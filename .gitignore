@@ -40,3 +40,6 @@ desktop.ini
 # Claude Code working files (kept local)
 CLAUDE.md
 TASKS.md
+
+# Local preview renders (tools/preview_village.py)
+preview/

@@ -1,0 +1,17 @@
+Slider3DS village export  2026-10-11 13:18:21
+STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material  Cells: 44052
+Tiles: 164 (39 animated)  Sprites: 268
+Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
+Sheets (7, 553K px):
+  largeprops_village_ruins: 128x64  [village_ruins_deco]
+  tempsprites: 32x32  [temp_interior]
+  tiles: 512x1024  [TilesetAnims, WaterTiles, sand-water_animated, VillageTileset, rock_wall_border, rock_wall, sand-grass_transition, waterfall, border, border_light]
+  tiles_caves: 256x32  [cave_rocks]
+  tiles_insides: 128x64  [interiors]
+  tiles_jungle: 128x64  [leaf_tiles]
+  tiles_village: 128x64  [river_end_transition, snow_tiles]
+Tile types:
+  Tile: 37599
+  RuleTile: 5751
+  AnimatedTile: 702
+Warnings (0):
