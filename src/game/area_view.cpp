@@ -35,13 +35,12 @@ void AreaView::draw(const Area& area, float camX, float camY, int screenW, int s
 
     for (const TileLayer& L : area.layers) {
         if (!L.active) continue;
-        float baseX = 0, baseY = 0;
         if (L.owner != 0) {
             const STileDef* s = area.stile(L.owner);
             if (!s || (!s->active && !showInactiveTiles)) continue;
-            baseX = (float)(s->x * s->width);
-            baseY = (float)(s->y * s->width);
         }
+        float baseX, baseY;
+        area.ownerBase(L.owner, baseX, baseY);
         // World position of cell (0,0)'s min corner.
         const float ox = baseX + L.originX + L.minX, oy = baseY + L.originY + L.minY;
 

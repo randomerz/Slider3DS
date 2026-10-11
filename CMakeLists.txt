@@ -35,3 +35,9 @@ add_executable(slider3ds ${GAME_SOURCES} src/platform/sdl/platform_sdl.cpp)
 target_include_directories(slider3ds PRIVATE src)
 target_compile_definitions(slider3ds PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets")
 target_link_libraries(slider3ds PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)
+
+# Headless tests of game logic against the exported data (no window).
+add_executable(slider3ds_tests tests/physics_test.cpp src/game/area.cpp src/game/json.cpp src/game/physics.cpp
+    tests/test_platform.cpp)
+target_include_directories(slider3ds_tests PRIVATE src)
+target_compile_definitions(slider3ds_tests PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets")

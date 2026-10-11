@@ -82,6 +82,32 @@
       "isTileActive": false
     }
   ],
+  "spawns": [
+    {
+      "name": "Default",
+      "owner": 1,
+      "pos": [-3,-145.5],
+      "inBoat": false
+    },
+    {
+      "name": "VillageAlcove",
+      "owner": 0,
+      "pos": [36.5,49.5],
+      "inBoat": false
+    },
+    {
+      "name": "VillageBeach",
+      "owner": 0,
+      "pos": [62.5,12],
+      "inBoat": true
+    },
+    {
+      "name": "VillageWaterfall",
+      "owner": 6,
+      "pos": [4.5,5.5],
+      "inBoat": false
+    }
+  ],
   "tilemaps": [
     {
       "path": "Map/World Grid/BaseCollider",

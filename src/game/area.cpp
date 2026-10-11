@@ -11,6 +11,18 @@ const STileDef* Area::stile(int islandId) const {
     return nullptr;
 }
 
+const Spawn* Area::spawn(const char* name) const {
+    for (const Spawn& s : spawns)
+        if (s.name == name) return &s;
+    return nullptr;
+}
+
+void Area::ownerBase(int owner, float& x, float& y) const {
+    const STileDef* s = owner != 0 ? stile(owner) : nullptr;
+    x = s ? (float)(s->x * s->width) : 0.0f;
+    y = s ? (float)(s->y * s->width) : 0.0f;
+}
+
 static bool fail(std::string* error, const std::string& msg) {
     if (error) *error = msg;
     return false;
@@ -33,10 +45,25 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.gridW = doc["grid"]["width"].asInt();
     out.gridH = doc["grid"]["height"].asInt();
     out.targetGrid = doc["grid"]["targetGrid"].asString();
+    out.housingOffset = doc["grid"]["housingOffset"].asInt();
 
     for (const Json& s : doc["stiles"].items())
         out.stiles.push_back({s["islandId"].asInt(), s["name"].asString(), s["x"].asInt(), s["y"].asInt(),
                               s["width"].asInt(), s["isTileActive"].asBool()});
+
+    for (const Json& s : doc["spawns"].items())
+        out.spawns.push_back({s["name"].asString(), s["owner"].asInt(), s["pos"].at(0).asFloat(),
+                              s["pos"].at(1).asFloat(), s["inBoat"].asBool()});
+
+    for (const Json& shape : doc["collisionShapes"].items()) {
+        std::vector<Polygon> polys;
+        for (const Json& poly : shape.items()) {
+            Polygon p;
+            for (const Json& v : poly.items()) p.push_back(v.asFloat());
+            polys.push_back(std::move(p));
+        }
+        out.shapes.push_back(std::move(polys));
+    }
 
     for (const Json& sh : doc["sheets"].items())
         out.sheetNames.push_back(sh["name"].asString());
@@ -52,6 +79,29 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         for (const Json& f : t["frames"].items()) def.frames.push_back(f.asInt());
         def.fps = t["fps"].asFloat();
         out.tiles.push_back(std::move(def));
+    }
+
+    for (const Json& t : doc["tilemaps"].items()) {
+        if (t["kind"].asString() != "collision" || !t["enabled"].asBool() || t["trigger"].asBool() ||
+            t["size"].at(0).asInt() == 0)
+            continue;
+        CollisionLayer C;
+        C.path = t["path"].asString();
+        C.owner = t["owner"].asInt();
+        C.active = t["active"].asBool(true);
+        const std::string& mode = t["mode"].asString();
+        C.mode = mode == "onFoot" ? CollisionMode::OnFoot : mode == "onWater" ? CollisionMode::OnWater : CollisionMode::Always;
+        C.originX = t["origin"].at(0).asFloat();
+        C.originY = t["origin"].at(1).asFloat();
+        C.minX = t["cellMin"].at(0).asInt();
+        C.minY = t["cellMin"].at(1).asInt();
+        C.w = t["size"].at(0).asInt();
+        C.h = t["size"].at(1).asInt();
+        C.cells.reserve(C.w * C.h);
+        for (const Json& c : t["cells"].items()) C.cells.push_back((int16_t)c.asInt());
+        if ((int)C.cells.size() != C.w * C.h)
+            return fail(error, "tilemap " + C.path + ": cell count mismatch");
+        out.collision.push_back(std::move(C));
     }
 
     for (const Json& t : doc["tilemaps"].items()) {
