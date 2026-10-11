@@ -1,14 +1,38 @@
 # 3DS build
 build/
 *.3dsx
+*.3dsx.tmp
 *.elf
 *.smdh
 *.map
+*.lst
 *.cia
+*.3ds
+*.cci
+*.t3x
 
-# PC build
+# PC build (CMake, incl. Visual Studio's "Open Folder" defaults)
 build-pc/
+out/
+CMakeUserPresets.json
+compile_commands.json
 
-# Editors
+# Editors / tooling
 .vs/
 .vscode/
+.idea/
+.cache/
+*.user
+*.swp
+.claude/settings.local.json
+
+# Python (asset tools)
+__pycache__/
+*.pyc
+.venv/
+
+# OS / OneDrive
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log

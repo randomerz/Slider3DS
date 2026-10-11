@@ -1,0 +1,8 @@
+# Keep LF everywhere: Makefile recipes and devkitPro's MSYS2 tools break on CRLF.
+* text=auto eol=lf
+
+*.png binary
+*.t3x binary
+*.ogg binary
+*.wav binary
+*.bcfnt binary
