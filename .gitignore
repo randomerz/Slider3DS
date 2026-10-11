@@ -1,0 +1,14 @@
+# 3DS build
+build/
+*.3dsx
+*.elf
+*.smdh
+*.map
+*.cia
+
+# PC build
+build-pc/
+
+# Editors
+.vs/
+.vscode/
