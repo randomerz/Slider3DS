@@ -24,7 +24,7 @@ compile_commands.json
 .cache/
 *.user
 *.swp
-.claude/settings.local.json
+.claude/
 
 # Python (asset tools)
 __pycache__/
@@ -36,3 +36,7 @@ Thumbs.db
 desktop.ini
 .DS_Store
 *.log
+
+# Claude Code working files (kept local)
+CLAUDE.md
+TASKS.md
