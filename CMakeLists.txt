@@ -14,8 +14,24 @@ FetchContent_Declare(SDL2
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
 FetchContent_MakeAvailable(SDL2)
 
+# SDL2_image with only its built-in (stb) PNG loader.
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(SDL2IMAGE_SAMPLES OFF CACHE BOOL "" FORCE)
+set(SDL2IMAGE_INSTALL OFF CACHE BOOL "" FORCE)
+set(SDL2IMAGE_VENDORED OFF CACHE BOOL "" FORCE)
+foreach(fmt AVIF BMP GIF JPG JXL LBM PCX PNM QOI SVG TGA TIF WEBP XCF XPM XV)
+    set(SDL2IMAGE_${fmt} OFF CACHE BOOL "" FORCE)
+endforeach()
+set(SDL2IMAGE_PNG ON CACHE BOOL "" FORCE)
+set(SDL2IMAGE_BACKEND_STB ON CACHE BOOL "" FORCE)
+FetchContent_Declare(SDL2_image
+    URL https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.2/SDL2_image-2.8.2.tar.gz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
+FetchContent_MakeAvailable(SDL2_image)
+
 file(GLOB GAME_SOURCES CONFIGURE_DEPENDS src/*.cpp src/game/*.cpp)
 
 add_executable(slider3ds ${GAME_SOURCES} src/platform/sdl/platform_sdl.cpp)
 target_include_directories(slider3ds PRIVATE src)
-target_link_libraries(slider3ds PRIVATE SDL2::SDL2main SDL2::SDL2-static)
+target_compile_definitions(slider3ds PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets")
+target_link_libraries(slider3ds PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)

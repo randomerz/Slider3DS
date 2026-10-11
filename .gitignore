@@ -43,3 +43,7 @@ TASKS.md
 
 # Local preview renders (tools/preview_village.py)
 preview/
+
+# Generated RomFS content (Makefile builds it from assets/)
+romfs/gfx/
+romfs/*/*.json

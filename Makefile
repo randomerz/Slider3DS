@@ -168,10 +168,22 @@ ifneq ($(ROMFS),)
 	export _3DSXFLAGS += --romfs=$(CURDIR)/$(ROMFS)
 endif
 
+#---------------------------------------------------------------------------------
+# Exported game data (assets/, from the Unity exporter) -> RomFS:
+#   assets/sheets/<name>.png -> romfs/gfx/<name>.t3x   (tex3ds)
+#   assets/<area>/*.json     -> romfs/<area>/*.json   (copied)
+# The .3dsx embeds RomFS, so it is rebuilt when any of these change.
+#---------------------------------------------------------------------------------
+SHEET_PNGS	:=	$(wildcard assets/sheets/*.png)
+ROMFS_SHEETS	:=	$(patsubst assets/sheets/%.png,$(ROMFS)/gfx/%.t3x,$(SHEET_PNGS))
+AREA_JSONS	:=	$(wildcard assets/*/*.json)
+ROMFS_JSONS	:=	$(patsubst assets/%,$(ROMFS)/%,$(AREA_JSONS))
+export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS))
+
 .PHONY: all clean
 
 #---------------------------------------------------------------------------------
-all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
+all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 $(BUILD):
@@ -190,7 +202,20 @@ endif
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD)
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS_SHEETS) $(ROMFS_JSONS)
+
+#---------------------------------------------------------------------------------
+$(ROMFS)/gfx/%.t3x	:	assets/sheets/%.png
+#---------------------------------------------------------------------------------
+	@mkdir -p $(dir $@)
+	@echo $(notdir $<)
+	@tex3ds -f rgba8 -z auto -o $@ $<
+
+#---------------------------------------------------------------------------------
+$(ROMFS)/%.json	:	assets/%.json
+#---------------------------------------------------------------------------------
+	@mkdir -p $(dir $@)
+	@cp $< $@
 
 #---------------------------------------------------------------------------------
 $(GFXBUILD)/%.t3x	$(BUILD)/%.h	:	%.t3s

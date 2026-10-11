@@ -3,12 +3,32 @@
 //
 // Keys (Citra/Azahar defaults): arrows = D-pad, X = A, Z = B, S = X, A = Y,
 // Q = L, W = R, Enter = START, Backspace = SELECT.
+//
+// Dev hook: if SLIDER3DS_SCREENSHOT=<file.bmp> is set, the window is saved there after
+// SCREENSHOT_FRAME frames and the app quits (lets tools verify rendering headlessly).
 #include "platform/platform.h"
 
 #include <SDL.h>
+#include <SDL_image.h>
+
+#include <cstdlib>
+
+#ifndef ASSET_ROOT
+#define ASSET_ROOT "assets"
+#endif
 
 namespace plat {
+
+struct Texture {
+    SDL_Texture* tex;
+};
+
 namespace {
+
+constexpr int SCREENSHOT_FRAME = 30;
+int g_frame = 0;
+Uint64 g_frameStart = 0;
+FrameStats g_stats;
 
 constexpr int WINDOW_SCALE = 2;
 constexpr int LOGICAL_W = TOP_W;
@@ -65,10 +85,15 @@ bool init() {
     }
     SDL_RenderSetLogicalSize(g_renderer, LOGICAL_W, LOGICAL_H);
     SDL_RenderSetIntegerScale(g_renderer, SDL_TRUE);
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        SDL_Log("IMG_Init failed: %s", IMG_GetError());
+        return false;
+    }
     return true;
 }
 
 void shutdown() {
+    IMG_Quit();
     SDL_DestroyRenderer(g_renderer);
     SDL_DestroyWindow(g_window);
     SDL_Quit();
@@ -102,7 +127,38 @@ Input pollInput() {
     return in;
 }
 
+bool readFile(const char* path, std::string& out) {
+    std::string full = std::string(ASSET_ROOT) + "/" + path;
+    size_t size = 0;
+    void* data = SDL_LoadFile(full.c_str(), &size);
+    if (!data) {
+        SDL_Log("readFile(%s) failed: %s", full.c_str(), SDL_GetError());
+        return false;
+    }
+    out.assign(static_cast<const char*>(data), size);
+    SDL_free(data);
+    return true;
+}
+
+Texture* loadSheet(const char* name) {
+    std::string path = std::string(ASSET_ROOT) + "/sheets/" + name + ".png";
+    SDL_Texture* tex = IMG_LoadTexture(g_renderer, path.c_str());
+    if (!tex) {
+        SDL_Log("loadSheet(%s) failed: %s", path.c_str(), IMG_GetError());
+        return nullptr;
+    }
+    SDL_SetTextureScaleMode(tex, SDL_ScaleModeNearest);
+    return new Texture{tex};
+}
+
+void freeSheet(Texture* tex) {
+    if (!tex) return;
+    SDL_DestroyTexture(tex->tex);
+    delete tex;
+}
+
 void beginFrame() {
+    g_frameStart = SDL_GetPerformanceCounter();
     SDL_RenderSetViewport(g_renderer, nullptr);
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);
@@ -123,6 +179,36 @@ void drawRect(float x, float y, float w, float h, uint32_t color) {
     SDL_RenderFillRectF(g_renderer, &r);
 }
 
-void endFrame() { SDL_RenderPresent(g_renderer); }
+void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags) {
+    // SDL flips in texture space before rotating, so a flip that follows ROT90 is a rotation the
+    // other way: F*R(a) = R(-a)*F. SDL angles are clockwise on screen.
+    int flip = ((flags & FLIP_X) ? SDL_FLIP_HORIZONTAL : 0) | ((flags & FLIP_Y) ? SDL_FLIP_VERTICAL : 0);
+    double angle = 0.0;
+    if (flags & ROT90) {
+        bool mirrored = ((flags & FLIP_X) != 0) != ((flags & FLIP_Y) != 0);
+        angle = mirrored ? 90.0 : -90.0;
+    }
+    SDL_Rect src{sx, sy, sw, sh};
+    SDL_FRect dst{x, y, (float)sw, (float)sh};
+    SDL_RenderCopyExF(g_renderer, tex->tex, &src, &dst, angle, nullptr, (SDL_RendererFlip)flip);
+}
+
+FrameStats lastFrameStats() { return g_stats; }
+
+void endFrame() {
+    g_stats.cpuMs = (float)((SDL_GetPerformanceCounter() - g_frameStart) * 1000.0 / SDL_GetPerformanceFrequency());
+    const char* shot = std::getenv("SLIDER3DS_SCREENSHOT");
+    if (shot && ++g_frame == SCREENSHOT_FRAME) {
+        SDL_RenderSetViewport(g_renderer, nullptr);
+        int w, h;
+        SDL_GetRendererOutputSize(g_renderer, &w, &h);
+        SDL_Surface* s = SDL_CreateRGBSurfaceWithFormat(0, w, h, 32, SDL_PIXELFORMAT_ARGB8888);
+        SDL_RenderReadPixels(g_renderer, nullptr, SDL_PIXELFORMAT_ARGB8888, s->pixels, s->pitch);
+        SDL_SaveBMP(s, shot);
+        SDL_FreeSurface(s);
+        g_quit = true;
+    }
+    SDL_RenderPresent(g_renderer);
+}
 
 } // namespace plat
