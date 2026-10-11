@@ -1,5 +1,6 @@
 // Village walkabout: a placeholder player walks the exported Village with the original's
-// collision; the camera follows. Starts at the Default spawn (inside tile 1's house).
+// collision; the camera follows. For development it starts outdoors on tile 1 (DEV_START_OUTSIDE);
+// the real new-game start is the Default spawn inside tile 1's house.
 //   D-pad / circle pad: walk          L / R: jump to previous / next spawn point
 //   X: toggle noclip                  Y: toggle drawing inactive STiles      START: quit
 // Bottom screen: the 3x3 grid (active tiles light, inactive dark) with the player's position,
@@ -7,6 +8,7 @@
 // the red tick marks 16.7 ms (60 fps).
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <string>
 
 #include "game/area.h"
@@ -18,6 +20,32 @@ namespace {
 
 constexpr float MOVE_SPEED = 5.0f; // world units per second (Player.moveSpeed)
 constexpr float FRAME_DT = 1.0f / 60.0f;
+constexpr bool DEV_START_OUTSIDE = true;
+
+// The player's BoxCollider2Ds from the Unity prefab, in pixels (size incl. edge radius; offset from
+// the player position). The original moves by raycasting from the position point; these boxes are
+// what triggers/NPCs see. On foot: 0.5x0.5 + 0.125 edge radius at (0,-1/16). Boat: 1.5x0.75 at (0,-0.375).
+struct Hitbox { float w, h, offsetY; };
+constexpr Hitbox HITBOX_FOOT = {12, 12, -1};
+constexpr Hitbox HITBOX_BOAT = {24, 12, -6};
+
+// Nearest collision-free point to (x, y), searching outward in half-unit rings.
+bool findFreeNear(const Area& area, float& x, float& y) {
+    for (int r = 0; r <= 16; r++) {
+        for (int i = -r; i <= r; i++) {
+            for (int j = -r; j <= r; j++) {
+                if (std::abs(i) != r && std::abs(j) != r) continue; // ring only
+                float tx = x + i * 0.5f, ty = y + j * 0.5f;
+                if (!segmentBlocked(area, tx, ty, 0, 0, false)) {
+                    x = tx;
+                    y = ty;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
 
 void placeAtSpawn(const Area& area, const Spawn& s, float& x, float& y, bool& onWater) {
     float bx, by;
@@ -45,6 +73,11 @@ int main(int, char**) {
         for (size_t i = 0; i < area.spawns.size(); i++)
             if (area.spawns[i].name == "Default") spawnIndex = i;
         placeAtSpawn(area, area.spawns[spawnIndex], px, py, onWater);
+    }
+    if (loaded && DEV_START_OUTSIDE) {
+        area.ownerBase(1, px, py); // tile 1's center, outdoors
+        onWater = false;
+        findFreeNear(area, px, py);
     }
     int frame = 0;
 
@@ -77,10 +110,12 @@ int main(int, char**) {
         plat::beginScreen(plat::Screen::Top, plat::rgba(0x14, 0x14, 0x1c));
         if (loaded) {
             view.draw(area, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
-            // Placeholder player: 10x14 px standing on its position (the camera centers on it).
+            // Placeholder player: its collider box, centered on screen (the camera follows it),
+            // with the position point in white.
+            const Hitbox& hb = onWater ? HITBOX_BOAT : HITBOX_FOOT;
             uint32_t c = noclip ? plat::rgba(0xe0, 0xa0, 0x40) : onWater ? plat::rgba(0x50, 0x90, 0xe0)
                                                                          : plat::rgba(0xe0, 0x50, 0x50);
-            plat::drawRect(plat::TOP_W / 2 - 5, plat::TOP_H / 2 - 14, 10, 14, c);
+            plat::drawRect(plat::TOP_W / 2 - hb.w / 2, plat::TOP_H / 2 - hb.offsetY - hb.h / 2, hb.w, hb.h, c);
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xff, 0xff, 0xff));
         } else {
             plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0x80, 0x20, 0x20));
