@@ -1,11 +1,12 @@
 """Render an exported area (<area>.json + shared sheets) to a PNG, to sanity-check the Unity export.
 
-Usage: python tools/preview_village.py [assets/village/village.json] [out.png] [--houses] [--collision] [--materials]
+Usage: python tools/preview_village.py [assets/village/village.json] [out.png] [--houses] [--collision [--raft]] [--materials]
 Requires Pillow. Draws every visible "visual" tilemap with STiles at their authored grid positions,
 sorted by (sorting layer, order). Animated tiles show frame 0.
 --houses     render the interior tilemaps (placed at housingOffset) instead of the overworld
---collision  overlay collision polygons (red)
+--collision  overlay collision polygons active on foot (red); add --raft for the on-water set
 --materials  overlay footstep materials (one color per material)
+Typically render one overlay per image (e.g. world_collision.png, world_sounds.png).
 """
 import json
 import os
@@ -30,9 +31,9 @@ def main():
     sheets = [Image.open(os.path.join(base_dir, s["file"])).convert("RGBA") for s in d["sheets"]]
     stile_pos = {s["islandId"]: (s["x"] * s["width"], s["y"] * s["width"]) for s in d["stiles"]}
 
-    def placed(tm):
+    def placed(tm, ignore_active=False):
         """Yields (cellIndex, cellWorldX, cellWorldY) for occupied cells of a tilemap in this view."""
-        if not tm["active"] or tm["size"][0] == 0:
+        if (not tm["active"] and not ignore_active) or tm["size"][0] == 0:
             return
         bx, by = stile_pos.get(tm["owner"], (0, 0))
         ox, oy = tm["origin"]
@@ -108,9 +109,11 @@ def main():
         print("materials:", ", ".join(f"{m['footstep']}={MATERIAL_COLORS[i % len(MATERIAL_COLORS)]}"
                                      for i, m in enumerate(d["materials"])))
     if "--collision" in sys.argv:
+        # WaterLandColliderManager switches the onFoot/onWater sets by the player's water state.
+        state = "onWater" if "--raft" in sys.argv else "onFoot"
         for tm in d["tilemaps"]:
-            if tm["kind"] == "collision" and tm["enabled"] and not tm["trigger"]:
-                for i, wx, wy in placed(tm):
+            if tm["kind"] == "collision" and tm["enabled"] and not tm["trigger"] and tm["mode"] in ("always", state):
+                for i, wx, wy in placed(tm, ignore_active=tm["mode"] != "always"):
                     for poly in d["collisionShapes"][tm["cells"][i]]:
                         pts = [to_px(wx + poly[k], wy + poly[k + 1]) for k in range(0, len(poly), 2)]
                         draw.polygon(pts, fill=(255, 40, 40, 90))
