@@ -3,9 +3,11 @@
 // the real new-game start is the Default spawn inside tile 1's house.
 //   D-pad / circle pad: walk          L / R: jump to previous / next spawn point
 //   X: toggle noclip                  Y: toggle drawing inactive STiles      START: quit
-// Bottom screen: the 3x3 grid (active tiles light, inactive dark) with the player's position,
-// and perf bars for the previous frame: CPU (green), GPU (blue), sprites drawn (gray, 1px = 20);
-// the red tick marks 16.7 ms (60 fps).
+//   A + D-pad: slide the tile you stand on (debug, until the Artifact UI exists)
+//   B: toggle collecting tiles 1-8 (debug)
+// Bottom screen: the 3x3 grid (active tiles light, inactive dark, the one you stand on outlined)
+// with the player's position, and perf bars for the previous frame: CPU (green), GPU (blue),
+// sprites drawn (gray, 1px = 20); the red tick marks 16.7 ms (60 fps).
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -13,6 +15,8 @@
 
 #include "game/area.h"
 #include "game/area_view.h"
+#include "game/artifact.h"
+#include "game/grid.h"
 #include "game/physics.h"
 #include "platform/platform.h"
 
@@ -62,12 +66,18 @@ int main(int, char**) {
 
     Area area;
     AreaView view;
+    Grid grid;
+    Artifact artifact;
     std::string error;
     bool loaded = loadArea("village/village.json", area, &error) && view.loadSheets(area);
     if (!loaded) printf("Failed to load village: %s\n", error.c_str());
+    if (loaded) {
+        grid.init(area);
+        artifact.init(grid);
+    }
 
     float px = 0, py = 0;
-    bool onWater = false, noclip = false, showInactive = false;
+    bool onWater = false, noclip = false, showInactive = false, debugCollected = false;
     size_t spawnIndex = 0;
     if (loaded && !area.spawns.empty()) {
         for (size_t i = 0; i < area.spawns.size(); i++)
@@ -79,6 +89,7 @@ int main(int, char**) {
         onWater = false;
         findFreeNear(area, px, py);
     }
+    int playerStile = loaded ? grid.stileUnder(px, py) : 0;
     int frame = 0;
 
     while (plat::mainLoop()) {
@@ -93,11 +104,48 @@ int main(int, char**) {
             printf("Spawn: %s\n", area.spawns[spawnIndex].name.c_str());
         }
 
+        // Debug grid controls.
+        const bool sliding = (in.held & plat::BTN_A) != 0;
+        if (loaded && (in.pressed & plat::BTN_B)) {
+            debugCollected = !debugCollected;
+            for (int id = 2; id <= 8; id++) grid.setTileActive(id, debugCollected);
+            printf("Tiles 2-8 %s; grid %s\n", debugCollected ? "collected" : "removed", grid.gridString().c_str());
+        }
+        if (loaded && sliding && playerStile != 0) {
+            const STileDef* s = area.stile(playerStile);
+            int dx = (in.pressed & plat::BTN_RIGHT) ? 1 : (in.pressed & plat::BTN_LEFT) ? -1 : 0;
+            int dy = (in.pressed & plat::BTN_UP) ? 1 : (in.pressed & plat::BTN_DOWN) ? -1 : 0;
+            if ((dx != 0) != (dy != 0)) {
+                // The Artifact's view of where the tile is (it may still be queued to get there).
+                int bx = -1, by = -1;
+                for (int y = 0; y < grid.height(); y++)
+                    for (int x = 0; x < grid.width(); x++)
+                        if (artifact.buttonAt(x, y) == s->islandId) { bx = x; by = y; }
+                bool ok = artifact.tryMove(grid, bx, by, bx + dx, by + dy, playerStile);
+                printf("Slide tile %d (%d,%d)->(%d,%d): %s; artifact %s\n", s->islandId, bx, by, bx + dx, by + dy,
+                       ok ? "queued" : "refused", artifact.gridString(area).c_str());
+            }
+        }
+
+        // Tiles slide; the player is parented to the tile underneath and rides along.
+        if (loaded) {
+            playerStile = grid.stileUnder(px, py, playerStile);
+            const STileDef* s = playerStile ? area.stile(playerStile) : nullptr;
+            float ox = s ? s->posX : 0, oy = s ? s->posY : 0;
+            artifact.update(grid, FRAME_DT, playerStile);
+            if (s) {
+                px += (s->posX - ox) * s->width;
+                py += (s->posY - oy) * s->width;
+            }
+        }
+
         float ix = 0, iy = 0;
-        if (in.held & plat::BTN_LEFT)  ix -= 1;
-        if (in.held & plat::BTN_RIGHT) ix += 1;
-        if (in.held & plat::BTN_UP)    iy += 1;
-        if (in.held & plat::BTN_DOWN)  iy -= 1;
+        if (!sliding) {
+            if (in.held & plat::BTN_LEFT)  ix -= 1;
+            if (in.held & plat::BTN_RIGHT) ix += 1;
+            if (in.held & plat::BTN_UP)    iy += 1;
+            if (in.held & plat::BTN_DOWN)  iy -= 1;
+        }
         if (loaded && (ix != 0 || iy != 0)) {
             float len = std::sqrt(ix * ix + iy * iy);
             float dx = ix / len * MOVE_SPEED * FRAME_DT, dy = iy / len * MOVE_SPEED * FRAME_DT;
@@ -123,12 +171,19 @@ int main(int, char**) {
 
         plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x2a, 0x2a, 0x3a));
         if (loaded) {
-            // 3x3 grid map: each slot 60px, row 0 at the bottom. Slots span center +- width/2.
+            // 3x3 grid map: each slot 60px, row 0 at the bottom; tiles at their animated positions.
             const int cell = 60, gx = (plat::BOTTOM_W - cell * area.gridW) / 2, gy = 30;
+            for (int pass = 0; pass < 2; pass++)  // empty slots first, so sliding tiles draw over them
             for (const STileDef& s : area.stiles) {
-                float x = gx + s.x * cell, y = gy + (area.gridH - 1 - s.y) * cell;
+                if (s.active != (pass == 1)) continue;
+                float x = gx + s.posX * cell, y = gy + (area.gridH - 1 - s.posY) * cell;
+                if (s.islandId == playerStile)
+                    plat::drawRect(x, y, cell, cell, plat::rgba(0xe0, 0xe0, 0x60));
                 uint32_t c = s.active ? plat::rgba(0xb0, 0xb0, 0xb0) : plat::rgba(0x50, 0x50, 0x58);
                 plat::drawRect(x + 2, y + 2, cell - 4, cell - 4, c);
+                // Tile number as pips (no font yet): one 4px square per unit, rows of 3.
+                for (int i = 0; i < s.islandId; i++)
+                    plat::drawRect(x + 8 + (i % 3) * 7, y + 8 + (i / 3) * 7, 4, 4, plat::rgba(0x30, 0x30, 0x38));
             }
             const float w = (float)area.stiles[0].width;
             // Inside a house the player is housingOffset below the grid; show the slot it's under.

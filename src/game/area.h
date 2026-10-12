@@ -62,7 +62,17 @@ struct STileDef {
     std::string name;
     int x, y, width; // grid slot; the tile is centered on (x * width, y * width)
     bool active;
+    int startX = 0, startY = 0; // slot and active state in the export (new game)
+    bool startActive = false;
+    // Runtime state, owned by Grid: x, y, active above; the drawn/physical position in slots
+    // (differs from x, y while sliding), and a counter that switches the tile's colliders off while > 0
+    // (STile.SetSliderCollider, used for tiles in a move the player isn't riding).
+    float posX = 0, posY = 0;
+    int collidersOff = 0;
 };
+
+// Temporary wall segment (world units): the edge colliders that fence a slide (Grid).
+struct Wall { float x0, y0, x1, y1; };
 
 struct Area {
     int ppu = 16;
@@ -77,10 +87,11 @@ struct Area {
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
     std::vector<std::string> sheetNames;
+    std::vector<Wall> borderWalls; // runtime, set by Grid
 
     const STileDef* stile(int islandId) const;
     const Spawn* spawn(const char* name) const;
-    // World position of an owner's origin: an STile's center, or (0,0) for the world.
+    // World position of an owner's origin: an STile's (animated) center, or (0,0) for the world.
     void ownerBase(int owner, float& x, float& y) const;
 };
 

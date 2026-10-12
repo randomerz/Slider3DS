@@ -1,4 +1,4 @@
-// Headless checks of the collision against the real exported Village (PC only).
+// Headless checks against the real exported Village (PC only): collision here, grid in grid_test.cpp.
 // Run: build-pc/Debug/slider3ds_tests.exe   (exit code 0 = all passed)
 #include <cmath>
 #include <cstdio>
@@ -7,14 +7,16 @@
 #include "game/area.h"
 #include "game/physics.h"
 
-namespace {
+void gridTests(const Area& area); // grid_test.cpp
 
-int g_failures = 0;
+static int g_failures = 0;
 
 void check(bool ok, const std::string& what) {
     printf("%s  %s\n", ok ? "PASS" : "FAIL", what.c_str());
     if (!ok) g_failures++;
 }
+
+namespace {
 
 void spawnPos(const Area& area, const Spawn& s, float& x, float& y) {
     area.ownerBase(s.owner, x, y);
@@ -87,6 +89,8 @@ int main(int, char**) {
         check(frames < 600, "raft sailing west from Beach stops after " + std::to_string(startX - x) +
                                 " units (at x=" + std::to_string(x) + ", blocked by " + by + ")");
     }
+
+    gridTests(area);
 
     printf("%s (%d failure%s)\n", g_failures ? "FAILED" : "OK", g_failures, g_failures == 1 ? "" : "s");
     return g_failures ? 1 : 0;

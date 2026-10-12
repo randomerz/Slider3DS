@@ -19,8 +19,8 @@ const Spawn* Area::spawn(const char* name) const {
 
 void Area::ownerBase(int owner, float& x, float& y) const {
     const STileDef* s = owner != 0 ? stile(owner) : nullptr;
-    x = s ? (float)(s->x * s->width) : 0.0f;
-    y = s ? (float)(s->y * s->width) : 0.0f;
+    x = s ? s->posX * s->width : 0.0f;
+    y = s ? s->posY * s->width : 0.0f;
 }
 
 static bool fail(std::string* error, const std::string& msg) {
@@ -47,9 +47,16 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.targetGrid = doc["grid"]["targetGrid"].asString();
     out.housingOffset = doc["grid"]["housingOffset"].asInt();
 
-    for (const Json& s : doc["stiles"].items())
-        out.stiles.push_back({s["islandId"].asInt(), s["name"].asString(), s["x"].asInt(), s["y"].asInt(),
-                              s["width"].asInt(), s["isTileActive"].asBool()});
+    for (const Json& s : doc["stiles"].items()) {
+        STileDef d{s["islandId"].asInt(), s["name"].asString(), s["x"].asInt(), s["y"].asInt(),
+                   s["width"].asInt(), s["isTileActive"].asBool()};
+        d.startX = d.x;
+        d.startY = d.y;
+        d.startActive = d.active;
+        d.posX = (float)d.x;
+        d.posY = (float)d.y;
+        out.stiles.push_back(std::move(d));
+    }
 
     for (const Json& s : doc["spawns"].items())
         out.spawns.push_back({s["name"].asString(), s["owner"].asInt(), s["pos"].at(0).asFloat(),

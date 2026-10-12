@@ -58,9 +58,10 @@ bool layerEnabled(const Area& area, const CollisionLayer& L, bool onWater) {
     case CollisionMode::OnWater: if (!onWater) return false; break;
     case CollisionMode::Always: if (!L.active) return false; break;
     }
-    // An inactive STile's tilemaps (colliders included) are switched off.
+    // An inactive STile's tilemaps (colliders included) are switched off, and so are a tile's
+    // colliders while it slides in a move the player isn't riding.
     const STileDef* s = L.owner != 0 ? area.stile(L.owner) : nullptr;
-    return L.owner == 0 || (s && s->active);
+    return L.owner == 0 || (s && s->active && s->collidersOff <= 0);
 }
 
 } // namespace
@@ -70,16 +71,21 @@ bool segmentBlocked(const Area& area, float x, float y, float dx, float dy, bool
 }
 
 std::string segmentBlockedBy(const Area& area, float x, float y, float dx, float dy, bool onWater) {
+    // Edge colliders fencing a slide in progress.
+    for (const Wall& w : area.borderWalls)
+        if (segmentsIntersect(x, y, dx, dy, w.x0, w.y0, w.x1, w.y1)) return "slide border";
+
     // Inactive STiles: STile.SetTileActive makes their slider colliders solid, blocking the slot
     // and the house interior below it.
     for (const STileDef& s : area.stiles) {
-        if (s.active) continue;
-        const float cx = (float)(s.x * s.width), cy = (float)(s.y * s.width), half = s.width * 0.5f;
+        if (s.active || s.collidersOff > 0) continue;
+        const float cx = s.posX * s.width, cy = s.posY * s.width, half = s.width * 0.5f;
         const float hy = cy + area.housingOffset;
         if (segmentHitsBox(x, y, dx, dy, cx - half, cy - half, cx + half, cy + half) ||
             segmentHitsBox(x, y, dx, dy, cx - half, hy - half, cx + half, hy + half))
             return "inactive STile " + std::to_string(s.islandId);
     }
+
 
     for (const CollisionLayer& L : area.collision) {
         if (!layerEnabled(area, L, onWater)) continue;
