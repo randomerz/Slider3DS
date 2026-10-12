@@ -4,7 +4,7 @@
 // walls, props, NPCs, items, inactive STile slots, slide fences. (Player.FixedUpdate also raycasts
 // its position point against the Default layer, but the box always meets a collider first.)
 // So the port moves that box: along X, then along Y, each stopping flush against what it hits,
-// which slides along walls the way the push-out does.
+// which slides along walls the way the push-out does (see moveWithCollision).
 #pragma once
 
 #include <string>
@@ -49,7 +49,9 @@ inline bool boxBlocked(const Area& area, const Grid& grid, const ObjectStates& o
 std::string describe(const Area& area, const Blocker& b);
 
 // Moves the player at (x, y) with hitbox `hb` by (dx, dy): X first, then Y, each as far as it goes
-// before touching a collider. A box that already overlaps something (a tile slid onto the player)
-// moves freely, as Box2D would push it out. Returns true if it moved.
+// before touching a collider; a single-axis step blocked by a round or slanted collider slides
+// around it. A box that already overlaps something (a tile slid onto the player) is first pushed
+// out to the nearest free spot, as Box2D would; one buried deeper than a unit walks free. Returns
+// true if it moved.
 bool moveWithCollision(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x,
                        float& y, float dx, float dy, bool onWater);

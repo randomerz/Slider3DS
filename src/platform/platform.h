@@ -87,4 +87,7 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
 void endFrame();
 FrameStats lastFrameStats();
 
+// Monotonic time in milliseconds (sub-millisecond resolution), for timing code.
+double nowMs();
+
 } // namespace plat

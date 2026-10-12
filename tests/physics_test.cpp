@@ -248,16 +248,72 @@ TEST(physics_slide_fences_block_in_world_and_house) {
     check(grid.walls().empty(), "fences drop when the slide ends");
 }
 
-TEST(physics_overlapping_box_walks_free) {
-    // A box that already overlaps something (a tile slid onto the player) moves freely rather
-    // than sticking, like Box2D pushing it out.
+TEST(physics_overlapping_box_is_pushed_out_not_in) {
+    // A box overlapping a wall (as after a slide) is pushed out, and walking further into the wall
+    // doesn't get it any deeper.
+    const Area& area = village();
+    Grid grid;
+    grid.init(area);
+    const Spawn* def = area.spawn("Default");
+    check(def != nullptr, "Default spawn exists");
+    if (!def) return;
+    float x, y;
+    spawnPos(grid, *def, x, y);
+    walk(area, grid, x, y, STEP, 0, false); // flush against the wall on the right
+    const float flushX = x;
+    x += 0.2f; // now overlapping it
+    check((bool)ahead(area, grid, x, y, 0, 0, false), "starts overlapping the wall");
+    for (int i = 0; i < 10; i++) moveWithCollision(area, grid, villageObjects(), area.player.footBox, x, y, STEP, 0, false);
+    check(!ahead(area, grid, x, y, 0, 0, false) && x <= flushX + 1e-3f,
+          "walking into it ends free, not deeper (x " + std::to_string(x - flushX) + " past flush)");
+}
+
+TEST(physics_buried_box_walks_free) {
+    // Buried deeper than a unit (the middle of an inactive slot), the box walks free rather than
+    // being stuck forever.
     const Area& area = village();
     Grid grid;
     grid.init(area);
     const TileState* t9 = grid.tile(9);
+    check(t9 != nullptr, "tile 9 exists");
     if (!t9) return;
-    float x = t9->posX * grid.tileWidth(), y = t9->posY * grid.tileWidth(); // inside inactive tile 9
-    check(boxBlocked(area, grid, villageObjects(), hitboxAt(area.player.footBox, x, y), false), "starts overlapping");
+    float x = t9->posX * grid.tileWidth(), y = t9->posY * grid.tileWidth();
+    check((bool)ahead(area, grid, x, y, 0, 0, false), "starts buried");
     const float sx = x;
     check(moveWithCollision(area, grid, villageObjects(), area.player.footBox, x, y, STEP, 0, false) && x > sx, "still moves");
+}
+
+TEST(physics_slides_around_round_colliders) {
+    // Walking straight into a knot node (a circle) so the box's corner meets it (0.6 off center; the
+    // box is 0.75 tall, so a flat face at a smaller offset stops dead, as in Box2D) slides around it; a flat wall still stops the player dead (house walls test). The lane is
+    // chosen so it is clear with the knot hidden (the negative control).
+    const Area& area = village();
+    Grid grid;
+    grid.init(area);
+    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    const Hitbox& hb = area.player.footBox;
+    int lanes = 0;
+    for (const ObjectCollider& knot : area.objectColliders) {
+        if (knot.kind != ObjectCollider::Kind::Circle || knot.path.find("Knot Node") == std::string::npos) continue;
+        ObjectStates without = villageObjects();
+        without.setActive(area, knot.path, false);
+        float bx, by;
+        grid.ownerBase(knot.owner, bx, by);
+        const float cx = bx + knot.cx, cy = by + knot.cy - hb.offY;
+        for (int dir : {1, -1}) {
+            // Approach along x from 1.5 units away, 0.6 above center; the lane must be clear without the knot.
+            const float sx = cx - dir * 1.5f, sy = cy + 0.6f;
+            bool clear = true;
+            for (float t = 0; t <= 3.0f && clear; t += 0.125f) // incl. the band the slide deflects into
+                for (float lift : {0.0f, 0.4f, 0.8f})
+                    clear = clear && !boxBlocked(area, grid, without, hitboxAt(hb, sx + dir * t, sy + lift), false);
+            if (!clear) continue;
+            float x = sx, y = sy;
+            for (int i = 0; i < 60; i++) moveWithCollision(area, grid, villageObjects(), hb, x, y, dir * STEP, 0, false);
+            check(dir * (x - cx) > 0.5f, knot.path + ": walked past it (" + std::to_string(dir * (x - cx)) + ")");
+            check(!boxBlocked(area, grid, villageObjects(), hitboxAt(hb, x, y), false), knot.path + ": ends free");
+            lanes++;
+        }
+    }
+    check(lanes >= 2, "found clear lanes past knot nodes (" + std::to_string(lanes) + ")");
 }

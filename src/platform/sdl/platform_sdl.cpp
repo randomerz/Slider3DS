@@ -197,6 +197,8 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
 
 FrameStats lastFrameStats() { return g_stats; }
 
+double nowMs() { return SDL_GetPerformanceCounter() * 1000.0 / SDL_GetPerformanceFrequency(); }
+
 // The game steps a fixed 1/60 s per frame (like the 3DS's 60 Hz vblank), so hold the PC loop to
 // 60 Hz whatever the monitor's refresh rate: sleep, then spin the last ~2 ms, toward an absolute
 // schedule. If we fall far behind (breakpoint, window drag), resync instead of fast-forwarding.

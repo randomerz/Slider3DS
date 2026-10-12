@@ -6,9 +6,7 @@
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
 //   A + D-pad: slide the tile you stand on (until the Artifact UI exists)
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
-// add a perf overlay (SELECT hides it), each row a bar plus its number, averaged over ~half a
-// second: CPU ms (green; FPS beside it), GPU ms (blue), sprites drawn (gray, 1px = 20; red near the
-// sprite budget). Bars are 10px per ms; the red tick marks 16.7 ms (60 fps).
+// add a perf overlay (game/dev_overlay; SELECT hides it).
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -20,7 +18,7 @@
 #include "game/artifact.h"
 #include "game/artifact_ui.h"
 #include "game/conditions.h"
-#include "game/debug_text.h"
+#include "game/dev_overlay.h"
 #include "game/grid.h"
 #include "game/object_states.h"
 #include "game/physics.h"
@@ -103,9 +101,10 @@ int main(int, char**) {
     int playerStile = loaded ? grid.stileUnder(px, py) : 0;
     int frame = 0;
     bool showPerf = DEV;
-    float avgCpu = 0, avgGpu = 0, avgFrame = 1000.0f / 60.0f, avgSprites = 0; // smoothed overlay values
+    DevOverlay overlay;
 
     while (plat::mainLoop()) {
+        const double updateStart = plat::nowMs();
         plat::Input in = plat::pollInput();
         if (in.pressed & plat::BTN_START) break;
         if (DEV && (in.pressed & plat::BTN_Y)) showInactive = !showInactive;
@@ -168,6 +167,7 @@ int main(int, char**) {
             else moveWithCollision(area, grid, objects, onWater ? area.player.boatBox : area.player.footBox, px, py, dx, dy, onWater);
         }
 
+        const float updateMs = (float)(plat::nowMs() - updateStart);
         plat::beginFrame();
 
         plat::beginScreen(plat::Screen::Top, loaded ? plat::rgba(area.background[0], area.background[1], area.background[2])
@@ -198,35 +198,8 @@ int main(int, char**) {
         if (loaded) {
             artifactUI.draw(area, grid, artifact, sheets);
         }
-        if (DEV) {
-            const plat::FrameStats stats = plat::lastFrameStats();
-            const float k = 1.0f / 30.0f;
-            avgCpu += (stats.cpuMs - avgCpu) * k;
-            avgGpu += (stats.gpuMs - avgGpu) * k;
-            if (stats.frameMs > 0) avgFrame += (stats.frameMs - avgFrame) * k;
-            avgSprites += (view.lastSpriteCount() - avgSprites) * k;
-        }
-        if (DEV && showPerf) {
-            const float msPx = 10.0f; // 10px per ms
-            const bool nearBudget = avgSprites > plat::MAX_DRAWS_PER_FRAME * 3 / 4;
-            const uint32_t green = plat::rgba(0x60, 0xd0, 0x70), blue = plat::rgba(0x60, 0x90, 0xe0);
-            const uint32_t gray = nearBudget ? plat::rgba(0xe0, 0x50, 0x50) : plat::rgba(0xa0, 0xa0, 0xa0);
-            const float rowY[3] = {196, 210, 224}, rowH = 10, textX = 190;
-            char text[32];
-            plat::drawRect(4, 192, 312, 46, plat::rgba(0x1a, 0x1a, 0x1a, 0xc0));
-            plat::drawRect(10, rowY[0], avgCpu * msPx, rowH, green);
-            snprintf(text, sizeof text, "CPU %.1fMS", avgCpu);
-            float after = drawDebugText(textX, rowY[0], text, green, 2);
-            snprintf(text, sizeof text, "%.0fFPS", avgFrame > 0 ? 1000.0f / avgFrame : 0.0f);
-            drawDebugText(after + 8, rowY[0], text, plat::rgba(0xff, 0xff, 0xff), 2);
-            plat::drawRect(10, rowY[1], avgGpu * msPx, rowH, blue);
-            snprintf(text, sizeof text, "GPU %.1fMS", avgGpu);
-            drawDebugText(textX, rowY[1], text, blue, 2);
-            plat::drawRect(10, rowY[2], std::min(avgSprites / 20.0f, textX - 20), rowH, gray);
-            snprintf(text, sizeof text, "SPR %.0f", avgSprites);
-            drawDebugText(textX, rowY[2], text, gray, 2);
-            plat::drawRect(10 + 16.7f * msPx, rowY[0] - 2, 1, rowY[2] + rowH - rowY[0] + 4, plat::rgba(0xe0, 0x50, 0x50));
-        }
+        if (DEV) overlay.record(plat::lastFrameStats(), updateMs, view.lastSpriteCount());
+        if (DEV && showPerf) overlay.draw();
 
         plat::endFrame();
         frame++;

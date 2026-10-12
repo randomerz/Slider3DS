@@ -60,5 +60,6 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
 }
 void endFrame() {}
 FrameStats lastFrameStats() { return {}; }
+double nowMs() { return 0; }
 
 } // namespace plat
