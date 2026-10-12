@@ -1,17 +1,31 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
-Static sprites: 9
-Tiles: 168 (39 animated)  Sprites: 303
+World sprites: 329  Anims: 36  Object colliders: 184
+Tiles: 168 (39 animated)  Sprites: 514
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
-Sheets (12, 1133K px):
-  largeprops_village_ruins: 128x64  [village_ruins_deco]
+Sheets (26, 2685K px):
+  characters_chad: 64x64  [chad]
+  characters_fezziwig: 64x64  [Fezziwig]
+  characters_jungle: 32x128  [jungle_npcsprites]
+  characters_misc: 64x128  [Emotes_v2, sign, sign_dark]
+  characters_mountain: 32x64  [Dogs]
+  characters_player: 256x64  [raft, playersprite, player_action_available]
+  characters_village: 256x256  [village_npcsprites, cats, village_npc2, Archeologist_v2, SadRomeo]
+  items: 128x128  [Items, bobs_small, breadge, artifact_pickup, boating_license, map_collectible, village_ruins_piece]
+  largeprops_ocean: 512x512  [pom_tree]
+  largeprops_village: 512x512  [more_village_props, Pine Tree, houses2, houses3, houses4, face_rocks, Cow]
+  largeprops_village_ruins: 128x512  [village_ruins_bot, village_ruins_bot_deets, village_ruins_runes, village_ruins_top, village_ruins_deco]
   misc: 512x512  [BGFrame]
   tempsprites: 32x32  [temp_interior]
   tiles: 512x1024  [TilesetAnims, WaterTiles, sand-water_animated, VillageTileset, rock_wall_border, rock_wall, sand-grass_transition, waterfall, border, border_light]
-  tiles_caves: 256x32  [cave_rocks]
-  tiles_insides: 128x64  [interiors]
-  tiles_jungle: 128x64  [leaf_tiles]
-  tiles_village: 128x64  [river_end_transition, snow_tiles]
+  tiles_caves: 256x64  [cave_construction_props, cave_rocks]
+  tiles_factory: 256x128  [computers, computer_tables]
+  tiles_factory_props: 256x128  [shelves_and_lockers, workshop_benches]
+  tiles_insides: 128x256  [house_inside, jungle_inside, interiors]
+  tiles_jungle: 128x128  [junglebush, leaf_tiles, jungle_props, JungleSprout]
+  tiles_misc: 64x32  [bathroom]
+  tiles_ocean: 512x512  [buoy_rope_hors, buoy_rope_ver, ocean_rocks_small_splash, ocean_rocks_small, buoy, buoy_splash]
+  tiles_village: 512x1024  [tree_bounce, bakery, floating_wood, river_end_transition, snow_tiles, rock_column, villagebell, village_ruins_missing_piece, village_ruins_scrawls, village_ruins_scrawls_color, hole]
   ui_areaicons: 64x64  [village_icon_highlights]
   ui_areaicons_areas: 256x512  [ArtifactIcons, ArtifactIcons_completed]
   ui_areaicons_outsidemap: 256x256  [village_outside_map]
@@ -20,4 +34,5 @@ Tile types:
   Tile: 37599
   RuleTile: 5751
   AnimatedTile: 702
-Warnings (0):
+Warnings (1):
+  World sprite Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomToilet: draw mode/scale/rotation not exported

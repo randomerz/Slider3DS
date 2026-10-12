@@ -10,15 +10,18 @@
 
 // What stopped a segment. kind None = nothing did.
 struct Blocker {
-    enum Kind { None, Wall, InactiveTile, Layer } kind = None;
-    int index = 0; // Wall: index in grid.walls(); InactiveTile: islandId; Layer: index in area.collision
+    enum Kind { None, Wall, InactiveTile, Layer, Object } kind = None;
+    // Wall: index in grid.walls(); InactiveTile: islandId; Layer: index in area.collision;
+    // Object: index in area.objectColliders
+    int index = 0;
     explicit operator bool() const { return kind != None; }
 };
 
 // What blocks the segment (x, y) -> (x + dx, y + dy), counting a start point inside a collider
 // (Unity's queriesStartInColliders). Collision maps follow the water state and the owning tile's
 // position; inactive STiles are solid over their whole slot and their house interior; the grid's
-// slide fences (walls) block too. Tiles with colliders switched off (Grid) are skipped.
+// slide fences (walls) and object colliders (props, trees, houses) block too. Tiles with colliders
+// switched off (Grid) are skipped, with their objects.
 Blocker segmentBlocker(const Area& area, const Grid& grid, float x, float y, float dx, float dy, bool onWater);
 
 inline bool segmentBlocked(const Area& area, const Grid& grid, float x, float y, float dx, float dy, bool onWater) {

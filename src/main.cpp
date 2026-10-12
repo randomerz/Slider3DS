@@ -1,8 +1,8 @@
-// Village walkabout: a placeholder player walks the exported Village with the original's
-// collision; the camera follows. The new-game start is the Default spawn inside tile 1's house.
+// Village walkabout: the player walks the exported Village with the original's collision; the
+// camera follows. The new-game start is the Default spawn inside tile 1's house.
 //   D-pad / circle pad: walk          START: quit
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default) start outdoors on tile 1 and add:
-//   L / R: jump to previous / next spawn point      X: toggle noclip
+//   L / R: jump to previous / next spawn point      X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
 //   A + D-pad: slide the tile you stand on (until the Artifact UI exists)
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
@@ -31,13 +31,6 @@ constexpr float FRAME_DT = 1.0f / 60.0f;
 #endif
 constexpr bool DEV = SLIDER_DEV != 0;
 constexpr bool DEV_START_OUTSIDE = DEV;
-
-// The player's BoxCollider2Ds from the Unity prefab, in pixels (size incl. edge radius; offset from
-// the player position). The original moves by raycasting from the position point; these boxes are
-// what triggers/NPCs see. On foot: 0.5x0.5 + 0.125 edge radius at (0,-1/16). Boat: 1.5x0.75 at (0,-0.375).
-struct Hitbox { float w, h, offsetY; };
-constexpr Hitbox HITBOX_FOOT = {12, 12, -1};
-constexpr Hitbox HITBOX_BOAT = {24, 12, -6};
 
 // Nearest collision-free point to (x, y), searching outward in half-unit rings.
 bool findFreeNear(const Area& area, const Grid& grid, float& x, float& y) {
@@ -86,7 +79,7 @@ int main(int, char**) {
     }
 
     float px = 0, py = 0;
-    bool onWater = false, noclip = false, showInactive = false, debugCollected = false;
+    bool onWater = false, noclip = false, showInactive = false, debugCollected = false, facingLeft = false;
     size_t spawnIndex = 0;
     if (loaded && !area.spawns.empty()) {
         for (size_t i = 0; i < area.spawns.size(); i++)
@@ -153,6 +146,7 @@ int main(int, char**) {
             if (in.held & plat::BTN_UP)    iy += 1;
             if (in.held & plat::BTN_DOWN)  iy -= 1;
         }
+        if (ix != 0) facingLeft = ix < 0; // Player.Update flips the sprite by the input's x
         if (loaded && (ix != 0 || iy != 0)) {
             float len = std::sqrt(ix * ix + iy * iy);
             float dx = ix / len * MOVE_SPEED * FRAME_DT, dy = iy / len * MOVE_SPEED * FRAME_DT;
@@ -166,14 +160,22 @@ int main(int, char**) {
                                                    : plat::rgba(0x14, 0x14, 0x1c));
         if (loaded) {
             view.begin(area, sheets, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
-            view.drawLayers(area, grid);
-            // Placeholder player: its collider box, centered on screen (the camera follows it),
-            // with the position point in white.
-            const Hitbox& hb = onWater ? HITBOX_BOAT : HITBOX_FOOT;
-            uint32_t c = noclip ? plat::rgba(0xe0, 0xa0, 0x40) : onWater ? plat::rgba(0x50, 0x90, 0xe0)
-                                                                         : plat::rgba(0xe0, 0x50, 0x50);
-            plat::drawRect(plat::TOP_W / 2 - hb.w / 2, plat::TOP_H / 2 - hb.offsetY - hb.h / 2, hb.w, hb.h, c);
-            plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xff, 0xff, 0xff));
+            SortedSprite playerSprites[2];
+            size_t playerSpriteCount = 0;
+            for (const PlayerSpriteDef* d : {&area.player.body, onWater ? &area.player.boat : nullptr}) {
+                if (!d || d->sprite < 0) continue;
+                SortedSprite& sp = playerSprites[playerSpriteCount++];
+                sp.sprite = d->anim >= 0 ? area.anims[d->anim].frameAt(frame / 60.0f) : d->sprite;
+                sp.x = px + d->x;
+                sp.y = py + d->y;
+                sp.sortY = py + d->sortY;
+                sp.sortLayer = d->sortLayer;
+                sp.order = d->order;
+                sp.flags = facingLeft ? (uint32_t)plat::FLIP_X : 0u;
+            }
+            view.draw(area, grid, playerSprites, playerSpriteCount);
+            if (DEV && noclip) // the position point the player raycasts from (the camera follows it)
+                plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
         } else {
             plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0x80, 0x20, 0x20));
         }

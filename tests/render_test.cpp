@@ -11,6 +11,7 @@
 #include <fstream>
 #include <functional>
 #include <map>
+#include <set>
 #include <sstream>
 #include <string>
 
@@ -139,7 +140,7 @@ TEST(render_goldens) {
         if (sc.setup) sc.setup(grid, artifact);
         testResetDrawCalls();
         view.begin(area, sheets, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
-        view.drawLayers(area, grid);
+        view.draw(area, grid);
         goldens.compare(sc.name, 50);
     }
 }
@@ -211,7 +212,7 @@ TEST(render_artifact_goldens) {
 }
 
 TEST(render_layer_ranges_compose) {
-    // Drawing sorting layer by sorting layer (as the entity pass will) gives exactly the same
+    // Drawing sorting layer by sorting layer gives exactly the same
     // draw list as drawing everything at once.
     const Area& area = village();
     SpriteSheets sheets;
@@ -223,20 +224,67 @@ TEST(render_layer_ranges_compose) {
 
     testResetDrawCalls();
     view.begin(area, sheets, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
-    view.drawLayers(area, grid);
+    view.draw(area, grid);
     const std::string all = drawListText(testDrawCalls());
     const int allCount = view.lastSpriteCount();
 
     testResetDrawCalls();
     view.begin(area, sheets, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
-    int layersSeen = 0, prev = INT_MIN;
-    for (const TileLayer& L : area.layers) {
-        if (L.sortLayer == prev && layersSeen > 0) continue;
-        prev = L.sortLayer;
-        view.drawLayers(area, grid, L.sortLayer, L.sortLayer);
+    std::set<int> sortLayers;
+    for (const TileLayer& L : area.layers) sortLayers.insert(L.sortLayer);
+    for (const WorldSprite& ws : area.worldSprites) sortLayers.insert(ws.sortLayer);
+    int layersSeen = 0;
+    for (int sl : sortLayers) {
+        view.draw(area, grid, nullptr, 0, sl, sl);
         layersSeen++;
     }
     check(layersSeen > 1, "the export uses several sorting layers (" + std::to_string(layersSeen) + ")");
     check(drawListText(testDrawCalls()) == all && view.lastSpriteCount() == allCount,
           "per-sorting-layer draws == one full draw");
+}
+
+TEST(render_player_y_sorts_with_world_sprites) {
+    // Unity's custom sort axis (0,1,0): in the same sorting layer and order, the sprite with the
+    // lower sort point draws later (in front). The player just below tile 1's tree is drawn after
+    // it, just above it before it.
+    const Area& area = village();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    Grid grid;
+    grid.init(area);
+    size_t treeIndex = area.worldSprites.size();
+    for (size_t i = 0; i < area.worldSprites.size(); i++)
+        if (area.worldSprites[i].owner == 1 && area.worldSprites[i].path.find("Decorations/Tree1") != std::string::npos)
+            treeIndex = i;
+    check(treeIndex < area.worldSprites.size(), "tile 1 has a Tree1");
+    if (treeIndex == area.worldSprites.size()) return;
+    const WorldSprite& tree = area.worldSprites[treeIndex];
+    const PlayerSpriteDef& body = area.player.body;
+    check(body.sortLayer == tree.sortLayer && body.order == tree.order, "player and tree share layer + order");
+
+    float bx, by;
+    grid.ownerBase(1, bx, by);
+    auto drawIndex = [&](const std::vector<DrawCall>& calls, int sprite) {
+        const SpriteDef& S = area.sprites[sprite];
+        for (size_t i = 0; i < calls.size(); i++)
+            if (calls[i].sheet == area.sheetNames[S.sheet] && calls[i].sx == S.x && calls[i].sy == S.y) return (int)i;
+        return -1;
+    };
+    for (float dy : {-0.5f, 0.5f}) {
+        SortedSprite p;
+        p.sprite = body.sprite;
+        p.x = bx + tree.x + 0.5f;
+        p.y = by + tree.sortY + dy - body.sortY;
+        p.sortY = p.y + body.sortY;
+        p.sortLayer = body.sortLayer;
+        p.order = body.order;
+        testResetDrawCalls();
+        view.begin(area, sheets, p.x, p.y, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(area, grid, &p, 1);
+        const int ti = drawIndex(testDrawCalls(), AreaView::worldSpriteFrame(area, tree, treeIndex, 0));
+        const int pi = drawIndex(testDrawCalls(), p.sprite);
+        check(ti >= 0 && pi >= 0, "tree and player both drawn");
+        check(dy < 0 ? pi > ti : pi < ti, dy < 0 ? "player below the tree is drawn in front" : "player above the tree is drawn behind");
+    }
 }

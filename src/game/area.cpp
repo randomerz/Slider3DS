@@ -1,6 +1,7 @@
 #include "game/area.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "game/json.h"
 #include "platform/platform.h"
@@ -17,9 +18,68 @@ const Spawn* Area::spawn(const char* name) const {
     return nullptr;
 }
 
+int Anim::frameAt(float t) const {
+    if (frames.empty()) return -1;
+    if (length > 0) t = loop ? std::fmod(t, length) : std::min(t, length);
+    if (t < 0) t += length;
+    size_t i = 0;
+    while (i + 1 < times.size() && times[i + 1] <= t) i++;
+    return frames[i];
+}
+
 static bool fail(std::string* error, const std::string& msg) {
     if (error) *error = msg;
     return false;
+}
+
+static void readPlayerSprite(const Json& j, PlayerSpriteDef& p) {
+    p.sprite = j["sprite"].asInt(-1);
+    p.x = j["pos"].at(0).asFloat();
+    p.y = j["pos"].at(1).asFloat();
+    p.sortY = j["sortY"].asFloat();
+    p.sortLayer = j["sortingLayerValue"].asInt();
+    p.order = j["order"].asInt();
+    p.anim = j["anim"].asInt(-1);
+}
+
+static void readObjectCollider(const Json& j, ObjectCollider& c) {
+    c.path = j["path"].asString();
+    c.owner = j["owner"].asInt();
+    c.active = j["active"].asBool(true);
+    const std::string& kind = j["kind"].asString();
+    auto readPoints = [](const Json& pts) {
+        Polygon p;
+        for (const Json& v : pts.items()) p.push_back(v.asFloat());
+        return p;
+    };
+    if (kind == "circle") {
+        c.kind = ObjectCollider::Kind::Circle;
+        c.cx = j["center"].at(0).asFloat();
+        c.cy = j["center"].at(1).asFloat();
+        c.radius = j["radius"].asFloat();
+        c.minX = c.cx - c.radius;
+        c.maxX = c.cx + c.radius;
+        c.minY = c.cy - c.radius;
+        c.maxY = c.cy + c.radius;
+        return;
+    }
+    if (kind == "edge") {
+        c.kind = ObjectCollider::Kind::Edge;
+        c.paths.push_back(readPoints(j["points"]));
+    } else {
+        c.kind = ObjectCollider::Kind::Poly; // "none" (unsupported shape) loads as no paths
+        for (const Json& path : j["paths"].items()) c.paths.push_back(readPoints(path));
+    }
+    bool first = true;
+    for (const Polygon& p : c.paths) {
+        for (size_t i = 0; i + 1 < p.size(); i += 2) {
+            c.minX = first ? p[i] : std::min(c.minX, p[i]);
+            c.maxX = first ? p[i] : std::max(c.maxX, p[i]);
+            c.minY = first ? p[i + 1] : std::min(c.minY, p[i + 1]);
+            c.maxY = first ? p[i + 1] : std::max(c.maxY, p[i + 1]);
+            first = false;
+        }
+    }
 }
 
 static UiPart readPart(const Json& j) {
@@ -75,11 +135,27 @@ static bool validate(const Area& a, std::string* error) {
         if (!ownerOk(C.owner)) return fail(error, "tilemap " + C.path + ": unknown owner STile");
     for (const Spawn& sp : a.spawns)
         if (!ownerOk(sp.owner)) return fail(error, "spawn " + sp.name + ": unknown owner STile");
-    for (const StaticSprite& st : a.statics) {
-        if (!ownerOk(st.owner)) return fail(error, "static sprite " + st.path + ": unknown owner STile");
-        if (st.sprite < 0 || st.sprite >= (int)a.sprites.size())
-            return fail(error, "static sprite " + st.path + ": bad sprite index");
+    auto spriteIndexOk = [&](int s) { return s >= 0 && s < (int)a.sprites.size(); };
+    auto animOk = [&](int i) { return i == -1 || (i >= 0 && i < (int)a.anims.size()); };
+    for (const Anim& an : a.anims) {
+        if (an.frames.empty() || an.frames.size() != an.times.size())
+            return fail(error, "anim " + an.name + ": frames/times mismatch");
+        for (int f : an.frames)
+            if (!spriteIndexOk(f)) return fail(error, "anim " + an.name + ": bad sprite index");
     }
+    for (const WorldSprite& ws : a.worldSprites) {
+        if (!ownerOk(ws.owner)) return fail(error, "world sprite " + ws.path + ": unknown owner STile");
+        if (!spriteIndexOk(ws.sprite) || !animOk(ws.anim))
+            return fail(error, "world sprite " + ws.path + ": bad sprite or anim index");
+    }
+    for (const ObjectCollider& c : a.objectColliders) {
+        if (!ownerOk(c.owner)) return fail(error, "collider " + c.path + ": unknown owner STile");
+        for (const Polygon& p : c.paths)
+            if (p.size() % 2 != 0) return fail(error, "collider " + c.path + ": odd point list");
+    }
+    for (const PlayerSpriteDef* p : {&a.player.body, &a.player.boat})
+        if ((p->sprite != -1 && !spriteIndexOk(p->sprite)) || !animOk(p->anim))
+            return fail(error, "player: bad sprite or anim index");
     if (a.artifact.present) {
         const ArtifactDef& d = a.artifact;
         auto spriteOk = [&](int s) { return s >= 0 && s < (int)a.sprites.size(); };
@@ -136,18 +212,43 @@ bool loadArea(const char* path, Area& out, std::string* error) {
 
     for (int i = 0; i < 3; i++) out.background[i] = (uint8_t)doc["background"].at(i).asInt();
 
-    for (const Json& s : doc["staticSprites"].items()) {
-        StaticSprite st;
-        st.path = s["path"].asString();
-        st.owner = s["owner"].asInt();
-        st.sprite = s["sprite"].asInt(-1);
-        st.x = s["pos"].at(0).asFloat();
-        st.y = s["pos"].at(1).asFloat();
-        st.sortLayer = s["sortingLayerValue"].asInt();
-        st.order = s["order"].asInt();
-        st.flags = (uint32_t)s["flip"].asInt() & 3u; // bit0 X, bit1 Y = plat::FLIP_X | FLIP_Y
-        st.active = s["active"].asBool(true);
-        out.statics.push_back(std::move(st));
+    for (const Json& s : doc["worldSprites"].items()) {
+        WorldSprite ws;
+        ws.path = s["path"].asString();
+        ws.owner = s["owner"].asInt();
+        ws.sprite = s["sprite"].asInt(-1);
+        ws.x = s["pos"].at(0).asFloat();
+        ws.y = s["pos"].at(1).asFloat();
+        ws.sortY = s["sortY"].asFloat(ws.y);
+        ws.sortLayer = s["sortingLayerValue"].asInt();
+        ws.order = s["order"].asInt();
+        ws.flags = (uint32_t)s["flip"].asInt() & 3u; // bit0 X, bit1 Y = plat::FLIP_X | FLIP_Y
+        ws.active = s["active"].asBool(true);
+        ws.anim = s["anim"].asInt(-1);
+        ws.animStart = s["animStart"].asFloat();
+        ws.animRandom = s["animRandom"].asFloat();
+        out.worldSprites.push_back(std::move(ws));
+    }
+
+    for (const Json& a : doc["anims"].items()) {
+        Anim an;
+        an.name = a["name"].asString();
+        for (const Json& f : a["frames"].items()) an.frames.push_back(f.asInt());
+        for (const Json& t : a["times"].items()) an.times.push_back(t.asFloat());
+        an.length = a["length"].asFloat();
+        an.loop = a["loop"].asBool(true);
+        out.anims.push_back(std::move(an));
+    }
+
+    for (const Json& c : doc["objectColliders"].items()) {
+        ObjectCollider oc;
+        readObjectCollider(c, oc);
+        out.objectColliders.push_back(std::move(oc));
+    }
+
+    if (doc.has("player")) {
+        if (doc["player"].has("body")) readPlayerSprite(doc["player"]["body"], out.player.body);
+        if (doc["player"].has("boat")) readPlayerSprite(doc["player"]["boat"], out.player.boat);
     }
 
     readArtifact(doc["artifact"], out.artifact);
@@ -232,13 +333,6 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
 
     if (!validate(out, error)) return false;
-
-    // Unity's transparency sort for sprites: sorting layer, order, then (sort axis Y) higher y first.
-    std::stable_sort(out.statics.begin(), out.statics.end(), [](const StaticSprite& a, const StaticSprite& b) {
-        if (a.sortLayer != b.sortLayer) return a.sortLayer < b.sortLayer;
-        if (a.order != b.order) return a.order < b.order;
-        return a.y > b.y;
-    });
 
     // Unity draws by (sorting layer, order); stable keeps file order within equal keys.
     std::stable_sort(out.layers.begin(), out.layers.end(), [](const TileLayer& a, const TileLayer& b) {

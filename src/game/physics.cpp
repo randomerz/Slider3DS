@@ -52,17 +52,53 @@ bool segmentHitsBox(float x, float y, float dx, float dy, float minX, float minY
     return segmentHitsPolygon(x, y, dx, dy, box, 4, 0, 0);
 }
 
+// Segment vs circle: does any point of the segment lie within r of (cx, cy)?
+bool segmentHitsCircle(float x, float y, float dx, float dy, float cx, float cy, float r) {
+    const float len2 = dx * dx + dy * dy;
+    float t = len2 > 1e-12f ? ((cx - x) * dx + (cy - y) * dy) / len2 : 0.0f;
+    t = std::max(0.0f, std::min(1.0f, t));
+    const float ex = x + t * dx - cx, ey = y + t * dy - cy;
+    return ex * ex + ey * ey <= r * r;
+}
+
+// The colliders of an STile's objects collide like its tilemaps: off while the tile is inactive
+// (its slot is solid anyway) or sliding in a move the player isn't riding.
+bool ownerCollides(const Grid& grid, int owner) {
+    if (owner == 0) return true;
+    const TileState* t = grid.tile(owner);
+    return t && t->active && t->collidersOff <= 0;
+}
+
+bool objectHit(const ObjectCollider& c, float x, float y, float dx, float dy, float ox, float oy) {
+    // Cheap reject: the segment's bounds vs the collider's.
+    if (std::max(x, x + dx) < c.minX + ox || std::min(x, x + dx) > c.maxX + ox ||
+        std::max(y, y + dy) < c.minY + oy || std::min(y, y + dy) > c.maxY + oy)
+        return false;
+    switch (c.kind) {
+    case ObjectCollider::Kind::Circle:
+        return segmentHitsCircle(x, y, dx, dy, c.cx + ox, c.cy + oy, c.radius);
+    case ObjectCollider::Kind::Poly:
+        for (const Polygon& p : c.paths)
+            if (segmentHitsPolygon(x, y, dx, dy, p.data(), p.size() / 2, ox, oy)) return true;
+        return false;
+    case ObjectCollider::Kind::Edge:
+        for (const Polygon& p : c.paths)
+            for (size_t i = 0; i + 3 < p.size(); i += 2)
+                if (segmentsIntersect(x, y, dx, dy, p[i] + ox, p[i + 1] + oy, p[i + 2] + ox, p[i + 3] + oy)) return true;
+        return false;
+    }
+    return false;
+}
+
 bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
     switch (L.mode) {
     case CollisionMode::OnFoot: if (onWater) return false; break;
     case CollisionMode::OnWater: if (!onWater) return false; break;
     case CollisionMode::Always: if (!L.active) return false; break;
     }
-    if (L.owner == 0) return true;
     // An inactive STile's tilemaps (colliders included) are switched off, and so are a tile's
     // colliders while it slides in a move the player isn't riding.
-    const TileState* t = grid.tile(L.owner);
-    return t && t->active && t->collidersOff <= 0;
+    return ownerCollides(grid, L.owner);
 }
 
 } // namespace
@@ -109,6 +145,14 @@ Blocker segmentBlocker(const Area& area, const Grid& grid, float x, float y, flo
             }
         }
     }
+
+    for (size_t i = 0; i < area.objectColliders.size(); i++) {
+        const ObjectCollider& c = area.objectColliders[i];
+        if (!c.active || !ownerCollides(grid, c.owner)) continue;
+        float bx, by;
+        grid.ownerBase(c.owner, bx, by);
+        if (objectHit(c, x, y, dx, dy, bx, by)) return {Blocker::Object, (int)i};
+    }
     return {};
 }
 
@@ -121,6 +165,7 @@ std::string describe(const Area& area, const Blocker& b) {
         const CollisionLayer& L = area.collision[b.index];
         return (L.owner ? "STile " + std::to_string(L.owner) + " " : std::string()) + L.path;
     }
+    case Blocker::Object: return "object " + area.objectColliders[b.index].path;
     }
     return "";
 }

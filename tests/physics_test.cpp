@@ -42,8 +42,9 @@ TEST(physics_spawns_start_free) {
 }
 
 TEST(physics_house_walls_stop_the_player) {
-    // From the Default spawn (inside tile 1's house) the player can walk some way in every
-    // direction, and is always stopped by a wall before leaving the house.
+    // From the Default spawn (inside tile 1's house, beside the bed) the player can walk some way
+    // right, up and down, and is always stopped before leaving the house; left, the bed (an
+    // object collider) stops it after half a unit.
     const Area& area = village();
     Grid grid;
     grid.init(area);
@@ -59,10 +60,57 @@ TEST(physics_house_walls_stop_the_player) {
         const float sx = x, sy = y;
         int frames = walk(area, grid, x, y, dirs[d][0] * step, dirs[d][1] * step, false);
         float dist = std::fabs(x - sx) + std::fabs(y - sy);
-        check(frames < 600 && dist > 1.0f && dist < 17.0f,
-              std::string("walk ") + names[d] + " from Default moves, then stops at a house wall (" +
-                  std::to_string(dist) + " units)");
+        const std::string by = describe(area, segmentBlocker(area, grid, x, y, dirs[d][0] * step, dirs[d][1] * step, false));
+        const bool left = d == 1;
+        check(frames < 600 && dist > (left ? 0.3f : 1.0f) && dist < (left ? 0.7f : 17.0f) &&
+                  (by.find("DoubleBed") != std::string::npos) == left,
+              std::string("walk ") + names[d] + " from Default moves, then stops (" + std::to_string(dist) +
+                  " units, at " + by + ")");
     }
+}
+
+TEST(physics_object_colliders_block) {
+    // Every active object collider blocks a step into its middle from its own position (start
+    // inside counts, like Unity's queriesStartInColliders) once its tile is collected; a collider
+    // on an uncollected tile is off (the slot itself is solid instead), and so is one whose tile
+    // slides in a move the player isn't riding.
+    const Area& area = village();
+    check(area.objectColliders.size() > 100, "village has object colliders (" + std::to_string(area.objectColliders.size()) + ")");
+    Grid grid;
+    grid.init(area);
+    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    int tested = 0;
+    for (size_t i = 0; i < area.objectColliders.size(); i++) {
+        const ObjectCollider& c = area.objectColliders[i];
+        if (!c.active || c.kind == ObjectCollider::Kind::Edge) continue;
+        float bx, by;
+        grid.ownerBase(c.owner, bx, by);
+        const float x = bx + (c.minX + c.maxX) * 0.5f, y = by + (c.minY + c.maxY) * 0.5f;
+        if (c.kind == ObjectCollider::Kind::Poly && c.paths.size() == 1 && c.paths[0].size() == 8) { // boxes
+            Blocker b = segmentBlocker(area, grid, x, y, 0, 0, false);
+            check((bool)b, c.path + ": its center is blocked");
+            tested++;
+        }
+    }
+    check(tested > 100, "tested the box colliders (" + std::to_string(tested) + ")");
+
+    // Tile 9's well: blocked with tile 9 collected and still; free while tile 9 is uncollected (the
+    // slot is solid, reported as the inactive tile, not the well).
+    const ObjectCollider* well = nullptr;
+    for (const ObjectCollider& c : area.objectColliders)
+        if (c.path.find("STile (9)/All Tile Maps/Tile Maps/Decorations/Well") != std::string::npos) well = &c;
+    check(well != nullptr, "tile 9 has the well");
+    if (!well) return;
+    float bx, by;
+    grid.ownerBase(9, bx, by);
+    const float wx = bx + (well->minX + well->maxX) * 0.5f, wy = by + well->minY - 0.5f;
+    check(!segmentBlocked(area, grid, wx, wy, 0, 0, false), "below the well is free");
+    Blocker b = segmentBlocker(area, grid, wx, wy, 0, 1.0f, false);
+    check(b.kind == Blocker::Object && describe(area, b).find("Well") != std::string::npos,
+          "walking up into the well is blocked by it (" + describe(area, b) + ")");
+    grid.setTileActive(9, false);
+    b = segmentBlocker(area, grid, wx, wy, 0, 1.0f, false);
+    check(b.kind == Blocker::InactiveTile, "uncollected tile 9: its slot blocks instead (" + describe(area, b) + ")");
 }
 
 TEST(physics_inactive_tile_is_solid) {

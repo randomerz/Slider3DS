@@ -57,15 +57,54 @@ struct Spawn {
     bool inBoat;
 };
 
-// A SpriteRenderer drawn as-is (so far the empty-slot grid frames), sorted among the tilemaps.
-struct StaticSprite {
+// A sprite animation (an AnimationClip's sprite keys): frame i shows from times[i] until the next key.
+struct Anim {
+    std::string name;
+    std::vector<int> frames;  // Area::sprites indices
+    std::vector<float> times; // seconds, ascending, parallel to frames
+    float length = 0;         // clip length (s)
+    bool loop = true;
+
+    // The sprite shown `t` seconds into the clip.
+    int frameAt(float t) const;
+};
+
+// A world SpriteRenderer (prop, tree, NPC, item, empty-slot frame). Drawn sorted among the tile
+// layers by (sortLayer, order, higher sortY first), like Unity's transparency sort.
+struct WorldSprite {
     std::string path;
-    int owner = 0;    // STile islandId (position relative to its center), 0 = world
-    int sprite = 0;   // index in Area::sprites
+    int owner = 0;      // STile islandId (positions relative to its center), 0 = world
+    int sprite = 0;     // index in Area::sprites (the authored frame; anim overrides it)
     float x = 0, y = 0; // transform position (the sprite's pivot lands here)
+    float sortY = 0;    // sort point y (pivot or sprite center)
     int sortLayer = 0, order = 0;
     uint32_t flags = 0; // plat::DrawFlags (FLIP_X / FLIP_Y)
-    bool active = true;
+    bool active = true; // authored state
+    int anim = -1;      // Area::anims index, -1 = static
+    float animStart = 0, animRandom = 0; // normalized start time, or a random one in [0, animRandom)
+};
+
+// A non-tilemap collider that blocks the player, in world units relative to its owner's center.
+struct ObjectCollider {
+    enum class Kind { Poly, Circle, Edge };
+    std::string path;
+    int owner = 0;
+    bool active = true; // authored state
+    Kind kind = Kind::Poly;
+    std::vector<Polygon> paths;       // Poly: closed polygons; Edge: one open polyline
+    float cx = 0, cy = 0, radius = 0; // Circle
+    float minX = 0, minY = 0, maxX = 0, maxY = 0; // bounds, for culling
+};
+
+// How the player is drawn: its sprite and, on water, the boat (relative to the player position).
+struct PlayerSpriteDef {
+    int sprite = -1; // -1 = none
+    float x = 0, y = 0, sortY = 0;
+    int sortLayer = 0, order = 0;
+    int anim = -1;
+};
+struct PlayerDef {
+    PlayerSpriteDef body, boat;
 };
 
 // A sprite placed in UI pixels: rect min corner (x, y) and size, y up, relative to some origin.
@@ -121,7 +160,10 @@ struct Area {
     std::vector<CollisionLayer> collision;
     std::vector<std::vector<Polygon>> shapes; // collision shapes (each a list of polygons)
     std::vector<TileLayer> layers; // drawn layers only, in draw order
-    std::vector<StaticSprite> statics; // in draw order (sortLayer, order, then higher y first)
+    std::vector<WorldSprite> worldSprites;
+    std::vector<Anim> anims;
+    std::vector<ObjectCollider> objectColliders;
+    PlayerDef player;
     ArtifactDef artifact;
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
