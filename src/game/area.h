@@ -79,7 +79,8 @@ struct WorldSprite {
     float sortY = 0;    // sort point y (pivot or sprite center)
     int sortLayer = 0, order = 0;
     uint32_t flags = 0; // plat::DrawFlags (FLIP_X / FLIP_Y)
-    bool active = true; // authored state
+    bool active = true; // authored state (activeInHierarchy); at runtime see ObjectStates
+    std::vector<std::string> inactiveAt; // paths of this object and its ancestors authored inactive
     int anim = -1;      // Area::anims index, -1 = static
     float animStart = 0, animRandom = 0; // normalized start time, or a random one in [0, animRandom)
 };
@@ -89,7 +90,9 @@ struct ObjectCollider {
     enum class Kind { Poly, Circle, Edge };
     std::string path;
     int owner = 0;
-    bool active = true; // authored state
+    bool active = true;  // authored state (enabled && activeInHierarchy); at runtime see ObjectStates
+    bool enabled = true; // the component itself
+    std::vector<std::string> inactiveAt; // paths of this object and its ancestors authored inactive
     Kind kind = Kind::Poly;
     std::vector<Polygon> paths;       // Poly: closed polygons; Edge: one open polyline
     float cx = 0, cy = 0, radius = 0; // Circle
@@ -103,6 +106,31 @@ struct PlayerSpriteDef {
     int sortLayer = 0, order = 0;
     int anim = -1;
 };
+// One Condition (Condition.cs) as exported.
+struct ConditionDef {
+    enum class Type { Item, Grid, GridStationary, NoGrid, Flag, NoFlag, PlayerCarryingItem, Unsupported };
+    Type type = Type::Unsupported;
+    std::string name;     // Item: collectible name; Flag/NoFlag: flag; PlayerCarryingItem: item name
+    std::string itemArea; // Item: the collectible's area ("Village")
+    std::string pattern;  // grid conditions: CheckGrid.contains pattern
+    std::vector<int> stationaryTiles;
+};
+
+// GameObject.SetActive(active) on the object at `target` (a hierarchy path).
+struct SetActiveCall {
+    std::string target;
+    bool active = true;
+};
+
+// A ConditionChecker that checks at Start: all conditions true -> onSuccess, else onFail. Only
+// the SetActive calls are kept (the exporter lists the others in its report).
+struct StartCheck {
+    std::string path;
+    bool active = true; // its object is active at Start (else it never runs)
+    std::vector<ConditionDef> conditions;
+    std::vector<SetActiveCall> onSuccess, onFail;
+};
+
 // A box collider relative to the player position: center offset and full size (edge radius included).
 struct Hitbox {
     float offX = 0, offY = 0, w = 0, h = 0;
@@ -168,6 +196,7 @@ struct Area {
     std::vector<WorldSprite> worldSprites;
     std::vector<Anim> anims;
     std::vector<ObjectCollider> objectColliders;
+    std::vector<StartCheck> startChecks;
     PlayerDef player;
     ArtifactDef artifact;
     std::vector<TileDef> tiles;

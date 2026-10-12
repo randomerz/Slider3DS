@@ -18,6 +18,7 @@
 #include "game/area_view.h"
 #include "game/artifact_ui.h"
 #include "game/artifact.h"
+#include "game/conditions.h"
 #include "game/grid.h"
 #include "platform/platform.h"
 #include "test.h"
@@ -140,7 +141,7 @@ TEST(render_goldens) {
         if (sc.setup) sc.setup(grid, artifact);
         testResetDrawCalls();
         view.begin(area, sheets, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
-        view.draw(area, grid);
+        view.draw(area, grid, villageObjects());
         goldens.compare(sc.name, 50);
     }
 }
@@ -224,7 +225,7 @@ TEST(render_layer_ranges_compose) {
 
     testResetDrawCalls();
     view.begin(area, sheets, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
-    view.draw(area, grid);
+    view.draw(area, grid, villageObjects());
     const std::string all = drawListText(testDrawCalls());
     const int allCount = view.lastSpriteCount();
 
@@ -235,7 +236,7 @@ TEST(render_layer_ranges_compose) {
     for (const WorldSprite& ws : area.worldSprites) sortLayers.insert(ws.sortLayer);
     int layersSeen = 0;
     for (int sl : sortLayers) {
-        view.draw(area, grid, nullptr, 0, sl, sl);
+        view.draw(area, grid, villageObjects(), nullptr, 0, sl, sl);
         layersSeen++;
     }
     check(layersSeen > 1, "the export uses several sorting layers (" + std::to_string(layersSeen) + ")");
@@ -281,10 +282,33 @@ TEST(render_player_y_sorts_with_world_sprites) {
         p.order = body.order;
         testResetDrawCalls();
         view.begin(area, sheets, p.x, p.y, plat::TOP_W, plat::TOP_H, 0, false);
-        view.draw(area, grid, &p, 1);
+        view.draw(area, grid, villageObjects(), &p, 1);
         const int ti = drawIndex(testDrawCalls(), AreaView::worldSpriteFrame(area, tree, treeIndex, 0));
         const int pi = drawIndex(testDrawCalls(), p.sprite);
         check(ti >= 0 && pi >= 0, "tree and player both drawn");
         check(dy < 0 ? pi > ti : pi < ti, dy < 0 ? "player below the tree is drawn in front" : "player above the tree is drawn behind");
+    }
+}
+
+TEST(render_start_check_goldens) {
+    // The cave door after the new-game start checks (rocks, no dither shadow) and once the door
+    // has exploded (shadowed doorway, no rocks).
+    const Area& area = village();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    GoldenSet goldens("objects.txt");
+    for (bool exploded : {false, true}) {
+        Grid grid;
+        grid.init(area);
+        GameState state;
+        state.setFlag("caveDoorExploded", exploded);
+        ObjectStates objects;
+        objects.init(area);
+        runStartChecks(area, state, grid, objects);
+        testResetDrawCalls();
+        view.begin(area, sheets, 36.5f, 50.0f, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(area, grid, objects);
+        goldens.compare(exploded ? "cave_door_exploded" : "cave_door_new_game", 50);
     }
 }

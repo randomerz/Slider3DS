@@ -42,6 +42,37 @@ static void readPlayerSprite(const Json& j, PlayerSpriteDef& p) {
     p.anim = j["anim"].asInt(-1);
 }
 
+static std::vector<std::string> readStrings(const Json& j) {
+    std::vector<std::string> out;
+    for (const Json& v : j.items()) out.push_back(v.asString());
+    return out;
+}
+
+static void readCalls(const Json& j, std::vector<SetActiveCall>& out) {
+    for (const Json& c : j.items())
+        if (c.has("active")) out.push_back({c["target"].asString(), c["active"].asBool()});
+}
+
+static void readStartCheck(const Json& j, StartCheck& sc) {
+    using T = ConditionDef::Type;
+    sc.path = j["path"].asString();
+    sc.active = j["active"].asBool(true);
+    for (const Json& c : j["conditions"].items()) {
+        ConditionDef d;
+        const std::string& type = c["type"].asString();
+        d.type = type == "item" ? T::Item : type == "grid" ? T::Grid : type == "gridStationary" ? T::GridStationary
+               : type == "noGrid" ? T::NoGrid : type == "flag" ? T::Flag : type == "noFlag" ? T::NoFlag
+               : type == "playerCarryingItem" ? T::PlayerCarryingItem : T::Unsupported;
+        d.name = c.has("item") ? c["item"].asString() : c.has("flag") ? c["flag"].asString() : c["playerItem"].asString();
+        d.itemArea = c["itemArea"].asString();
+        d.pattern = c["pattern"].asString();
+        for (const Json& t : c["stationaryTiles"].items()) d.stationaryTiles.push_back(t.asInt());
+        sc.conditions.push_back(std::move(d));
+    }
+    readCalls(j["onSuccess"], sc.onSuccess);
+    readCalls(j["onFail"], sc.onFail);
+}
+
 static Hitbox readHitbox(const Json& j) {
     return {j["offset"].at(0).asFloat(), j["offset"].at(1).asFloat(), j["size"].at(0).asFloat(), j["size"].at(1).asFloat()};
 }
@@ -50,6 +81,8 @@ static void readObjectCollider(const Json& j, ObjectCollider& c) {
     c.path = j["path"].asString();
     c.owner = j["owner"].asInt();
     c.active = j["active"].asBool(true);
+    c.enabled = j["enabled"].asBool(true);
+    c.inactiveAt = readStrings(j["inactiveAt"]);
     const std::string& kind = j["kind"].asString();
     auto readPoints = [](const Json& pts) {
         Polygon p;
@@ -228,6 +261,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         ws.order = s["order"].asInt();
         ws.flags = (uint32_t)s["flip"].asInt() & 3u; // bit0 X, bit1 Y = plat::FLIP_X | FLIP_Y
         ws.active = s["active"].asBool(true);
+        ws.inactiveAt = readStrings(s["inactiveAt"]);
         ws.anim = s["anim"].asInt(-1);
         ws.animStart = s["animStart"].asFloat();
         ws.animRandom = s["animRandom"].asFloat();
@@ -248,6 +282,12 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         ObjectCollider oc;
         readObjectCollider(c, oc);
         out.objectColliders.push_back(std::move(oc));
+    }
+
+    for (const Json& c : doc["startChecks"].items()) {
+        StartCheck sc;
+        readStartCheck(c, sc);
+        out.startChecks.push_back(std::move(sc));
     }
 
     if (doc.has("player")) {

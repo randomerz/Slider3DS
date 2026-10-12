@@ -30,7 +30,7 @@ int walk(const Area& area, const Grid& grid, float& x, float& y, float dx, float
     const Hitbox& hb = onWater ? area.player.boatBox : area.player.footBox;
     int frames = 0;
     float px = x, py = y;
-    while (frames < 600 && moveWithCollision(area, grid, hb, x, y, dx, dy, onWater) &&
+    while (frames < 600 && moveWithCollision(area, grid, villageObjects(), hb, x, y, dx, dy, onWater) &&
            (std::fabs(x - px) > 1e-5f || std::fabs(y - py) > 1e-5f)) {
         px = x;
         py = y;
@@ -42,7 +42,7 @@ int walk(const Area& area, const Grid& grid, float& x, float& y, float dx, float
 // What the hitbox at (x, y) runs into one step further along (dx, dy).
 Blocker ahead(const Area& area, const Grid& grid, float x, float y, float dx, float dy, bool onWater) {
     const Hitbox& hb = onWater ? area.player.boatBox : area.player.footBox;
-    return boxBlocker(area, grid, hitboxAt(hb, x + dx, y + dy), onWater);
+    return boxBlocker(area, grid, villageObjects(), hitboxAt(hb, x + dx, y + dy), onWater);
 }
 
 const ObjectCollider* findCollider(const Area& area, const std::string& pathPart) {
@@ -72,7 +72,7 @@ TEST(physics_spawns_start_free) {
     for (const Spawn& s : area.spawns) {
         float x, y;
         spawnPos(grid, s, x, y);
-        Blocker b = boxBlocker(area, grid, hitboxAt(s.inBoat ? area.player.boatBox : area.player.footBox, x, y), s.inBoat);
+        Blocker b = boxBlocker(area, grid, villageObjects(), hitboxAt(s.inBoat ? area.player.boatBox : area.player.footBox, x, y), s.inBoat);
         check(!b, "spawn " + s.name + " starts free (blocked by " + describe(area, b) + ")");
     }
 }
@@ -120,7 +120,7 @@ TEST(physics_slides_along_walls) {
           "resting flush under the wall: free here, blocked 0.01 further up");
     const float sx = x, sy = y;
     const float d = STEP / std::sqrt(2.0f);
-    moveWithCollision(area, grid, area.player.footBox, x, y, d, d, false);
+    moveWithCollision(area, grid, villageObjects(), area.player.footBox, x, y, d, d, false);
     check(std::fabs(x - sx - d) < 1e-4f && std::fabs(y - sy) < 1e-3f,
           "diagonal into the wall slides right by the x part (" + std::to_string(x - sx) + ", " + std::to_string(y - sy) + ")");
 }
@@ -138,7 +138,7 @@ TEST(physics_object_colliders_block) {
         if (!c.active || c.kind != ObjectCollider::Kind::Poly || c.paths.size() != 1 || c.paths[0].size() != 8) continue;
         float bx, by;
         grid.ownerBase(c.owner, bx, by);
-        Blocker b = boxBlocker(area, grid, probe(bx + (c.minX + c.maxX) * 0.5f, by + (c.minY + c.maxY) * 0.5f), false);
+        Blocker b = boxBlocker(area, grid, villageObjects(), probe(bx + (c.minX + c.maxX) * 0.5f, by + (c.minY + c.maxY) * 0.5f), false);
         check((bool)b, c.path + ": its center is blocked");
         tested++;
     }
@@ -196,11 +196,11 @@ TEST(physics_inactive_tile_is_solid) {
     check(t9 && !t9->active, "tile 9 exists and starts inactive");
     if (!t9) return;
     const float edge = t9->posX * grid.tileWidth() - grid.tileWidth() * 0.5f;
-    Blocker b = boxBlocker(area, grid, probe(edge - 0.25f, 17.0f, 0.5f, 0.0f), false);
+    Blocker b = boxBlocker(area, grid, villageObjects(), probe(edge - 0.25f, 17.0f, 0.5f, 0.0f), false);
     check(b.kind == Blocker::InactiveTile && b.index == 9, "inactive tile 9 blocks (" + describe(area, b) + ")");
-    check(!boxBlocked(area, grid, probe(edge - 0.25f, 17.0f), false), "control: just left of the slot is free");
+    check(!boxBlocked(area, grid, villageObjects(), probe(edge - 0.25f, 17.0f), false), "control: just left of the slot is free");
     grid.setTileActive(9, true);
-    b = boxBlocker(area, grid, probe(edge - 0.25f, 17.0f, 0.5f, 0.0f), false);
+    b = boxBlocker(area, grid, villageObjects(), probe(edge - 0.25f, 17.0f, 0.5f, 0.0f), false);
     check(b.kind != Blocker::InactiveTile, "collected tile 9 no longer blocks as a slot (" + describe(area, b) + ")");
 }
 
@@ -222,11 +222,11 @@ TEST(physics_raft_stops_at_the_coast) {
     check(frames >= 1 && frames < 600 && b.kind == Blocker::Layer,
           "raft sails west " + std::to_string(startX - x) + " units, then is blocked by " + describe(area, b));
     spawnPos(grid, *beach, x, y);
-    for (int i = 0; i < 30; i++) moveWithCollision(area, grid, area.player.boatBox, x, y, STEP, 0, true);
+    for (int i = 0; i < 30; i++) moveWithCollision(area, grid, villageObjects(), area.player.boatBox, x, y, STEP, 0, true);
     check(x - startX > 2.4f, "control: sailing east for half a second is free (" + std::to_string(x - startX) + ")");
     float fx, fy;
     spawnPos(grid, *beach, fx, fy);
-    check(!boxBlocked(area, grid, probe(fx, fy), false), "the Beach spawn point itself is not solid on foot");
+    check(!boxBlocked(area, grid, villageObjects(), probe(fx, fy), false), "the Beach spawn point itself is not solid on foot");
 }
 
 TEST(physics_slide_fences_block_in_world_and_house) {
@@ -236,11 +236,11 @@ TEST(physics_slide_fences_block_in_world_and_house) {
     // Everything collected except 9 (the empty slot, middle), then slide tile 7 (2,1) left into it.
     for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
     grid.setTileActive(9, false);
-    Blocker before = boxBlocker(area, grid, probe(25.0f, 7.0f, 0.0f, 3.0f), false);
+    Blocker before = boxBlocker(area, grid, villageObjects(), probe(25.0f, 7.0f, 0.0f, 3.0f), false);
     grid.startMove(SMove::swap(2, 1, 1, 1, 7, 9), 0, 1);
     // The move covers slots (1,1) and (2,1); their bottom edge is at y = 8.5.
-    Blocker world = boxBlocker(area, grid, probe(25.0f, 7.0f, 0.0f, 3.0f), false);
-    Blocker house = boxBlocker(area, grid, probe(25.0f, 7.0f + grid.housingOffset(), 0.0f, 3.0f), false);
+    Blocker world = boxBlocker(area, grid, villageObjects(), probe(25.0f, 7.0f, 0.0f, 3.0f), false);
+    Blocker house = boxBlocker(area, grid, villageObjects(), probe(25.0f, 7.0f + grid.housingOffset(), 0.0f, 3.0f), false);
     check(before.kind != Blocker::Wall, "no fence before the slide (" + describe(area, before) + ")");
     check(world.kind == Blocker::Wall, "fence blocks entering the slide (" + describe(area, world) + ")");
     check(house.kind == Blocker::Wall, "fence blocks in the house copy too (" + describe(area, house) + ")");
@@ -257,7 +257,7 @@ TEST(physics_overlapping_box_walks_free) {
     const TileState* t9 = grid.tile(9);
     if (!t9) return;
     float x = t9->posX * grid.tileWidth(), y = t9->posY * grid.tileWidth(); // inside inactive tile 9
-    check(boxBlocked(area, grid, hitboxAt(area.player.footBox, x, y), false), "starts overlapping");
+    check(boxBlocked(area, grid, villageObjects(), hitboxAt(area.player.footBox, x, y), false), "starts overlapping");
     const float sx = x;
-    check(moveWithCollision(area, grid, area.player.footBox, x, y, STEP, 0, false) && x > sx, "still moves");
+    check(moveWithCollision(area, grid, villageObjects(), area.player.footBox, x, y, STEP, 0, false) && x > sx, "still moves");
 }

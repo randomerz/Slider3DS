@@ -108,8 +108,8 @@ TEST(artifact_player_rides_tile) {
         artifact.update(grid, DT, under);
         py += (grid.tile(under)->posY - oy) * grid.tileWidth();
         if (i == 30) {
-            fencedIn = boxBlocker(area, grid, {px + 8.0f, py - 0.01f, px + 9.0f, py + 0.01f}, false).kind == Blocker::Wall;
-            Blocker b = boxBlocker(area, grid, {-0.01f, -3.01f, 0.01f, -2.99f}, false); // inside tile 8's new slot
+            fencedIn = boxBlocker(area, grid, villageObjects(), {px + 8.0f, py - 0.01f, px + 9.0f, py + 0.01f}, false).kind == Blocker::Wall;
+            Blocker b = boxBlocker(area, grid, villageObjects(), {-0.01f, -3.01f, 0.01f, -2.99f}, false); // inside tile 8's new slot
             tile8Solid = b.kind == Blocker::InactiveTile && b.index == 8;
         }
     }
@@ -117,6 +117,6 @@ TEST(artifact_player_rides_tile) {
     CHECK(fencedIn);
     check(!tile8Solid, "tile 8's slot is not solid mid-slide (its collider is off)");
     CHECK(grid.walls().empty() && grid.tile(8)->collidersOff == 0);
-    Blocker after = boxBlocker(area, grid, {-0.01f, -3.01f, 0.01f, -2.99f}, false);
+    Blocker after = boxBlocker(area, grid, villageObjects(), {-0.01f, -3.01f, 0.01f, -2.99f}, false);
     check(after.kind == Blocker::InactiveTile && after.index == 8, "tile 8's slot is solid again after the slide");
 }

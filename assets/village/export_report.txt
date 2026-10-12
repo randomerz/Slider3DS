@@ -1,6 +1,6 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
-World sprites: 329  Anims: 36  Object colliders: 218
+World sprites: 329  Anims: 36  Object colliders: 218  Start checks: 6
 Tiles: 168 (39 animated)  Sprites: 514
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
 Sheets (26, 2685K px):
@@ -34,5 +34,7 @@ Tile types:
   Tile: 37599
   RuleTile: 5751
   AnimatedTile: 702
-Warnings (1):
+Warnings (3):
   World sprite Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomToilet: draw mode/scale/rotation not exported
+  Start check Map/Village 8Puzzle/STile (4)/Objects/Knot: onSuccess call SetToCorrectPositions on Knot not run by the port
+  Start check Map/World Grid/Beach/Raft: condition spec not exported (evaluates false)

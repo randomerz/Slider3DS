@@ -7,6 +7,7 @@
 #include <string>
 
 #include "game/area.h"
+#include "game/object_states.h"
 
 struct TestRegistrar {
     TestRegistrar(const char* name, void (*fn)());
@@ -24,3 +25,6 @@ void check(bool ok, const std::string& what);
 // The real Village export, loaded once (a failed load fails the calling test and returns an
 // empty Area).
 const Area& village();
+
+// The Village's objects as authored (no start checks run).
+const ObjectStates& villageObjects();

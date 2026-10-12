@@ -11,6 +11,7 @@
 
 #include "game/area.h"
 #include "game/grid.h"
+#include "game/object_states.h"
 
 // What overlaps a box. kind None = nothing does.
 struct Blocker {
@@ -34,12 +35,13 @@ inline Box hitboxAt(const Hitbox& hb, float x, float y) {
 
 // What overlaps the box's interior (touching is fine). Collision maps follow the water state and
 // the owning tile's position; inactive STiles are solid over their whole slot and their house
-// interior; the grid's slide fences and object colliders block too. Tiles with colliders switched
-// off (Grid: sliding in a move the player isn't riding) are skipped, with their objects.
-Blocker boxBlocker(const Area& area, const Grid& grid, const Box& box, bool onWater);
+// interior; the grid's slide fences and the active object colliders (`objects`) block too. Tiles
+// with colliders switched off (Grid: sliding in a move the player isn't riding) are skipped, with
+// their objects.
+Blocker boxBlocker(const Area& area, const Grid& grid, const ObjectStates& objects, const Box& box, bool onWater);
 
-inline bool boxBlocked(const Area& area, const Grid& grid, const Box& box, bool onWater) {
-    return (bool)boxBlocker(area, grid, box, onWater);
+inline bool boxBlocked(const Area& area, const Grid& grid, const ObjectStates& objects, const Box& box, bool onWater) {
+    return (bool)boxBlocker(area, grid, objects, box, onWater);
 }
 
 // Human-readable blocker ("slide border", "inactive STile 9", "STile 1 <tilemap path>",
@@ -49,5 +51,5 @@ std::string describe(const Area& area, const Blocker& b);
 // Moves the player at (x, y) with hitbox `hb` by (dx, dy): X first, then Y, each as far as it goes
 // before touching a collider. A box that already overlaps something (a tile slid onto the player)
 // moves freely, as Box2D would push it out. Returns true if it moved.
-bool moveWithCollision(const Area& area, const Grid& grid, const Hitbox& hb, float& x, float& y, float dx, float dy,
-                       bool onWater);
+bool moveWithCollision(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x,
+                       float& y, float dx, float dy, bool onWater);

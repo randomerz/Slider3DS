@@ -60,6 +60,7 @@ struct Texture; // opaque, backend-specific
 struct FrameStats {
     float cpuMs = 0; // time spent between beginFrame() and endFrame()
     float gpuMs = 0; // GPU drawing time (0 where the backend can't measure it)
+    float frameMs = 0; // time from the previous beginFrame() to the last one (1000 / fps)
 };
 
 bool init();

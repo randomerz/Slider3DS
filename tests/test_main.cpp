@@ -42,6 +42,16 @@ const Area& village() {
     return area;
 }
 
+const ObjectStates& villageObjects() {
+    static ObjectStates objects;
+    static bool init = false;
+    if (!init) {
+        objects.init(village());
+        init = true;
+    }
+    return objects;
+}
+
 int main(int argc, char** argv) {
     const char* filter = argc > 1 ? argv[1] : nullptr;
     int run = 0, failedTests = 0;

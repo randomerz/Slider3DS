@@ -99,7 +99,7 @@ bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
 
 } // namespace
 
-Blocker boxBlocker(const Area& area, const Grid& grid, const Box& box, bool onWater) {
+Blocker boxBlocker(const Area& area, const Grid& grid, const ObjectStates& objects, const Box& box, bool onWater) {
     const Box in = inner(box);
 
     // Edge colliders fencing a slide in progress.
@@ -145,7 +145,7 @@ Blocker boxBlocker(const Area& area, const Grid& grid, const Box& box, bool onWa
 
     for (size_t i = 0; i < area.objectColliders.size(); i++) {
         const ObjectCollider& c = area.objectColliders[i];
-        if (!c.active || !ownerCollides(grid, c.owner)) continue;
+        if (!objects.colliderActive(i) || !ownerCollides(grid, c.owner)) continue;
         float bx, by;
         grid.ownerBase(c.owner, bx, by);
         if (objectHit(c, bx, by, in)) return {Blocker::Object, (int)i};
@@ -167,10 +167,10 @@ std::string describe(const Area& area, const Blocker& b) {
     return "";
 }
 
-bool moveWithCollision(const Area& area, const Grid& grid, const Hitbox& hb, float& x, float& y, float dx, float dy,
-                       bool onWater) {
+bool moveWithCollision(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x,
+                       float& y, float dx, float dy, bool onWater) {
     if (dx == 0 && dy == 0) return false;
-    if (boxBlocked(area, grid, hitboxAt(hb, x, y), onWater)) {
+    if (boxBlocked(area, grid, objects, hitboxAt(hb, x, y), onWater)) {
         x += dx;
         y += dy;
         return true;
@@ -180,8 +180,8 @@ bool moveWithCollision(const Area& area, const Grid& grid, const Hitbox& hb, flo
         const float d = axis == 0 ? dx : dy;
         if (d == 0) continue;
         auto freeAt = [&](float t) {
-            return axis == 0 ? !boxBlocked(area, grid, hitboxAt(hb, x + t * d, y), onWater)
-                             : !boxBlocked(area, grid, hitboxAt(hb, x, y + t * d), onWater);
+            return axis == 0 ? !boxBlocked(area, grid, objects, hitboxAt(hb, x + t * d, y), onWater)
+                             : !boxBlocked(area, grid, objects, hitboxAt(hb, x, y + t * d), onWater);
         };
         float t = 1;
         if (!freeAt(1)) {

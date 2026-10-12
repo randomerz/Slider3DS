@@ -119,7 +119,15 @@ void freeSheet(Texture* tex) {
     delete tex;
 }
 
-void beginFrame() { C3D_FrameBegin(C3D_FRAME_SYNCDRAW); }
+static u64 g_lastFrameTick = 0;
+static float g_frameMs = 0;
+
+void beginFrame() {
+    C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+    const u64 now = svcGetSystemTick();
+    if (g_lastFrameTick) g_frameMs = (float)((now - g_lastFrameTick) * 1000.0 / SYSCLOCK_ARM11);
+    g_lastFrameTick = now;
+}
 
 void beginScreen(Screen screen, uint32_t clearColor) {
     C3D_RenderTarget* t = screen == Screen::Top ? g_top : g_bottom;
@@ -156,6 +164,6 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
 
 void endFrame() { C3D_FrameEnd(0); }
 
-FrameStats lastFrameStats() { return {C3D_GetProcessingTime(), C3D_GetDrawingTime()}; }
+FrameStats lastFrameStats() { return {C3D_GetProcessingTime(), C3D_GetDrawingTime(), g_frameMs}; }
 
 } // namespace plat

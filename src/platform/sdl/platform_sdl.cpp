@@ -158,7 +158,9 @@ void freeSheet(Texture* tex) {
 }
 
 void beginFrame() {
-    g_frameStart = SDL_GetPerformanceCounter();
+    const Uint64 now = SDL_GetPerformanceCounter();
+    if (g_frameStart) g_stats.frameMs = (float)((now - g_frameStart) * 1000.0 / SDL_GetPerformanceFrequency());
+    g_frameStart = now;
     SDL_RenderSetViewport(g_renderer, nullptr);
     SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, 255);
     SDL_RenderClear(g_renderer);

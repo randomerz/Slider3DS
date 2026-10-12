@@ -36,7 +36,7 @@ int AreaView::worldSpriteFrame(const Area& area, const WorldSprite& ws, size_t i
     return an.frameAt(time + start * an.length);
 }
 
-void AreaView::draw(const Area& area, const Grid& grid, const SortedSprite* extras, size_t extraCount,
+void AreaView::draw(const Area& area, const Grid& grid, const ObjectStates& objects, const SortedSprite* extras, size_t extraCount,
                     int minSortLayer, int maxSortLayer) {
     auto inRange = [&](int sortLayer) { return sortLayer >= minSortLayer && sortLayer <= maxSortLayer; };
     auto ownerShown = [&](int owner) { return owner == 0 || grid.tileActive(owner) || showInactive_; };
@@ -53,7 +53,7 @@ void AreaView::draw(const Area& area, const Grid& grid, const SortedSprite* extr
     }
     for (size_t i = 0; i < area.worldSprites.size(); i++) {
         const WorldSprite& ws = area.worldSprites[i];
-        if (!inRange(ws.sortLayer) || !ws.active || !ownerShown(ws.owner)) continue;
+        if (!inRange(ws.sortLayer) || !objects.spriteActive(i) || !ownerShown(ws.owner)) continue;
         float bx, by;
         grid.ownerBase(ws.owner, bx, by);
         const int frame = worldSpriteFrame(area, ws, i, time_);

@@ -12,6 +12,7 @@
 
 #include "game/area.h"
 #include "game/grid.h"
+#include "game/object_states.h"
 #include "game/sprite_sheets.h"
 
 // A sprite drawn at a world position (its pivot lands on (x, y)) and sorted among the area's.
@@ -28,10 +29,10 @@ public:
     // `time` (seconds) drives animated tiles and sprites. Inactive STiles are drawn when showInactiveTiles.
     void begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
                bool showInactiveTiles);
-    // Draws the visible tile layers, world sprites and `extras` with minSortLayer <= sorting
+    // Draws the visible tile layers, active world sprites and `extras` with minSortLayer <= sorting
     // layer value <= maxSortLayer, sorted together.
-    void draw(const Area& area, const Grid& grid, const SortedSprite* extras = nullptr, size_t extraCount = 0,
-              int minSortLayer = INT_MIN, int maxSortLayer = INT_MAX);
+    void draw(const Area& area, const Grid& grid, const ObjectStates& objects, const SortedSprite* extras = nullptr,
+              size_t extraCount = 0, int minSortLayer = INT_MIN, int maxSortLayer = INT_MAX);
 
     // World -> screen pixel (top-left origin) with the current snapped camera.
     void worldToScreen(float wx, float wy, float& sx, float& sy) const;

@@ -6,8 +6,10 @@
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
 //   A + D-pad: slide the tile you stand on (until the Artifact UI exists)
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
-// add perf bars for the previous frame: CPU (green), GPU (blue), sprites drawn (gray, 1px = 20;
-// red near the sprite budget); the red tick marks 16.7 ms.
+// add a perf overlay (SELECT hides it), each row a bar plus its number, averaged over ~half a
+// second: CPU ms (green; FPS beside it), GPU ms (blue), sprites drawn (gray, 1px = 20; red near the
+// sprite budget). Bars are 10px per ms; the red tick marks 16.7 ms (60 fps).
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -17,7 +19,10 @@
 #include "game/area_view.h"
 #include "game/artifact.h"
 #include "game/artifact_ui.h"
+#include "game/conditions.h"
+#include "game/debug_text.h"
 #include "game/grid.h"
+#include "game/object_states.h"
 #include "game/physics.h"
 #include "game/sprite_sheets.h"
 #include "platform/platform.h"
@@ -33,13 +38,13 @@ constexpr bool DEV = SLIDER_DEV != 0;
 constexpr bool DEV_START_OUTSIDE = DEV;
 
 // Nearest point to (x, y) where hitbox `hb` is collision-free, searching outward in half-unit rings.
-bool findFreeNear(const Area& area, const Grid& grid, const Hitbox& hb, float& x, float& y) {
+bool findFreeNear(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x, float& y) {
     for (int r = 0; r <= 16; r++) {
         for (int i = -r; i <= r; i++) {
             for (int j = -r; j <= r; j++) {
                 if (std::abs(i) != r && std::abs(j) != r) continue; // ring only
                 float tx = x + i * 0.5f, ty = y + j * 0.5f;
-                if (!boxBlocked(area, grid, hitboxAt(hb, tx, ty), false)) {
+                if (!boxBlocked(area, grid, objects, hitboxAt(hb, tx, ty), false)) {
                     x = tx;
                     y = ty;
                     return true;
@@ -69,6 +74,8 @@ int main(int, char**) {
     Grid grid;
     Artifact artifact;
     ArtifactUI artifactUI;
+    ObjectStates objects;
+    GameState state; // new game: no flags
     std::string error;
     bool loaded = loadArea("village/village.json", area, &error) && sheets.load(area);
     if (!loaded) printf("Failed to load village: %s\n", error.c_str());
@@ -76,6 +83,8 @@ int main(int, char**) {
         grid.init(area);
         artifact.init(grid);
         artifactUI.init(area, artifact);
+        objects.init(area);
+        runStartChecks(area, state, grid, objects);
     }
 
     float px = 0, py = 0;
@@ -89,15 +98,18 @@ int main(int, char**) {
     if (loaded && DEV_START_OUTSIDE) {
         grid.ownerBase(1, px, py); // tile 1's center, outdoors
         onWater = false;
-        findFreeNear(area, grid, area.player.footBox, px, py);
+        findFreeNear(area, grid, objects, area.player.footBox, px, py);
     }
     int playerStile = loaded ? grid.stileUnder(px, py) : 0;
     int frame = 0;
+    bool showPerf = DEV;
+    float avgCpu = 0, avgGpu = 0, avgFrame = 1000.0f / 60.0f, avgSprites = 0; // smoothed overlay values
 
     while (plat::mainLoop()) {
         plat::Input in = plat::pollInput();
         if (in.pressed & plat::BTN_START) break;
         if (DEV && (in.pressed & plat::BTN_Y)) showInactive = !showInactive;
+        if (DEV && (in.pressed & plat::BTN_SELECT)) showPerf = !showPerf;
         if (DEV && (in.pressed & plat::BTN_X)) noclip = !noclip;
         if (DEV && loaded && !area.spawns.empty() && (in.pressed & (plat::BTN_L | plat::BTN_R))) {
             size_t n = area.spawns.size();
@@ -111,6 +123,8 @@ int main(int, char**) {
         if (DEV && loaded && (in.pressed & plat::BTN_B)) {
             debugCollected = !debugCollected;
             for (int id = 2; id <= 8; id++) grid.setTileActive(id, debugCollected);
+            objects.init(area); // as if loading a save with these tiles
+            runStartChecks(area, state, grid, objects);
             printf("Tiles 2-8 %s; grid %s\n", debugCollected ? "collected" : "removed", grid.gridString().c_str());
         }
         if (loaded && sliding && playerStile != 0) {
@@ -151,7 +165,7 @@ int main(int, char**) {
             float len = std::sqrt(ix * ix + iy * iy);
             float dx = ix / len * MOVE_SPEED * FRAME_DT, dy = iy / len * MOVE_SPEED * FRAME_DT;
             if (noclip) { px += dx; py += dy; }
-            else moveWithCollision(area, grid, onWater ? area.player.boatBox : area.player.footBox, px, py, dx, dy, onWater);
+            else moveWithCollision(area, grid, objects, onWater ? area.player.boatBox : area.player.footBox, px, py, dx, dy, onWater);
         }
 
         plat::beginFrame();
@@ -173,7 +187,7 @@ int main(int, char**) {
                 sp.order = d->order;
                 sp.flags = facingLeft ? (uint32_t)plat::FLIP_X : 0u;
             }
-            view.draw(area, grid, playerSprites, playerSpriteCount);
+            view.draw(area, grid, objects, playerSprites, playerSpriteCount);
             if (DEV && noclip) // the position point the player raycasts from (the camera follows it)
                 plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
         } else {
@@ -185,15 +199,33 @@ int main(int, char**) {
             artifactUI.draw(area, grid, artifact, sheets);
         }
         if (DEV) {
-            plat::FrameStats stats = plat::lastFrameStats();
+            const plat::FrameStats stats = plat::lastFrameStats();
+            const float k = 1.0f / 30.0f;
+            avgCpu += (stats.cpuMs - avgCpu) * k;
+            avgGpu += (stats.gpuMs - avgGpu) * k;
+            if (stats.frameMs > 0) avgFrame += (stats.frameMs - avgFrame) * k;
+            avgSprites += (view.lastSpriteCount() - avgSprites) * k;
+        }
+        if (DEV && showPerf) {
             const float msPx = 10.0f; // 10px per ms
-            const int sprites = view.lastSpriteCount();
-            const bool nearBudget = sprites > plat::MAX_DRAWS_PER_FRAME * 3 / 4;
-            plat::drawRect(10, 216, stats.cpuMs * msPx, 5, plat::rgba(0x60, 0xd0, 0x70));
-            plat::drawRect(10, 223, stats.gpuMs * msPx, 5, plat::rgba(0x60, 0x90, 0xe0));
-            plat::drawRect(10, 230, sprites / 20.0f, 5,
-                           nearBudget ? plat::rgba(0xe0, 0x50, 0x50) : plat::rgba(0xa0, 0xa0, 0xa0));
-            plat::drawRect(10 + 16.7f * msPx, 212, 1, 26, plat::rgba(0xe0, 0x50, 0x50));
+            const bool nearBudget = avgSprites > plat::MAX_DRAWS_PER_FRAME * 3 / 4;
+            const uint32_t green = plat::rgba(0x60, 0xd0, 0x70), blue = plat::rgba(0x60, 0x90, 0xe0);
+            const uint32_t gray = nearBudget ? plat::rgba(0xe0, 0x50, 0x50) : plat::rgba(0xa0, 0xa0, 0xa0);
+            const float rowY[3] = {196, 210, 224}, rowH = 10, textX = 190;
+            char text[32];
+            plat::drawRect(4, 192, 312, 46, plat::rgba(0x1a, 0x1a, 0x1a, 0xc0));
+            plat::drawRect(10, rowY[0], avgCpu * msPx, rowH, green);
+            snprintf(text, sizeof text, "CPU %.1fMS", avgCpu);
+            float after = drawDebugText(textX, rowY[0], text, green, 2);
+            snprintf(text, sizeof text, "%.0fFPS", avgFrame > 0 ? 1000.0f / avgFrame : 0.0f);
+            drawDebugText(after + 8, rowY[0], text, plat::rgba(0xff, 0xff, 0xff), 2);
+            plat::drawRect(10, rowY[1], avgGpu * msPx, rowH, blue);
+            snprintf(text, sizeof text, "GPU %.1fMS", avgGpu);
+            drawDebugText(textX, rowY[1], text, blue, 2);
+            plat::drawRect(10, rowY[2], std::min(avgSprites / 20.0f, textX - 20), rowH, gray);
+            snprintf(text, sizeof text, "SPR %.0f", avgSprites);
+            drawDebugText(textX, rowY[2], text, gray, 2);
+            plat::drawRect(10 + 16.7f * msPx, rowY[0] - 2, 1, rowY[2] + rowH - rowY[0] + 4, plat::rgba(0xe0, 0x50, 0x50));
         }
 
         plat::endFrame();
