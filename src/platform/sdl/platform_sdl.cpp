@@ -179,7 +179,7 @@ void drawRect(float x, float y, float w, float h, uint32_t color) {
     SDL_RenderFillRectF(g_renderer, &r);
 }
 
-void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags) {
+void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale) {
     // SDL flips in texture space before rotating, so a flip that follows ROT90 is a rotation the
     // other way: F*R(a) = R(-a)*F. SDL angles are clockwise on screen.
     int flip = ((flags & FLIP_X) ? SDL_FLIP_HORIZONTAL : 0) | ((flags & FLIP_Y) ? SDL_FLIP_VERTICAL : 0);
@@ -189,7 +189,7 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
         angle = mirrored ? 90.0 : -90.0;
     }
     SDL_Rect src{sx, sy, sw, sh};
-    SDL_FRect dst{x, y, (float)sw, (float)sh};
+    SDL_FRect dst{x, y, (float)(sw * scale), (float)(sh * scale)};
     SDL_RenderCopyExF(g_renderer, tex->tex, &src, &dst, angle, nullptr, (SDL_RendererFlip)flip);
 }
 

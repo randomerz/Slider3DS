@@ -7,7 +7,7 @@
 namespace {
 
 constexpr size_t VILLAGE_LAYERS = 76, VILLAGE_COLLISION = 35, VILLAGE_SHAPES = 9, VILLAGE_TILES = 168,
-                 VILLAGE_SPRITES = 302, VILLAGE_FILLED_CELLS = 27554;
+                 VILLAGE_SPRITES = 303, VILLAGE_FILLED_CELLS = 27554;
 
 // A minimal valid area: 1x1 grid, one sheet/sprite/tile, one visual and one collision tilemap.
 // Each `replace` pair breaks one thing for the validation tests.
@@ -88,7 +88,7 @@ TEST(area_village_export_stats) {
     check(a.shapes.size() == VILLAGE_SHAPES, "collision shapes " + std::to_string(a.shapes.size()));
     check(a.tiles.size() == VILLAGE_TILES, "tiles " + std::to_string(a.tiles.size()));
     check(a.sprites.size() == VILLAGE_SPRITES, "sprites " + std::to_string(a.sprites.size()));
-    check(a.sheetNames.size() == 11, "sheets " + std::to_string(a.sheetNames.size()));
+    check(a.sheetNames.size() == 12, "sheets " + std::to_string(a.sheetNames.size()));
     size_t cells = 0;
     for (const TileLayer& L : a.layers)
         for (int16_t c : L.cells) cells += c >= 0;

@@ -24,7 +24,7 @@ void SpriteSheets::unload() {
     sheets_.clear();
 }
 
-void SpriteSheets::draw(const Area& area, int index, float x, float y, uint32_t flags) const {
+void SpriteSheets::draw(const Area& area, int index, float x, float y, uint32_t flags, int scale) const {
     const SpriteDef& S = area.sprites[index];
-    plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(x), std::round(y), flags);
+    plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(x), std::round(y), flags, scale);
 }

@@ -3,7 +3,8 @@ mismatch) to a PNG using the sheet images in assets/sheets, to see what a golden
 
     python tools/render_drawlist.py build-pc/test-out/artifact_selected.txt [out.png] [--size 320x240] [--scale 3]
 
-Each line: sheet sx sy sw sh x y flags  (an empty sheet name = a rect; then flags is its RGBA color).
+Each line: sheet sx sy sw sh x y flags [xN]  (xN = scale; an empty sheet name = a rect, whose flags
+is its RGBA color).
 """
 import argparse
 import os
@@ -33,11 +34,14 @@ def main():
                 rect = Image.new("RGBA", (int(sw), int(sh)), (c >> 24, (c >> 16) & 255, (c >> 8) & 255, c & 255))
                 canvas.alpha_composite(rect, (round(float(x)), round(float(y))))
                 continue
+            scale = int(parts.pop()[1:]) if parts[-1].startswith("x") else 1
             name, sx, sy, sw, sh, x, y, flags = parts
             if name not in sheets:
                 sheets[name] = Image.open(os.path.join(ROOT, "assets", "sheets", name + ".png")).convert("RGBA")
             sx, sy, sw, sh, flags = int(sx), int(sy), int(sw), int(sh), int(flags)
             img = sheets[name].crop((sx, sy, sx + sw, sy + sh))
+            if scale != 1:
+                img = img.resize((sw * scale, sh * scale), Image.NEAREST)
             if flags & ROT90:
                 img = img.transpose(Image.Transpose.ROTATE_90)
             if flags & FLIP_X:

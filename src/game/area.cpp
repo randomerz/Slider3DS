@@ -38,6 +38,7 @@ static void readArtifact(const Json& j, ArtifactDef& a) {
     a.buttonSpacing = j["buttonSpacing"].asInt(37);
     a.frame = readPart(j["frame"]);
     a.background = readPart(j["background"]);
+    for (const Json& u : j["underlays"].items()) a.underlays.push_back(readPart(u));
     a.pressed = readPart(j["parts"]["pressed"]);
     a.highlight = readPart(j["parts"]["highlight"]);
     a.hover = readPart(j["parts"]["hover"]);
@@ -85,6 +86,7 @@ static bool validate(const Area& a, std::string* error) {
         bool ok = spriteOk(d.frame.sprite) && spriteOk(d.background.sprite) && spriteOk(d.pressed.sprite) &&
                   spriteOk(d.highlight.sprite) && spriteOk(d.hover.sprite) && spriteOk(d.empty) &&
                   spriteOk(d.blank) && spriteOk(d.hoverIcon) && d.buttonSpacing > 0;
+        for (const UiPart& u : d.underlays) ok = ok && spriteOk(u.sprite);
         for (const ArtifactButtonDef& b : d.buttons) {
             ok = ok && a.stile(b.islandId) && spriteOk(b.island) && spriteOk(b.completed);
             for (const UiPart& icon : b.icons) ok = ok && spriteOk(icon.sprite);

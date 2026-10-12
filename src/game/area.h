@@ -86,6 +86,7 @@ struct ArtifactDef {
     bool present = false;
     int buttonSpacing = 37;
     UiPart frame, background;          // relative to the panel center
+    std::vector<UiPart> underlays;     // area art over the background, under the buttons (panel center)
     UiPart pressed, highlight, hover;  // relative to a button center
     int empty = -1, blank = -1, hoverIcon = -1; // sprites replacing the island image
     int pressedDrop = 1;               // px the image drops while pressed

@@ -55,8 +55,8 @@ void beginScreen(Screen, uint32_t) {}
 void drawRect(float x, float y, float w, float h, uint32_t color) {
     g_draws.push_back({"", 0, 0, 0, 0, x, y, w, h, color});
 }
-void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags) {
-    g_draws.push_back({tex->name, sx, sy, sw, sh, x, y, (float)sw, (float)sh, flags});
+void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale) {
+    g_draws.push_back({tex->name, sx, sy, sw, sh, x, y, (float)(sw * scale), (float)(sh * scale), flags});
 }
 void endFrame() {}
 FrameStats lastFrameStats() { return {}; }

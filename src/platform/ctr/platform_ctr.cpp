@@ -131,7 +131,7 @@ void drawRect(float x, float y, float w, float h, uint32_t color) {
     C2D_DrawRectSolid(x, y, 0.5f, w, h, toC2D(color));
 }
 
-void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags) {
+void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale) {
     // Texture v runs bottom-up (top = 1 - y/H). Don't flip by swapping UVs: citro2d reads a
     // subtexture with top < bottom as a rotated atlas entry. A negative draw size flips instead,
     // in texture space before the rotation, so a flip that follows ROT90 is a rotation the
@@ -146,9 +146,9 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
         angle = mirrored ? (float)M_PI_2 : -(float)M_PI_2;
     }
     C2D_DrawParams p = {};
-    p.pos = {x + sw * 0.5f, y + sh * 0.5f, (flags & FLIP_X) ? -(float)sw : (float)sw,
-             (flags & FLIP_Y) ? -(float)sh : (float)sh};
-    p.center = {sw * 0.5f, sh * 0.5f};
+    const float w = (float)(sw * scale), h = (float)(sh * scale);
+    p.pos = {x + w * 0.5f, y + h * 0.5f, (flags & FLIP_X) ? -w : w, (flags & FLIP_Y) ? -h : h};
+    p.center = {w * 0.5f, h * 0.5f};
     p.depth = 0.5f;
     p.angle = angle;
     C2D_DrawImage(img, &p, nullptr);

@@ -84,7 +84,18 @@ TEST(artifact_ui_drag) {
     f.drag(0, 2, -1, -1); // released off the buttons: cancelled
     CHECK(f.artifact.queueEmpty() && f.grid.gridString() == "1##_###_###" && f.ui.selected() == 0);
     f.drag(0, 2, 1, 1); // released on a non-option (diagonal): cancelled
-    CHECK(f.artifact.queueEmpty() && f.grid.gridString() == "1##_###_###");
+    CHECK(f.artifact.queueEmpty() && f.grid.gridString() == "1##_###_###" && f.ui.selected() == 0);
+}
+
+TEST(artifact_ui_drag_back_onto_itself_selects) {
+    Fixture f;
+    float x, y;
+    f.ui.slotCenter(village(), 0, 0, x, y);
+    for (int i = 0; i <= 10; i++) f.frame(true, x + (i <= 5 ? i : 10 - i) * 4, y); // out and back
+    f.frame(false);
+    CHECK(f.ui.selected() == 1 && f.ui.isOption(1, 0) && f.artifact.queueEmpty());
+    f.tap(1, 0); // and the selection works like a tap's
+    check(f.artifact.gridString(f.grid) == "###_###_#1#", "moved: " + f.artifact.gridString(f.grid));
 }
 
 TEST(artifact_ui_respects_rules) {

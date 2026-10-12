@@ -19,8 +19,9 @@ public:
     bool load(const Area& area); // false (and nothing kept) if a sheet fails to load
     void unload();
 
-    // Draws sprite `index` of `area` 1:1 with its top-left at screen pixel (x, y), rounded.
-    void draw(const Area& area, int index, float x, float y, uint32_t flags = 0) const;
+    // Draws sprite `index` of `area` with its top-left at screen pixel (x, y), rounded, magnified
+    // by a whole `scale`.
+    void draw(const Area& area, int index, float x, float y, uint32_t flags = 0, int scale = 1) const;
 
 private:
     std::vector<plat::Texture*> sheets_;

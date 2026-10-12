@@ -81,7 +81,8 @@ void beginScreen(Screen screen, uint32_t clearColor);
 void drawRect(float x, float y, float w, float h, uint32_t color);
 // Draws the sw x sh pixel rect at (sx, sy) of `tex` (top-left origin) with its top-left at (x, y).
 // Rotation is about the rect's center, so ROT90 suits square sprites (all tiles are 16x16).
-void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags = 0);
+// `scale` is a whole-pixel magnification (the drawn size is sw*scale x sh*scale).
+void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags = 0, int scale = 1);
 void endFrame();
 FrameStats lastFrameStats();
 

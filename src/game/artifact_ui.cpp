@@ -22,7 +22,7 @@ void ArtifactUI::init(const Area& area, const Artifact& artifact) {
 }
 
 void ArtifactUI::slotCenter(const Area& area, int x, int y, float& sx, float& sy) const {
-    const int sp = area.artifact.buttonSpacing;
+    const int sp = area.artifact.buttonSpacing * scale;
     sx = (float)(centerX + (x - 1) * sp);
     sy = (float)(centerY - (y - 1) * sp);
 }
@@ -30,7 +30,7 @@ void ArtifactUI::slotCenter(const Area& area, int x, int y, float& sx, float& sy
 bool ArtifactUI::slotAtPixel(const Area& area, const Artifact& artifact, int px, int py, int& x, int& y) const {
     // Each slot owns the spacing-sized square around its center (a little more generous than the
     // 32 px images, which suits a stylus).
-    const float half = area.artifact.buttonSpacing * 0.5f;
+    const float half = area.artifact.buttonSpacing * scale * 0.5f;
     for (y = 0; y < artifact.height(); y++)
         for (x = 0; x < artifact.width(); x++) {
             float cx, cy;
@@ -120,9 +120,11 @@ void ArtifactUI::update(const plat::Input& in, const Area& area, Grid& grid, Art
         if (!dragging_) {
             if (upOnSlot && ux == downSlotX_ && uy == downSlotY_) selectButton(grid, artifact, ux, uy, false, playerStile);
         } else if (grid.tileActive(artifact.buttonAt(downSlotX_, downSlotY_)) && selectedId_) {
-            // ButtonDragEnd / DoButtonDrag: drop on an option moves there; anywhere else cancels.
+            // ButtonDragEnd / DoButtonDrag: drop on an option moves there; back on the dragged tile
+            // keeps it selected (like a tap); anywhere else cancels.
+            const bool onItself = upOnSlot && ux == downSlotX_ && uy == downSlotY_;
             if (upOnSlot && isOption(ux, uy)) selectButton(grid, artifact, ux, uy, true, playerStile);
-            deselect();
+            if (!onItself) deselect();
         }
         dragging_ = false;
         downSlotX_ = downSlotY_ = hoverX_ = hoverY_ = -1;
@@ -158,13 +160,14 @@ bool ArtifactUI::buttonPressed(const Grid& grid, const Artifact& artifact, int i
 void ArtifactUI::draw(const Area& area, const Grid& grid, const Artifact& artifact, const SpriteSheets& sheets) const {
     const ArtifactDef& def = area.artifact;
     if (!def.present) return;
-    // UI rect (min corner + size, y up) relative to a UI origin -> screen top-left.
+    // UI rect (min corner + size, y up, UI px) relative to a screen-pixel origin -> screen top-left.
     auto drawPart = [&](int sprite, int x, int y, int h, float originX, float originY) {
-        sheets.draw(area, sprite, originX + x, originY - (y + h));
+        sheets.draw(area, sprite, originX + x * scale, originY - (y + h) * scale, 0, scale);
     };
     drawPart(def.frame.sprite, def.frame.x, def.frame.y, def.frame.h, (float)centerX, (float)centerY);
     drawPart(def.background.sprite, def.background.x, def.background.y, def.background.h, (float)centerX,
              (float)centerY);
+    for (const UiPart& u : def.underlays) drawPart(u.sprite, u.x, u.y, u.h, (float)centerX, (float)centerY);
 
     for (const ArtifactButtonDef& b : def.buttons) { // Button1..9 sibling order
         int bx, by;
@@ -174,13 +177,13 @@ void ArtifactUI::draw(const Area& area, const Grid& grid, const Artifact& artifa
         const Nudge& n = nudges_[b.islandId];
         if (n.t < 1) { // ease out: the curve starts with slope 2
             float k = 1 - (1 - n.t) * (1 - n.t);
-            cx += n.dx * (1 - k);
-            cy -= n.dy * (1 - k);
+            cx += n.dx * (1 - k) * scale;
+            cy -= n.dy * (1 - k) * scale;
         }
         const bool active = grid.tileActive(b.islandId);
         const bool pressed = buttonPressed(grid, artifact, b.islandId);
         const bool hovered = bx == hoverX_ && by == hoverY_ && isOption(bx, by);
-        const float drop = pressed ? (float)def.pressedDrop : 0.0f;
+        const float drop = pressed ? (float)(def.pressedDrop * scale) : 0.0f;
 
         const int image = hovered ? def.hoverIcon : active ? b.island : def.empty;
         drawPart(image, -IMAGE_HALF, -IMAGE_HALF, 2 * IMAGE_HALF, cx, cy + drop);

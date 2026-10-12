@@ -27,9 +27,12 @@ namespace {
 
 std::string drawListText(const std::vector<DrawCall>& calls) {
     std::ostringstream out;
-    for (const DrawCall& c : calls)
+    for (const DrawCall& c : calls) {
         out << c.sheet << ' ' << c.sx << ' ' << c.sy << ' ' << c.sw << ' ' << c.sh << ' ' << c.x << ' ' << c.y << ' '
-            << c.flags << '\n';
+            << c.flags;
+        if (!c.sheet.empty() && c.w != (float)c.sw) out << " x" << (int)(c.w / c.sw); // sprite scale, if not 1
+        out << '\n';
+    }
     return out.str();
 }
 
