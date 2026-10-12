@@ -1,0 +1,5 @@
+# Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
+artifact_start 12:663f74a49658ef44
+artifact_selected 17:3b11b3d939220288
+artifact_moving 17:632029a474258539
+artifact_drag_hover 16:ecdd92a4bf802b51

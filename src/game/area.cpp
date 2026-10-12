@@ -22,6 +22,41 @@ static bool fail(std::string* error, const std::string& msg) {
     return false;
 }
 
+static UiPart readPart(const Json& j) {
+    UiPart p;
+    p.sprite = j["sprite"].asInt(-1);
+    p.x = j["rect"].at(0).asInt();
+    p.y = j["rect"].at(1).asInt();
+    p.w = j["rect"].at(2).asInt();
+    p.h = j["rect"].at(3).asInt();
+    return p;
+}
+
+static void readArtifact(const Json& j, ArtifactDef& a) {
+    a.present = !j.isNull();
+    if (!a.present) return;
+    a.buttonSpacing = j["buttonSpacing"].asInt(37);
+    a.frame = readPart(j["frame"]);
+    a.background = readPart(j["background"]);
+    a.pressed = readPart(j["parts"]["pressed"]);
+    a.highlight = readPart(j["parts"]["highlight"]);
+    a.hover = readPart(j["parts"]["hover"]);
+    a.empty = j["empty"].asInt(-1);
+    a.blank = j["blank"].asInt(-1);
+    a.hoverIcon = j["hoverIcon"].asInt(-1);
+    a.pressedDrop = j["pressedDrop"].asInt(1);
+    a.nudgeDistance = j["nudge"]["distance"].asFloat(2);
+    a.nudgeDuration = j["nudge"]["duration"].asFloat(0.2f);
+    for (const Json& b : j["buttons"].items()) {
+        ArtifactButtonDef d;
+        d.islandId = b["islandId"].asInt();
+        d.island = b["island"].asInt(-1);
+        d.completed = b["completed"].asInt(-1);
+        for (const Json& icon : b["icons"].items()) d.icons.push_back(readPart(icon));
+        a.buttons.push_back(std::move(d));
+    }
+}
+
 static bool validate(const Area& a, std::string* error) {
     if (a.gridW <= 0 || a.gridH <= 0 || (int)a.stiles.size() != a.gridW * a.gridH)
         return fail(error, "grid: expected " + std::to_string(a.gridW * a.gridH) + " stiles");
@@ -43,6 +78,19 @@ static bool validate(const Area& a, std::string* error) {
         if (!ownerOk(st.owner)) return fail(error, "static sprite " + st.path + ": unknown owner STile");
         if (st.sprite < 0 || st.sprite >= (int)a.sprites.size())
             return fail(error, "static sprite " + st.path + ": bad sprite index");
+    }
+    if (a.artifact.present) {
+        const ArtifactDef& d = a.artifact;
+        auto spriteOk = [&](int s) { return s >= 0 && s < (int)a.sprites.size(); };
+        bool ok = spriteOk(d.frame.sprite) && spriteOk(d.background.sprite) && spriteOk(d.pressed.sprite) &&
+                  spriteOk(d.highlight.sprite) && spriteOk(d.hover.sprite) && spriteOk(d.empty) &&
+                  spriteOk(d.blank) && spriteOk(d.hoverIcon) && d.buttonSpacing > 0;
+        for (const ArtifactButtonDef& b : d.buttons) {
+            ok = ok && a.stile(b.islandId) && spriteOk(b.island) && spriteOk(b.completed);
+            for (const UiPart& icon : b.icons) ok = ok && spriteOk(icon.sprite);
+        }
+        for (const STileDef& s : a.stiles) ok = ok && d.button(s.islandId);
+        if (!ok) return fail(error, "artifact: bad sprite index or button set");
     }
     for (const SpriteDef& sp : a.sprites)
         if (sp.sheet < 0 || sp.sheet >= (int)a.sheetNames.size()) return fail(error, "sprite: bad sheet index");
@@ -99,6 +147,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         st.active = s["active"].asBool(true);
         out.statics.push_back(std::move(st));
     }
+
+    readArtifact(doc["artifact"], out.artifact);
 
     for (const Json& s : doc["spawns"].items())
         out.spawns.push_back({s["name"].asString(), s["owner"].asInt(), s["pos"].at(0).asFloat(),

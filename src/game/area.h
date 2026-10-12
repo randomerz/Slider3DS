@@ -68,6 +68,37 @@ struct StaticSprite {
     bool active = true;
 };
 
+// A sprite placed in UI pixels: rect min corner (x, y) and size, y up, relative to some origin.
+struct UiPart {
+    int sprite = -1; // index in Area::sprites; -1 = none
+    int x = 0, y = 0, w = 0, h = 0;
+};
+
+struct ArtifactButtonDef {
+    int islandId = 0;
+    int island = -1, completed = -1; // sprites
+    std::vector<UiPart> icons;      // overlays, relative to the button center
+};
+
+// The Artifact's tile screen (UIArtifact / ArtifactTileButton). UI pixels, y up, origin at the
+// panel center; button slot (x, y) is centered at ((x - 1), (y - 1)) * buttonSpacing.
+struct ArtifactDef {
+    bool present = false;
+    int buttonSpacing = 37;
+    UiPart frame, background;          // relative to the panel center
+    UiPart pressed, highlight, hover;  // relative to a button center
+    int empty = -1, blank = -1, hoverIcon = -1; // sprites replacing the island image
+    int pressedDrop = 1;               // px the image drops while pressed
+    float nudgeDistance = 2, nudgeDuration = 0.2f;
+    std::vector<ArtifactButtonDef> buttons;
+
+    const ArtifactButtonDef* button(int islandId) const {
+        for (const ArtifactButtonDef& b : buttons)
+            if (b.islandId == islandId) return &b;
+        return nullptr;
+    }
+};
+
 // An STile as exported (new-game state). Its runtime slot/position lives in Grid.
 struct STileDef {
     int islandId;
@@ -90,6 +121,7 @@ struct Area {
     std::vector<std::vector<Polygon>> shapes; // collision shapes (each a list of polygons)
     std::vector<TileLayer> layers; // drawn layers only, in draw order
     std::vector<StaticSprite> statics; // in draw order (sortLayer, order, then higher y first)
+    ArtifactDef artifact;
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
     std::vector<std::string> sheetNames;

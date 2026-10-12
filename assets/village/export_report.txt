@@ -1,9 +1,9 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
 Static sprites: 9
-Tiles: 168 (39 animated)  Sprites: 273
+Tiles: 168 (39 animated)  Sprites: 302
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
-Sheets (8, 809K px):
+Sheets (11, 1069K px):
   largeprops_village_ruins: 128x64  [village_ruins_deco]
   misc: 512x512  [BGFrame]
   tempsprites: 32x32  [temp_interior]
@@ -12,6 +12,9 @@ Sheets (8, 809K px):
   tiles_insides: 128x64  [interiors]
   tiles_jungle: 128x64  [leaf_tiles]
   tiles_village: 128x64  [river_end_transition, snow_tiles]
+  ui_areaicons: 64x64  [village_icon_highlights]
+  ui_areaicons_areas: 256x512  [ArtifactIcons, ArtifactIcons_completed]
+  ui_artifact: 256x512  [ArtifactBG, artifact_frame, ControllerHoverHighlight]
 Tile types:
   Tile: 37599
   RuleTile: 5751

@@ -5,9 +5,9 @@
 //   L / R: jump to previous / next spawn point      X: toggle noclip
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
 //   A + D-pad: slide the tile you stand on (until the Artifact UI exists)
-// Bottom screen: the 3x3 grid (active tiles light, inactive dark, the one you stand on outlined)
-// with the player's position; in dev builds also perf bars for the previous frame: CPU (green),
-// GPU (blue), sprites drawn (gray, 1px = 20; red near the sprite budget); the red tick marks 16.7 ms.
+// Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
+// add perf bars for the previous frame: CPU (green), GPU (blue), sprites drawn (gray, 1px = 20;
+// red near the sprite budget); the red tick marks 16.7 ms.
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -16,8 +16,10 @@
 #include "game/area.h"
 #include "game/area_view.h"
 #include "game/artifact.h"
+#include "game/artifact_ui.h"
 #include "game/grid.h"
 #include "game/physics.h"
+#include "game/sprite_sheets.h"
 #include "platform/platform.h"
 
 namespace {
@@ -69,15 +71,18 @@ int main(int, char**) {
     if (!plat::init()) return 1;
 
     Area area;
+    SpriteSheets sheets;
     AreaView view;
     Grid grid;
     Artifact artifact;
+    ArtifactUI artifactUI;
     std::string error;
-    bool loaded = loadArea("village/village.json", area, &error) && view.loadSheets(area);
+    bool loaded = loadArea("village/village.json", area, &error) && sheets.load(area);
     if (!loaded) printf("Failed to load village: %s\n", error.c_str());
     if (loaded) {
         grid.init(area);
         artifact.init(grid);
+        artifactUI.init(area, artifact);
     }
 
     float px = 0, py = 0;
@@ -133,6 +138,7 @@ int main(int, char**) {
             playerStile = grid.stileUnder(px, py, playerStile);
             const TileState* t = grid.tile(playerStile);
             float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
+            artifactUI.update(in, area, grid, artifact, playerStile, FRAME_DT);
             artifact.update(grid, FRAME_DT, playerStile);
             if (t) {
                 px += (t->posX - ox) * grid.tileWidth();
@@ -159,7 +165,7 @@ int main(int, char**) {
         plat::beginScreen(plat::Screen::Top, loaded ? plat::rgba(area.background[0], area.background[1], area.background[2])
                                                    : plat::rgba(0x14, 0x14, 0x1c));
         if (loaded) {
-            view.begin(area, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
+            view.begin(area, sheets, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
             view.drawLayers(area, grid);
             // Placeholder player: its collider box, centered on screen (the camera follows it),
             // with the position point in white.
@@ -172,28 +178,9 @@ int main(int, char**) {
             plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0x80, 0x20, 0x20));
         }
 
-        plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x2a, 0x2a, 0x3a));
+        plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));
         if (loaded) {
-            // 3x3 grid map: each slot 60px, row 0 at the bottom; tiles at their animated positions.
-            const int cell = 60, gx = (plat::BOTTOM_W - cell * area.gridW) / 2, gy = 30;
-            for (int pass = 0; pass < 2; pass++)  // empty slots first, so sliding tiles draw over them
-            for (const TileState& s : grid.tiles()) {
-                if (s.active != (pass == 1)) continue;
-                float x = gx + s.posX * cell, y = gy + (area.gridH - 1 - s.posY) * cell;
-                if (s.islandId == playerStile)
-                    plat::drawRect(x, y, cell, cell, plat::rgba(0xe0, 0xe0, 0x60));
-                uint32_t c = s.active ? plat::rgba(0xb0, 0xb0, 0xb0) : plat::rgba(0x50, 0x50, 0x58);
-                plat::drawRect(x + 2, y + 2, cell - 4, cell - 4, c);
-                // Tile number as pips (no font yet): one 4px square per unit, rows of 3.
-                for (int i = 0; i < s.islandId; i++)
-                    plat::drawRect(x + 8 + (i % 3) * 7, y + 8 + (i / 3) * 7, 4, 4, plat::rgba(0x30, 0x30, 0x38));
-            }
-            const float w = (float)grid.tileWidth();
-            // Inside a house the player is housingOffset below the grid; show the slot it's under.
-            float mapY = py < area.housingOffset / 2.0f ? py - area.housingOffset : py;
-            float mx = gx + (px / w + 0.5f) * cell;
-            float my = gy + (area.gridH - (mapY / w + 0.5f)) * cell;
-            plat::drawRect(mx - 3, my - 3, 6, 6, plat::rgba(0xe0, 0x60, 0x60));
+            artifactUI.draw(area, grid, artifact, sheets);
         }
         if (DEV) {
             plat::FrameStats stats = plat::lastFrameStats();
@@ -211,7 +198,7 @@ int main(int, char**) {
         frame++;
     }
 
-    view.unloadSheets();
+    sheets.unload();
     plat::shutdown();
     return 0;
 }

@@ -15,6 +15,7 @@
 #include <string>
 
 #include "game/area_view.h"
+#include "game/artifact_ui.h"
 #include "game/artifact.h"
 #include "game/grid.h"
 #include "platform/platform.h"
@@ -23,7 +24,6 @@
 
 namespace {
 
-const std::string GOLDEN_PATH = std::string(TESTS_DIR) + "/golden/render.txt";
 
 std::string drawListText(const std::vector<DrawCall>& calls) {
     std::ostringstream out;
@@ -39,17 +39,50 @@ uint64_t fnv1a(const std::string& s) {
     return h;
 }
 
-std::map<std::string, std::string> readGoldens() {
-    std::map<std::string, std::string> g;
-    std::ifstream in(GOLDEN_PATH);
-    std::string name, value, line;
-    while (std::getline(in, line)) {
-        if (line.empty() || line[0] == '#') continue;
-        std::istringstream ls(line);
-        if (ls >> name >> value) g[name] = value;
+// A golden file of draw-list hashes (tests/golden/<file>): compare() checks the draw calls
+// recorded since the last testResetDrawCalls() against the named entry; with
+// SLIDER3DS_UPDATE_GOLDENS set, the file is rewritten instead when the set is destroyed.
+class GoldenSet {
+public:
+    explicit GoldenSet(const std::string& file) : path_(std::string(TESTS_DIR) + "/golden/" + file) {
+        update_ = std::getenv("SLIDER3DS_UPDATE_GOLDENS") != nullptr;
+        std::ifstream in(path_);
+        std::string name, value, line;
+        while (std::getline(in, line)) {
+            if (line.empty() || line[0] == '#') continue;
+            std::istringstream ls(line);
+            if (ls >> name >> value) goldens_[name] = value;
+        }
+        fresh_ << "# Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64\n";
     }
-    return g;
-}
+    ~GoldenSet() {
+        if (!update_) return;
+        std::ofstream(path_, std::ios::binary) << fresh_.str();
+        printf("    wrote %s\n", path_.c_str());
+    }
+
+    void compare(const std::string& name, size_t minDraws) {
+        const std::vector<DrawCall>& calls = testDrawCalls();
+        const std::string text = drawListText(calls);
+        char value[64];
+        snprintf(value, sizeof value, "%zu:%016llx", calls.size(), (unsigned long long)fnv1a(text));
+        fresh_ << name << ' ' << value << '\n';
+        check(calls.size() >= minDraws, name + " draws something (" + std::to_string(calls.size()) + ")");
+        if (update_) return;
+        auto it = goldens_.find(name);
+        if (it != goldens_.end() && it->second == value) return;
+        std::string out = std::string(TEST_OUT_DIR) + "/" + name + ".txt";
+        std::ofstream(out) << text;
+        check(false, name + ": draw list " + value + " != golden " +
+                         (it == goldens_.end() ? "(missing)" : it->second) + "; actual list in " + out);
+    }
+
+private:
+    std::string path_;
+    bool update_ = false;
+    std::map<std::string, std::string> goldens_;
+    std::ostringstream fresh_;
+};
 
 struct Scene {
     const char* name;
@@ -66,8 +99,9 @@ void allButNine(Grid& grid, Artifact&) {
 
 TEST(render_goldens) {
     const Area& area = village();
+    SpriteSheets sheets;
     AreaView view;
-    check(view.loadSheets(area), "sheets load");
+    check(sheets.load(area), "sheets load");
 
     const Scene scenes[] = {
         {"start_tile1", 0, 0, 0, false, nullptr},
@@ -93,11 +127,7 @@ TEST(render_goldens) {
          }},
     };
 
-    const bool update = std::getenv("SLIDER3DS_UPDATE_GOLDENS") != nullptr;
-    std::map<std::string, std::string> goldens = readGoldens();
-    std::ostringstream fresh;
-    fresh << "# Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64\n";
-
+    GoldenSet goldens("render.txt");
     for (const Scene& sc : scenes) {
         Grid grid;
         grid.init(area);
@@ -105,30 +135,75 @@ TEST(render_goldens) {
         artifact.init(grid);
         if (sc.setup) sc.setup(grid, artifact);
         testResetDrawCalls();
-        view.begin(area, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
+        view.begin(area, sheets, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
         view.drawLayers(area, grid);
-        const std::vector<DrawCall>& calls = testDrawCalls();
-        const std::string text = drawListText(calls);
-        char value[64];
-        snprintf(value, sizeof value, "%zu:%016llx", calls.size(), (unsigned long long)fnv1a(text));
-        fresh << sc.name << ' ' << value << '\n';
-
-        check(calls.size() > 50, std::string(sc.name) + " draws something (" + std::to_string(calls.size()) + ")");
-        if (update) continue;
-        auto it = goldens.find(sc.name);
-        bool same = it != goldens.end() && it->second == value;
-        if (!same) {
-            std::string out = std::string(TEST_OUT_DIR) + "/" + sc.name + ".txt";
-            std::ofstream(out) << text;
-            check(false, std::string(sc.name) + ": draw list " + value + " != golden " +
-                             (it == goldens.end() ? "(missing)" : it->second) + "; actual list in " + out);
-        }
+        goldens.compare(sc.name, 50);
     }
-    view.unloadSheets();
+}
 
-    if (update) {
-        std::ofstream(GOLDEN_PATH, std::ios::binary) << fresh.str();
-        printf("    wrote %s\n", GOLDEN_PATH.c_str());
+TEST(render_artifact_goldens) {
+    const Area& area = village();
+    SpriteSheets sheets;
+    check(sheets.load(area), "sheets load");
+    GoldenSet goldens("artifact.txt");
+
+    struct Setup {
+        Grid grid;
+        Artifact artifact;
+        ArtifactUI ui;
+        explicit Setup(bool allButNine) {
+            grid.init(village());
+            if (allButNine)
+                for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
+            artifact.init(grid);
+            ui.init(village(), artifact);
+        }
+        void touch(bool down, int x, int y, int frames = 1) {
+            for (int i = 0; i < frames; i++) {
+                plat::Input in;
+                in.touching = down;
+                float cx, cy;
+                ui.slotCenter(village(), x, y, cx, cy);
+                in.touchX = (int)cx + (down && i > 0 ? i : 0); // wiggle to start drags
+                in.touchY = (int)cy;
+                ui.update(in, village(), grid, artifact, 0, 1.0f / 60.0f);
+                artifact.update(grid, 1.0f / 60.0f, 0);
+            }
+        }
+        void render(const SpriteSheets& sheets) {
+            testResetDrawCalls();
+            ui.draw(village(), grid, artifact, sheets);
+        }
+    };
+
+    {
+        Setup s(false);
+        s.render(sheets);
+        goldens.compare("artifact_start", 11);
+    }
+    {
+        Setup s(false);
+        s.touch(true, 0, 0); // tap tile 1: selected, 4 options highlighted
+        s.touch(false, 0, 0);
+        s.render(sheets);
+        goldens.compare("artifact_selected", 11);
+    }
+    {
+        Setup s(true);
+        s.touch(true, 2, 1); // tile 7, then the middle slot: moving (pressed, nudged)
+        s.touch(false, 2, 1);
+        s.touch(true, 1, 1);
+        s.touch(false, 1, 1);
+        s.touch(false, 0, 0, 4);
+        s.render(sheets);
+        goldens.compare("artifact_moving", 11);
+    }
+    {
+        Setup s(true);
+        s.touch(true, 1, 0, 6); // drag tile 5 ...
+        s.touch(true, 1, 1, 2); // ... hovering over the empty middle
+        s.render(sheets);
+        goldens.compare("artifact_drag_hover", 11);
     }
 }
 
@@ -136,20 +211,21 @@ TEST(render_layer_ranges_compose) {
     // Drawing sorting layer by sorting layer (as the entity pass will) gives exactly the same
     // draw list as drawing everything at once.
     const Area& area = village();
+    SpriteSheets sheets;
     AreaView view;
-    check(view.loadSheets(area), "sheets load");
+    check(sheets.load(area), "sheets load");
     Grid grid;
     grid.init(area);
     for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
 
     testResetDrawCalls();
-    view.begin(area, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
+    view.begin(area, sheets, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
     view.drawLayers(area, grid);
     const std::string all = drawListText(testDrawCalls());
     const int allCount = view.lastSpriteCount();
 
     testResetDrawCalls();
-    view.begin(area, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
+    view.begin(area, sheets, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
     int layersSeen = 0, prev = INT_MIN;
     for (const TileLayer& L : area.layers) {
         if (L.sortLayer == prev && layersSeen > 0) continue;
@@ -160,5 +236,4 @@ TEST(render_layer_ranges_compose) {
     check(layersSeen > 1, "the export uses several sorting layers (" + std::to_string(layersSeen) + ")");
     check(drawListText(testDrawCalls()) == all && view.lastSpriteCount() == allCount,
           "per-sorting-layer draws == one full draw");
-    view.unloadSheets();
 }

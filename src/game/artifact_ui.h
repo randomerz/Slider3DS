@@ -1,0 +1,59 @@
+// The Artifact's tile screen on the bottom screen: draws the frame and the 3x3 tile buttons, and
+// turns stylus taps and drags into moves, like UIArtifact.SelectButton / ButtonDragged /
+// ButtonDragEnd and ArtifactTileButton(Animator):
+//   - tap a collected tile with somewhere to go: it's selected (pressed) and its move options
+//     highlight; tap an option to slide it there (it stays selected), anything else deselects
+//     (tapping another collected tile selects that one instead);
+//   - drag a tile onto an option to slide it there; releasing anywhere else cancels;
+//   - tiles in a running move show pressed; a button whose slot changes nudges toward it.
+// Positions are UI pixels from the Area's ArtifactDef, drawn 1:1 around (centerX, centerY).
+#pragma once
+
+#include <utility>
+#include <vector>
+
+#include "game/area.h"
+#include "game/artifact.h"
+#include "game/grid.h"
+#include "game/sprite_sheets.h"
+#include "platform/platform.h"
+
+class ArtifactUI {
+public:
+    void init(const Area& area, const Artifact& artifact); // clears selection and animations
+
+    // One frame of stylus input and animation. Moves go through artifact.tryMove.
+    void update(const plat::Input& in, const Area& area, Grid& grid, Artifact& artifact, int playerStile, float dt);
+    void draw(const Area& area, const Grid& grid, const Artifact& artifact, const SpriteSheets& sheets) const;
+
+    int selected() const { return selectedId_; } // islandId of the selected tile, 0 = none
+    bool isOption(int x, int y) const;           // slot highlighted as a move option
+    // Screen pixel center of slot (x, y), without nudge (for tests and touch mapping).
+    void slotCenter(const Area& area, int x, int y, float& sx, float& sy) const;
+
+    bool autoMove = false; // "forceAutoMoveVillage": a tap on a tile with one option moves it
+    int centerX = plat::BOTTOM_W / 2, centerY = plat::BOTTOM_H / 2;
+
+private:
+    struct Nudge {
+        float dx = 0, dy = 0, t = 1; // start offset (UI px, y up); t >= 1 = at rest
+    };
+
+    bool slotAtPixel(const Area& area, const Artifact& artifact, int px, int py, int& x, int& y) const;
+    void selectButton(Grid& grid, Artifact& artifact, int x, int y, bool dragged, int playerStile);
+    void deselect();
+    void refreshOptions(const Grid& grid, const Artifact& artifact);
+    bool buttonPressed(const Grid& grid, const Artifact& artifact, int islandId) const;
+
+    int selectedId_ = 0;
+    std::vector<std::pair<int, int>> options_;
+    // Stylus state.
+    bool wasTouching_ = false, dragging_ = false;
+    int downX_ = 0, downY_ = 0;       // touch-down pixel
+    int lastX_ = 0, lastY_ = 0;       // last touched pixel (the 3DS reports none on release)
+    int downSlotX_ = -1, downSlotY_ = -1; // slot touched down on (-1 = none)
+    int hoverX_ = -1, hoverY_ = -1;   // slot under the stylus while dragging
+    // Per islandId: last slot seen (to detect moves) and its nudge animation.
+    std::vector<std::pair<int, int>> lastSlot_;
+    std::vector<Nudge> nudges_;
+};

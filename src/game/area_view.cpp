@@ -2,30 +2,11 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdio>
 
-#include "platform/platform.h"
 
-bool AreaView::loadSheets(const Area& area) {
-    unloadSheets();
-    for (const std::string& name : area.sheetNames) {
-        plat::Texture* t = plat::loadSheet(name.c_str());
-        if (!t) {
-            printf("AreaView: failed to load sheet %s\n", name.c_str());
-            return false;
-        }
-        sheets_.push_back(t);
-    }
-    return true;
-}
-
-void AreaView::unloadSheets() {
-    for (plat::Texture* t : sheets_) plat::freeSheet(t);
-    sheets_.clear();
-}
-
-void AreaView::begin(const Area& area, float camX, float camY, int screenW, int screenH, float time,
+void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
                      bool showInactiveTiles) {
+    sheets_ = &sheets;
     ppu_ = (float)area.ppu;
     // Snap the camera to whole pixels so tiles stay pixel-aligned.
     camX_ = std::round(camX * ppu_) / ppu_;
@@ -87,7 +68,7 @@ void AreaView::drawLayers(const Area& area, const Grid& grid, int minSortLayer, 
                 float px, py;
                 worldToScreen(left, top, px, py);
                 uint32_t flags = L.xform.empty() ? 0 : L.xform[cy * L.w + cx];
-                plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(px), std::round(py), flags);
+                sheets_->draw(area, frame, px, py, flags);
                 spriteCount_++;
             }
         }
@@ -106,6 +87,6 @@ void AreaView::drawStatic(const Area& area, const Grid& grid, const StaticSprite
     worldToScreen(left, top, px, py);
     const float wPx = S.w * ppu_ / S.ppu, hPx = S.h * ppu_ / S.ppu;
     if (px >= screenW_ || py >= screenH_ || px + wPx <= 0 || py + hPx <= 0) return; // off screen
-    plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(px), std::round(py), st.flags);
+    sheets_->draw(area, st.sprite, px, py, st.flags);
     spriteCount_++;
 }

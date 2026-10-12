@@ -14,6 +14,9 @@ class Artifact {
 public:
     void init(const Grid& grid); // buttons match the grid; clears queues
 
+    int width() const { return w_; }
+    int height() const { return h_; }
+
     // Button (tile id) at slot (x, y) as the Artifact shows it.
     int buttonAt(int x, int y) const { return buttons_[y * w_ + x]; }
     bool buttonActive(const Grid& grid, int x, int y) const { return grid.tileActive(buttonAt(x, y)); }
@@ -37,6 +40,7 @@ public:
     // Grid string of the buttons (UIArtifact.GetGridString), used by the final check.
     std::string gridString(const Grid& grid) const;
     bool queueEmpty() const { return queue_.empty() && active_.empty(); }
+    bool tileInActiveMove(int islandId) const; // part of a move that is animating now
 
     bool canQueue = true;
     static constexpr int MAX_QUEUE = 3;

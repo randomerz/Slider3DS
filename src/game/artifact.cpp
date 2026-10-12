@@ -83,6 +83,13 @@ void Artifact::update(Grid& grid, float dt, int playerStile) {
     }
 }
 
+bool Artifact::tileInActiveMove(int islandId) const {
+    for (const Queued& q : active_)
+        for (const Movement& m : q.move.moves)
+            if (m.islandId == islandId) return true;
+    return false;
+}
+
 bool Artifact::setGrid(Grid& grid, const std::string& ids) {
     if (!grid.setGrid(ids)) return false;
     init(grid);

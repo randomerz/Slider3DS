@@ -6,21 +6,16 @@
 #pragma once
 
 #include <climits>
-#include <vector>
 
 #include "game/area.h"
 #include "game/grid.h"
-
-namespace plat { struct Texture; }
+#include "game/sprite_sheets.h"
 
 class AreaView {
 public:
-    bool loadSheets(const Area& area);
-    void unloadSheets();
-
     // World point (camX, camY) lands at the screen center; the camera snaps to whole pixels.
     // `time` (seconds) drives animated tiles. Inactive STiles are drawn when showInactiveTiles.
-    void begin(const Area& area, float camX, float camY, int screenW, int screenH, float time,
+    void begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
                bool showInactiveTiles);
     // Draws the visible tile layers and static sprites with minSortLayer <= sortingLayerValue <=
     // maxSortLayer. At equal (sorting layer, order) static sprites go first.
@@ -34,7 +29,7 @@ public:
 private:
     void drawStatic(const Area& area, const Grid& grid, const StaticSprite& st);
 
-    std::vector<plat::Texture*> sheets_;
+    const SpriteSheets* sheets_ = nullptr; // set by begin()
     float camX_ = 0, camY_ = 0, ppu_ = 16, time_ = 0;
     int screenW_ = 0, screenH_ = 0;
     bool showInactive_ = false;
