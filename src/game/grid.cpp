@@ -8,9 +8,6 @@
 
 namespace {
 
-char idToChar(int id) { return id > 9 ? (char)('A' - 10 + id) : (char)('0' + id); }
-int charToId(char c) { return c > '9' ? c - 'A' + 10 : c - '0'; }
-
 // --- Minimal regex (backtracking), enough for the grid patterns the game uses. ---
 
 struct Atom {
@@ -107,6 +104,9 @@ float bezier(float a, float b, float u) { // P0 = 0, P3 = 1
 
 } // namespace
 
+char idToChar(int id) { return id > 9 ? (char)('A' - 10 + id) : (char)('0' + id); }
+int charToId(char c) { return c > '9' ? c - 'A' + 10 : c - '0'; }
+
 float slideCurve(float t) {
     if (t <= 0) return 0;
     if (t >= 1) return 1;
@@ -187,88 +187,103 @@ std::vector<SMove::Border> SMove::borders() const {
 
 // --- Grid ---
 
-void Grid::init(Area& area) {
-    area_ = &area;
+void Grid::init(const Area& area) {
     w_ = area.gridW;
     h_ = area.gridH;
-    slots_.assign(w_ * h_, 0);
+    tileWidth_ = area.stiles.empty() ? 17 : area.stiles[0].width;
+    housingOffset_ = area.housingOffset;
+    targetGrid_ = area.targetGrid;
+    tiles_.clear();
     int maxId = 0;
-    for (STileDef& s : area.stiles) {
-        s.x = s.startX;
-        s.y = s.startY;
-        s.active = s.startActive;
-        s.posX = (float)s.x;
-        s.posY = (float)s.y;
-        s.collidersOff = 0;
-        if (s.x >= 0 && s.x < w_ && s.y >= 0 && s.y < h_) slots_[s.y * w_ + s.x] = s.islandId;
-        maxId = std::max(maxId, s.islandId);
+    for (const STileDef& d : area.stiles) maxId = std::max(maxId, d.islandId);
+    tileIndex_.assign(maxId + 1, -1);
+    slots_.assign(w_ * h_, 0);
+    for (const STileDef& d : area.stiles) {
+        TileState t;
+        t.islandId = d.islandId;
+        t.x = d.x;
+        t.y = d.y;
+        t.active = d.active;
+        tileIndex_[d.islandId] = (int)tiles_.size();
+        tiles_.push_back(t);
+        slots_[d.y * w_ + d.x] = d.islandId; // loadArea checked slots are in range and unique
     }
-    anims_.clear();
-    active_.clear();
-    bgBorderCount_.assign(w_ * h_ * 4, 0);
-    tileBorderCount_.assign(maxId + 1, 0);
-    rebuildWalls();
+    clearMotion();
 }
 
-STileDef* Grid::stile(int islandId) {
-    for (STileDef& s : area_->stiles)
-        if (s.islandId == islandId) return &s;
-    return nullptr;
+const TileState* Grid::tile(int islandId) const {
+    return islandId > 0 && islandId < (int)tileIndex_.size() && tileIndex_[islandId] >= 0
+               ? &tiles_[tileIndex_[islandId]]
+               : nullptr;
+}
+
+TileState* Grid::tileMut(int islandId) { return const_cast<TileState*>(tile(islandId)); }
+
+bool Grid::tileActive(int islandId) const {
+    const TileState* t = tile(islandId);
+    return t && t->active;
+}
+
+void Grid::ownerBase(int owner, float& x, float& y) const {
+    const TileState* t = owner != 0 ? tile(owner) : nullptr;
+    x = t ? t->posX * tileWidth_ : 0.0f;
+    y = t ? t->posY * tileWidth_ : 0.0f;
 }
 
 std::string Grid::gridString(bool numsOnly) const {
-    std::string s;
-    for (int y = h_ - 1; y >= 0; y--) {
-        for (int x = 0; x < w_; x++) {
-            const STileDef* t = area_->stile(idAt(x, y));
-            s += (numsOnly || (t && t->active)) ? idToChar(idAt(x, y)) : '#';
-        }
-        if (y != 0) s += '_';
+    return buildGridString(
+        w_, h_, [&](int x, int y) { return idAt(x, y); }, [&](int id) { return tileActive(id); }, numsOnly);
+}
+
+void Grid::clearMotion() {
+    anims_.clear();
+    active_.clear();
+    bgBorderCount_.assign(w_ * h_ * 4, 0);
+    tileBorderCount_.assign(tiles_.size(), 0);
+    for (TileState& t : tiles_) {
+        t.posX = (float)t.x;
+        t.posY = (float)t.y;
+        t.collidersOff = 0;
     }
-    return s;
+    rebuildWalls();
 }
 
 bool Grid::setGrid(const std::string& ids) {
     std::vector<int> next;
+    std::vector<bool> seen(tileIndex_.size(), false);
     for (char c : ids) {
         if (c == '_') continue;
-        int id = (c == '0' || c == '#') ? w_ * h_ : charToId(c);
-        if (!area_->stile(id)) return false;
+        int id = c == '0' ? w_ * h_ : charToId(c);
+        if (!tile(id) || seen[id]) return false;
+        seen[id] = true;
         next.push_back(id);
     }
     if ((int)next.size() != w_ * h_) return false;
-    anims_.clear();
-    active_.clear();
-    std::fill(bgBorderCount_.begin(), bgBorderCount_.end(), 0);
-    std::fill(tileBorderCount_.begin(), tileBorderCount_.end(), 0);
     for (int i = 0; i < w_ * h_; i++) {
         int x = i % w_, y = h_ - 1 - i / w_;
         slots_[y * w_ + x] = next[i];
-        STileDef* s = stile(next[i]);
-        s->x = x;
-        s->y = y;
-        s->posX = (float)x;
-        s->posY = (float)y;
-        s->collidersOff = 0;
+        TileState* t = tileMut(next[i]);
+        t->x = x;
+        t->y = y;
     }
-    rebuildWalls();
+    clearMotion();
     return true;
 }
 
 bool Grid::checkTarget() const {
-    const std::string have = gridString(true);
-    std::string want;
-    for (char c : area_->targetGrid) if (c != '_') want += c;
-    std::string flat;
-    for (char c : have) if (c != '_') flat += c;
-    if (flat.size() != want.size()) return false;
+    std::string have, want;
+    for (char c : gridString(true))
+        if (c != '_') have += c;
+    for (char c : targetGrid_)
+        if (c != '_') want += c;
+    if (have.size() != want.size()) return false;
     for (size_t i = 0; i < want.size(); i++)
-        if (want[i] != '*' && want[i] != flat[i]) return false;
+        if (want[i] != '*' && want[i] != have[i]) return false;
     return true;
 }
 
 void Grid::setTileActive(int islandId, bool active) {
-    if (STileDef* s = stile(islandId)) s->active = active;
+    if (TileState* t = tileMut(islandId)) t->active = active;
 }
 
 void Grid::startMove(const SMove& move, int playerStile, int id) {
@@ -282,7 +297,7 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
         for (const auto& p : move.positions()) {
             int tid = idAt(p.first, p.second);
             if (tid != playerStile) {
-                stile(tid)->collidersOff++;
+                tileMut(tid)->collidersOff++;
                 am.collidersOff.push_back(tid);
             }
         }
@@ -292,17 +307,17 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
     std::vector<int> next = slots_;
     for (const Movement& m : move.moves) {
         int tid = idAt(m.sx, m.sy);
-        STileDef* s = stile(tid);
+        TileState* t = tileMut(tid);
         next[m.ey * w_ + m.ex] = tid;
-        s->x = m.ex;
-        s->y = m.ey;
-        if (s->active) {
+        t->x = m.ex;
+        t->y = m.ey;
+        if (t->active) {
             bool on = tid == playerStile;
-            if (on) tileBorderCount_[tid]++;
+            if (on) tileBorderCount_[tileIndex_[tid]]++;
             anims_.push_back({id, tid, (float)m.sx, (float)m.sy, (float)m.ex, (float)m.ey, 0.0f, duration, on});
         } else {
-            s->posX = (float)m.ex; // empty slots jump straight to their new place
-            s->posY = (float)m.ey;
+            t->posX = (float)m.ex; // empty slots jump straight to their new place
+            t->posY = (float)m.ey;
         }
     }
     slots_ = next;
@@ -312,33 +327,37 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
 
 std::vector<int> Grid::update(float dt) {
     std::vector<int> finished;
-    if (anims_.empty()) return finished;
+    if (active_.empty()) return finished;
     for (Anim& a : anims_) {
-        STileDef* s = stile(a.islandId);
+        TileState* t = tileMut(a.islandId);
         a.t += dt;
         float k = slideCurve(std::min(a.t / a.duration, 1.0f));
-        s->posX = a.sx + (a.ex - a.sx) * k;
-        s->posY = a.sy + (a.ey - a.sy) * k;
+        t->posX = a.sx + (a.ex - a.sx) * k;
+        t->posY = a.sy + (a.ey - a.sy) * k;
         if (a.t >= a.duration) {
-            s->posX = a.ex;
-            s->posY = a.ey;
-            if (a.playerOn) tileBorderCount_[a.islandId]--;
+            t->posX = a.ex;
+            t->posY = a.ey;
+            if (a.playerOn) tileBorderCount_[tileIndex_[a.islandId]]--;
         }
     }
     anims_.erase(std::remove_if(anims_.begin(), anims_.end(), [](const Anim& a) { return a.t >= a.duration; }),
                  anims_.end());
 
-    // A move ends once all its tiles have arrived: drop its fences, restore colliders.
+    // A move ends once all its tiles have arrived (at once if it moved none): drop its fences,
+    // restore colliders.
     for (size_t i = 0; i < active_.size();) {
         const ActiveMove& am = active_[i];
         bool running = std::any_of(anims_.begin(), anims_.end(), [&](const Anim& a) { return a.moveId == am.id; });
-        if (running) { i++; continue; }
+        if (running) {
+            i++;
+            continue;
+        }
         for (const SMove::Border& b : am.borders)
             if (b.x >= 0 && b.x < w_ && b.y >= 0 && b.y < h_) {
                 int& c = bgBorderCount_[(b.y * w_ + b.x) * 4 + b.side];
                 c = std::max(0, c - 1);
             }
-        for (int tid : am.collidersOff) stile(tid)->collidersOff--;
+        for (int tid : am.collidersOff) tileMut(tid)->collidersOff--;
         finished.push_back(am.id);
         active_.erase(active_.begin() + i);
     }
@@ -348,35 +367,34 @@ std::vector<int> Grid::update(float dt) {
 
 int Grid::stileUnder(float x, float y, int current) const {
     int best = 0;
-    for (const STileDef& s : area_->stiles) {
-        if (!s.active) continue;
-        const float cx = s.posX * s.width, cy = s.posY * s.width, half = s.width * 0.5f;
-        const float hy = cy + area_->housingOffset;
+    const float half = tileWidth_ * 0.5f;
+    for (const TileState& t : tiles_) {
+        if (!t.active) continue;
+        const float cx = t.posX * tileWidth_, cy = t.posY * tileWidth_, hy = cy + housingOffset_;
         bool in = cx - half <= x && x < cx + half &&
                   ((cy - half <= y && y < cy + half) || (hy - half <= y && y < hy + half));
         if (!in) continue;
-        if (s.islandId == current) return current;
-        if (best == 0 || s.islandId < best) best = s.islandId;
+        if (t.islandId == current) return current;
+        if (best == 0 || t.islandId < best) best = t.islandId;
     }
     return best;
 }
 
 void Grid::rebuildWalls() {
-    std::vector<Wall>& walls = area_->borderWalls;
-    walls.clear();
+    walls_.clear();
     // Side i of a square centered on (cx, cy), half-size h, in the world and in its house copy.
     auto addSide = [&](float cx, float cy, float h, int side) {
         const float c[4][4] = {{h, -h, h, h}, {-h, h, h, h}, {-h, -h, -h, h}, {-h, -h, h, -h}};
-        for (float oy : {0.0f, (float)area_->housingOffset})
-            walls.push_back({cx + c[side][0], cy + oy + c[side][1], cx + c[side][2], cy + oy + c[side][3]});
+        for (float oy : {0.0f, (float)housingOffset_})
+            walls_.push_back({cx + c[side][0], cy + oy + c[side][1], cx + c[side][2], cy + oy + c[side][3]});
     };
-    const float width = area_->stiles.empty() ? 17.0f : (float)area_->stiles[0].width;
+    const float width = (float)tileWidth_, half = width * 0.5f;
     for (int i = 0; i < w_ * h_ * 4; i++)
         if (bgBorderCount_[i] > 0) {
             int slot = i / 4;
-            addSide((slot % w_) * width, (slot / w_) * width, width * 0.5f, i % 4);
+            addSide((slot % w_) * width, (slot / w_) * width, half, i % 4);
         }
-    for (const STileDef& s : area_->stiles)
-        if (s.islandId < (int)tileBorderCount_.size() && tileBorderCount_[s.islandId] > 0)
-            for (int side = 0; side < 4; side++) addSide(s.posX * s.width, s.posY * s.width, s.width * 0.5f, side);
+    for (size_t i = 0; i < tiles_.size(); i++)
+        if (tileBorderCount_[i] > 0)
+            for (int side = 0; side < 4; side++) addSide(tiles_[i].posX * width, tiles_[i].posY * width, half, side);
 }

@@ -24,7 +24,7 @@ void AreaView::unloadSheets() {
     sheets_.clear();
 }
 
-void AreaView::draw(const Area& area, float camX, float camY, int screenW, int screenH, float time,
+void AreaView::draw(const Area& area, const Grid& grid, float camX, float camY, int screenW, int screenH, float time,
                     bool showInactiveTiles) {
     const float ppu = (float)area.ppu;
     // Snap the camera to whole pixels so tiles stay pixel-aligned.
@@ -35,12 +35,9 @@ void AreaView::draw(const Area& area, float camX, float camY, int screenW, int s
 
     for (const TileLayer& L : area.layers) {
         if (!L.active) continue;
-        if (L.owner != 0) {
-            const STileDef* s = area.stile(L.owner);
-            if (!s || (!s->active && !showInactiveTiles)) continue;
-        }
+        if (L.owner != 0 && !grid.tileActive(L.owner) && !showInactiveTiles) continue;
         float baseX, baseY;
-        area.ownerBase(L.owner, baseX, baseY);
+        grid.ownerBase(L.owner, baseX, baseY);
         // World position of cell (0,0)'s min corner.
         const float ox = baseX + L.originX + L.minX, oy = baseY + L.originY + L.minY;
 

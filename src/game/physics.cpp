@@ -36,61 +36,62 @@ bool pointInPolygon(float x, float y, const float* pts, size_t n, float ox, floa
     return inside;
 }
 
-// Segment vs polygon offset by (ox, oy).
-bool segmentHitsPolygon(float x, float y, float dx, float dy, const Polygon& poly, float ox, float oy) {
-    const size_t n = poly.size() / 2;
+
+// Segment vs polygon (n points, flat x,y pairs) offset by (ox, oy).
+bool segmentHitsPolygon(float x, float y, float dx, float dy, const float* pts, size_t n, float ox, float oy) {
     if (n < 3) return false;
-    if (pointInPolygon(x, y, poly.data(), n, ox, oy)) return true;
+    if (pointInPolygon(x, y, pts, n, ox, oy)) return true;
     for (size_t i = 0, j = n - 1; i < n; j = i++)
-        if (segmentsIntersect(x, y, dx, dy, poly[2 * j] + ox, poly[2 * j + 1] + oy, poly[2 * i] + ox, poly[2 * i + 1] + oy))
+        if (segmentsIntersect(x, y, dx, dy, pts[2 * j] + ox, pts[2 * j + 1] + oy, pts[2 * i] + ox, pts[2 * i + 1] + oy))
             return true;
     return false;
 }
 
 bool segmentHitsBox(float x, float y, float dx, float dy, float minX, float minY, float maxX, float maxY) {
-    const Polygon box = {minX, minY, maxX, minY, maxX, maxY, minX, maxY};
-    return segmentHitsPolygon(x, y, dx, dy, box, 0, 0);
+    const float box[8] = {minX, minY, maxX, minY, maxX, maxY, minX, maxY};
+    return segmentHitsPolygon(x, y, dx, dy, box, 4, 0, 0);
 }
 
-bool layerEnabled(const Area& area, const CollisionLayer& L, bool onWater) {
+bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
     switch (L.mode) {
     case CollisionMode::OnFoot: if (onWater) return false; break;
     case CollisionMode::OnWater: if (!onWater) return false; break;
     case CollisionMode::Always: if (!L.active) return false; break;
     }
+    if (L.owner == 0) return true;
     // An inactive STile's tilemaps (colliders included) are switched off, and so are a tile's
     // colliders while it slides in a move the player isn't riding.
-    const STileDef* s = L.owner != 0 ? area.stile(L.owner) : nullptr;
-    return L.owner == 0 || (s && s->active && s->collidersOff <= 0);
+    const TileState* t = grid.tile(L.owner);
+    return t && t->active && t->collidersOff <= 0;
 }
 
 } // namespace
 
-bool segmentBlocked(const Area& area, float x, float y, float dx, float dy, bool onWater) {
-    return !segmentBlockedBy(area, x, y, dx, dy, onWater).empty();
-}
-
-std::string segmentBlockedBy(const Area& area, float x, float y, float dx, float dy, bool onWater) {
+Blocker segmentBlocker(const Area& area, const Grid& grid, float x, float y, float dx, float dy, bool onWater) {
     // Edge colliders fencing a slide in progress.
-    for (const Wall& w : area.borderWalls)
-        if (segmentsIntersect(x, y, dx, dy, w.x0, w.y0, w.x1, w.y1)) return "slide border";
+    const std::vector<Wall>& walls = grid.walls();
+    for (size_t i = 0; i < walls.size(); i++) {
+        const Wall& w = walls[i];
+        if (segmentsIntersect(x, y, dx, dy, w.x0, w.y0, w.x1, w.y1)) return {Blocker::Wall, (int)i};
+    }
 
     // Inactive STiles: STile.SetTileActive makes their slider colliders solid, blocking the slot
     // and the house interior below it.
-    for (const STileDef& s : area.stiles) {
-        if (s.active || s.collidersOff > 0) continue;
-        const float cx = s.posX * s.width, cy = s.posY * s.width, half = s.width * 0.5f;
-        const float hy = cy + area.housingOffset;
+    const float half = grid.tileWidth() * 0.5f;
+    for (const TileState& t : grid.tiles()) {
+        if (t.active || t.collidersOff > 0) continue;
+        const float cx = t.posX * grid.tileWidth(), cy = t.posY * grid.tileWidth();
+        const float hy = cy + grid.housingOffset();
         if (segmentHitsBox(x, y, dx, dy, cx - half, cy - half, cx + half, cy + half) ||
             segmentHitsBox(x, y, dx, dy, cx - half, hy - half, cx + half, hy + half))
-            return "inactive STile " + std::to_string(s.islandId);
+            return {Blocker::InactiveTile, t.islandId};
     }
 
-
-    for (const CollisionLayer& L : area.collision) {
-        if (!layerEnabled(area, L, onWater)) continue;
+    for (size_t li = 0; li < area.collision.size(); li++) {
+        const CollisionLayer& L = area.collision[li];
+        if (!layerEnabled(grid, L, onWater)) continue;
         float bx, by;
-        area.ownerBase(L.owner, bx, by);
+        grid.ownerBase(L.owner, bx, by);
         // Segment in this layer's cell space: cell (cx, cy)'s min corner sits at (ox + cx, oy + cy).
         const float ox = bx + L.originX + L.minX, oy = by + L.originY + L.minY;
         const float lx = x - ox, ly = y - oy;
@@ -103,18 +104,32 @@ std::string segmentBlockedBy(const Area& area, float x, float y, float dx, float
                 int s = L.cell(cx, cy);
                 if (s < 0) continue;
                 for (const Polygon& poly : area.shapes[s])
-                    if (segmentHitsPolygon(lx, ly, dx, dy, poly, (float)cx, (float)cy))
-                        return (L.owner ? "STile " + std::to_string(L.owner) + " " : std::string()) + L.path;
+                    if (segmentHitsPolygon(lx, ly, dx, dy, poly.data(), poly.size() / 2, (float)cx, (float)cy))
+                        return {Blocker::Layer, (int)li};
             }
         }
+    }
+    return {};
+}
+
+std::string describe(const Area& area, const Blocker& b) {
+    switch (b.kind) {
+    case Blocker::None: return "";
+    case Blocker::Wall: return "slide border";
+    case Blocker::InactiveTile: return "inactive STile " + std::to_string(b.index);
+    case Blocker::Layer: {
+        const CollisionLayer& L = area.collision[b.index];
+        return (L.owner ? "STile " + std::to_string(L.owner) + " " : std::string()) + L.path;
+    }
     }
     return "";
 }
 
-bool moveWithCollision(const Area& area, float& x, float& y, float dx, float dy, bool onWater) {
+bool moveWithCollision(const Area& area, const Grid& grid, float& x, float& y, float dx, float dy, bool onWater) {
     if (dx == 0 && dy == 0) return false;
-    if (!segmentBlocked(area, x, y, dx, dy, onWater)) {
-        x += dx; y += dy;
+    if (!segmentBlocked(area, grid, x, y, dx, dy, onWater)) {
+        x += dx;
+        y += dy;
         return true;
     }
     // Like the original, the single-axis fallbacks move the full step length along that axis,
@@ -122,14 +137,14 @@ bool moveWithCollision(const Area& area, float& x, float& y, float dx, float dy,
     const float step = std::sqrt(dx * dx + dy * dy);
     if (dx != 0) {
         float sx = dx > 0 ? step : -step;
-        if (!segmentBlocked(area, x, y, sx, 0, onWater)) {
+        if (!segmentBlocked(area, grid, x, y, sx, 0, onWater)) {
             x += sx;
             return true;
         }
     }
     if (dy != 0) {
         float sy = dy > 0 ? step : -step;
-        if (!segmentBlocked(area, x, y, 0, sy, onWater)) {
+        if (!segmentBlocked(area, grid, x, y, 0, sy, onWater)) {
             y += sy;
             return true;
         }

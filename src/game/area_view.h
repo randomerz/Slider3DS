@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "game/area.h"
+#include "game/grid.h"
 
 namespace plat { struct Texture; }
 
@@ -14,7 +15,7 @@ public:
 
     // Draws the layers visible around world point (camX, camY), which lands at the screen center.
     // `time` (seconds) drives animated tiles. Inactive STiles are drawn when showInactiveTiles.
-    void draw(const Area& area, float camX, float camY, int screenW, int screenH, float time,
+    void draw(const Area& area, const Grid& grid, float camX, float camY, int screenW, int screenH, float time,
               bool showInactiveTiles);
 
     int lastSpriteCount() const { return spriteCount_; }

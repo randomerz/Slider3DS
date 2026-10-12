@@ -34,13 +34,13 @@ constexpr Hitbox HITBOX_FOOT = {12, 12, -1};
 constexpr Hitbox HITBOX_BOAT = {24, 12, -6};
 
 // Nearest collision-free point to (x, y), searching outward in half-unit rings.
-bool findFreeNear(const Area& area, float& x, float& y) {
+bool findFreeNear(const Area& area, const Grid& grid, float& x, float& y) {
     for (int r = 0; r <= 16; r++) {
         for (int i = -r; i <= r; i++) {
             for (int j = -r; j <= r; j++) {
                 if (std::abs(i) != r && std::abs(j) != r) continue; // ring only
                 float tx = x + i * 0.5f, ty = y + j * 0.5f;
-                if (!segmentBlocked(area, tx, ty, 0, 0, false)) {
+                if (!segmentBlocked(area, grid, tx, ty, 0, 0, false)) {
                     x = tx;
                     y = ty;
                     return true;
@@ -51,9 +51,9 @@ bool findFreeNear(const Area& area, float& x, float& y) {
     return false;
 }
 
-void placeAtSpawn(const Area& area, const Spawn& s, float& x, float& y, bool& onWater) {
+void placeAtSpawn(const Grid& grid, const Spawn& s, float& x, float& y, bool& onWater) {
     float bx, by;
-    area.ownerBase(s.owner, bx, by);
+    grid.ownerBase(s.owner, bx, by);
     x = bx + s.x;
     y = by + s.y;
     onWater = s.inBoat;
@@ -82,12 +82,12 @@ int main(int, char**) {
     if (loaded && !area.spawns.empty()) {
         for (size_t i = 0; i < area.spawns.size(); i++)
             if (area.spawns[i].name == "Default") spawnIndex = i;
-        placeAtSpawn(area, area.spawns[spawnIndex], px, py, onWater);
+        placeAtSpawn(grid, area.spawns[spawnIndex], px, py, onWater);
     }
     if (loaded && DEV_START_OUTSIDE) {
-        area.ownerBase(1, px, py); // tile 1's center, outdoors
+        grid.ownerBase(1, px, py); // tile 1's center, outdoors
         onWater = false;
-        findFreeNear(area, px, py);
+        findFreeNear(area, grid, px, py);
     }
     int playerStile = loaded ? grid.stileUnder(px, py) : 0;
     int frame = 0;
@@ -100,7 +100,7 @@ int main(int, char**) {
         if (loaded && !area.spawns.empty() && (in.pressed & (plat::BTN_L | plat::BTN_R))) {
             size_t n = area.spawns.size();
             spawnIndex = (in.pressed & plat::BTN_R) ? (spawnIndex + 1) % n : (spawnIndex + n - 1) % n;
-            placeAtSpawn(area, area.spawns[spawnIndex], px, py, onWater);
+            placeAtSpawn(grid, area.spawns[spawnIndex], px, py, onWater);
             printf("Spawn: %s\n", area.spawns[spawnIndex].name.c_str());
         }
 
@@ -112,30 +112,27 @@ int main(int, char**) {
             printf("Tiles 2-8 %s; grid %s\n", debugCollected ? "collected" : "removed", grid.gridString().c_str());
         }
         if (loaded && sliding && playerStile != 0) {
-            const STileDef* s = area.stile(playerStile);
             int dx = (in.pressed & plat::BTN_RIGHT) ? 1 : (in.pressed & plat::BTN_LEFT) ? -1 : 0;
             int dy = (in.pressed & plat::BTN_UP) ? 1 : (in.pressed & plat::BTN_DOWN) ? -1 : 0;
             if ((dx != 0) != (dy != 0)) {
                 // The Artifact's view of where the tile is (it may still be queued to get there).
-                int bx = -1, by = -1;
-                for (int y = 0; y < grid.height(); y++)
-                    for (int x = 0; x < grid.width(); x++)
-                        if (artifact.buttonAt(x, y) == s->islandId) { bx = x; by = y; }
+                int bx = 0, by = 0;
+                artifact.findButton(playerStile, bx, by);
                 bool ok = artifact.tryMove(grid, bx, by, bx + dx, by + dy, playerStile);
-                printf("Slide tile %d (%d,%d)->(%d,%d): %s; artifact %s\n", s->islandId, bx, by, bx + dx, by + dy,
-                       ok ? "queued" : "refused", artifact.gridString(area).c_str());
+                printf("Slide tile %d (%d,%d)->(%d,%d): %s; artifact %s\n", playerStile, bx, by, bx + dx, by + dy,
+                       ok ? "queued" : "refused", artifact.gridString(grid).c_str());
             }
         }
 
         // Tiles slide; the player is parented to the tile underneath and rides along.
         if (loaded) {
             playerStile = grid.stileUnder(px, py, playerStile);
-            const STileDef* s = playerStile ? area.stile(playerStile) : nullptr;
-            float ox = s ? s->posX : 0, oy = s ? s->posY : 0;
+            const TileState* t = grid.tile(playerStile);
+            float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
             artifact.update(grid, FRAME_DT, playerStile);
-            if (s) {
-                px += (s->posX - ox) * s->width;
-                py += (s->posY - oy) * s->width;
+            if (t) {
+                px += (t->posX - ox) * grid.tileWidth();
+                py += (t->posY - oy) * grid.tileWidth();
             }
         }
 
@@ -150,14 +147,14 @@ int main(int, char**) {
             float len = std::sqrt(ix * ix + iy * iy);
             float dx = ix / len * MOVE_SPEED * FRAME_DT, dy = iy / len * MOVE_SPEED * FRAME_DT;
             if (noclip) { px += dx; py += dy; }
-            else moveWithCollision(area, px, py, dx, dy, onWater);
+            else moveWithCollision(area, grid, px, py, dx, dy, onWater);
         }
 
         plat::beginFrame();
 
         plat::beginScreen(plat::Screen::Top, plat::rgba(0x14, 0x14, 0x1c));
         if (loaded) {
-            view.draw(area, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
+            view.draw(area, grid, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
             // Placeholder player: its collider box, centered on screen (the camera follows it),
             // with the position point in white.
             const Hitbox& hb = onWater ? HITBOX_BOAT : HITBOX_FOOT;
@@ -174,7 +171,7 @@ int main(int, char**) {
             // 3x3 grid map: each slot 60px, row 0 at the bottom; tiles at their animated positions.
             const int cell = 60, gx = (plat::BOTTOM_W - cell * area.gridW) / 2, gy = 30;
             for (int pass = 0; pass < 2; pass++)  // empty slots first, so sliding tiles draw over them
-            for (const STileDef& s : area.stiles) {
+            for (const TileState& s : grid.tiles()) {
                 if (s.active != (pass == 1)) continue;
                 float x = gx + s.posX * cell, y = gy + (area.gridH - 1 - s.posY) * cell;
                 if (s.islandId == playerStile)
@@ -185,7 +182,7 @@ int main(int, char**) {
                 for (int i = 0; i < s.islandId; i++)
                     plat::drawRect(x + 8 + (i % 3) * 7, y + 8 + (i / 3) * 7, 4, 4, plat::rgba(0x30, 0x30, 0x38));
             }
-            const float w = (float)area.stiles[0].width;
+            const float w = (float)grid.tileWidth();
             // Inside a house the player is housingOffset below the grid; show the slot it's under.
             float mapY = py < area.housingOffset / 2.0f ? py - area.housingOffset : py;
             float mx = gx + (px / w + 0.5f) * cell;

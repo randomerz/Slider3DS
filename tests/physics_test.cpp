@@ -1,97 +1,124 @@
-// Headless checks against the real exported Village (PC only): collision here, grid in grid_test.cpp.
-// Run: build-pc/Debug/slider3ds_tests.exe   (exit code 0 = all passed)
+// Collision against the real exported Village. Every "blocked" check has a matching "free"
+// control, so a world that turned fully solid (or fully open) fails.
 #include <cmath>
-#include <cstdio>
 #include <string>
 
 #include "game/area.h"
+#include "game/grid.h"
 #include "game/physics.h"
-
-void gridTests(const Area& area); // grid_test.cpp
-
-static int g_failures = 0;
-
-void check(bool ok, const std::string& what) {
-    printf("%s  %s\n", ok ? "PASS" : "FAIL", what.c_str());
-    if (!ok) g_failures++;
-}
+#include "test.h"
 
 namespace {
 
-void spawnPos(const Area& area, const Spawn& s, float& x, float& y) {
-    area.ownerBase(s.owner, x, y);
+void spawnPos(const Grid& grid, const Spawn& s, float& x, float& y) {
+    grid.ownerBase(s.owner, x, y);
     x += s.x;
     y += s.y;
 }
 
+// Walks from (x, y) in steps of (dx, dy) until blocked (max 600 frames); returns frames moved.
+int walk(const Area& area, const Grid& grid, float& x, float& y, float dx, float dy, bool onWater) {
+    int frames = 0;
+    while (frames < 600 && moveWithCollision(area, grid, x, y, dx, dy, onWater)) frames++;
+    return frames;
+}
+
 } // namespace
 
-int main(int, char**) {
-    Area area;
-    std::string error;
-    if (!loadArea("village/village.json", area, &error)) {
-        printf("FAIL  load: %s\n", error.c_str());
-        return 1;
-    }
-    check(!area.collision.empty() && !area.shapes.empty(), "collision layers loaded");
-
-    // No spawn starts inside solid collision (the player would be stuck). Spawns on tiles that
-    // aren't collected yet (e.g. VillageWaterfall on tile 6) are only used once they are, so
-    // check with every tile active.
-    Area allActive = area;
-    for (STileDef& t : allActive.stiles) t.active = true;
-    for (const Spawn& s : allActive.spawns) {
+TEST(physics_spawns_start_free) {
+    // Spawns on tiles that aren't collected yet (e.g. VillageWaterfall on tile 6) are only used
+    // once they are, so check with every tile active.
+    const Area& area = village();
+    Grid grid;
+    grid.init(area);
+    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    check(area.spawns.size() >= 4, "has spawns");
+    for (const Spawn& s : area.spawns) {
         float x, y;
-        spawnPos(allActive, s, x, y);
-        std::string by = segmentBlockedBy(allActive, x, y, 0, 0, s.inBoat);
-        check(by.empty(), "spawn " + s.name + " starts free" + (by.empty() ? "" : " (blocked by " + by + ")"));
+        spawnPos(grid, s, x, y);
+        Blocker b = segmentBlocker(area, grid, x, y, 0, 0, s.inBoat);
+        check(!b, "spawn " + s.name + " starts free (blocked by " + describe(area, b) + ")");
     }
+}
 
-    // From the Default spawn (inside a house), walking any direction is eventually stopped by a
-    // wall, and stepping never jumps through one: each step's segment was checked clear.
+TEST(physics_house_walls_stop_the_player) {
+    // From the Default spawn (inside tile 1's house) the player can walk some way in every
+    // direction, and is always stopped by a wall before leaving the house.
+    const Area& area = village();
+    Grid grid;
+    grid.init(area);
     const Spawn* def = area.spawn("Default");
     check(def != nullptr, "Default spawn exists");
-    if (def) {
-        const float step = 5.0f / 60.0f;
-        const float dirs[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-        const char* names[4] = {"right", "left", "up", "down"};
-        for (int d = 0; d < 4; d++) {
-            float x, y;
-            spawnPos(area, *def, x, y);
-            const float sx = x, sy = y;
-            int frames = 0;
-            while (frames < 600 && moveWithCollision(area, x, y, dirs[d][0] * step, dirs[d][1] * step, false))
-                frames++;
-            float dist = std::fabs(x - sx) + std::fabs(y - sy);
-            check(frames < 600 && dist < 17.0f,
-                  std::string("walk ") + names[d] + " from Default stops at a wall inside the house (" +
-                      std::to_string(dist) + " units)");
-        }
-    }
-
-    // Inactive STiles are solid: walking into tile 9's slot (center 17,17, inactive at start) from
-    // tile 1 (active, center 0,0) must be blocked at the slot edge.
-    const STileDef* t9 = area.stile(9);
-    if (t9 && !t9->active) {
-        float edge = t9->x * t9->width - t9->width * 0.5f; // left edge of tile 9's slot
-        check(segmentBlocked(area, edge - 0.25f, 17.0f, 0.5f, 0.0f, false), "inactive tile 9's slot is solid");
-    }
-
-    // On water the land colliders apply: sailing west from the Beach spawn (on the ocean) stops
-    // at the coast instead of crossing onto land.
-    if (const Spawn* beach = area.spawn("VillageBeach")) {
+    if (!def) return;
+    const float step = 5.0f / 60.0f;
+    const float dirs[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    const char* names[4] = {"right", "left", "up", "down"};
+    for (int d = 0; d < 4; d++) {
         float x, y;
-        spawnPos(area, *beach, x, y);
-        const float startX = x;
-        int frames = 0;
-        while (frames < 600 && moveWithCollision(area, x, y, -5.0f / 60.0f, 0, true)) frames++;
-        std::string by = segmentBlockedBy(area, x, y, -5.0f / 60.0f, 0, true);
-        check(frames < 600, "raft sailing west from Beach stops after " + std::to_string(startX - x) +
-                                " units (at x=" + std::to_string(x) + ", blocked by " + by + ")");
+        spawnPos(grid, *def, x, y);
+        const float sx = x, sy = y;
+        int frames = walk(area, grid, x, y, dirs[d][0] * step, dirs[d][1] * step, false);
+        float dist = std::fabs(x - sx) + std::fabs(y - sy);
+        check(frames < 600 && dist > 1.0f && dist < 17.0f,
+              std::string("walk ") + names[d] + " from Default moves, then stops at a house wall (" +
+                  std::to_string(dist) + " units)");
     }
+}
 
-    gridTests(area);
+TEST(physics_inactive_tile_is_solid) {
+    // Walking from tile 8's slot (center 0,17, collected here) into tile 9's slot (center 17,17):
+    // the slot's left edge blocks while tile 9 is uncollected, and the tile itself does not once it is.
+    const Area& area = village();
+    Grid grid;
+    grid.init(area);
+    grid.setTileActive(8, true);
+    const TileState* t9 = grid.tile(9);
+    check(t9 && !t9->active, "tile 9 exists and starts inactive");
+    if (!t9) return;
+    const float edge = t9->posX * grid.tileWidth() - grid.tileWidth() * 0.5f;
+    Blocker b = segmentBlocker(area, grid, edge - 0.25f, 17.0f, 0.5f, 0.0f, false);
+    check(b.kind == Blocker::InactiveTile && b.index == 9, "inactive tile 9 blocks (" + describe(area, b) + ")");
+    grid.setTileActive(9, true);
+    b = segmentBlocker(area, grid, edge - 0.25f, 17.0f, 0.5f, 0.0f, false);
+    check(b.kind != Blocker::InactiveTile, "collected tile 9 no longer blocks as a slot (" + describe(area, b) + ")");
+}
 
-    printf("%s (%d failure%s)\n", g_failures ? "FAILED" : "OK", g_failures, g_failures == 1 ? "" : "s");
-    return g_failures ? 1 : 0;
+TEST(physics_raft_stops_at_the_coast) {
+    // On water the land colliders apply: sailing west from the Beach spawn (on the ocean) moves,
+    // then stops at the coast instead of crossing onto land. On foot the same path is open water.
+    const Area& area = village();
+    Grid grid;
+    grid.init(area);
+    const Spawn* beach = area.spawn("VillageBeach");
+    check(beach != nullptr, "VillageBeach spawn exists");
+    if (!beach) return;
+    float x, y;
+    spawnPos(grid, *beach, x, y);
+    const float startX = x;
+    int frames = walk(area, grid, x, y, -5.0f / 60.0f, 0, true);
+    Blocker b = segmentBlocker(area, grid, x, y, -5.0f / 60.0f, 0, true);
+    check(frames > 6 && frames < 600 && b.kind == Blocker::Layer,
+          "raft sails west " + std::to_string(startX - x) + " units, then is blocked by " + describe(area, b));
+    float fx, fy;
+    spawnPos(grid, *beach, fx, fy);
+    check(!segmentBlocked(area, grid, fx, fy, 0, 0, false), "the Beach spawn point itself is not solid on foot");
+}
+
+TEST(physics_slide_fences_block_in_world_and_house) {
+    const Area& area = village();
+    Grid grid;
+    grid.init(area);
+    // Everything collected except 9 (the empty slot, middle), then slide tile 7 (2,1) left into it.
+    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    grid.setTileActive(9, false);
+    Blocker before = segmentBlocker(area, grid, 25.0f, 7.0f, 0.0f, 3.0f, false);
+    grid.startMove(SMove::swap(2, 1, 1, 1, 7, 9), 0, 1);
+    // The move covers slots (1,1) and (2,1); their bottom edge is at y = 8.5.
+    Blocker world = segmentBlocker(area, grid, 25.0f, 7.0f, 0.0f, 3.0f, false);
+    Blocker house = segmentBlocker(area, grid, 25.0f, 7.0f + grid.housingOffset(), 0.0f, 3.0f, false);
+    check(before.kind != Blocker::Wall, "no fence before the slide (" + describe(area, before) + ")");
+    check(world.kind == Blocker::Wall, "fence blocks entering the slide (" + describe(area, world) + ")");
+    check(house.kind == Blocker::Wall, "fence blocks in the house copy too (" + describe(area, house) + ")");
+    while (grid.moving()) grid.update(1.0f / 60.0f);
+    check(grid.walls().empty(), "fences drop when the slide ends");
 }

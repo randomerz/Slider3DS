@@ -17,15 +17,43 @@ const Spawn* Area::spawn(const char* name) const {
     return nullptr;
 }
 
-void Area::ownerBase(int owner, float& x, float& y) const {
-    const STileDef* s = owner != 0 ? stile(owner) : nullptr;
-    x = s ? s->posX * s->width : 0.0f;
-    y = s ? s->posY * s->width : 0.0f;
-}
-
 static bool fail(std::string* error, const std::string& msg) {
     if (error) *error = msg;
     return false;
+}
+
+static bool validate(const Area& a, std::string* error) {
+    if (a.gridW <= 0 || a.gridH <= 0 || (int)a.stiles.size() != a.gridW * a.gridH)
+        return fail(error, "grid: expected " + std::to_string(a.gridW * a.gridH) + " stiles");
+    std::vector<bool> slotUsed(a.gridW * a.gridH, false);
+    for (const STileDef& s : a.stiles) {
+        if (s.islandId <= 0 || s.width <= 0 || s.x < 0 || s.x >= a.gridW || s.y < 0 || s.y >= a.gridH ||
+            slotUsed[s.y * a.gridW + s.x])
+            return fail(error, "stile " + std::to_string(s.islandId) + ": bad id, width or slot");
+        slotUsed[s.y * a.gridW + s.x] = true;
+    }
+    auto ownerOk = [&](int owner) { return owner == 0 || a.stile(owner) != nullptr; };
+    for (const TileLayer& L : a.layers)
+        if (!ownerOk(L.owner)) return fail(error, "tilemap " + L.path + ": unknown owner STile");
+    for (const CollisionLayer& C : a.collision)
+        if (!ownerOk(C.owner)) return fail(error, "tilemap " + C.path + ": unknown owner STile");
+    for (const Spawn& sp : a.spawns)
+        if (!ownerOk(sp.owner)) return fail(error, "spawn " + sp.name + ": unknown owner STile");
+    for (const SpriteDef& sp : a.sprites)
+        if (sp.sheet < 0 || sp.sheet >= (int)a.sheetNames.size()) return fail(error, "sprite: bad sheet index");
+    for (const TileDef& t : a.tiles)
+        for (int f : t.frames)
+            if (f < 0 || f >= (int)a.sprites.size()) return fail(error, "tile: bad sprite index");
+    for (const TileLayer& L : a.layers) {
+        for (int16_t c : L.cells)
+            if (c < -1 || c >= (int)a.tiles.size()) return fail(error, "tilemap " + L.path + ": bad tile index");
+        if (!L.xform.empty() && L.xform.size() != L.cells.size())
+            return fail(error, "tilemap " + L.path + ": xform size mismatch");
+    }
+    for (const CollisionLayer& C : a.collision)
+        for (int16_t c : C.cells)
+            if (c < -1 || c >= (int)a.shapes.size()) return fail(error, "tilemap " + C.path + ": bad shape index");
+    return true;
 }
 
 bool loadArea(const char* path, Area& out, std::string* error) {
@@ -47,16 +75,9 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.targetGrid = doc["grid"]["targetGrid"].asString();
     out.housingOffset = doc["grid"]["housingOffset"].asInt();
 
-    for (const Json& s : doc["stiles"].items()) {
-        STileDef d{s["islandId"].asInt(), s["name"].asString(), s["x"].asInt(), s["y"].asInt(),
-                   s["width"].asInt(), s["isTileActive"].asBool()};
-        d.startX = d.x;
-        d.startY = d.y;
-        d.startActive = d.active;
-        d.posX = (float)d.x;
-        d.posY = (float)d.y;
-        out.stiles.push_back(std::move(d));
-    }
+    for (const Json& s : doc["stiles"].items())
+        out.stiles.push_back({s["islandId"].asInt(), s["name"].asString(), s["x"].asInt(), s["y"].asInt(),
+                              s["width"].asInt(), s["isTileActive"].asBool()});
 
     for (const Json& s : doc["spawns"].items())
         out.spawns.push_back({s["name"].asString(), s["owner"].asInt(), s["pos"].at(0).asFloat(),
@@ -136,6 +157,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
             return fail(error, "tilemap " + L.path + ": cell count mismatch");
         out.layers.push_back(std::move(L));
     }
+
+    if (!validate(out, error)) return false;
 
     // Unity draws by (sorting layer, order); stable keeps file order within equal keys.
     std::stable_sort(out.layers.begin(), out.layers.end(), [](const TileLayer& a, const TileLayer& b) {

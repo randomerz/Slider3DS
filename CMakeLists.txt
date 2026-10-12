@@ -29,15 +29,21 @@ FetchContent_Declare(SDL2_image
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE)
 FetchContent_MakeAvailable(SDL2_image)
 
-file(GLOB GAME_SOURCES CONFIGURE_DEPENDS src/*.cpp src/game/*.cpp)
+# Platform-free game code, shared by the game and the tests.
+file(GLOB GAME_SOURCES CONFIGURE_DEPENDS src/game/*.cpp)
+add_library(slider3ds_game STATIC ${GAME_SOURCES})
+target_include_directories(slider3ds_game PUBLIC src)
 
-add_executable(slider3ds ${GAME_SOURCES} src/platform/sdl/platform_sdl.cpp)
-target_include_directories(slider3ds PRIVATE src)
+file(GLOB APP_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+add_executable(slider3ds ${APP_SOURCES} src/platform/sdl/platform_sdl.cpp)
 target_compile_definitions(slider3ds PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets")
-target_link_libraries(slider3ds PRIVATE SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)
+target_link_libraries(slider3ds PRIVATE slider3ds_game SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)
 
-# Headless tests of game logic against the exported data (no window).
-add_executable(slider3ds_tests tests/physics_test.cpp tests/grid_test.cpp src/game/area.cpp src/game/json.cpp
-    src/game/physics.cpp src/game/grid.cpp src/game/artifact.cpp tests/test_platform.cpp)
-target_include_directories(slider3ds_tests PRIVATE src)
+# Headless tests against the exported data (tests/test_platform.cpp stands in for a backend).
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
+add_executable(slider3ds_tests ${TEST_SOURCES})
 target_compile_definitions(slider3ds_tests PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets")
+target_link_libraries(slider3ds_tests PRIVATE slider3ds_game)
+
+enable_testing()
+add_test(NAME slider3ds_tests COMMAND slider3ds_tests)

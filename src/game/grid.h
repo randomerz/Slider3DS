@@ -1,13 +1,29 @@
-// Sliding-tile grid: the runtime state of the Area's STiles, ported from SGrid / STile /
-// SMove / SGridAnimator. It writes tile positions into Area::stiles (logical slot x/y,
-// animated posX/posY, collider switches) and the temporary border walls into
-// Area::borderWalls, so rendering and physics just follow the Area.
+// Sliding-tile grid: the runtime state of an Area's STiles, ported from SGrid / STile /
+// SMove / SGridAnimator. Owns each tile's slot, animated position and collider switch, plus the
+// temporary border walls that fence a slide. Rendering and physics read it alongside the Area.
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "game/area.h"
+
+// Grid strings: "123_6##_4#5" = top row first, rows joined by '_', inactive tiles as '#'.
+char idToChar(int id); // Converter.IntToChar: 1-9, then A, B, ...
+int charToId(char c);
+template <class IdAt, class IsActive>
+std::string buildGridString(int w, int h, IdAt idAt, IsActive isActive, bool numsOnly = false) {
+    std::string s;
+    for (int y = h - 1; y >= 0; y--) {
+        for (int x = 0; x < w; x++) {
+            int id = idAt(x, y);
+            s += (numsOnly || isActive(id)) ? idToChar(id) : '#';
+        }
+        if (y != 0) s += '_';
+    }
+    return s;
+}
 
 // One tile (or empty slot) moving from start to end, in grid slots (SMove.cs Movement).
 struct Movement {
@@ -47,33 +63,53 @@ bool column(const std::string& gridString, const std::string& column);
 bool subgrid(const std::string& gridString, const std::string& subgrid); // TL TR BL BR
 }
 
+// Runtime state of one STile.
+struct TileState {
+    int islandId = 0;
+    int x = 0, y = 0;         // logical slot (updates the moment a move starts)
+    bool active = false;      // collected
+    float posX = 0, posY = 0; // drawn/physical position in slots; differs from x, y while sliding
+    int collidersOff = 0;     // > 0: colliders off (STile.SetSliderCollider, during others' moves)
+};
+
+// Temporary wall segment (world units): the edge colliders that fence a slide.
+struct Wall { float x0, y0, x1, y1; };
+
 class Grid {
 public:
-    // New-game state: tiles at their exported slots and active flags, nothing moving.
-    void init(Area& area);
+    // New-game state from the Area: tiles at their exported slots and active flags, nothing moving.
+    void init(const Area& area);
 
     int width() const { return w_; }
     int height() const { return h_; }
+    int tileWidth() const { return tileWidth_; }
+    int housingOffset() const { return housingOffset_; }
     // islandId of the tile in slot (x, y); every slot holds a tile (inactive = empty).
     int idAt(int x, int y) const { return slots_[y * w_ + x]; }
-    STileDef* stile(int islandId);
+    const TileState* tile(int islandId) const;
+    const std::vector<TileState>& tiles() const { return tiles_; }
+    bool tileActive(int islandId) const;
+    // World position of an owner's origin: an STile's animated center, or (0,0) for the world (0).
+    void ownerBase(int owner, float& x, float& y) const;
+    const std::vector<Wall>& walls() const { return walls_; }
 
-    // "123_6##_4#5": top row first, rows joined by '_', inactive tiles as '#' unless numsOnly.
+    // Grid string of the slots; inactive tiles as '#' unless numsOnly.
     std::string gridString(bool numsOnly = false) const;
     // Rearranges every tile at once (SGrid.SetGrid): `ids` in grid-string order (top row first),
-    // '_' ignored, '0' or '#' = the highest-numbered tile. Cancels motion. False if malformed.
+    // '_' ignored, '0' = the highest-numbered tile; each id exactly once. Cancels motion (use
+    // Artifact::setGrid to keep the Artifact in step). False, and no change, if malformed.
     bool setGrid(const std::string& ids);
-    bool checkTarget() const; // gridString(true) matches area.targetGrid ('*' = any)
+    bool checkTarget() const; // gridString(true) matches the area's targetGrid ('*' = any)
 
     void setTileActive(int islandId, bool active); // collecting a Slider enables its tile
 
     // Starts animating a move (SGrid.Move + SGridAnimator.Move). Logical slots update at once;
     // `playerStile` (0 = none) is the tile the player stands on, which keeps border walls
-    // around it while it moves. `id` tags the move for movesFinished().
+    // around it while it moves. `id` tags the move for update()'s finished list.
     void startMove(const SMove& move, int playerStile, int id);
     // Advances animations by dt seconds. Returns the ids of moves that finished this step.
     std::vector<int> update(float dt);
-    bool moving() const { return !anims_.empty(); }
+    bool moving() const { return !active_.empty(); }
 
     // The tile under a world point (SGrid.GetSTileUnderneath): active tiles whose slot square
     // (or house square below it) contains the point. Prefers `current`, else the lowest id. 0 = none.
@@ -93,13 +129,18 @@ private:
         std::vector<int> collidersOff; // tiles whose colliders are off until the move ends
     };
 
+    TileState* tileMut(int islandId);
+    void clearMotion();
     void rebuildWalls();
 
-    Area* area_ = nullptr;
-    int w_ = 0, h_ = 0;
+    int w_ = 0, h_ = 0, tileWidth_ = 17, housingOffset_ = 0;
+    std::string targetGrid_;
+    std::vector<TileState> tiles_;  // in export order
+    std::vector<int> tileIndex_;    // islandId -> index in tiles_, -1 = none
     std::vector<int> slots_;
     std::vector<Anim> anims_;
     std::vector<ActiveMove> active_;
-    std::vector<int> bgBorderCount_;    // per slot * 4 sides (SGridBackground counters)
-    std::vector<int> tileBorderCount_;  // per islandId (STile.SetBorderColliders counter)
+    std::vector<int> bgBorderCount_;   // per slot * 4 sides (SGridBackground counters)
+    std::vector<int> tileBorderCount_; // per tiles_ index (STile.SetBorderColliders counter)
+    std::vector<Wall> walls_;
 };
