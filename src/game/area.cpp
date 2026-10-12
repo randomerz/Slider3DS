@@ -39,6 +39,11 @@ static bool validate(const Area& a, std::string* error) {
         if (!ownerOk(C.owner)) return fail(error, "tilemap " + C.path + ": unknown owner STile");
     for (const Spawn& sp : a.spawns)
         if (!ownerOk(sp.owner)) return fail(error, "spawn " + sp.name + ": unknown owner STile");
+    for (const StaticSprite& st : a.statics) {
+        if (!ownerOk(st.owner)) return fail(error, "static sprite " + st.path + ": unknown owner STile");
+        if (st.sprite < 0 || st.sprite >= (int)a.sprites.size())
+            return fail(error, "static sprite " + st.path + ": bad sprite index");
+    }
     for (const SpriteDef& sp : a.sprites)
         if (sp.sheet < 0 || sp.sheet >= (int)a.sheetNames.size()) return fail(error, "sprite: bad sheet index");
     for (const TileDef& t : a.tiles)
@@ -78,6 +83,22 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& s : doc["stiles"].items())
         out.stiles.push_back({s["islandId"].asInt(), s["name"].asString(), s["x"].asInt(), s["y"].asInt(),
                               s["width"].asInt(), s["isTileActive"].asBool()});
+
+    for (int i = 0; i < 3; i++) out.background[i] = (uint8_t)doc["background"].at(i).asInt();
+
+    for (const Json& s : doc["staticSprites"].items()) {
+        StaticSprite st;
+        st.path = s["path"].asString();
+        st.owner = s["owner"].asInt();
+        st.sprite = s["sprite"].asInt(-1);
+        st.x = s["pos"].at(0).asFloat();
+        st.y = s["pos"].at(1).asFloat();
+        st.sortLayer = s["sortingLayerValue"].asInt();
+        st.order = s["order"].asInt();
+        st.flags = (uint32_t)s["flip"].asInt() & 3u; // bit0 X, bit1 Y = plat::FLIP_X | FLIP_Y
+        st.active = s["active"].asBool(true);
+        out.statics.push_back(std::move(st));
+    }
 
     for (const Json& s : doc["spawns"].items())
         out.spawns.push_back({s["name"].asString(), s["owner"].asInt(), s["pos"].at(0).asFloat(),
@@ -159,6 +180,13 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
 
     if (!validate(out, error)) return false;
+
+    // Unity's transparency sort for sprites: sorting layer, order, then (sort axis Y) higher y first.
+    std::stable_sort(out.statics.begin(), out.statics.end(), [](const StaticSprite& a, const StaticSprite& b) {
+        if (a.sortLayer != b.sortLayer) return a.sortLayer < b.sortLayer;
+        if (a.order != b.order) return a.order < b.order;
+        return a.y > b.y;
+    });
 
     // Unity draws by (sorting layer, order); stable keeps file order within equal keys.
     std::stable_sort(out.layers.begin(), out.layers.end(), [](const TileLayer& a, const TileLayer& b) {

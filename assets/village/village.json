@@ -82,6 +82,7 @@
       "isTileActive": false
     }
   ],
+  "background": [102,102,102],
   "spawns": [
     {
       "name": "Default",
@@ -106,6 +107,98 @@
       "owner": 6,
       "pos": [4.5,5.5],
       "inBoat": false
+    }
+  ],
+  "staticSprites": [
+    {
+      "path": "Map/BGFrame/Grid BGFrame (1)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [0,0],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (2)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [17,0],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (3)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [34,0],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (4)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [0,17],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (5)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [17,17],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (6)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [34,17],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (7)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [0,34],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (8)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [17,34],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
+    },
+    {
+      "path": "Map/BGFrame/Grid BGFrame (9)",
+      "owner": 0,
+      "sprite": 0,
+      "pos": [34,34],
+      "sortingLayerValue": 0,
+      "order": -99,
+      "flip": 0,
+      "active": true
     }
   ],
   "tilemaps": [
@@ -2823,60 +2916,56 @@
   "tiles": [
     {
       "name": "Grass2 (Flower)",
-      "frames": [0,1,2],
+      "frames": [1,2,3],
       "fps": 4
     },
     {
       "name": "Grass1",
-      "frames": [3,4],
+      "frames": [4,5],
       "fps": 4
     },
     {
       "name": "Grass4",
-      "frames": [5,6],
+      "frames": [6,7],
       "fps": 4
     },
     {
       "name": "Grass6",
-      "frames": [7,8],
+      "frames": [8,9],
       "fps": 4
     },
     {
       "name": "Grass5",
-      "frames": [9,10],
+      "frames": [10,11],
       "fps": 4
     },
     {
       "name": "rock_wall_12",
-      "frames": [11]
-    },
-    {
-      "name": "rock_wall_15",
       "frames": [12]
     },
     {
-      "name": "rock_wall_13",
+      "name": "rock_wall_15",
       "frames": [13]
     },
     {
-      "name": "rock_wall_2",
+      "name": "rock_wall_13",
       "frames": [14]
     },
     {
-      "name": "rock_wall_24",
+      "name": "rock_wall_2",
       "frames": [15]
     },
     {
+      "name": "rock_wall_24",
+      "frames": [16]
+    },
+    {
       "name": "Grass3",
-      "frames": [16,17],
+      "frames": [17,18],
       "fps": 4
     },
     {
       "name": "rock_wall_23",
-      "frames": [18]
-    },
-    {
-      "name": "WallRockCut",
       "frames": [19]
     },
     {
@@ -2888,35 +2977,35 @@
       "frames": [21]
     },
     {
-      "name": "rock_wall_21",
+      "name": "WallRockCut",
       "frames": [22]
     },
     {
-      "name": "rock_wall_17",
+      "name": "rock_wall_21",
       "frames": [23]
     },
     {
-      "name": "village_ruins_deco_10",
+      "name": "rock_wall_17",
       "frames": [24]
     },
     {
-      "name": "village_ruins_deco_8",
+      "name": "village_ruins_deco_10",
       "frames": [25]
     },
     {
-      "name": "rock_wall_4",
+      "name": "village_ruins_deco_8",
       "frames": [26]
     },
     {
-      "name": "rock_wall_11",
+      "name": "rock_wall_4",
       "frames": [27]
     },
     {
-      "name": "rock_wall_5",
+      "name": "rock_wall_11",
       "frames": [28]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_5",
       "frames": [29]
     },
     {
@@ -2940,15 +3029,15 @@
       "frames": [34]
     },
     {
-      "name": "village_ruins_deco_9",
+      "name": "Jungle Leaves",
       "frames": [35]
     },
     {
-      "name": "village_ruins_deco_1",
+      "name": "village_ruins_deco_9",
       "frames": [36]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "village_ruins_deco_1",
       "frames": [37]
     },
     {
@@ -2960,23 +3049,23 @@
       "frames": [39]
     },
     {
-      "name": "village_ruins_deco_3",
+      "name": "Jungle Leaves",
       "frames": [40]
     },
     {
-      "name": "village_ruins_deco_2",
+      "name": "village_ruins_deco_3",
       "frames": [41]
     },
     {
-      "name": "rock_wall_0",
+      "name": "village_ruins_deco_2",
       "frames": [42]
     },
     {
-      "name": "rock_wall_1",
+      "name": "rock_wall_0",
       "frames": [43]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_1",
       "frames": [44]
     },
     {
@@ -2984,36 +3073,36 @@
       "frames": [45]
     },
     {
-      "name": "village_ruins_deco_0",
+      "name": "Jungle Leaves",
       "frames": [46]
     },
     {
-      "name": "leaf_tiles_5",
+      "name": "village_ruins_deco_0",
       "frames": [47]
     },
     {
-      "name": "Ground_4",
+      "name": "leaf_tiles_5",
       "frames": [48]
     },
     {
-      "name": "sand-grass_transition_6",
+      "name": "Ground_4",
       "frames": [49]
     },
     {
-      "name": "DesertSand",
+      "name": "sand-grass_transition_6",
       "frames": [50]
     },
     {
+      "name": "DesertSand",
+      "frames": [51]
+    },
+    {
       "name": "WaterSandTransition5",
-      "frames": [51,52,53,54,54,53,52,51],
+      "frames": [52,53,54,55,55,54,53,52],
       "fps": 4
     },
     {
       "name": "Tileset_1",
-      "frames": [55]
-    },
-    {
-      "name": "DesertSand",
       "frames": [56]
     },
     {
@@ -3025,122 +3114,122 @@
       "frames": [58]
     },
     {
-      "name": "sand-grass_transition_8",
+      "name": "DesertSand",
       "frames": [59]
     },
     {
-      "name": "sand-grass_transition_11",
+      "name": "sand-grass_transition_8",
       "frames": [60]
     },
     {
+      "name": "sand-grass_transition_11",
+      "frames": [61]
+    },
+    {
       "name": "WaterSandTransition6",
-      "frames": [61,62,63,64,64,63,62,61],
+      "frames": [62,63,64,65,65,64,63,62],
       "fps": 4
     },
     {
       "name": "WaterSandTransition7",
-      "frames": [65,66,67,68,68,67,66,65],
+      "frames": [66,67,68,69,69,68,67,66],
       "fps": 4
     },
     {
       "name": "WaterSandTransition8",
-      "frames": [69,70,71,72,72,71,70,69],
+      "frames": [70,71,72,73,73,72,71,70],
       "fps": 4
     },
     {
       "name": "WaterSandTransition11",
-      "frames": [73,74,75,76,76,75,74,73],
+      "frames": [74,75,76,77,77,76,75,74],
       "fps": 4
     },
     {
       "name": "WaterSandTransition12",
-      "frames": [77,78,79,80,80,79,78,77],
+      "frames": [78,79,80,81,81,80,79,78],
       "fps": 4
     },
     {
       "name": "DesertSand",
-      "frames": [81]
+      "frames": [82]
     },
     {
       "name": "WaterSandTransition4",
-      "frames": [82,83,84,85,85,84,83,82],
+      "frames": [83,84,85,86,86,85,84,83],
       "fps": 4
     },
     {
       "name": "WaterSandTransition10",
-      "frames": [86,87,88,89,89,88,87,86],
+      "frames": [87,88,89,90,90,89,88,87],
       "fps": 4
     },
     {
       "name": "WaterSandTransition3",
-      "frames": [90,91,92,93,93,92,91,90],
+      "frames": [91,92,93,94,94,93,92,91],
       "fps": 4
     },
     {
       "name": "WaterSandTransition1",
-      "frames": [94,95,96,97,97,96,95,94],
+      "frames": [95,96,97,98,98,97,96,95],
       "fps": 4
     },
     {
       "name": "WaterSandTransition9",
-      "frames": [98,99,100,101,101,100,99,98],
+      "frames": [99,100,101,102,102,101,100,99],
       "fps": 4
     },
     {
       "name": "sand-grass_transition_10",
-      "frames": [102]
+      "frames": [103]
     },
     {
       "name": "WaterSandTransition2",
-      "frames": [103,104,105,106,106,105,104,103],
+      "frames": [104,105,106,107,107,106,105,104],
       "fps": 4
     },
     {
       "name": "Tileset_0",
-      "frames": [107]
-    },
-    {
-      "name": "sand-grass_transition_4",
       "frames": [108]
     },
     {
-      "name": "sand-grass_transition_2",
+      "name": "sand-grass_transition_4",
       "frames": [109]
     },
     {
+      "name": "sand-grass_transition_2",
+      "frames": [110]
+    },
+    {
       "name": "RiverEndTile2",
-      "frames": [110,111,112,113],
+      "frames": [111,112,113,114],
       "fps": 4
     },
     {
       "name": "Water9",
-      "frames": [114,115,116,117,117,116,115,114],
+      "frames": [115,116,117,118,118,117,116,115],
       "fps": 4
     },
     {
       "name": "Water2",
-      "frames": [118,119,120,121,121,120,119,118],
+      "frames": [119,120,121,122,122,121,120,119],
       "fps": 4
     },
     {
       "name": "RiverEndTile1",
-      "frames": [122,123,124,125],
+      "frames": [123,124,125,126],
       "fps": 4
-    },
-    {
-      "name": "GroundDefault",
-      "frames": [126]
     },
     {
       "name": "GroundDefault",
       "frames": [127]
     },
     {
-      "name": "snow_tiles_0",
+      "name": "GroundDefault",
       "frames": [128]
     },
     {
-      "name": "WallRock",
+      "name": "snow_tiles_0",
       "frames": [129]
     },
     {
@@ -3156,11 +3245,11 @@
       "frames": [132]
     },
     {
-      "name": "border_3",
+      "name": "WallRock",
       "frames": [133]
     },
     {
-      "name": "WallRock",
+      "name": "border_3",
       "frames": [134]
     },
     {
@@ -3168,80 +3257,80 @@
       "frames": [135]
     },
     {
+      "name": "WallRock",
+      "frames": [136]
+    },
+    {
       "name": "Water6",
-      "frames": [136,137,138,139,139,138,137,136],
+      "frames": [137,138,139,140,140,139,138,137],
       "fps": 4
     },
     {
       "name": "Water7",
-      "frames": [140,141,142,143,143,142,141,140],
+      "frames": [141,142,143,144,144,143,142,141],
       "fps": 4
     },
     {
       "name": "WallRock",
-      "frames": [144]
+      "frames": [145]
     },
     {
       "name": "Fall3",
-      "frames": [145,146,147,148],
+      "frames": [146,147,148,149],
       "fps": 4
     },
     {
       "name": "Fall2",
-      "frames": [149,150,151,152],
+      "frames": [150,151,152,153],
       "fps": 4
     },
     {
       "name": "Fall1",
-      "frames": [153,154,155,156],
+      "frames": [154,155,156,157],
       "fps": 4
     },
     {
       "name": "snow_tiles_6",
-      "frames": [157]
-    },
-    {
-      "name": "Tileset_74",
       "frames": [158]
     },
     {
-      "name": "Tileset_65",
+      "name": "Tileset_74",
       "frames": [159]
     },
     {
-      "name": "snow_tiles_7",
+      "name": "Tileset_65",
       "frames": [160]
     },
     {
-      "name": "Tileset_73",
+      "name": "snow_tiles_7",
       "frames": [161]
     },
     {
-      "name": "Tileset_66",
+      "name": "Tileset_73",
       "frames": [162]
     },
     {
-      "name": "snow_tiles_2",
+      "name": "Tileset_66",
       "frames": [163]
     },
     {
-      "name": "snow_tiles_4",
+      "name": "snow_tiles_2",
       "frames": [164]
     },
     {
-      "name": "snow_tiles_3",
+      "name": "snow_tiles_4",
       "frames": [165]
     },
     {
-      "name": "snow_tiles_1",
+      "name": "snow_tiles_3",
       "frames": [166]
     },
     {
-      "name": "snow_tiles_5",
+      "name": "snow_tiles_1",
       "frames": [167]
     },
     {
-      "name": "Ceiling",
+      "name": "snow_tiles_5",
       "frames": [168]
     },
     {
@@ -3249,455 +3338,466 @@
       "frames": [169]
     },
     {
-      "name": "interiors_0",
+      "name": "Ceiling",
       "frames": [170]
     },
     {
-      "name": "Tileset_26",
+      "name": "interiors_0",
       "frames": [171]
     },
     {
-      "name": "interiors_2",
+      "name": "Tileset_26",
       "frames": [172]
     },
     {
-      "name": "interiors_4",
+      "name": "interiors_2",
       "frames": [173]
     },
     {
-      "name": "interiors_5",
+      "name": "interiors_4",
       "frames": [174]
     },
     {
-      "name": "interiors_1",
+      "name": "interiors_5",
       "frames": [175]
     },
     {
-      "name": "interiors_3",
+      "name": "interiors_1",
       "frames": [176]
     },
     {
-      "name": "interiors_6",
+      "name": "interiors_3",
       "frames": [177]
     },
     {
-      "name": "interiors_7",
+      "name": "interiors_6",
       "frames": [178]
     },
     {
-      "name": "leaf_tiles_7",
+      "name": "interiors_7",
       "frames": [179]
     },
     {
-      "name": "rock_wall_34",
+      "name": "leaf_tiles_7",
       "frames": [180]
     },
     {
-      "name": "rock_wall_33",
+      "name": "rock_wall_34",
       "frames": [181]
     },
     {
-      "name": "border_6",
+      "name": "rock_wall_33",
       "frames": [182]
     },
     {
-      "name": "border_7",
+      "name": "border_6",
       "frames": [183]
     },
     {
-      "name": "border_5",
+      "name": "border_7",
       "frames": [184]
     },
     {
-      "name": "rock_wall_border_10",
+      "name": "border_5",
       "frames": [185]
     },
     {
-      "name": "rock_wall_border_8",
+      "name": "rock_wall_border_10",
       "frames": [186]
     },
     {
-      "name": "border_4",
+      "name": "rock_wall_border_8",
       "frames": [187]
     },
     {
-      "name": "border_0",
+      "name": "border_4",
       "frames": [188]
     },
     {
-      "name": "rock_wall_border_7",
+      "name": "border_0",
       "frames": [189]
     },
     {
-      "name": "rock_wall_border_4",
+      "name": "rock_wall_border_7",
       "frames": [190]
     },
     {
-      "name": "border_1",
+      "name": "rock_wall_border_4",
       "frames": [191]
     },
     {
-      "name": "border_2",
+      "name": "border_1",
       "frames": [192]
     },
     {
-      "name": "village_ruins_deco_11",
+      "name": "border_2",
       "frames": [193]
     },
     {
-      "name": "cave_rocks_17",
+      "name": "village_ruins_deco_11",
       "frames": [194]
     },
     {
-      "name": "cave_rocks_18",
+      "name": "cave_rocks_17",
       "frames": [195]
     },
     {
-      "name": "rock_wall_border_15",
+      "name": "cave_rocks_18",
       "frames": [196]
     },
     {
-      "name": "rock_wall_26",
+      "name": "rock_wall_border_15",
       "frames": [197]
     },
     {
+      "name": "rock_wall_26",
+      "frames": [198]
+    },
+    {
       "name": "Water11",
-      "frames": [198,199,200,201,201,200,199,198],
+      "frames": [199,200,201,202,202,201,200,199],
       "fps": 4
     },
     {
       "name": "Water12",
-      "frames": [202,203,204,205,205,204,203,202],
+      "frames": [203,204,205,206,206,205,204,203],
       "fps": 4
     },
     {
       "name": "Tileset_51",
-      "frames": [206]
+      "frames": [207]
     },
     {
       "name": "Water4",
-      "frames": [207,208,209,210,210,209,208,207],
+      "frames": [208,209,210,211,211,210,209,208],
       "fps": 4
     },
     {
       "name": "RiverReeds",
-      "frames": [211,212,213,214],
+      "frames": [212,213,214,215],
       "fps": 4
     },
     {
       "name": "Water5",
-      "frames": [215,216,217,218,218,217,216,215],
+      "frames": [216,217,218,219,219,218,217,216],
       "fps": 4
     },
     {
       "name": "rock_wall_border_5",
-      "frames": [219]
-    },
-    {
-      "name": "rock_wall_border_3",
       "frames": [220]
     },
     {
-      "name": "rock_wall_border_11",
+      "name": "rock_wall_border_3",
       "frames": [221]
     },
     {
-      "name": "rock_wall_border_9",
+      "name": "rock_wall_border_11",
       "frames": [222]
     },
     {
-      "name": "Tileset_42",
+      "name": "rock_wall_border_9",
       "frames": [223]
     },
     {
+      "name": "Tileset_42",
+      "frames": [224]
+    },
+    {
       "name": "Water13",
-      "frames": [224,225,226,227,227,226,225,224],
+      "frames": [225,226,227,228,228,227,226,225],
       "fps": 4
     },
     {
       "name": "Water3",
-      "frames": [228,229,230,231,231,230,229,228],
+      "frames": [229,230,231,232,232,231,230,229],
       "fps": 4
     },
     {
       "name": "Water1",
-      "frames": [232,233,234,235,235,234,233,232],
+      "frames": [233,234,235,236,236,235,234,233],
       "fps": 4
     },
     {
       "name": "cave_rocks_9",
-      "frames": [236]
-    },
-    {
-      "name": "cave_rocks_8",
       "frames": [237]
     },
     {
-      "name": "cave_rocks_16",
+      "name": "cave_rocks_8",
       "frames": [238]
     },
     {
-      "name": "cave_rocks_6",
+      "name": "cave_rocks_16",
       "frames": [239]
     },
     {
-      "name": "rock_wall_border_6",
+      "name": "cave_rocks_6",
       "frames": [240]
     },
     {
-      "name": "rock_wall_28",
+      "name": "rock_wall_border_6",
       "frames": [241]
     },
     {
-      "name": "rock_wall_31",
+      "name": "rock_wall_28",
       "frames": [242]
     },
     {
-      "name": "rock_wall_border_0",
+      "name": "rock_wall_31",
       "frames": [243]
     },
     {
-      "name": "rock_wall_border_14",
+      "name": "rock_wall_border_0",
       "frames": [244]
     },
     {
-      "name": "border_light_1",
+      "name": "rock_wall_border_14",
       "frames": [245]
     },
     {
+      "name": "border_light_1",
+      "frames": [246]
+    },
+    {
       "name": "Water8",
-      "frames": [246,247,248,249,249,248,247,246],
+      "frames": [247,248,249,250,250,249,248,247],
       "fps": 4
     },
     {
       "name": "rock_wall_27",
-      "frames": [250]
-    },
-    {
-      "name": "rock_wall_30",
       "frames": [251]
     },
     {
+      "name": "rock_wall_30",
+      "frames": [252]
+    },
+    {
       "name": "Snow1",
-      "frames": [252,253],
+      "frames": [253,254],
       "fps": 4
     },
     {
       "name": "Tileset_27",
-      "frames": [254]
-    },
-    {
-      "name": "Tileset_40",
       "frames": [255]
     },
     {
-      "name": "rock_wall_border_1",
+      "name": "Tileset_40",
       "frames": [256]
     },
     {
-      "name": "interiors_19",
+      "name": "rock_wall_border_1",
       "frames": [257]
     },
     {
+      "name": "interiors_19",
+      "frames": [258]
+    },
+    {
       "name": "Water10",
-      "frames": [258,259,260,261,261,260,259,258],
+      "frames": [259,260,261,262,262,261,260,259],
       "fps": 4
     },
     {
       "name": "Water14",
-      "frames": [262,263,264,265,265,264,263,262],
+      "frames": [263,264,265,266,266,265,264,263],
       "fps": 4
     },
     {
       "name": "Ceiling",
-      "frames": [266]
-    },
-    {
-      "name": "rock_wall_border_2",
       "frames": [267]
     },
     {
-      "name": "Tileset_32",
+      "name": "rock_wall_border_2",
       "frames": [268]
     },
     {
-      "name": "Tileset_45",
+      "name": "Tileset_32",
       "frames": [269]
     },
     {
-      "name": "Tileset_31",
+      "name": "Tileset_45",
       "frames": [270]
     },
     {
-      "name": "Tileset_30",
+      "name": "Tileset_31",
       "frames": [271]
+    },
+    {
+      "name": "Tileset_30",
+      "frames": [272]
     }
   ],
   "sprites": [
     {
+      "name": "BGFrame",
+      "sheet": 1,
+      "rect": [0,0,272,272],
+      "pivot": [136,136],
+      "ppu": 16
+    },
+    {
       "name": "Grass2Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass2Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,192,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass2Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass1Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass1Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,176,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass4Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass4Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass6Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass6Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass5Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass5Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_12",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [352,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_15",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [400,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_13",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_24",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass3Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass3Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_23",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [352,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_18",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [448,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_19",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [464,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_20",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [480,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_21",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [496,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_17",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [432,608,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -3718,63 +3818,63 @@
     },
     {
       "name": "rock_wall_4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [400,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_11",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_5",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [416,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_10",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [0,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_12",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [32,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_11",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [16,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_4",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [64,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_3",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [48,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_6",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [16,16,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -3795,21 +3895,21 @@
     },
     {
       "name": "leaf_tiles_8",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [48,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_1",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [16,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_9",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [64,16,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -3830,28 +3930,28 @@
     },
     {
       "name": "rock_wall_0",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [352,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_0",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [0,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_2",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [32,0,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -3865,1022 +3965,1022 @@
     },
     {
       "name": "leaf_tiles_5",
-      "sheet": 5,
+      "sheet": 6,
       "rect": [0,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_6",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [112,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [112,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_44",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [208,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_53",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [208,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_54",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [224,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_8",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [144,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_11",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [112,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_60",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [208,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [64,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [32,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [0,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_10",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [16,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_0",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [80,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [144,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [112,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_4",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [0,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_5",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [32,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_6",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [64,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_7",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [96,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_0",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [0,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_1",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [32,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_2",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [64,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_3",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [96,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_0",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [80,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_0",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [0,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_22",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_16",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [416,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_25",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [384,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_32",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [416,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [224,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_14",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [384,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_29",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [352,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,224,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,224,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [384,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [160,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [176,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [192,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [208,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [160,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [176,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [192,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [208,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [160,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [176,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [192,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [208,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_6",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [32,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_74",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [128,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_65",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [112,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_7",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [48,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_73",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [112,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_66",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [128,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_2",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [32,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_4",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [0,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_3",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [48,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_1",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [16,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_5",
-      "sheet": 6,
+      "sheet": 7,
       "rect": [16,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_8",
-      "sheet": 4,
+      "sheet": 5,
       "rect": [80,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_9",
-      "sheet": 4,
+      "sheet": 5,
       "rect": [96,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_0",
-      "sheet": 4,
+      "sheet": 5,
       "rect": [0,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_26",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [128,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_2",
-      "sheet": 4,
+      "sheet": 5,
       "rect": [32,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_4",
-      "sheet": 4,
+      "sheet": 5,
       "rect": [16,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_5",
-      "sheet": 4,
-      "rect": [32,16,16,16],
-      "pivot": [8,8],
-      "ppu": 16
-    },
-    {
-      "name": "interiors_1",
-      "sheet": 4,
-      "rect": [16,0,16,16],
-      "pivot": [8,8],
-      "ppu": 16
-    },
-    {
-      "name": "interiors_3",
-      "sheet": 4,
-      "rect": [0,16,16,16],
-      "pivot": [8,8],
-      "ppu": 16
-    },
-    {
-      "name": "interiors_6",
-      "sheet": 4,
-      "rect": [48,16,16,16],
-      "pivot": [8,8],
-      "ppu": 16
-    },
-    {
-      "name": "interiors_7",
-      "sheet": 4,
-      "rect": [64,16,16,16],
-      "pivot": [8,8],
-      "ppu": 16
-    },
-    {
-      "name": "leaf_tiles_7",
       "sheet": 5,
       "rect": [32,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
+      "name": "interiors_1",
+      "sheet": 5,
+      "rect": [16,0,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "interiors_3",
+      "sheet": 5,
+      "rect": [0,16,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "interiors_6",
+      "sheet": 5,
+      "rect": [48,16,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "interiors_7",
+      "sheet": 5,
+      "rect": [64,16,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "leaf_tiles_7",
+      "sheet": 6,
+      "rect": [32,16,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
       "name": "rock_wall_34",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [496,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_33",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [432,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_6",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [240,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_7",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [256,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_5",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [224,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_10",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_8",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [256,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_0",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [224,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_7",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [384,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [240,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [256,640,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -4894,546 +4994,546 @@
     },
     {
       "name": "cave_rocks_17",
-      "sheet": 3,
+      "sheet": 4,
       "rect": [112,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_18",
-      "sheet": 3,
+      "sheet": 4,
       "rect": [128,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_15",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [384,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_26",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [400,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_51",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [176,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [320,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,288,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [96,416,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_5",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [352,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [384,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_11",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [384,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_9",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [352,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_42",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [176,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [304,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_9",
-      "sheet": 3,
+      "sheet": 4,
       "rect": [144,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_8",
-      "sheet": 3,
+      "sheet": 4,
       "rect": [128,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_16",
-      "sheet": 3,
+      "sheet": 4,
       "rect": [96,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_6",
-      "sheet": 3,
+      "sheet": 4,
       "rect": [96,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_6",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_28",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_31",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [400,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_0",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_14",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_light_1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [288,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [272,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_27",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [416,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_30",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Snow1Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Snow1Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [48,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_27",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [144,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_40",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [144,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [352,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_19",
-      "sheet": 4,
+      "sheet": 5,
       "rect": [48,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame1",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame3",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame4",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [336,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "temp_interior_0",
-      "sheet": 1,
+      "sheet": 2,
       "rect": [16,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_2",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [368,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_32",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [224,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_45",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [224,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_31",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [208,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_30",
-      "sheet": 2,
+      "sheet": 3,
       "rect": [192,544,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -5444,6 +5544,11 @@
       "name": "largeprops_village_ruins",
       "file": "../sheets/largeprops_village_ruins.png",
       "size": [128,64]
+    },
+    {
+      "name": "misc",
+      "file": "../sheets/misc.png",
+      "size": [512,512]
     },
     {
       "name": "tempsprites",

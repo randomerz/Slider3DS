@@ -156,7 +156,8 @@ int main(int, char**) {
 
         plat::beginFrame();
 
-        plat::beginScreen(plat::Screen::Top, plat::rgba(0x14, 0x14, 0x1c));
+        plat::beginScreen(plat::Screen::Top, loaded ? plat::rgba(area.background[0], area.background[1], area.background[2])
+                                                   : plat::rgba(0x14, 0x14, 0x1c));
         if (loaded) {
             view.begin(area, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
             view.drawLayers(area, grid);

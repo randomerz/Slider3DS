@@ -45,9 +45,18 @@ void AreaView::worldToScreen(float wx, float wy, float& sx, float& sy) const {
 void AreaView::drawLayers(const Area& area, const Grid& grid, int minSortLayer, int maxSortLayer) {
     const float halfW = screenW_ / (2 * ppu_), halfH = screenH_ / (2 * ppu_);
 
-    for (const TileLayer& L : area.layers) { // sorted by (sortLayer, order) at load
+    // Layers and statics are each sorted by (sortLayer, order) at load; merge them.
+    size_t si = 0;
+    const std::vector<StaticSprite>& statics = area.statics;
+    while (si < statics.size() && statics[si].sortLayer < minSortLayer) si++;
+
+    for (const TileLayer& L : area.layers) {
         if (L.sortLayer < minSortLayer) continue;
         if (L.sortLayer > maxSortLayer) break;
+        for (; si < statics.size() && (statics[si].sortLayer < L.sortLayer ||
+                                       (statics[si].sortLayer == L.sortLayer && statics[si].order <= L.order));
+             si++)
+            drawStatic(area, grid, statics[si]);
         if (!L.active) continue;
         if (L.owner != 0 && !grid.tileActive(L.owner) && !showInactive_) continue;
         float baseX, baseY;
@@ -83,4 +92,20 @@ void AreaView::drawLayers(const Area& area, const Grid& grid, int minSortLayer, 
             }
         }
     }
+    for (; si < statics.size() && statics[si].sortLayer <= maxSortLayer; si++) drawStatic(area, grid, statics[si]);
+}
+
+void AreaView::drawStatic(const Area& area, const Grid& grid, const StaticSprite& st) {
+    if (!st.active || (st.owner != 0 && !grid.tileActive(st.owner) && !showInactive_)) return;
+    float baseX, baseY;
+    grid.ownerBase(st.owner, baseX, baseY);
+    const SpriteDef& S = area.sprites[st.sprite];
+    // The pivot sits on the transform position.
+    const float left = baseX + st.x - S.pivotX / S.ppu, top = baseY + st.y - S.pivotY / S.ppu + S.h / S.ppu;
+    float px, py;
+    worldToScreen(left, top, px, py);
+    const float wPx = S.w * ppu_ / S.ppu, hPx = S.h * ppu_ / S.ppu;
+    if (px >= screenW_ || py >= screenH_ || px + wPx <= 0 || py + hPx <= 0) return; // off screen
+    plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(px), std::round(py), st.flags);
+    spriteCount_++;
 }

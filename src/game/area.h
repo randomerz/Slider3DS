@@ -57,6 +57,17 @@ struct Spawn {
     bool inBoat;
 };
 
+// A SpriteRenderer drawn as-is (so far the empty-slot grid frames), sorted among the tilemaps.
+struct StaticSprite {
+    std::string path;
+    int owner = 0;    // STile islandId (position relative to its center), 0 = world
+    int sprite = 0;   // index in Area::sprites
+    float x = 0, y = 0; // transform position (the sprite's pivot lands here)
+    int sortLayer = 0, order = 0;
+    uint32_t flags = 0; // plat::DrawFlags (FLIP_X / FLIP_Y)
+    bool active = true;
+};
+
 // An STile as exported (new-game state). Its runtime slot/position lives in Grid.
 struct STileDef {
     int islandId;
@@ -72,11 +83,13 @@ struct Area {
     int gridW = 0, gridH = 0;
     std::string targetGrid;
     int housingOffset = 0; // y offset of each STile's house interior
+    uint8_t background[3] = {0, 0, 0}; // camera clear color (the void between/behind tiles)
     std::vector<STileDef> stiles;
     std::vector<Spawn> spawns;
     std::vector<CollisionLayer> collision;
     std::vector<std::vector<Polygon>> shapes; // collision shapes (each a list of polygons)
     std::vector<TileLayer> layers; // drawn layers only, in draw order
+    std::vector<StaticSprite> statics; // in draw order (sortLayer, order, then higher y first)
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
     std::vector<std::string> sheetNames;

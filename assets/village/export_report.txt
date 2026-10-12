@@ -1,9 +1,11 @@
-Slider3DS village export  2026-10-11 14:21:38
+Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
-Tiles: 168 (39 animated)  Sprites: 272
+Static sprites: 9
+Tiles: 168 (39 animated)  Sprites: 273
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
-Sheets (7, 553K px):
+Sheets (8, 809K px):
   largeprops_village_ruins: 128x64  [village_ruins_deco]
+  misc: 512x512  [BGFrame]
   tempsprites: 32x32  [temp_interior]
   tiles: 512x1024  [TilesetAnims, WaterTiles, sand-water_animated, VillageTileset, rock_wall_border, rock_wall, sand-grass_transition, waterfall, border, border_light]
   tiles_caves: 256x32  [cave_rocks]
