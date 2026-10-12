@@ -1,13 +1,13 @@
 // Village walkabout: a placeholder player walks the exported Village with the original's
-// collision; the camera follows. For development it starts outdoors on tile 1 (DEV_START_OUTSIDE);
-// the real new-game start is the Default spawn inside tile 1's house.
-//   D-pad / circle pad: walk          L / R: jump to previous / next spawn point
-//   X: toggle noclip                  Y: toggle drawing inactive STiles      START: quit
-//   A + D-pad: slide the tile you stand on (debug, until the Artifact UI exists)
-//   B: toggle collecting tiles 1-8 (debug)
+// collision; the camera follows. The new-game start is the Default spawn inside tile 1's house.
+//   D-pad / circle pad: walk          START: quit
+// Dev builds (SLIDER_DEV=1: plain `make`, PC default) start outdoors on tile 1 and add:
+//   L / R: jump to previous / next spawn point      X: toggle noclip
+//   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
+//   A + D-pad: slide the tile you stand on (until the Artifact UI exists)
 // Bottom screen: the 3x3 grid (active tiles light, inactive dark, the one you stand on outlined)
-// with the player's position, and perf bars for the previous frame: CPU (green), GPU (blue),
-// sprites drawn (gray, 1px = 20); the red tick marks 16.7 ms (60 fps).
+// with the player's position; in dev builds also perf bars for the previous frame: CPU (green),
+// GPU (blue), sprites drawn (gray, 1px = 20; red near the sprite budget); the red tick marks 16.7 ms.
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -24,7 +24,11 @@ namespace {
 
 constexpr float MOVE_SPEED = 5.0f; // world units per second (Player.moveSpeed)
 constexpr float FRAME_DT = 1.0f / 60.0f;
-constexpr bool DEV_START_OUTSIDE = true;
+#ifndef SLIDER_DEV
+#define SLIDER_DEV 0
+#endif
+constexpr bool DEV = SLIDER_DEV != 0;
+constexpr bool DEV_START_OUTSIDE = DEV;
 
 // The player's BoxCollider2Ds from the Unity prefab, in pixels (size incl. edge radius; offset from
 // the player position). The original moves by raycasting from the position point; these boxes are
@@ -95,9 +99,9 @@ int main(int, char**) {
     while (plat::mainLoop()) {
         plat::Input in = plat::pollInput();
         if (in.pressed & plat::BTN_START) break;
-        if (in.pressed & plat::BTN_Y) showInactive = !showInactive;
-        if (in.pressed & plat::BTN_X) noclip = !noclip;
-        if (loaded && !area.spawns.empty() && (in.pressed & (plat::BTN_L | plat::BTN_R))) {
+        if (DEV && (in.pressed & plat::BTN_Y)) showInactive = !showInactive;
+        if (DEV && (in.pressed & plat::BTN_X)) noclip = !noclip;
+        if (DEV && loaded && !area.spawns.empty() && (in.pressed & (plat::BTN_L | plat::BTN_R))) {
             size_t n = area.spawns.size();
             spawnIndex = (in.pressed & plat::BTN_R) ? (spawnIndex + 1) % n : (spawnIndex + n - 1) % n;
             placeAtSpawn(grid, area.spawns[spawnIndex], px, py, onWater);
@@ -105,8 +109,8 @@ int main(int, char**) {
         }
 
         // Debug grid controls.
-        const bool sliding = (in.held & plat::BTN_A) != 0;
-        if (loaded && (in.pressed & plat::BTN_B)) {
+        const bool sliding = DEV && (in.held & plat::BTN_A) != 0;
+        if (DEV && loaded && (in.pressed & plat::BTN_B)) {
             debugCollected = !debugCollected;
             for (int id = 2; id <= 8; id++) grid.setTileActive(id, debugCollected);
             printf("Tiles 2-8 %s; grid %s\n", debugCollected ? "collected" : "removed", grid.gridString().c_str());
@@ -189,12 +193,17 @@ int main(int, char**) {
             float my = gy + (area.gridH - (mapY / w + 0.5f)) * cell;
             plat::drawRect(mx - 3, my - 3, 6, 6, plat::rgba(0xe0, 0x60, 0x60));
         }
-        plat::FrameStats stats = plat::lastFrameStats();
-        const float msPx = 10.0f; // 10px per ms
-        plat::drawRect(10, 216, stats.cpuMs * msPx, 5, plat::rgba(0x60, 0xd0, 0x70));
-        plat::drawRect(10, 223, stats.gpuMs * msPx, 5, plat::rgba(0x60, 0x90, 0xe0));
-        plat::drawRect(10, 230, view.lastSpriteCount() / 20.0f, 5, plat::rgba(0xa0, 0xa0, 0xa0));
-        plat::drawRect(10 + 16.7f * msPx, 212, 1, 26, plat::rgba(0xe0, 0x50, 0x50));
+        if (DEV) {
+            plat::FrameStats stats = plat::lastFrameStats();
+            const float msPx = 10.0f; // 10px per ms
+            const int sprites = view.lastSpriteCount();
+            const bool nearBudget = sprites > plat::MAX_DRAWS_PER_FRAME * 3 / 4;
+            plat::drawRect(10, 216, stats.cpuMs * msPx, 5, plat::rgba(0x60, 0xd0, 0x70));
+            plat::drawRect(10, 223, stats.gpuMs * msPx, 5, plat::rgba(0x60, 0x90, 0xe0));
+            plat::drawRect(10, 230, sprites / 20.0f, 5,
+                           nearBudget ? plat::rgba(0xe0, 0x50, 0x50) : plat::rgba(0xa0, 0xa0, 0xa0));
+            plat::drawRect(10 + 16.7f * msPx, 212, 1, 26, plat::rgba(0xe0, 0x50, 0x50));
+        }
 
         plat::endFrame();
         frame++;

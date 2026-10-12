@@ -31,11 +31,19 @@ include $(DEVKITARM)/3ds_rules
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
+# `make`           dev build -> slider3ds.3dsx: SELECT-at-launch updater (pulls from DEV_HOST) and
+#                  debug controls/overlay (SLIDER_DEV=1).
+# `make RELEASE=1` release build in its own build dir -> slider3ds_release.3dsx, without either.
+ifeq ($(strip $(RELEASE)),)
 TARGET		:=	slider3ds
+BUILD		:=	build
+else
+TARGET		:=	slider3ds_release
+BUILD		:=	build-release
+endif
 APP_TITLE	:=	Slider
 APP_DESCRIPTION	:=	Slide chunks of the world to solve puzzles
 APP_AUTHOR	:=	boomo
-BUILD		:=	build
 SOURCES		:=	src src/game src/platform/ctr
 DATA		:=	data
 INCLUDES	:=	src
@@ -49,17 +57,19 @@ ROMFS		:=	romfs
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
-CFLAGS	:=	-g -Wall -O2 -mword-relocations \
+CFLAGS	:=	-g -Wall -Wextra -O2 -mword-relocations \
 			-ffunction-sections \
 			$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -D__3DS__
 
 # Dev PC serving the build for the SELECT-at-launch updater (src/platform/ctr/dev_update.cpp).
-# Build with `make DEV_HOST=` to leave the updater out.
+# Changing DEV_HOST needs a `make clean` (compiler flags aren't dependency-tracked).
+ifeq ($(strip $(RELEASE)),)
 DEV_HOST	?=	10.0.0.200
-ifneq ($(strip $(DEV_HOST)),)
-CFLAGS	+=	-DDEV_UPDATE_URL='"http://$(DEV_HOST):8000/slider3ds.3dsx"'
+CFLAGS	+=	-DSLIDER_DEV=1 -DDEV_UPDATE_URL='"http://$(DEV_HOST):8000/slider3ds.3dsx"'
+else
+CFLAGS	+=	-DSLIDER_DEV=0
 endif
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
@@ -94,6 +104,12 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+
+# Objects are named by basename only, so two sources with the same name would collide.
+ALLSRCNAMES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp $(dir)/*.c $(dir)/*.s)))
+ifneq ($(words $(ALLSRCNAMES)),$(words $(sort $(ALLSRCNAMES))))
+$(error Source files in $(SOURCES) share a basename: $(ALLSRCNAMES))
+endif
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 PICAFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.v.pica)))
 SHLISTFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.shlist)))
@@ -202,7 +218,7 @@ endif
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS_SHEETS) $(ROMFS_JSONS)
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS)/gfx $(ROMFS)/*/*.json
 
 #---------------------------------------------------------------------------------
 $(ROMFS)/gfx/%.t3x	:	assets/sheets/%.png

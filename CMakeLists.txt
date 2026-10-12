@@ -36,14 +36,26 @@ target_include_directories(slider3ds_game PUBLIC src)
 
 file(GLOB APP_SOURCES CONFIGURE_DEPENDS src/*.cpp)
 add_executable(slider3ds ${APP_SOURCES} src/platform/sdl/platform_sdl.cpp)
-target_compile_definitions(slider3ds PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets")
+option(SLIDER_DEV "Debug controls and overlay in the PC build" ON)
+target_compile_definitions(slider3ds PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets" SLIDER_DEV=$<BOOL:${SLIDER_DEV}>)
 target_link_libraries(slider3ds PRIVATE slider3ds_game SDL2::SDL2main SDL2::SDL2-static SDL2_image::SDL2_image-static)
 
 # Headless tests against the exported data (tests/test_platform.cpp stands in for a backend).
 file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
 add_executable(slider3ds_tests ${TEST_SOURCES})
-target_compile_definitions(slider3ds_tests PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets")
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test-out)
+target_compile_definitions(slider3ds_tests PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets"
+    TESTS_DIR="${CMAKE_SOURCE_DIR}/tests" TEST_OUT_DIR="${CMAKE_BINARY_DIR}/test-out")
 target_link_libraries(slider3ds_tests PRIVATE slider3ds_game)
+
+# Strict warnings on our own targets only (not SDL).
+foreach(t slider3ds_game slider3ds slider3ds_tests)
+    if(MSVC)
+        target_compile_options(${t} PRIVATE /W4 /permissive- /D_CRT_SECURE_NO_WARNINGS)
+    else()
+        target_compile_options(${t} PRIVATE -Wall -Wextra)
+    endif()
+endforeach()
 
 enable_testing()
 add_test(NAME slider3ds_tests COMMAND slider3ds_tests)

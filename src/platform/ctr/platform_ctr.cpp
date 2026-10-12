@@ -19,7 +19,6 @@ struct Texture {
 namespace {
 
 // Each sprite is one citro2d object; a screenful of tile layers is a few thousand.
-constexpr size_t MAX_2D_OBJECTS = 8192;
 
 C3D_RenderTarget* g_top = nullptr;
 C3D_RenderTarget* g_bottom = nullptr;
@@ -57,7 +56,7 @@ bool init() {
 #endif
     gfxInitDefault();
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
-    C2D_Init(MAX_2D_OBJECTS);
+    C2D_Init(MAX_DRAWS_PER_FRAME);
     C2D_Prepare();
     g_top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
     g_bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);

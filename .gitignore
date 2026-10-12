@@ -1,5 +1,6 @@
 # 3DS build
 build/
+build-release/
 *.3dsx
 *.3dsx.tmp
 *.elf

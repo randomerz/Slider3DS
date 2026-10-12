@@ -14,6 +14,10 @@ constexpr int TOP_H = 240;
 constexpr int BOTTOM_W = 320;
 constexpr int BOTTOM_H = 240;
 
+// Sprites + rects per frame, both screens (the 3DS backend's C2D_Init budget). Draws past it are
+// dropped silently by citro2d, so the dev overlay warns before getting close.
+constexpr int MAX_DRAWS_PER_FRAME = 8192;
+
 enum Button : uint32_t {
     BTN_A      = 1u << 0,
     BTN_B      = 1u << 1,

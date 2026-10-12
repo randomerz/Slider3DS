@@ -78,7 +78,7 @@ bool init() {
         SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
         return false;
     }
-    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED); // paced in endFrame()
     if (!g_renderer) {
         SDL_Log("SDL_CreateRenderer failed: %s", SDL_GetError());
         return false;
@@ -195,6 +195,21 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
 
 FrameStats lastFrameStats() { return g_stats; }
 
+// The game steps a fixed 1/60 s per frame (like the 3DS's 60 Hz vblank), so hold the PC loop to
+// 60 Hz whatever the monitor's refresh rate: sleep, then spin the last ~2 ms, toward an absolute
+// schedule. If we fall far behind (breakpoint, window drag), resync instead of fast-forwarding.
+static void paceFrame() {
+    static Uint64 next = 0;
+    const Uint64 freq = SDL_GetPerformanceFrequency(), period = freq / 60;
+    Uint64 now = SDL_GetPerformanceCounter();
+    if (next == 0 || now > next + 4 * period) next = now;
+    next += period;
+    while ((now = SDL_GetPerformanceCounter()) < next) {
+        Uint64 msLeft = (next - now) * 1000 / freq;
+        if (msLeft > 2) SDL_Delay((Uint32)(msLeft - 2));
+    }
+}
+
 void endFrame() {
     g_stats.cpuMs = (float)((SDL_GetPerformanceCounter() - g_frameStart) * 1000.0 / SDL_GetPerformanceFrequency());
     const char* shot = std::getenv("SLIDER3DS_SCREENSHOT");
@@ -209,6 +224,7 @@ void endFrame() {
         g_quit = true;
     }
     SDL_RenderPresent(g_renderer);
+    paceFrame();
 }
 
 } // namespace plat

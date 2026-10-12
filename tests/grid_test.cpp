@@ -78,7 +78,7 @@ TEST(grid_stile_under) {
     Grid grid;
     grid.init(village());
     CHECK(grid.stileUnder(0, 3) == 1);
-    CHECK(grid.stileUnder(0, 3 + grid.housingOffset()) == 1); // tile 1's house
+    CHECK(grid.stileUnder(0, 3.0f + grid.housingOffset()) == 1); // tile 1's house
     CHECK(grid.stileUnder(17, 17) == 0);                      // tile 9: not collected
     CHECK(grid.stileUnder(-20, 0) == 0);                      // off the grid
 }
