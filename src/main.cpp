@@ -158,7 +158,8 @@ int main(int, char**) {
 
         plat::beginScreen(plat::Screen::Top, plat::rgba(0x14, 0x14, 0x1c));
         if (loaded) {
-            view.draw(area, grid, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
+            view.begin(area, px, py, plat::TOP_W, plat::TOP_H, frame / 60.0f, showInactive);
+            view.drawLayers(area, grid);
             // Placeholder player: its collider box, centered on screen (the camera follows it),
             // with the position point in white.
             const Hitbox& hb = onWater ? HITBOX_BOAT : HITBOX_FOOT;

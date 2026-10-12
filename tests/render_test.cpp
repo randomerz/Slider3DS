@@ -105,7 +105,8 @@ TEST(render_goldens) {
         artifact.init(grid);
         if (sc.setup) sc.setup(grid, artifact);
         testResetDrawCalls();
-        view.draw(area, grid, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
+        view.begin(area, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
+        view.drawLayers(area, grid);
         const std::vector<DrawCall>& calls = testDrawCalls();
         const std::string text = drawListText(calls);
         char value[64];
@@ -126,7 +127,38 @@ TEST(render_goldens) {
     view.unloadSheets();
 
     if (update) {
-        std::ofstream(GOLDEN_PATH) << fresh.str();
+        std::ofstream(GOLDEN_PATH, std::ios::binary) << fresh.str();
         printf("    wrote %s\n", GOLDEN_PATH.c_str());
     }
+}
+
+TEST(render_layer_ranges_compose) {
+    // Drawing sorting layer by sorting layer (as the entity pass will) gives exactly the same
+    // draw list as drawing everything at once.
+    const Area& area = village();
+    AreaView view;
+    check(view.loadSheets(area), "sheets load");
+    Grid grid;
+    grid.init(area);
+    for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
+
+    testResetDrawCalls();
+    view.begin(area, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
+    view.drawLayers(area, grid);
+    const std::string all = drawListText(testDrawCalls());
+    const int allCount = view.lastSpriteCount();
+
+    testResetDrawCalls();
+    view.begin(area, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
+    int layersSeen = 0, prev = INT_MIN;
+    for (const TileLayer& L : area.layers) {
+        if (L.sortLayer == prev && layersSeen > 0) continue;
+        prev = L.sortLayer;
+        view.drawLayers(area, grid, L.sortLayer, L.sortLayer);
+        layersSeen++;
+    }
+    check(layersSeen > 1, "the export uses several sorting layers (" + std::to_string(layersSeen) + ")");
+    check(drawListText(testDrawCalls()) == all && view.lastSpriteCount() == allCount,
+          "per-sorting-layer draws == one full draw");
+    view.unloadSheets();
 }
