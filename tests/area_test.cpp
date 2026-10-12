@@ -122,7 +122,8 @@ TEST(area_village_export_stats) {
     check(a.sheetNames.size() == 26, "sheets " + std::to_string(a.sheetNames.size()));
     check(a.worldSprites.size() == 329, "world sprites " + std::to_string(a.worldSprites.size()));
     check(a.anims.size() == 36, "anims " + std::to_string(a.anims.size()));
-    check(a.objectColliders.size() == 184, "object colliders " + std::to_string(a.objectColliders.size()));
+    check(a.objectColliders.size() == 218, "object colliders " + std::to_string(a.objectColliders.size()));
+    check(a.player.footBox.w > 0 && a.player.boatBox.w > 0, "player hitboxes");
     check(a.player.body.sprite >= 0 && a.player.boat.sprite >= 0, "player body + boat sprites");
     size_t cells = 0;
     for (const TileLayer& L : a.layers)

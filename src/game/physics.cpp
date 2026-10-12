@@ -5,25 +5,34 @@
 
 namespace {
 
-float cross(float ax, float ay, float bx, float by) { return ax * by - ay * bx; }
+// Overlaps count only past this depth, so a box resting flush against a collider is free.
+constexpr float EPS = 1e-4f;
 
-// Segment p + t*d (t in [0,1]) vs segment a-b, touching counts.
-bool segmentsIntersect(float px, float py, float dx, float dy, float ax, float ay, float bx, float by) {
-    const float ex = bx - ax, ey = by - ay;
-    const float denom = cross(dx, dy, ex, ey);
-    const float qx = ax - px, qy = ay - py;
-    if (std::fabs(denom) < 1e-9f) {
-        // Parallel: overlapping only if collinear and the projections overlap.
-        if (std::fabs(cross(qx, qy, dx, dy)) > 1e-6f) return false;
-        float len2 = dx * dx + dy * dy;
-        if (len2 < 1e-12f) return false;
-        float t0 = (qx * dx + qy * dy) / len2;
-        float t1 = ((bx - px) * dx + (by - py) * dy) / len2;
-        return std::max(t0, t1) >= 0.0f && std::min(t0, t1) <= 1.0f;
+// The box's interior, shrunk by EPS.
+Box inner(const Box& b) { return {b.minX + EPS, b.minY + EPS, b.maxX - EPS, b.maxY - EPS}; }
+
+bool boxesOverlap(const Box& a, const Box& b) {
+    return a.minX < b.maxX && b.minX < a.maxX && a.minY < b.maxY && b.minY < a.maxY;
+}
+
+// Segment a-b vs box `in` (already shrunk): Liang-Barsky clipping.
+bool segmentHitsBox(float ax, float ay, float bx, float by, const Box& in) {
+    float t0 = 0, t1 = 1;
+    const float d[2] = {bx - ax, by - ay};
+    const float p[2] = {ax, ay};
+    const float lo[2] = {in.minX, in.minY}, hi[2] = {in.maxX, in.maxY};
+    for (int k = 0; k < 2; k++) {
+        if (std::fabs(d[k]) < 1e-12f) {
+            if (p[k] <= lo[k] || p[k] >= hi[k]) return false;
+            continue;
+        }
+        float ta = (lo[k] - p[k]) / d[k], tb = (hi[k] - p[k]) / d[k];
+        if (ta > tb) std::swap(ta, tb);
+        t0 = std::max(t0, ta);
+        t1 = std::min(t1, tb);
+        if (t0 > t1) return false;
     }
-    const float t = cross(qx, qy, ex, ey) / denom;
-    const float u = cross(qx, qy, dx, dy) / denom;
-    return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+    return true;
 }
 
 bool pointInPolygon(float x, float y, const float* pts, size_t n, float ox, float oy) {
@@ -36,29 +45,19 @@ bool pointInPolygon(float x, float y, const float* pts, size_t n, float ox, floa
     return inside;
 }
 
-
-// Segment vs polygon (n points, flat x,y pairs) offset by (ox, oy).
-bool segmentHitsPolygon(float x, float y, float dx, float dy, const float* pts, size_t n, float ox, float oy) {
+// Closed polygon (n points, flat x,y pairs, offset by (ox, oy)) vs box interior: an edge crosses
+// the box, or the polygon contains it.
+bool polygonHitsBox(const float* pts, size_t n, float ox, float oy, const Box& in) {
     if (n < 3) return false;
-    if (pointInPolygon(x, y, pts, n, ox, oy)) return true;
     for (size_t i = 0, j = n - 1; i < n; j = i++)
-        if (segmentsIntersect(x, y, dx, dy, pts[2 * j] + ox, pts[2 * j + 1] + oy, pts[2 * i] + ox, pts[2 * i + 1] + oy))
-            return true;
-    return false;
+        if (segmentHitsBox(pts[2 * j] + ox, pts[2 * j + 1] + oy, pts[2 * i] + ox, pts[2 * i + 1] + oy, in)) return true;
+    return pointInPolygon((in.minX + in.maxX) * 0.5f, (in.minY + in.maxY) * 0.5f, pts, n, ox, oy);
 }
 
-bool segmentHitsBox(float x, float y, float dx, float dy, float minX, float minY, float maxX, float maxY) {
-    const float box[8] = {minX, minY, maxX, minY, maxX, maxY, minX, maxY};
-    return segmentHitsPolygon(x, y, dx, dy, box, 4, 0, 0);
-}
-
-// Segment vs circle: does any point of the segment lie within r of (cx, cy)?
-bool segmentHitsCircle(float x, float y, float dx, float dy, float cx, float cy, float r) {
-    const float len2 = dx * dx + dy * dy;
-    float t = len2 > 1e-12f ? ((cx - x) * dx + (cy - y) * dy) / len2 : 0.0f;
-    t = std::max(0.0f, std::min(1.0f, t));
-    const float ex = x + t * dx - cx, ey = y + t * dy - cy;
-    return ex * ex + ey * ey <= r * r;
+bool circleHitsBox(float cx, float cy, float r, const Box& in) {
+    const float nx = std::max(in.minX, std::min(cx, in.maxX)), ny = std::max(in.minY, std::min(cy, in.maxY));
+    const float ex = nx - cx, ey = ny - cy;
+    return ex * ex + ey * ey < r * r;
 }
 
 // The colliders of an STile's objects collide like its tilemaps: off while the tile is inactive
@@ -69,22 +68,19 @@ bool ownerCollides(const Grid& grid, int owner) {
     return t && t->active && t->collidersOff <= 0;
 }
 
-bool objectHit(const ObjectCollider& c, float x, float y, float dx, float dy, float ox, float oy) {
-    // Cheap reject: the segment's bounds vs the collider's.
-    if (std::max(x, x + dx) < c.minX + ox || std::min(x, x + dx) > c.maxX + ox ||
-        std::max(y, y + dy) < c.minY + oy || std::min(y, y + dy) > c.maxY + oy)
-        return false;
+bool objectHit(const ObjectCollider& c, float ox, float oy, const Box& in) {
+    if (!boxesOverlap(in, {c.minX + ox, c.minY + oy, c.maxX + ox, c.maxY + oy})) return false;
     switch (c.kind) {
     case ObjectCollider::Kind::Circle:
-        return segmentHitsCircle(x, y, dx, dy, c.cx + ox, c.cy + oy, c.radius);
+        return circleHitsBox(c.cx + ox, c.cy + oy, c.radius, in);
     case ObjectCollider::Kind::Poly:
         for (const Polygon& p : c.paths)
-            if (segmentHitsPolygon(x, y, dx, dy, p.data(), p.size() / 2, ox, oy)) return true;
+            if (polygonHitsBox(p.data(), p.size() / 2, ox, oy, in)) return true;
         return false;
     case ObjectCollider::Kind::Edge:
         for (const Polygon& p : c.paths)
             for (size_t i = 0; i + 3 < p.size(); i += 2)
-                if (segmentsIntersect(x, y, dx, dy, p[i] + ox, p[i + 1] + oy, p[i + 2] + ox, p[i + 3] + oy)) return true;
+                if (segmentHitsBox(p[i] + ox, p[i + 1] + oy, p[i + 2] + ox, p[i + 3] + oy, in)) return true;
         return false;
     }
     return false;
@@ -103,12 +99,14 @@ bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
 
 } // namespace
 
-Blocker segmentBlocker(const Area& area, const Grid& grid, float x, float y, float dx, float dy, bool onWater) {
+Blocker boxBlocker(const Area& area, const Grid& grid, const Box& box, bool onWater) {
+    const Box in = inner(box);
+
     // Edge colliders fencing a slide in progress.
     const std::vector<Wall>& walls = grid.walls();
     for (size_t i = 0; i < walls.size(); i++) {
         const Wall& w = walls[i];
-        if (segmentsIntersect(x, y, dx, dy, w.x0, w.y0, w.x1, w.y1)) return {Blocker::Wall, (int)i};
+        if (segmentHitsBox(w.x0, w.y0, w.x1, w.y1, in)) return {Blocker::Wall, (int)i};
     }
 
     // Inactive STiles: STile.SetTileActive makes their slider colliders solid, blocking the slot
@@ -118,8 +116,8 @@ Blocker segmentBlocker(const Area& area, const Grid& grid, float x, float y, flo
         if (t.active || t.collidersOff > 0) continue;
         const float cx = t.posX * grid.tileWidth(), cy = t.posY * grid.tileWidth();
         const float hy = cy + grid.housingOffset();
-        if (segmentHitsBox(x, y, dx, dy, cx - half, cy - half, cx + half, cy + half) ||
-            segmentHitsBox(x, y, dx, dy, cx - half, hy - half, cx + half, hy + half))
+        if (boxesOverlap(in, {cx - half, cy - half, cx + half, cy + half}) ||
+            boxesOverlap(in, {cx - half, hy - half, cx + half, hy + half}))
             return {Blocker::InactiveTile, t.islandId};
     }
 
@@ -128,19 +126,18 @@ Blocker segmentBlocker(const Area& area, const Grid& grid, float x, float y, flo
         if (!layerEnabled(grid, L, onWater)) continue;
         float bx, by;
         grid.ownerBase(L.owner, bx, by);
-        // Segment in this layer's cell space: cell (cx, cy)'s min corner sits at (ox + cx, oy + cy).
+        // Cell (cx, cy)'s min corner sits at (ox + cx, oy + cy); a shape may poke into its neighbours.
         const float ox = bx + L.originX + L.minX, oy = by + L.originY + L.minY;
-        const float lx = x - ox, ly = y - oy;
-        int x0 = std::max(0, (int)std::floor(std::min(lx, lx + dx)) - 1);
-        int x1 = std::min(L.w - 1, (int)std::floor(std::max(lx, lx + dx)) + 1);
-        int y0 = std::max(0, (int)std::floor(std::min(ly, ly + dy)) - 1);
-        int y1 = std::min(L.h - 1, (int)std::floor(std::max(ly, ly + dy)) + 1);
+        int x0 = std::max(0, (int)std::floor(in.minX - ox) - 1);
+        int x1 = std::min(L.w - 1, (int)std::floor(in.maxX - ox) + 1);
+        int y0 = std::max(0, (int)std::floor(in.minY - oy) - 1);
+        int y1 = std::min(L.h - 1, (int)std::floor(in.maxY - oy) + 1);
         for (int cy = y0; cy <= y1; cy++) {
             for (int cx = x0; cx <= x1; cx++) {
                 int s = L.cell(cx, cy);
                 if (s < 0) continue;
                 for (const Polygon& poly : area.shapes[s])
-                    if (segmentHitsPolygon(lx, ly, dx, dy, poly.data(), poly.size() / 2, (float)cx, (float)cy))
+                    if (polygonHitsBox(poly.data(), poly.size() / 2, ox + cx, oy + cy, in))
                         return {Blocker::Layer, (int)li};
             }
         }
@@ -151,7 +148,7 @@ Blocker segmentBlocker(const Area& area, const Grid& grid, float x, float y, flo
         if (!c.active || !ownerCollides(grid, c.owner)) continue;
         float bx, by;
         grid.ownerBase(c.owner, bx, by);
-        if (objectHit(c, x, y, dx, dy, bx, by)) return {Blocker::Object, (int)i};
+        if (objectHit(c, bx, by, in)) return {Blocker::Object, (int)i};
     }
     return {};
 }
@@ -170,29 +167,35 @@ std::string describe(const Area& area, const Blocker& b) {
     return "";
 }
 
-bool moveWithCollision(const Area& area, const Grid& grid, float& x, float& y, float dx, float dy, bool onWater) {
+bool moveWithCollision(const Area& area, const Grid& grid, const Hitbox& hb, float& x, float& y, float dx, float dy,
+                       bool onWater) {
     if (dx == 0 && dy == 0) return false;
-    if (!segmentBlocked(area, grid, x, y, dx, dy, onWater)) {
+    if (boxBlocked(area, grid, hitboxAt(hb, x, y), onWater)) {
         x += dx;
         y += dy;
         return true;
     }
-    // Like the original, the single-axis fallbacks move the full step length along that axis,
-    // so sliding along a wall keeps full speed.
-    const float step = std::sqrt(dx * dx + dy * dy);
-    if (dx != 0) {
-        float sx = dx > 0 ? step : -step;
-        if (!segmentBlocked(area, grid, x, y, sx, 0, onWater)) {
-            x += sx;
-            return true;
+    bool moved = false;
+    for (int axis = 0; axis < 2; axis++) {
+        const float d = axis == 0 ? dx : dy;
+        if (d == 0) continue;
+        auto freeAt = [&](float t) {
+            return axis == 0 ? !boxBlocked(area, grid, hitboxAt(hb, x + t * d, y), onWater)
+                             : !boxBlocked(area, grid, hitboxAt(hb, x, y + t * d), onWater);
+        };
+        float t = 1;
+        if (!freeAt(1)) {
+            // Bisect for the contact point (to ~1/64 of a step, well under a pixel).
+            float lo = 0, hi = 1;
+            for (int i = 0; i < 6; i++) {
+                float mid = (lo + hi) * 0.5f;
+                (freeAt(mid) ? lo : hi) = mid;
+            }
+            t = lo;
         }
+        if (t <= 0) continue;
+        (axis == 0 ? x : y) += t * d;
+        moved = true;
     }
-    if (dy != 0) {
-        float sy = dy > 0 ? step : -step;
-        if (!segmentBlocked(area, grid, x, y, 0, sy, onWater)) {
-            y += sy;
-            return true;
-        }
-    }
-    return false;
+    return moved;
 }

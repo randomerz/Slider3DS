@@ -103,8 +103,13 @@ struct PlayerSpriteDef {
     int sortLayer = 0, order = 0;
     int anim = -1;
 };
+// A box collider relative to the player position: center offset and full size (edge radius included).
+struct Hitbox {
+    float offX = 0, offY = 0, w = 0, h = 0;
+};
 struct PlayerDef {
     PlayerSpriteDef body, boat;
+    Hitbox footBox, boatBox; // the player's collider on foot / on water
 };
 
 // A sprite placed in UI pixels: rect min corner (x, y) and size, y up, relative to some origin.

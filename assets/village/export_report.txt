@@ -1,6 +1,6 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
-World sprites: 329  Anims: 36  Object colliders: 184
+World sprites: 329  Anims: 36  Object colliders: 218
 Tiles: 168 (39 animated)  Sprites: 514
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
 Sheets (26, 2685K px):

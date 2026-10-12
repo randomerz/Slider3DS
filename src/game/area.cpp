@@ -42,6 +42,10 @@ static void readPlayerSprite(const Json& j, PlayerSpriteDef& p) {
     p.anim = j["anim"].asInt(-1);
 }
 
+static Hitbox readHitbox(const Json& j) {
+    return {j["offset"].at(0).asFloat(), j["offset"].at(1).asFloat(), j["size"].at(0).asFloat(), j["size"].at(1).asFloat()};
+}
+
 static void readObjectCollider(const Json& j, ObjectCollider& c) {
     c.path = j["path"].asString();
     c.owner = j["owner"].asInt();
@@ -249,6 +253,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     if (doc.has("player")) {
         if (doc["player"].has("body")) readPlayerSprite(doc["player"]["body"], out.player.body);
         if (doc["player"].has("boat")) readPlayerSprite(doc["player"]["boat"], out.player.boat);
+        out.player.footBox = readHitbox(doc["player"]["footBox"]);
+        out.player.boatBox = readHitbox(doc["player"]["boatBox"]);
     }
 
     readArtifact(doc["artifact"], out.artifact);

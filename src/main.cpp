@@ -32,14 +32,14 @@ constexpr float FRAME_DT = 1.0f / 60.0f;
 constexpr bool DEV = SLIDER_DEV != 0;
 constexpr bool DEV_START_OUTSIDE = DEV;
 
-// Nearest collision-free point to (x, y), searching outward in half-unit rings.
-bool findFreeNear(const Area& area, const Grid& grid, float& x, float& y) {
+// Nearest point to (x, y) where hitbox `hb` is collision-free, searching outward in half-unit rings.
+bool findFreeNear(const Area& area, const Grid& grid, const Hitbox& hb, float& x, float& y) {
     for (int r = 0; r <= 16; r++) {
         for (int i = -r; i <= r; i++) {
             for (int j = -r; j <= r; j++) {
                 if (std::abs(i) != r && std::abs(j) != r) continue; // ring only
                 float tx = x + i * 0.5f, ty = y + j * 0.5f;
-                if (!segmentBlocked(area, grid, tx, ty, 0, 0, false)) {
+                if (!boxBlocked(area, grid, hitboxAt(hb, tx, ty), false)) {
                     x = tx;
                     y = ty;
                     return true;
@@ -89,7 +89,7 @@ int main(int, char**) {
     if (loaded && DEV_START_OUTSIDE) {
         grid.ownerBase(1, px, py); // tile 1's center, outdoors
         onWater = false;
-        findFreeNear(area, grid, px, py);
+        findFreeNear(area, grid, area.player.footBox, px, py);
     }
     int playerStile = loaded ? grid.stileUnder(px, py) : 0;
     int frame = 0;
@@ -151,7 +151,7 @@ int main(int, char**) {
             float len = std::sqrt(ix * ix + iy * iy);
             float dx = ix / len * MOVE_SPEED * FRAME_DT, dy = iy / len * MOVE_SPEED * FRAME_DT;
             if (noclip) { px += dx; py += dy; }
-            else moveWithCollision(area, grid, px, py, dx, dy, onWater);
+            else moveWithCollision(area, grid, onWater ? area.player.boatBox : area.player.footBox, px, py, dx, dy, onWater);
         }
 
         plat::beginFrame();
