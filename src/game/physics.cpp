@@ -148,14 +148,16 @@ Blocker boxBlocker(const World& world, const Box& box, bool onWater) {
         }
     }
 
-    for (size_t i = 0; i < area.objectColliders.size(); i++) {
-        const ObjectCollider& c = area.objectColliders[i];
-        if (!world.objects.active(c) || !ownerCollides(grid, c.owner)) continue;
-        float bx, by;
-        grid.ownerBase(c.owner, bx, by);
-        if (objectHit(c, bx, by, in)) return {Blocker::Object, (int)i};
-    }
+    for (size_t i = 0; i < area.objectColliders.size(); i++)
+        if (colliderOverlaps(world, area.objectColliders[i], box)) return {Blocker::Object, (int)i};
     return {};
+}
+
+bool colliderOverlaps(const World& world, const ObjectCollider& c, const Box& box) {
+    if (!world.objects.active(c) || !ownerCollides(world.grid, c.owner)) return false;
+    float bx, by;
+    world.grid.ownerBase(c.owner, bx, by);
+    return objectHit(c, bx, by, inner(box));
 }
 
 std::string describe(const Area& area, const Blocker& b) {

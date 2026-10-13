@@ -2,6 +2,9 @@
 
 #include <algorithm>
 
+#include "game/events.h"
+#include "game/world.h"
+
 namespace {
 
 void setIn(std::vector<std::string>& set, const std::string& key, bool present) {
@@ -46,25 +49,9 @@ bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& g
     return false;
 }
 
-bool runConditionals(const Area& area, const ConditionalsDef& c, const GameState& state, const Grid& grid,
-                     ObjectStates& objects) {
+bool runConditionals(World& world, const ConditionalsDef& c) {
     const bool ok = std::all_of(c.conditions.begin(), c.conditions.end(),
-                                [&](const ConditionDef& d) { return checkCondition(d, state, grid); });
-    for (const SetActiveCall& call : ok ? c.onSuccess : c.onFail) objects.setActive(area, call.target, call.active);
+                                [&](const ConditionDef& d) { return checkCondition(d, world.state, world.grid); });
+    runCalls(world, ok ? c.onSuccess : c.onFail);
     return ok;
-}
-
-void StartChecks::reset(const Area& area) { started_.assign(area.startChecks.size(), 0); }
-
-void StartChecks::update(const Area& area, const GameState& state, const Grid& grid, ObjectStates& objects) {
-    for (bool ranAny = true; ranAny;) {
-        ranAny = false;
-        for (size_t i = 0; i < area.startChecks.size(); i++) {
-            const StartCheck& sc = area.startChecks[i];
-            if (started_[i] || !objects.active(sc)) continue;
-            started_[i] = 1;
-            runConditionals(area, sc.conditionals, state, grid, objects);
-            ranAny = true;
-        }
-    }
 }

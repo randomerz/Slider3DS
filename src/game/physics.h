@@ -44,6 +44,10 @@ inline bool boxBlocked(const World& world, const Box& box, bool onWater) {
     return (bool)boxBlocker(world, box, onWater);
 }
 
+// Whether collider `c` (solid or trigger) is on (its object active, its tile collected and not
+// sliding without the player) and overlaps the box's interior.
+bool colliderOverlaps(const World& world, const ObjectCollider& c, const Box& box);
+
 // Human-readable blocker ("slide border", "inactive STile 9", "STile 1 <tilemap path>",
 // "object <path>"), for debugging and tests.
 std::string describe(const Area& area, const Blocker& b);

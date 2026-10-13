@@ -1,10 +1,10 @@
 // Village walkabout: the player walks the exported Village with the original's collision; the
 // camera follows. The new-game start is the Default spawn inside tile 1's house.
-//   D-pad / circle pad: walk          START: quit
+//   D-pad / circle pad: walk          A: interact (doors, raft, ...)          START: quit
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) start outdoors on tile 1 and add:
-//   L / R: jump to previous / next spawn point      X: toggle noclip (shows the position point)
+//   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
-//   A + D-pad: slide the tile you stand on          SELECT: toggle the perf overlay
+//   L + D-pad: slide the tile you stand on          SELECT: toggle the perf overlay
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
 // add a perf overlay (game/dev_overlay).
 #include <cstdio>
@@ -91,6 +91,7 @@ int main(int, char**) {
             if (in.held & plat::BTN_UP) moveY += 1;
             if (in.held & plat::BTN_DOWN) moveY -= 1;
         }
+        if (in.pressed & plat::BTN_A) world.interact();
         world.update(FRAME_DT, moveX, moveY, DEV && dev.noclip);
         const float updateMs = (float)(plat::nowMs() - updateStart);
 
@@ -101,6 +102,8 @@ int main(int, char**) {
         view.draw(world);
         if (DEV && dev.noclip) // the position point the player moves by (the camera follows it)
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
+        if (world.fade > 0) // FadeFromBlack (UIEffects' black panel)
+            plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(world.fade * 255)));
 
         plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));
         artifactUI.draw(world, sheets);

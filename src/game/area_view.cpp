@@ -80,9 +80,13 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     }
     const Player& pl = world.player;
     const uint32_t facing = pl.facingLeft ? (uint32_t)plat::FLIP_X : 0u;
-    for (const SpritePlacement* p : {&area.player.body, pl.onWater ? &area.player.boat : nullptr}) {
+    const SpritePlacement* playerParts[] = {&area.player.body, pl.onWater ? &area.player.boat : nullptr,
+                                            world.interactables.empty() ? nullptr : &area.player.actionIndicator};
+    for (const SpritePlacement* p : playerParts) {
         if (!p || p->sprite < 0 || !inRange(p->sortLayer)) continue;
-        items_.push_back({ItemKind::Player, (int)items_.size(), placeSprite(area, *p, pl.x, pl.y, time_, facing)});
+        // The body flips with facing (SpriteRenderer.flipX); its children (boat, indicator) don't.
+        const uint32_t flip = p == &area.player.body ? facing : 0u;
+        items_.push_back({ItemKind::Player, (int)items_.size(), placeSprite(area, *p, pl.x, pl.y, time_, flip)});
     }
 
     std::sort(items_.begin(), items_.end(), [](const Item& a, const Item& b) {

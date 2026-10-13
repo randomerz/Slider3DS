@@ -118,25 +118,76 @@ struct ConditionDef {
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
 };
 
-// GameObject.SetActive(active) on Area::objects[target].
-struct SetActiveCall {
-    int target = 0;
-    bool active = true;
+// One UnityEvent persistent call, as exported. `method` is the subset game/events runs; the rest
+// load as Unsupported (the exporter's report lists them by name).
+struct CallDef {
+    enum class Method {
+        SetActive,            // GameObject.SetActive(boolArg) on target
+        TeleportHard,         // PlayerPositionChanger.UPPHard: player to dPos
+        TeleportRelativePlayer, // UPPRelativePlayer: player += dPos
+        TeleportRelativeMe,   // UPPRelativeMe: player to the changer's position + dPos
+        TeleportTransform,    // UPPTransform: player to goTo's position + dPos
+        ActivateSTile,        // Collectible.ActivateSTile(intArg): SGrid.CollectSTile
+        SetFlagOn,            // VarManager.SetBoolOn(stringArg)
+        SetOnWater,           // WaterLandColliderManager.SetOnWater(boolArg)
+        FadeFromBlack,        // UIEffectApplier.FadeFromBlack
+        CheckConditions,      // ConditionChecker.CheckConditions on conditionCheckers[checker]
+        ChangeScenes,         // SceneChanger.ChangeScenes (leaves the Village)
+        Unsupported,
+    };
+    Method method = Method::Unsupported;
+    std::string name; // "<TargetType>.<Method>", for logs and tests
+    int target = -1;  // Area::objects index of the target, -1 = none
+    bool boolArg = false;
+    int intArg = 0;
+    std::string stringArg;
+    // PlayerPositionChanger: its position (owner-relative), offset, house flag, goTo position.
+    int owner = 0, goToOwner = 0;
+    float x = 0, y = 0, dx = 0, dy = 0, goToX = 0, goToY = 0;
+    bool tpToHouse = false;
+    int checker = -1; // CheckConditions: Area::conditionCheckers index
 };
 
-// Conditionals: all conditions true -> onSuccess, else onFail. Only the SetActive calls are kept
-// (the exporter lists the others in its report).
+// Conditionals: all conditions true -> onSuccess, else onFail.
 struct ConditionalsDef {
     std::vector<ConditionDef> conditions;
-    std::vector<SetActiveCall> onSuccess, onFail;
+    std::vector<CallDef> onSuccess, onFail;
 };
 
-// A ConditionChecker with checkOnStart: checks its conditionals when its object first becomes
-// active (Unity's Start).
-struct StartCheck {
+// A ConditionChecker: its conditionals run from events (CheckConditions), and with checkOnStart
+// also when its object first becomes active (Unity's Start).
+struct ConditionCheckerDef {
     int object = 0;      // Area::objects index
     bool enabled = true; // the component itself
+    bool checkOnStart = false;
     ConditionalsDef conditionals;
+};
+
+// PlayerConditionals: with addToOnAction, offered while the player is in its trigger and run by the
+// action button; otherwise run when the player enters the trigger.
+struct InteractionDef {
+    int object = 0;
+    bool addToOnAction = false;
+    bool excludeBoat = false, excludeLand = false; // not offered on water / on land
+    bool isCarryingItem = false; // needs the player to carry an item (named itemName, if set)
+    std::string itemName;
+    std::vector<CallDef> onSuccess;
+};
+
+// OnTriggerEnter: calls when the player enters / leaves the object's trigger.
+struct TriggerEventDef {
+    int object = 0;
+    bool onPlayerEnter = true;
+    std::vector<CallDef> onEnter, onExit;
+};
+
+// A Collectible: picked up when the player touches it (PlayerInventory.AddCollectible), hiding it.
+struct CollectibleDef {
+    int object = 0;
+    std::string name, area;     // CollectibleData
+    bool disableAtStart = false; // Start hides it (shown later by an event)
+    int sprite = -1;
+    std::vector<CallDef> onCollect;
 };
 
 // A box collider relative to the player position: center offset and full size (edge radius included).
@@ -144,9 +195,10 @@ struct Hitbox {
     float offX = 0, offY = 0, w = 0, h = 0;
 };
 
-// How the player is drawn (relative to the player position; the boat only on water) and collides.
+// How the player is drawn (relative to the player position; the boat only on water, the action
+// indicator only while an interaction is on offer) and collides.
 struct PlayerDef {
-    SpritePlacement body, boat;
+    SpritePlacement body, boat, actionIndicator;
     Hitbox footBox, boatBox; // the player's collider on foot / on water
 };
 
@@ -207,7 +259,12 @@ struct Area {
     std::vector<WorldSprite> worldSprites;
     std::vector<Anim> anims;
     std::vector<ObjectCollider> objectColliders;
-    std::vector<StartCheck> startChecks;
+    std::vector<ObjectCollider> triggerColliders; // of objects with interactions, trigger events, collectibles
+    std::vector<ConditionCheckerDef> conditionCheckers;
+    std::vector<InteractionDef> interactions;
+    std::vector<TriggerEventDef> triggerEvents;
+    std::vector<CollectibleDef> collectibles;
+    float fadeDuration = 1; // UIEffects.fadeDuration (s)
     PlayerDef player;
     ArtifactDef artifact;
     std::vector<TileDef> tiles;

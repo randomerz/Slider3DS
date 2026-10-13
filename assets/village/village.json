@@ -5524,9 +5524,517 @@
       ]
     }
   ],
-  "startChecks": [
+  "triggerColliders": [
+    {
+      "object": 13,
+      "owner": 0,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [52.375,-0.625,58.625,-0.625,58.625,5.625,52.375,5.625]
+      ]
+    },
+    {
+      "object": 16,
+      "owner": 0,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [45,15.5,48,15.5,48,18.5,45,18.5]
+      ]
+    },
+    {
+      "object": 19,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [45.5,2.5,46.5,2.5,46.5,3.5,45.5,3.5]
+      ]
+    },
+    {
+      "object": 21,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [34.5,45.5,35.5,45.5,35.5,46.5,34.5,46.5]
+      ]
+    },
+    {
+      "object": 23,
+      "owner": 0,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [36.5,46.5,39.5,46.5,39.5,49.5,36.5,49.5]
+      ]
+    },
+    {
+      "object": 26,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [44.5,4.5,45.5,4.5,45.5,5.5,44.5,5.5]
+      ]
+    },
+    {
+      "object": 28,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [38.75,43.75,40.25,43.75,40.25,44.5,38.75,44.5]
+      ]
+    },
+    {
+      "object": 100,
+      "owner": 0,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [68,68,71,68,71,71,68,71]
+      ]
+    },
+    {
+      "object": 105,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [35.5,52,37.5,52,37.5,53.5,35.5,53.5]
+      ]
+    },
+    {
+      "object": 451,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [65.5,4.5,67.5,4.5,67.5,19.5,65.5,19.5]
+      ]
+    },
+    {
+      "object": 110,
+      "owner": 0,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [47.5,7.3125,50.5,7.3125,50.5,10.3125,47.5,10.3125]
+      ]
+    },
+    {
+      "object": 453,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [50,7,51,7,51,8,50,8]
+      ]
+    },
+    {
+      "object": 454,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [49.5,6.5,51.5,6.5,51.5,8.5,49.5,8.5]
+      ]
+    },
+    {
+      "object": 456,
+      "owner": 0,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [48.5,6.75,52.5,6.75,52.5,8.25,48.5,8.25]
+      ]
+    },
+    {
+      "object": 457,
+      "owner": 1,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [1,0.5,2,0.5,2,2.5,1,2.5]
+      ]
+    },
+    {
+      "object": 121,
+      "owner": 1,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [5.75,-1,7.75,-1,7.75,1,5.75,1]
+      ]
+    },
+    {
+      "object": 458,
+      "owner": 1,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [0.63,-0.37,2.63,-0.37,2.63,1.63,0.63,1.63]
+      ]
+    },
+    {
+      "object": 459,
+      "owner": 1,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [1,-152,3,-152,3,-150,1,-150]
+      ]
+    },
+    {
+      "object": 143,
+      "owner": 1,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [1.875,-145.5,2.875,-145.5,2.875,-144.5,1.875,-144.5]
+      ]
+    },
+    {
+      "object": 145,
+      "owner": 1,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-1.75,-146,0.25,-146,0.25,-144,-1.75,-144]
+      ]
+    },
+    {
+      "object": 153,
+      "owner": 2,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-7.5,3,-6.5,3,-6.5,4,-7.5,4]
+      ]
+    },
+    {
+      "object": 155,
+      "owner": 2,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-6.5,1.5,-3.5,1.5,-3.5,4.5,-6.5,4.5]
+      ]
+    },
+    {
+      "object": 166,
+      "owner": 2,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-8.5,5.25,-7,5.25,-7,7.75,-8.5,7.75]
+      ]
+    },
+    {
+      "object": 178,
+      "owner": 3,
+      "enabled": false,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [0.25,4.75,0.75,4.75,0.75,5.25,0.25,5.25]
+      ]
+    },
+    {
+      "object": 180,
+      "owner": 3,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [0,4.5,3,4.5,3,7.5,0,7.5]
+      ]
+    },
+    {
+      "object": 221,
+      "owner": 4,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-7.5,2.5,-4.5,2.5,-4.5,5.5,-7.5,5.5]
+      ]
+    },
+    {
+      "object": 227,
+      "owner": 4,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-3.5,3.5,-2.5,3.5,-2.5,4.5,-3.5,4.5]
+      ]
+    },
+    {
+      "object": 233,
+      "owner": 5,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-7.75,-1,-5.75,-1,-5.75,1,-7.75,1]
+      ]
+    },
+    {
+      "object": 460,
+      "owner": 5,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [0.625,1,1.625,1,1.625,3,0.625,3]
+      ]
+    },
+    {
+      "object": 237,
+      "owner": 5,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [0,-3,1,-3,1,-2,0,-2]
+      ]
+    },
+    {
+      "object": 238,
+      "owner": 5,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [0,-3,1,-3,1,-2,0,-2]
+      ]
+    },
+    {
+      "object": 245,
+      "owner": 5,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-9,-2.5,-8,-2.5,-8,-1.5,-9,-1.5]
+      ]
+    },
+    {
+      "object": 461,
+      "owner": 5,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [2,-150,4,-150,4,-148,2,-148]
+      ]
+    },
+    {
+      "object": 268,
+      "owner": 5,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [1.5,-146.5,4.5,-146.5,4.5,-143.5,1.5,-143.5]
+      ]
+    },
+    {
+      "object": 273,
+      "owner": 6,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-3.5,-4.5,-0.5,-4.5,-0.5,-1.5,-3.5,-1.5]
+      ]
+    },
+    {
+      "object": 462,
+      "owner": 6,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [1.5,6.5,2.5,6.5,2.5,7.5,1.5,7.5]
+      ]
+    },
+    {
+      "object": 279,
+      "owner": 6,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [7,5.25,8.5,5.25,8.5,7.75,7,7.75]
+      ]
+    },
+    {
+      "object": 283,
+      "owner": 6,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-2.5,-6.5,-1.5,-6.5,-1.5,-5.5,-2.5,-5.5]
+      ]
+    },
+    {
+      "object": 297,
+      "owner": 7,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-7.5,0.5,-5.5,0.5,-5.5,2.5,-7.5,2.5]
+      ]
+    },
+    {
+      "object": 320,
+      "owner": 8,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [2,1.5,5,1.5,5,4.5,2,4.5]
+      ]
+    },
+    {
+      "object": 463,
+      "owner": 8,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [2.5,-5,4.5,-5,4.5,-3,2.5,-3]
+      ]
+    },
+    {
+      "object": 332,
+      "owner": 8,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [5.5,-0.5,6.5,-0.5,6.5,0.5,5.5,0.5]
+      ]
+    },
+    {
+      "object": 464,
+      "owner": 8,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [2,-156,4,-156,4,-154,2,-154]
+      ]
+    },
+    {
+      "object": 364,
+      "owner": 9,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-1.5,-6,1.5,-6,1.5,-3,-1.5,-3]
+      ]
+    },
+    {
+      "object": 369,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [1.5,2,3.5,2,3.5,4,1.5,4]
+      ]
+    },
+    {
+      "object": 465,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-5.5,-0.5,-4.5,-0.5,-4.5,1.5,-5.5,1.5]
+      ]
+    },
+    {
+      "object": 466,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [3.5,-5.25,5.5,-5.25,5.5,-3.25,3.5,-3.25]
+      ]
+    },
+    {
+      "object": 467,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [3.75,2.5,5.75,2.5,5.75,4.5,3.75,4.5]
+      ]
+    },
+    {
+      "object": 381,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [1.25,-5,3.25,-5,3.25,-3,1.25,-3]
+      ]
+    },
+    {
+      "object": 468,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-6,-149,-4,-149,-4,-147,-6,-147]
+      ]
+    },
+    {
+      "object": 397,
+      "owner": 9,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [-4.5,-146.5,-1.5,-146.5,-1.5,-143.5,-4.5,-143.5]
+      ]
+    },
+    {
+      "object": 400,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [-4.5,-145,-3.5,-145,-3.5,-144,-4.5,-144]
+      ]
+    },
+    {
+      "object": 419,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [1.5,-154.5,2.5,-154.5,2.5,-153.5,1.5,-153.5]
+      ]
+    },
+    {
+      "object": 469,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [4,-158,6,-158,6,-156,4,-156]
+      ]
+    },
+    {
+      "object": 470,
+      "owner": 9,
+      "layer": "Default",
+      "kind": "poly",
+      "paths": [
+        [3,-150,5,-150,5,-148,3,-148]
+      ]
+    },
+    {
+      "object": 434,
+      "owner": 9,
+      "layer": "NPC",
+      "kind": "poly",
+      "paths": [
+        [3.5625,-145.9375,6.5625,-145.9375,6.5625,-141.9375,3.5625,-141.9375]
+      ]
+    }
+  ],
+  "conditionCheckers": [
     {
       "object": 206,
+      "checkOnStart": true,
       "conditions": [
         {
           "type": "item",
@@ -5537,7 +6045,7 @@
       "onSuccess": [
         {
           "method": "KnotBox.SetToCorrectPositions",
-          "targetPath": "Map/Village 8Puzzle/STile (4)/Objects/Knot"
+          "target": 206
         }
       ],
       "onFail": [
@@ -5545,6 +6053,7 @@
     },
     {
       "object": 240,
+      "checkOnStart": true,
       "conditions": [
         {
           "type": "item",
@@ -5556,7 +6065,7 @@
         {
           "method": "GameObject.SetActive",
           "target": 240,
-          "active": false
+          "bool": false
         }
       ],
       "onFail": [
@@ -5564,6 +6073,7 @@
     },
     {
       "object": 241,
+      "checkOnStart": true,
       "conditions": [
         {
           "type": "item",
@@ -5577,12 +6087,41 @@
         {
           "method": "GameObject.SetActive",
           "target": 241,
-          "active": false
+          "bool": false
+        }
+      ]
+    },
+    {
+      "object": 462,
+      "checkOnStart": false,
+      "conditions": [
+        {
+          "type": "grid",
+          "pattern": "6.._..._...",
+          "stationaryTiles": []
+        }
+      ],
+      "onSuccess": [
+        {
+          "method": "VillageGrid.OnWaterfallEntry",
+          "target": 115
+        },
+        {
+          "method": "SceneChanger.ChangeScenes",
+          "target": 462
+        }
+      ],
+      "onFail": [
+        {
+          "method": "ConditionChecker.PlayErrorSound",
+          "target": 462,
+          "checker": 3
         }
       ]
     },
     {
       "object": 107,
+      "checkOnStart": true,
       "conditions": [
         {
           "type": "flag",
@@ -5593,29 +6132,30 @@
         {
           "method": "GameObject.SetActive",
           "target": 107,
-          "active": false
+          "bool": false
         },
         {
           "method": "GameObject.SetActive",
           "target": 105,
-          "active": true
+          "bool": true
         }
       ],
       "onFail": [
         {
           "method": "GameObject.SetActive",
           "target": 107,
-          "active": true
+          "bool": true
         },
         {
           "method": "GameObject.SetActive",
           "target": 105,
-          "active": false
+          "bool": false
         }
       ]
     },
     {
-      "object": 450,
+      "object": 452,
+      "checkOnStart": true,
       "conditions": [
         {
           "type": "item",
@@ -5627,24 +6167,25 @@
         {
           "method": "GameObject.SetActive",
           "target": 114,
-          "active": true
+          "bool": true
         },
         {
           "method": "GameObject.SetActive",
           "target": 113,
-          "active": false
+          "bool": false
         }
       ],
       "onFail": [
         {
           "method": "GameObject.SetActive",
           "target": 114,
-          "active": false
+          "bool": false
         }
       ]
     },
     {
       "object": 114,
+      "checkOnStart": true,
       "conditions": [
         {
           "type": "spec"
@@ -5654,23 +6195,1034 @@
         {
           "method": "GameObject.SetActive",
           "target": 114,
-          "active": false
+          "bool": false
         },
         {
           "method": "GameObject.SetActive",
-          "target": 451,
-          "active": true
+          "target": 455,
+          "bool": true
         },
         {
           "method": "GameObject.SetActive",
           "target": 113,
-          "active": false
+          "bool": false
         }
       ],
       "onFail": [
       ]
     }
   ],
+  "interactions": [
+    {
+      "object": 457,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 457,
+          "owner": 1,
+          "pos": [1.5,1.5],
+          "dPos": [0.5,-151],
+          "tpToHouse": true
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 457
+        }
+      ]
+    },
+    {
+      "object": 459,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 459,
+          "owner": 1,
+          "pos": [2,-151],
+          "dPos": [-0.5,151.5],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 459
+        },
+        {
+          "method": "VillageGrid.OnHouseExit",
+          "target": 115
+        },
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "interact"
+        }
+      ]
+    },
+    {
+      "object": 460,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 460,
+          "owner": 5,
+          "pos": [1.125,2],
+          "dPos": [1.875,-150],
+          "tpToHouse": true
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 460
+        }
+      ]
+    },
+    {
+      "object": 237,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "GameObject.SetActive",
+          "target": 238,
+          "bool": true
+        },
+        {
+          "method": "GameObject.SetActive",
+          "target": 241,
+          "bool": true
+        },
+        {
+          "method": "VillageGrid.PlayDigSound",
+          "target": 115
+        }
+      ]
+    },
+    {
+      "object": 461,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 461,
+          "owner": 5,
+          "pos": [3,-149],
+          "dPos": [-1.875,150],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 461
+        }
+      ]
+    },
+    {
+      "object": 463,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 463,
+          "owner": 8,
+          "pos": [3.5,-4],
+          "dPos": [-0.5,-150],
+          "tpToHouse": true
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 463
+        }
+      ]
+    },
+    {
+      "object": 464,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 464,
+          "owner": 8,
+          "pos": [3,-155],
+          "dPos": [0.5,150],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 464
+        }
+      ]
+    },
+    {
+      "object": 369,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "DogProp.Bark",
+          "target": 369
+        }
+      ]
+    },
+    {
+      "object": 465,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 465,
+          "owner": 9,
+          "pos": [-5,0.5],
+          "dPos": [0,-147.5],
+          "tpToHouse": true
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 465
+        }
+      ]
+    },
+    {
+      "object": 466,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 466,
+          "owner": 9,
+          "pos": [4.5,-4.25],
+          "dPos": [0.5,-151.75],
+          "tpToHouse": true
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 466
+        }
+      ]
+    },
+    {
+      "object": 467,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 467,
+          "owner": 9,
+          "pos": [4.75,3.5],
+          "dPos": [-0.75,-151.5],
+          "tpToHouse": true
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 467
+        }
+      ]
+    },
+    {
+      "object": 381,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlaySound.PlayString",
+          "target": 381,
+          "string": "Puzzle Complete"
+        }
+      ]
+    },
+    {
+      "object": 468,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 468,
+          "owner": 9,
+          "pos": [-5,-148],
+          "dPos": [0,147.5],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 468
+        }
+      ]
+    },
+    {
+      "object": 469,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 469,
+          "owner": 9,
+          "pos": [5,-157],
+          "dPos": [-0.5,151.75],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 469
+        }
+      ]
+    },
+    {
+      "object": 470,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 470,
+          "owner": 9,
+          "pos": [4,-149],
+          "dPos": [0.75,151.5],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIEffectApplier.FadeFromBlack",
+          "target": 470
+        }
+      ]
+    },
+    {
+      "object": 28,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "CowProp.Moo",
+          "target": 28
+        }
+      ]
+    },
+    {
+      "object": 454,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "WaterLandColliderManager.SetOnWater",
+          "target": 0,
+          "bool": true
+        },
+        {
+          "method": "GameObject.SetActive",
+          "target": 114,
+          "bool": false
+        },
+        {
+          "method": "GameObject.SetActive",
+          "target": 455,
+          "bool": true
+        },
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 454,
+          "owner": 0,
+          "pos": [50.5,7.5],
+          "dPos": [2.25,0],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIClick.Click",
+          "target": 454
+        }
+      ]
+    },
+    {
+      "object": 456,
+      "addToOnAction": true,
+      "excludeBoat": false,
+      "excludeLand": false,
+      "isCarryingItem": false,
+      "itemName": "",
+      "onSuccess": [
+        {
+          "method": "WaterLandColliderManager.SetOnWater",
+          "target": 0,
+          "bool": false
+        },
+        {
+          "method": "GameObject.SetActive",
+          "target": 114,
+          "bool": true
+        },
+        {
+          "method": "GameObject.SetActive",
+          "target": 455,
+          "bool": false
+        },
+        {
+          "method": "PlayerPositionChanger.UPPRelativeMe",
+          "target": 456,
+          "owner": 0,
+          "pos": [50.5,7.5],
+          "dPos": [0,0],
+          "tpToHouse": false
+        },
+        {
+          "method": "UIClick.Click",
+          "target": 456
+        }
+      ]
+    }
+  ],
+  "triggerEvents": [
+    {
+      "object": 121,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 121
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 121
+        }
+      ]
+    },
+    {
+      "object": 458,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "PlayerActionHints.TriggerHint",
+          "target": 471,
+          "string": "tab"
+        },
+        {
+          "method": "VarManager.SetBoolOn",
+          "target": 472,
+          "string": "villageTouchedGrass"
+        },
+        {
+          "method": "PlayerActionHints.TriggerHint",
+          "target": 471,
+          "string": "tiles"
+        }
+      ],
+      "onExit": [
+      ]
+    },
+    {
+      "object": 145,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 145
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 145
+        }
+      ]
+    },
+    {
+      "object": 155,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 155
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 155
+        }
+      ]
+    },
+    {
+      "object": 166,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "PlayerAction.SetItemSortingOrderInc",
+          "target": 473,
+          "int": 5
+        }
+      ],
+      "onExit": [
+        {
+          "method": "PlayerAction.SetItemSortingOrderDec",
+          "target": 473,
+          "int": 0
+        }
+      ]
+    },
+    {
+      "object": 180,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 180
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 180
+        }
+      ]
+    },
+    {
+      "object": 221,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 221
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 221
+        }
+      ]
+    },
+    {
+      "object": 233,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 233
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 233
+        }
+      ]
+    },
+    {
+      "object": 268,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 268
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 268
+        }
+      ]
+    },
+    {
+      "object": 273,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 273
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 273
+        }
+      ]
+    },
+    {
+      "object": 462,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "ConditionChecker.CheckConditions",
+          "target": 462,
+          "checker": 3
+        }
+      ],
+      "onExit": [
+      ]
+    },
+    {
+      "object": 279,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "PlayerAction.SetItemSortingOrderInc",
+          "target": 473,
+          "int": 5
+        }
+      ],
+      "onExit": [
+        {
+          "method": "PlayerAction.SetItemSortingOrderDec",
+          "target": 473,
+          "int": 0
+        }
+      ]
+    },
+    {
+      "object": 297,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 297
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 297
+        }
+      ]
+    },
+    {
+      "object": 320,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 320
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 320
+        }
+      ]
+    },
+    {
+      "object": 364,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 364
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 364
+        }
+      ]
+    },
+    {
+      "object": 397,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 397
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 397
+        }
+      ]
+    },
+    {
+      "object": 434,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 434
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 434
+        }
+      ]
+    },
+    {
+      "object": 13,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 13
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 13
+        }
+      ]
+    },
+    {
+      "object": 16,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 16
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 16
+        }
+      ]
+    },
+    {
+      "object": 23,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 23
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 23
+        }
+      ]
+    },
+    {
+      "object": 100,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 100
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 100
+        }
+      ]
+    },
+    {
+      "object": 105,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "SceneChanger.ChangeScenes",
+          "target": 105
+        }
+      ],
+      "onExit": [
+      ]
+    },
+    {
+      "object": 451,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "SceneChanger.ChangeScenes",
+          "target": 450
+        }
+      ],
+      "onExit": [
+      ]
+    },
+    {
+      "object": 110,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "NPC.OnDialogueTriggerEnter",
+          "target": 110
+        }
+      ],
+      "onExit": [
+        {
+          "method": "NPC.OnDialogueTriggerExit",
+          "target": 110
+        }
+      ]
+    },
+    {
+      "object": 453,
+      "onPlayerEnter": true,
+      "onEnter": [
+        {
+          "method": "ConditionChecker.CheckConditions",
+          "target": 452,
+          "checker": 5
+        }
+      ],
+      "onExit": [
+      ]
+    }
+  ],
+  "collectibles": [
+    {
+      "object": 143,
+      "name": "Artifact",
+      "area": "Village",
+      "disableAtStart": false,
+      "sprite": 107,
+      "onCollect": [
+        {
+          "method": "PlayerActionHints.TriggerHint",
+          "target": 471,
+          "string": "interact"
+        }
+      ]
+    },
+    {
+      "object": 153,
+      "name": "Slider 3",
+      "area": "Village",
+      "disableAtStart": true,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 153,
+          "int": 3
+        },
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "dialogue"
+        }
+      ]
+    },
+    {
+      "object": 178,
+      "name": "Slider 4",
+      "area": "Village",
+      "disableAtStart": false,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 178,
+          "int": 4
+        }
+      ]
+    },
+    {
+      "object": 227,
+      "name": "Slider 5",
+      "area": "Village",
+      "disableAtStart": true,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 227,
+          "int": 5
+        }
+      ]
+    },
+    {
+      "object": 238,
+      "name": "Slider 7",
+      "area": "Village",
+      "disableAtStart": true,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 238,
+          "int": 7
+        },
+        {
+          "method": "GameObject.SetActive",
+          "target": 237,
+          "bool": false
+        }
+      ]
+    },
+    {
+      "object": 245,
+      "name": "Slider 6",
+      "area": "Village",
+      "disableAtStart": true,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 245,
+          "int": 6
+        }
+      ]
+    },
+    {
+      "object": 283,
+      "name": "Slider 8",
+      "area": "Village",
+      "disableAtStart": true,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 283,
+          "int": 8
+        }
+      ]
+    },
+    {
+      "object": 332,
+      "name": "Slider 9",
+      "area": "Village",
+      "disableAtStart": true,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 332,
+          "int": 9
+        }
+      ]
+    },
+    {
+      "object": 400,
+      "name": "Breadge",
+      "area": "Village",
+      "disableAtStart": true,
+      "sprite": 197,
+      "onCollect": [
+        {
+          "method": "Breadge.Pickup",
+          "target": 400
+        }
+      ]
+    },
+    {
+      "object": 419,
+      "name": "Map",
+      "area": "Village",
+      "disableAtStart": false,
+      "sprite": 201,
+      "onCollect": [
+        {
+          "method": "ArtifactScreenHider.AddScreensAndShow",
+          "target": 474,
+          "int": 2
+        },
+        {
+          "method": "ArtifactWorldMapAffector.UpdateStatus",
+          "target": 419
+        },
+        {
+          "method": "ArtifactWorldMapAffector.UpdateStatus",
+          "target": 419
+        }
+      ]
+    },
+    {
+      "object": 19,
+      "name": "Coffee",
+      "area": "Village",
+      "disableAtStart": false,
+      "sprite": 5,
+      "onCollect": [
+      ]
+    },
+    {
+      "object": 21,
+      "name": "Slider 2",
+      "area": "Village",
+      "disableAtStart": false,
+      "sprite": 6,
+      "onCollect": [
+        {
+          "method": "Collectible.ActivateSTile",
+          "target": 21,
+          "int": 2
+        },
+        {
+          "method": "VillageGrid.RemoveSlider2Tracker",
+          "target": 115
+        }
+      ]
+    },
+    {
+      "object": 26,
+      "name": "Boating License",
+      "area": "Caves",
+      "disableAtStart": true,
+      "sprite": 8,
+      "onCollect": [
+      ]
+    }
+  ],
+  "fadeDuration": 1,
   "objects": [
     {
       "path": "Map",
@@ -7923,14 +9475,129 @@
       "active": false
     },
     {
+      "path": "Map/World Grid/Beach/Scene Change",
+      "parent": 109,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Beach/Scene Change/Collider",
+      "parent": 450,
+      "active": true
+    },
+    {
       "path": "Map/World Grid/Beach/EnableRaftCollider",
       "parent": 109,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Beach/EnableRaftCollider/Collider",
+      "parent": 452,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Beach/Raft/Collider",
+      "parent": 114,
       "active": true
     },
     {
       "path": "Map/World Grid/Beach/Dock",
       "parent": 109,
       "active": false
+    },
+    {
+      "path": "Map/World Grid/Beach/Dock/Collider",
+      "parent": 455,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/House2/HouseTPDown",
+      "parent": 120,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Artifact Prompt Trigger",
+      "parent": 117,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
+      "parent": 136,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/House7 (1)/HouseTPDown",
+      "parent": 236,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
+      "parent": 255,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/Objects/Waterfall Entrance",
+      "parent": 272,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/House4 (1)/HouseTPDown",
+      "parent": 326,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
+      "parent": 345,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House3 (1)/HouseTPDown",
+      "parent": 374,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House6/HouseTPDown",
+      "parent": 375,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House5/HouseTPDown",
+      "parent": 376,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/HouseTPAction",
+      "parent": 396,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/HouseTPAction (1)",
+      "parent": 418,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/HouseTPAction",
+      "parent": 433,
+      "active": true
+    },
+    {
+      "path": "Village Hints",
+      "parent": -1,
+      "active": true
+    },
+    {
+      "path": "VarManager",
+      "parent": -1,
+      "active": true
+    },
+    {
+      "path": "Player",
+      "parent": -1,
+      "active": true
+    },
+    {
+      "path": "ArtifactCanvas",
+      "parent": -1,
+      "active": true
     }
   ],
   "player": {
@@ -7949,6 +9616,13 @@
       "sortingLayerValue": 7,
       "order": 0,
       "anim": 35
+    },
+    "actionIndicator": {
+      "sprite": 2,
+      "pos": [0,1],
+      "sortY": 1,
+      "sortingLayerValue": 9,
+      "order": 0
     },
     "footBox": {
       "offset": [0,-0.0625],

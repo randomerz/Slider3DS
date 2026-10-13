@@ -317,3 +317,36 @@ TEST(render_start_check_goldens) {
         goldens.compare(exploded ? "cave_door_exploded" : "cave_door_new_game", 50);
     }
 }
+
+TEST(render_action_indicator_while_an_interaction_is_offered) {
+    // PlayerAction's indicator above the player shows only while an interaction is on offer.
+    const Area& area = village();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    const SpriteDef& indicator = area.sprites[area.player.actionIndicator.sprite];
+    auto indicatorDrawn = [&](World& world) {
+        testResetDrawCalls();
+        view.begin(area, sheets, world.player.x, world.player.y, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        for (const DrawCall& c : testDrawCalls())
+            if (c.sheet == area.sheetNames[indicator.sheet] && c.sx == indicator.x && c.sy == indicator.y) return true;
+        return false;
+    };
+    World world(area);
+    world.placeAt(*area.spawn("Default"));
+    world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.interactables.empty() && !indicatorDrawn(world), "nothing on offer by the bed: no indicator");
+    // Onto tile 1's house exit (its trigger's center).
+    const int exitObject = area.findObject("Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction");
+    for (const ObjectCollider& c : area.triggerColliders)
+        if (c.object == exitObject) {
+            float bx, by;
+            world.grid.ownerBase(c.owner, bx, by);
+            world.player.x = bx + (c.minX + c.maxX) * 0.5f;
+            world.player.y = by + (c.minY + c.maxY) * 0.5f - area.player.footBox.offY;
+        }
+    world.update(1.0f / 60.0f, 0, 0, false);
+    check(!world.interactables.empty(), "on the exit: it's on offer");
+    check(indicatorDrawn(world), "the indicator shows");
+}

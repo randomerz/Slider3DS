@@ -1,5 +1,5 @@
-// Object active state (GameObject.SetActive with Unity's hierarchy rules), conditions, and start
-// checks (ConditionChecker.checkOnStart) on synthetic areas and the Village.
+// Object active state (GameObject.SetActive with Unity's hierarchy rules), conditions, and Starts
+// (ConditionChecker.checkOnStart, Collectible.shouldDisableAtStart) on a synthetic area and the Village.
 #include <string>
 
 #include "game/area.h"
@@ -25,7 +25,7 @@ int colliderOf(const Area& area, const std::string& path) {
     return -1;
 }
 
-// Objects: 0 "A", 1 "A/B" (inactive itself), 2 "A/C", 3 "D" (inactive, holds a start check).
+// Objects: 0 "A", 1 "A/B" (inactive itself), 2 "A/C", 3 "D" (inactive).
 Area hierarchy() {
     Area area;
     area.objects = {{"A", -1, true}, {"A/B", 0, false}, {"A/C", 0, true}, {"D", -1, false}};
@@ -56,34 +56,26 @@ TEST(object_states_follow_the_hierarchy) {
     CHECK(o.activeInHierarchy(2) && !o.active(c)); // a disabled component stays off
 }
 
-TEST(start_checks_run_when_their_object_first_activates) {
-    // D's checker (flag "go": show A/B) doesn't run while D is inactive; it runs once D activates,
-    // and only once (Start), even if the state changes later.
-    Area area = hierarchy();
-    StartCheck sc;
-    sc.object = 3;
-    sc.conditionals.conditions.push_back({ConditionDef::Type::Flag, "go", "", "", {}});
-    sc.conditionals.onSuccess.push_back({1, true});
-    sc.conditionals.onFail.push_back({2, false});
-    area.startChecks.push_back(sc);
-    Grid grid;
-    GameState state;
-    state.setFlag("go", true);
-    ObjectStates o;
-    o.init(area);
-    StartChecks checks;
-    checks.reset(area);
-    checks.update(area, state, grid, o);
-    CHECK(!checks.started(0) && !o.activeInHierarchy(1));
-    o.setActive(area, 3, true);
-    checks.update(area, state, grid, o);
-    CHECK(checks.started(0) && o.activeInHierarchy(1) && o.activeInHierarchy(2));
-    state.setFlag("go", false);
-    checks.update(area, state, grid, o);
-    CHECK(o.activeInHierarchy(1) && o.activeInHierarchy(2)); // not run again
-    checks.reset(area); // a fresh load runs it again: now onFail
-    checks.update(area, state, grid, o);
-    CHECK(!o.activeInHierarchy(2));
+TEST(starts_run_when_their_object_first_activates) {
+    // Slider 7's collectible sits under the inactive "Burried Slider": its Start (which hides it,
+    // shouldDisableAtStart) runs only when digging shows its parent, and only once.
+    const Area& area = village();
+    World world(area);
+    const int buried = area.findObject("Map/Village 8Puzzle/STile (5)/Objects/Burried Slider");
+    size_t slider7 = area.collectibles.size();
+    for (size_t i = 0; i < area.collectibles.size(); i++)
+        if (area.collectibles[i].name == "Slider 7") slider7 = i;
+    check(buried >= 0 && slider7 < area.collectibles.size(), "the buried slider and its collectible exist");
+    if (buried < 0 || slider7 == area.collectibles.size()) return;
+    const int object = area.collectibles[slider7].object;
+    check(!world.starts.collectibleStarted(slider7), "not started while its parent is hidden");
+    world.objects.setActive(area, buried, true);
+    check(world.objects.activeInHierarchy(object), "shown with its parent ...");
+    world.starts.update(world);
+    check(world.starts.collectibleStarted(slider7) && !world.objects.activeInHierarchy(object), "... then its Start hides it");
+    world.objects.setActive(area, object, true); // shown by an event later: Start doesn't run again
+    world.starts.update(world);
+    check(world.objects.activeInHierarchy(object), "and an event can show it afterwards");
 }
 
 TEST(conditions_check) {
@@ -179,6 +171,11 @@ TEST(start_checks_skip_the_inactive_raft) {
     World world(area);
     const int raft = area.findObject("Map/World Grid/Beach/Raft");
     check(raft >= 0, "the raft object exists");
-    for (size_t i = 0; i < area.startChecks.size(); i++)
-        if (area.startChecks[i].object == raft) check(!world.startChecks.started(i), "the raft's check did not run");
+    int found = 0;
+    for (size_t i = 0; i < area.conditionCheckers.size(); i++)
+        if (area.conditionCheckers[i].object == raft) {
+            check(!world.starts.checkerStarted(i), "the raft's check did not run");
+            found++;
+        }
+    check(found == 1, "the raft has a checker");
 }

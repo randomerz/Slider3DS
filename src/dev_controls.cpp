@@ -9,9 +9,8 @@ bool DevControls::update(const plat::Input& in, World& world) {
     if (in.pressed & plat::BTN_SELECT) showPerf = !showPerf;
     if (in.pressed & plat::BTN_X) noclip = !noclip;
 
-    if (!area.spawns.empty() && (in.pressed & (plat::BTN_L | plat::BTN_R))) {
-        const size_t n = area.spawns.size();
-        spawnIndex = (in.pressed & plat::BTN_R) ? (spawnIndex + 1) % n : (spawnIndex + n - 1) % n;
+    if (!area.spawns.empty() && (in.pressed & plat::BTN_R)) {
+        spawnIndex = (spawnIndex + 1) % area.spawns.size();
         world.placeAt(area.spawns[spawnIndex]);
         printf("Spawn: %s\n", area.spawns[spawnIndex].name.c_str());
     }
@@ -27,7 +26,7 @@ bool DevControls::update(const plat::Input& in, World& world) {
         printf("Tiles 2-8 %s; grid %s\n", collected ? "collected" : "removed", world.grid.gridString().c_str());
     }
 
-    const bool sliding = (in.held & plat::BTN_A) != 0;
+    const bool sliding = (in.held & plat::BTN_L) != 0;
     const int stile = world.player.stile;
     if (sliding && stile != 0) {
         const int dx = (in.pressed & plat::BTN_RIGHT) ? 1 : (in.pressed & plat::BTN_LEFT) ? -1 : 0;

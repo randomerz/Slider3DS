@@ -52,9 +52,49 @@ static SpritePlacement readPlacement(const Json& j) {
     return p;
 }
 
-static void readCalls(const Json& j, std::vector<SetActiveCall>& out) {
-    for (const Json& c : j.items())
-        if (c.has("target")) out.push_back({c["target"].asInt(-1), c["active"].asBool()});
+static CallDef::Method callMethod(const std::string& name) {
+    using M = CallDef::Method;
+    static const std::pair<const char*, M> methods[] = {
+        {"GameObject.SetActive", M::SetActive},
+        {"PlayerPositionChanger.UPPHard", M::TeleportHard},
+        {"PlayerPositionChanger.UPPRelativePlayer", M::TeleportRelativePlayer},
+        {"PlayerPositionChanger.UPPRelativeMe", M::TeleportRelativeMe},
+        {"PlayerPositionChanger.UPPTransform", M::TeleportTransform},
+        {"Collectible.ActivateSTile", M::ActivateSTile},
+        {"VarManager.SetBoolOn", M::SetFlagOn},
+        {"WaterLandColliderManager.SetOnWater", M::SetOnWater},
+        {"UIEffectApplier.FadeFromBlack", M::FadeFromBlack},
+        {"ConditionChecker.CheckConditions", M::CheckConditions},
+        {"SceneChanger.ChangeScenes", M::ChangeScenes},
+    };
+    for (const auto& m : methods)
+        if (name == m.first) return m.second;
+    return M::Unsupported;
+}
+
+static std::vector<CallDef> readCalls(const Json& j) {
+    std::vector<CallDef> out;
+    for (const Json& c : j.items()) {
+        CallDef d;
+        d.name = c["method"].asString();
+        d.method = callMethod(d.name);
+        d.target = c["target"].asInt(-1);
+        d.boolArg = c["bool"].asBool();
+        d.intArg = c["int"].asInt();
+        d.stringArg = c["string"].asString();
+        d.owner = c["owner"].asInt();
+        d.x = c["pos"].at(0).asFloat();
+        d.y = c["pos"].at(1).asFloat();
+        d.dx = c["dPos"].at(0).asFloat();
+        d.dy = c["dPos"].at(1).asFloat();
+        d.tpToHouse = c["tpToHouse"].asBool();
+        d.goToOwner = c["goToOwner"].asInt();
+        d.goToX = c["goToPos"].at(0).asFloat();
+        d.goToY = c["goToPos"].at(1).asFloat();
+        d.checker = c["checker"].asInt(-1);
+        out.push_back(std::move(d));
+    }
+    return out;
 }
 
 static ConditionDef readCondition(const Json& c) {
@@ -79,12 +119,12 @@ static ConditionDef readCondition(const Json& c) {
     return d;
 }
 
-static void readStartCheck(const Json& j, StartCheck& sc) {
-    sc.object = j["object"].asInt(-1);
-    sc.enabled = j["enabled"].asBool(true);
-    for (const Json& c : j["conditions"].items()) sc.conditionals.conditions.push_back(readCondition(c));
-    readCalls(j["onSuccess"], sc.conditionals.onSuccess);
-    readCalls(j["onFail"], sc.conditionals.onFail);
+static ConditionalsDef readConditionals(const Json& j) {
+    ConditionalsDef c;
+    for (const Json& d : j["conditions"].items()) c.conditions.push_back(readCondition(d));
+    c.onSuccess = readCalls(j["onSuccess"]);
+    c.onFail = readCalls(j["onFail"]);
+    return c;
 }
 
 static Hitbox readHitbox(const Json& j) {
@@ -212,13 +252,30 @@ static bool validate(const Area& a, std::string* error) {
         for (const Polygon& p : c.paths)
             if (p.size() % 2 != 0) return fail(error, "collider " + a.pathOf(c.object) + ": odd point list");
     }
-    for (const StartCheck& sc : a.startChecks) {
-        if (!objectOk(sc.object)) return fail(error, "start check: bad object index");
-        for (const auto* calls : {&sc.conditionals.onSuccess, &sc.conditionals.onFail})
-            for (const SetActiveCall& call : *calls)
-                if (!objectOk(call.target)) return fail(error, "start check " + a.pathOf(sc.object) + ": bad SetActive target");
-    }
-    for (const SpritePlacement* p : {&a.player.body, &a.player.boat})
+    auto callsOk = [&](const std::vector<CallDef>& calls) {
+        for (const CallDef& c : calls) {
+            if (c.target != -1 && !objectOk(c.target)) return false;
+            if (c.method == CallDef::Method::SetActive && c.target == -1) return false;
+            if (c.method == CallDef::Method::CheckConditions && (c.checker < 0 || c.checker >= (int)a.conditionCheckers.size()))
+                return false;
+            if (!ownerOk(c.owner) || !ownerOk(c.goToOwner)) return false;
+        }
+        return true;
+    };
+    for (const ObjectCollider& c : a.triggerColliders)
+        if (!objectOk(c.object) || !ownerOk(c.owner)) return fail(error, "trigger collider: bad object or owner");
+    for (const ConditionCheckerDef& cc : a.conditionCheckers)
+        if (!objectOk(cc.object) || !callsOk(cc.conditionals.onSuccess) || !callsOk(cc.conditionals.onFail))
+            return fail(error, "condition checker: bad object or call");
+    for (const InteractionDef& in : a.interactions)
+        if (!objectOk(in.object) || !callsOk(in.onSuccess)) return fail(error, "interaction: bad object or call");
+    for (const TriggerEventDef& te : a.triggerEvents)
+        if (!objectOk(te.object) || !callsOk(te.onEnter) || !callsOk(te.onExit))
+            return fail(error, "trigger event: bad object or call");
+    for (const CollectibleDef& c : a.collectibles)
+        if (!objectOk(c.object) || (c.sprite != -1 && !spriteIndexOk(c.sprite)) || !callsOk(c.onCollect))
+            return fail(error, "collectible " + c.name + ": bad object, sprite or call");
+    for (const SpritePlacement* p : {&a.player.body, &a.player.boat, &a.player.actionIndicator})
         if (p->sprite != -1 && !placementOk(*p)) return fail(error, "player: bad sprite, anim or ppu");
     for (const TileDef& t : a.tiles)
         for (int f : t.frames)
@@ -308,15 +365,30 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.objectColliders.push_back(std::move(oc));
     }
 
-    for (const Json& c : doc["startChecks"].items()) {
-        StartCheck sc;
-        readStartCheck(c, sc);
-        out.startChecks.push_back(std::move(sc));
+    for (const Json& c : doc["triggerColliders"].items()) {
+        ObjectCollider oc;
+        readObjectCollider(c, oc);
+        out.triggerColliders.push_back(std::move(oc));
     }
+    for (const Json& c : doc["conditionCheckers"].items())
+        out.conditionCheckers.push_back({c["object"].asInt(-1), c["enabled"].asBool(true), c["checkOnStart"].asBool(),
+                                         readConditionals(c)});
+    for (const Json& c : doc["interactions"].items())
+        out.interactions.push_back({c["object"].asInt(-1), c["addToOnAction"].asBool(), c["excludeBoat"].asBool(),
+                                    c["excludeLand"].asBool(), c["isCarryingItem"].asBool(), c["itemName"].asString(),
+                                    readCalls(c["onSuccess"])});
+    for (const Json& c : doc["triggerEvents"].items())
+        out.triggerEvents.push_back({c["object"].asInt(-1), c["onPlayerEnter"].asBool(true), readCalls(c["onEnter"]),
+                                     readCalls(c["onExit"])});
+    for (const Json& c : doc["collectibles"].items())
+        out.collectibles.push_back({c["object"].asInt(-1), c["name"].asString(), c["area"].asString(),
+                                    c["disableAtStart"].asBool(), c["sprite"].asInt(-1), readCalls(c["onCollect"])});
+    out.fadeDuration = doc["fadeDuration"].asFloat(1);
 
     if (doc.has("player")) {
         if (doc["player"].has("body")) out.player.body = readPlacement(doc["player"]["body"]);
         if (doc["player"].has("boat")) out.player.boat = readPlacement(doc["player"]["boat"]);
+        if (doc["player"].has("actionIndicator")) out.player.actionIndicator = readPlacement(doc["player"]["actionIndicator"]);
         out.player.footBox = readHitbox(doc["player"]["footBox"]);
         out.player.boatBox = readHitbox(doc["player"]["boatBox"]);
     }

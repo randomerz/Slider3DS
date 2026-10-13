@@ -1,7 +1,9 @@
 #include "game/world.h"
 
+#include <algorithm>
 #include <cmath>
 
+#include "game/events.h"
 #include "game/physics.h"
 
 World::World(const Area& a) : area(a) {
@@ -12,8 +14,10 @@ World::World(const Area& a) : area(a) {
 
 void World::reloadObjects() {
     objects.init(area);
-    startChecks.reset(area);
-    startChecks.update(area, state, grid, objects);
+    triggers.reset(area);
+    interactables.clear();
+    starts.reset(area);
+    starts.update(*this);
 }
 
 void World::placeAt(const Spawn& spawn) {
@@ -43,8 +47,6 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
         player.y += (t->posY - oy) * grid.tileWidth();
     }
 
-    startChecks.update(area, state, grid, objects);
-
     if (moveX != 0) player.facingLeft = moveX < 0;
     if (moveX != 0 || moveY != 0) {
         const float len = std::sqrt(moveX * moveX + moveY * moveY);
@@ -57,4 +59,17 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
         }
     }
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
+
+    triggers.update(*this);
+    starts.update(*this); // components that became active this frame (e.g. shown by a trigger)
+    if (fade > 0) fade = area.fadeDuration > 0 ? std::max(0.0f, fade - dt / area.fadeDuration) : 0;
+}
+
+void World::interact() {
+    // Calls may change what's on offer (a door teleports the player away), so run a snapshot.
+    const std::vector<int> offered = interactables;
+    for (int i : offered) {
+        const InteractionDef& in = area.interactions[i];
+        if (!in.isCarryingItem) runCalls(*this, in.onSuccess); // PlayerConditionals.CheckCondition
+    }
 }

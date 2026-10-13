@@ -11,9 +11,9 @@ struct DevControls {
     bool showInactive = false; // Y: draw uncollected STiles too
     bool showPerf = true;      // SELECT: the perf overlay
     bool collected = false;    // B: tiles 2-8 collected
-    size_t spawnIndex = 0;     // L / R: the spawn last jumped to
+    size_t spawnIndex = 0;     // R: the spawn last jumped to
 
-    // Handles this frame's dev buttons. Returns true while A is held: the D-pad then slides the
+    // Handles this frame's dev buttons. Returns true while L is held: the D-pad then slides the
     // player's tile instead of walking.
     bool update(const plat::Input& in, World& world);
 };

@@ -4,7 +4,7 @@
 // Like Unity: an object is active in the hierarchy only if it and every ancestor are active
 // (activeSelf), so SetActive on a parent hides or shows everything under it, and showing a parent
 // again leaves children that are inactive themselves hidden. Components (world sprites,
-// colliders, start checks) are active when their object is, and they are enabled.
+// colliders, ...) are active when their object is, and they are enabled.
 #pragma once
 
 #include <cstdint>
@@ -21,7 +21,6 @@ public:
     bool activeInHierarchy(int object) const { return inHierarchy_[object] != 0; }
     bool active(const WorldSprite& ws) const { return activeInHierarchy(ws.object); }
     bool active(const ObjectCollider& c) const { return c.enabled && activeInHierarchy(c.object); }
-    bool active(const StartCheck& sc) const { return sc.enabled && activeInHierarchy(sc.object); }
 
 private:
     std::vector<uint8_t> self_, inHierarchy_; // per Area::objects index

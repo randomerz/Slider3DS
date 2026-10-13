@@ -31,9 +31,19 @@ std::string fixture(const std::string& from = "", const std::string& to = "") {
                     "order": 0, "flip": 1, "anim": 0}],
   "objectColliders": [{"object": 2, "owner": 1, "kind": "poly", "paths": [[0, 0, 1, 0, 1, 1, 0, 1]]},
                       {"object": 2, "owner": 0, "enabled": false, "kind": "circle", "center": [3, 4], "radius": 0.5}],
-  "startChecks": [{"object": 0, "conditions": [{"type": "flag", "flag": "f"}],
-                   "onSuccess": [{"method": "GameObject.SetActive", "target": 1, "active": true}],
-                   "onFail": [{"method": "KnotBox.Reset", "targetPath": "Root"}]}],
+  "conditionCheckers": [{"object": 0, "checkOnStart": true, "conditions": [{"type": "flag", "flag": "f"}],
+                         "onSuccess": [{"method": "GameObject.SetActive", "target": 1, "bool": true}],
+                         "onFail": [{"method": "KnotBox.Reset", "target": 0}]}],
+  "triggerColliders": [{"object": 2, "owner": 1, "kind": "circle", "center": [0, 0], "radius": 1}],
+  "interactions": [{"object": 2, "addToOnAction": true, "excludeBoat": true, "onSuccess": [
+      {"method": "PlayerPositionChanger.UPPRelativeMe", "target": 2, "owner": 1, "pos": [1, 2], "dPos": [0, -3],
+       "tpToHouse": true},
+      {"method": "ConditionChecker.CheckConditions", "target": 0, "checker": 0}]}],
+  "triggerEvents": [{"object": 2, "onPlayerEnter": true, "onEnter": [{"method": "VarManager.SetBoolOn", "target": 0,
+                     "string": "touched"}], "onExit": []}],
+  "collectibles": [{"object": 1, "name": "Slider 2", "area": "Village", "disableAtStart": true, "sprite": 0,
+                    "onCollect": [{"method": "Collectible.ActivateSTile", "target": 1, "int": 2}]}],
+  "fadeDuration": 0.5,
   "player": {"body": {"sprite": 0, "pos": [0, 0], "sortY": 0.5, "sortingLayerValue": 7, "order": 0, "anim": 0}},
   "tilemaps": [
     {"kind": "visual", "path": "VIS", "owner": 1, "active": true, "origin": [0, 0], "tileAnchor": [0.5, 0.5],
@@ -72,9 +82,24 @@ TEST(area_fixture_loads) {
     CHECK(a.objectColliders.size() == 2 && a.objectColliders[0].maxX == 1 && a.objectColliders[1].object == 2 &&
           !a.objectColliders[1].enabled && a.objectColliders[1].kind == ObjectCollider::Kind::Circle &&
           a.objectColliders[1].minY == 3.5f);
-    // Only SetActive calls are kept.
-    CHECK(a.startChecks.size() == 1 && a.startChecks[0].conditionals.conditions.size() == 1 &&
-          a.startChecks[0].conditionals.onSuccess.size() == 1 && a.startChecks[0].conditionals.onFail.empty());
+    using M = CallDef::Method;
+    CHECK(a.conditionCheckers.size() == 1 && a.conditionCheckers[0].checkOnStart &&
+          a.conditionCheckers[0].conditionals.conditions.size() == 1);
+    const ConditionalsDef& cc = a.conditionCheckers[0].conditionals;
+    CHECK(cc.onSuccess.size() == 1 && cc.onSuccess[0].method == M::SetActive && cc.onSuccess[0].target == 1 &&
+          cc.onSuccess[0].boolArg);
+    CHECK(cc.onFail.size() == 1 && cc.onFail[0].method == M::Unsupported && cc.onFail[0].name == "KnotBox.Reset");
+    CHECK(a.triggerColliders.size() == 1 && a.triggerColliders[0].kind == ObjectCollider::Kind::Circle);
+    CHECK(a.interactions.size() == 1 && a.interactions[0].addToOnAction && a.interactions[0].excludeBoat &&
+          !a.interactions[0].excludeLand && a.interactions[0].onSuccess.size() == 2);
+    const CallDef& tp = a.interactions[0].onSuccess[0];
+    CHECK(tp.method == M::TeleportRelativeMe && tp.owner == 1 && tp.x == 1 && tp.y == 2 && tp.dy == -3 && tp.tpToHouse);
+    CHECK(a.interactions[0].onSuccess[1].method == M::CheckConditions && a.interactions[0].onSuccess[1].checker == 0);
+    CHECK(a.triggerEvents.size() == 1 && a.triggerEvents[0].onEnter.size() == 1 &&
+          a.triggerEvents[0].onEnter[0].method == M::SetFlagOn && a.triggerEvents[0].onEnter[0].stringArg == "touched");
+    CHECK(a.collectibles.size() == 1 && a.collectibles[0].name == "Slider 2" && a.collectibles[0].disableAtStart &&
+          a.collectibles[0].onCollect[0].method == M::ActivateSTile && a.collectibles[0].onCollect[0].intArg == 2);
+    CHECK(a.fadeDuration == 0.5f);
     CHECK(a.player.body.sprite == 0 && a.player.body.sortY == 0.5f && a.player.boat.sprite == -1);
 }
 
@@ -111,8 +136,15 @@ TEST(area_validation_rejects_bad_indices) {
         {R"("object": 2, "owner": 1)", R"("object": 2, "owner": 5)", "collider owner is not an STile"},
         {R"("object": 2, "owner": 1)", R"("object": -1, "owner": 1)", "collider -> missing object"},
         {R"("path": "Root/WS", "parent": 0)", R"("path": "Root/WS", "parent": 2)", "object parent after it"},
-        {R"("target": 1, "active": true)", R"("target": 7, "active": true)", "start check -> missing SetActive target"},
-        {R"("startChecks": [{"object": 0)", R"("startChecks": [{"object": 9)", "start check -> missing object"},
+        {R"("target": 1, "bool": true)", R"("target": 7, "bool": true)", "call -> missing target"},
+        {R"("target": 1, "bool": true)", R"("bool": true)", "SetActive call without a target"},
+        {R"("conditionCheckers": [{"object": 0)", R"("conditionCheckers": [{"object": 9)", "checker -> missing object"},
+        {R"("target": 0, "checker": 0)", R"("target": 0, "checker": 3)", "CheckConditions -> missing checker"},
+        {R"("owner": 1, "pos": [1, 2])", R"("owner": 7, "pos": [1, 2])", "teleport owner is not an STile"},
+        {R"("interactions": [{"object": 2)", R"("interactions": [{"object": 8)", "interaction -> missing object"},
+        {R"("triggerEvents": [{"object": 2)", R"("triggerEvents": [{"object": 8)", "trigger event -> missing object"},
+        {R"("collectibles": [{"object": 1)", R"("collectibles": [{"object": 8)", "collectible -> missing object"},
+        {R"("triggerColliders": [{"object": 2)", R"("triggerColliders": [{"object": 8)", "trigger collider -> missing object"},
         {R"([[0, 0, 1, 0, 1, 1, 0, 1]]},)", R"([[0, 0, 1, 0, 1, 1, 0]]},)", "collider odd point list"},
         {R"("body": {"sprite": 0)", R"("body": {"sprite": 9)", "player -> missing sprite"},
     };
@@ -142,6 +174,12 @@ TEST(area_village_export_stats) {
     check(a.anims.size() == 36, "anims " + std::to_string(a.anims.size()));
     check(a.objectColliders.size() == 218, "object colliders " + std::to_string(a.objectColliders.size()));
     check(a.player.footBox.w > 0 && a.player.boatBox.w > 0, "player hitboxes");
+    check(a.triggerColliders.size() == 56 && a.conditionCheckers.size() == 7 && a.interactions.size() == 18 &&
+              a.triggerEvents.size() == 25 && a.collectibles.size() == 13,
+          "triggers/checkers/interactions/events/collectibles " + std::to_string(a.triggerColliders.size()) + "/" +
+              std::to_string(a.conditionCheckers.size()) + "/" + std::to_string(a.interactions.size()) + "/" +
+              std::to_string(a.triggerEvents.size()) + "/" + std::to_string(a.collectibles.size()));
+    check(a.player.actionIndicator.sprite >= 0, "player action indicator");
     check(a.player.body.sprite >= 0 && a.player.boat.sprite >= 0, "player body + boat sprites");
     size_t cells = 0;
     for (const TileLayer& L : a.layers)
