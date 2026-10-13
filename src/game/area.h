@@ -132,6 +132,10 @@ struct ConditionDef {
 //   FadeFromBlack           UIEffectApplier.FadeFromBlack
 //   CheckConditions         ConditionChecker.CheckConditions on conditionCheckers[data]
 //   ChangeScenes            SceneChanger.ChangeScenes (leaves the Village)
+//   NpcTriggerEnter/Exit    NPC.OnDialogueTriggerEnter / Exit on the target's NPC
+//   NpcTypeCurrent          NPC.TypeCurrentDialogue: (re)types its current line
+//   NpcTeleport             NPC.Teleport(transformArgs[data]): the NPC moves there (and follows it)
+//   SetFlipX                SpriteRenderer.set_flipX(boolArg) on the target's sprite
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -145,7 +149,11 @@ struct ConditionDef {
     X(SetOnWater, "WaterLandColliderManager.SetOnWater")               \
     X(FadeFromBlack, "UIEffectApplier.FadeFromBlack")                  \
     X(CheckConditions, "ConditionChecker.CheckConditions")             \
-    X(ChangeScenes, "SceneChanger.ChangeScenes")
+    X(ChangeScenes, "SceneChanger.ChangeScenes")                       \
+    X(NpcTriggerEnter, "NPC.OnDialogueTriggerEnter")                   \
+    X(NpcTriggerExit, "NPC.OnDialogueTriggerExit")                         X(NpcTypeCurrent, "NPC.TypeCurrentDialogue")                       \
+    X(NpcTeleport, "NPC.Teleport")                                     \
+    X(SetFlipX, "SpriteRenderer.set_flipX")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -162,7 +170,16 @@ struct CallDef {
     bool boolArg = false;
     int intArg = 0;
     std::string stringArg;
-    int data = -1; // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index
+    // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index; NpcTeleport:
+    // Area::transformArgs index.
+    int data = -1;
+};
+
+// A call's Transform argument: the object and its position (relative to its owner STile).
+struct TransformArgDef {
+    int object = -1;
+    int owner = 0;
+    float x = 0, y = 0;
 };
 
 // What a PlayerPositionChanger call needs of its component.
@@ -220,13 +237,56 @@ struct CollectibleDef {
     std::vector<CallDef> onCollect;
 };
 
+// One line of an NPC's dialogue chain (DialogueData).
+struct DialogueDef {
+    std::string text;            // English, with TMPSpecialText tags (<var>, <wavy>, ...)
+    float delay = 0.5f;          // delayAfterFinishedTyping: then the chain advances (0 = it doesn't)
+    bool waitForAction = false;  // waitUntilPlayerAction: the action button advances it
+    bool manual = false;         // advanceDialogueManually: only an event advances it
+    bool noRepeatEvents = false; // doNotRepeatEvents: onStart / onEnd run once
+    bool dontInterrupt = false;  // leaving the trigger doesn't end it
+    std::vector<CallDef> onStart, onEnd;
+};
+
+// NPCConditionals: when its conditions hold (all, or any with anyOf) it can be the NPC's current
+// one; the highest in the list wins.
+struct NpcCondDef {
+    std::vector<ConditionDef> conditions;
+    bool anyOf = false;
+    bool alwaysStartFromBeginning = false;
+    std::vector<DialogueDef> dialogue;          // the dialogue chain
+    std::vector<CallDef> onEnter, onExhausted;  // onConditionalEnter, onDialogueChainExhausted
+};
+
+// Where and how an NPC's DialogueDisplay types: TMP text in a box (owner-relative world units,
+// inside its margins), centered, bottom-aligned, word-wrapped, in the dialogue font.
+struct NpcTextDef {
+    float minX = 0, minY = 0, maxX = 0, maxY = 0;
+    float lineAdvance = 0.43f, wordSpacing = 0, charSpacing = 0; // world units
+    int sortLayer = 0, order = 0; // its canvas
+};
+
+// An NPC (NPC.cs): conditionals with dialogue chains, typed above it while the player is in its
+// dialogue trigger (whose OnTriggerEnter calls NpcTriggerEnter / Exit).
+struct NpcDef {
+    int object = 0;
+    std::string name;   // characterName
+    int owner = 0;
+    float x = 0, y = 0; // position, owner-relative
+    bool facingLeft = false; // spriteDefaultFacingLeft
+    NpcTextDef text;
+    int pingObject = -1;   // the message ping (shown while there's dialogue not yet exhausted)
+    SpritePlacement ping;  // owner-relative; sprite -1 = none
+    std::vector<NpcCondDef> conds;
+};
+
 // A behaviour component on a scene object (an entry in one of the Area's per-kind vectors), for
 // handling things by object: what reacts when the player touches an object's trigger, which
 // components have a Start. Built at load.
 struct ComponentRef {
-    enum class Kind : uint8_t { TriggerEvent, Interaction, Collectible, ConditionChecker };
+    enum class Kind : uint8_t { TriggerEvent, Interaction, Collectible, ConditionChecker, Npc };
     Kind kind;
-    int index; // into triggerEvents / interactions / collectibles / conditionCheckers
+    int index; // into triggerEvents / interactions / collectibles / conditionCheckers / npcs
 };
 
 struct ComponentRange {
@@ -310,12 +370,14 @@ struct Area {
     std::vector<ObjectCollider> triggerColliders; // of objects with interactions, trigger events, collectibles
     std::vector<ConditionCheckerDef> conditionCheckers;
     std::vector<TeleportDef> teleports; // payloads of teleport calls (CallDef::data)
+    std::vector<TransformArgDef> transformArgs; // Transform arguments of calls (CallDef::data)
     std::vector<InteractionDef> interactions;
     std::vector<TriggerEventDef> triggerEvents;
     std::vector<CollectibleDef> collectibles;
+    std::vector<NpcDef> npcs;
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
     // Each object's components (derived at load): componentRefs[componentStart[o] .. componentStart[o + 1]),
-    // per object in the kind order TriggerEvent, Interaction, Collectible, ConditionChecker.
+    // per object in the kind order TriggerEvent, Interaction, Collectible, ConditionChecker, Npc.
     std::vector<int> componentStart;
     std::vector<ComponentRef> componentRefs;
     ComponentRange components(int object) const {
@@ -332,6 +394,7 @@ struct Area {
     const Spawn* spawn(const char* name) const;
     const std::string& pathOf(int object) const { return objects[object].path; }
     int findObject(const std::string& path) const; // index in objects, -1 if none
+    int npcOn(int object) const; // index in npcs of the NPC on `object`, -1 if none
 };
 
 // Loads e.g. "village/village.json" through plat::readFile, then checks every index in it

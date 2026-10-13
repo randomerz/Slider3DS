@@ -10,6 +10,7 @@
 #include "game/artifact.h"
 #include "game/game_state.h"
 #include "game/grid.h"
+#include "game/npcs.h"
 #include "game/object_states.h"
 #include "game/starts.h"
 #include "game/triggers.h"
@@ -26,11 +27,11 @@ struct Player {
     const Hitbox& hitbox(const Area& area) const { return onWater ? area.player.boatBox : area.player.footBox; }
 };
 
-// Something the action button can use (Unity's IInteractable in PlayerAction.availableInteractables).
-// Only PlayerConditionals so far; NPCs and items join as more kinds. Its priority and prompt are
-// asked for when needed (World::priority / showsPrompt): an NPC's change with its dialogue.
+// Something the action button can use (Unity's IInteractable in PlayerAction.availableInteractables):
+// PlayerConditionals and NPCs so far; items join later. Its priority and prompt are asked for when
+// needed (World::priority / showsPrompt): an NPC's change with its dialogue.
 struct Interactable {
-    enum class Kind : uint8_t { Interaction }; // Interaction: Area::interactions[index]
+    enum class Kind : uint8_t { Interaction, Npc }; // Area::interactions / Area::npcs [index]
     Kind kind;
     int index;
 
@@ -66,8 +67,8 @@ public:
 
     // One frame: queued slides advance and the player rides the tile under it; the player walks
     // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless noclip
-    // (and is pushed out of anything it overlaps); triggers react to what it touches; then Starts
-    // run for components that became active.
+    // (and is pushed out of anything it overlaps); triggers react to what it touches; NPCs update;
+    // Starts run for components that became active.
     void update(float dt, float moveX, float moveY, bool noclip);
 
     // PlayerAction: offer / withdraw an interactable, and the action button: runs the offered
@@ -89,6 +90,7 @@ public:
     ObjectStates objects;
     Starts starts;
     TriggerTracker triggers;
+    Npcs npcs;
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now

@@ -47,6 +47,7 @@ void dispatch(World& world, int object, bool enter) {
             if (enter) pickUp(world, area.collectibles[ref.index]);
             break;
         case K::ConditionChecker:
+        case K::Npc: // (its dialogue trigger is a child with an OnTriggerEnter calling it)
             break;
         }
     }

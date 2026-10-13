@@ -7240,6 +7240,5230 @@
       ]
     }
   ],
+  "npcs": [
+    {
+      "object": 146,
+      "name": "Romeo",
+      "owner": 1,
+      "pos": [6.75,0],
+      "facingLeft": false,
+      "text": {
+        "box": [3.33,0.55,10.17,2.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 148,
+        "sprite": 2,
+        "pos": [6.75,1],
+        "sortY": 1,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 146,
+              "objectArg": 476,
+              "argOwner": 0,
+              "argPos": [30.75,49.25]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Juliet, my love, where hast though disappeared to?!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "gridStationary",
+              "pattern": "..1_..._...",
+              "stationaryTiles": [1]
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.StartValidWalk",
+              "target": 146
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Juliet, my love, wherefore art thou?!",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "villageRomeoAtDefaultPosition"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 146,
+              "objectArg": 477,
+              "argOwner": 1,
+              "argPos": [6.75,0]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Please bring my beloved back, lest I drink this poison!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Your cat? I care not! Where art thou, Juliet?!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 5",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 146,
+              "objectArg": 477,
+              "argOwner": 1,
+              "argPos": [6.75,0]
+            },
+            {
+              "method": "VarManager.SetBoolOn",
+              "target": 472,
+              "string": "villageRomeoAtDefaultPosition"
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Please bring my beloved back, lest I drink this poison!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 6",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Juliet, my beloved, where hath thou disappeared to now?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Oh, what a tragic life I must endure. The cycle of dread continues.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "15",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 146,
+              "objectArg": 477,
+              "argOwner": 1,
+              "argPos": [6.75,0]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Oh Juliet! I'll\u000anever leave\u000ayou again.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 6
+                },
+                {
+                  "method": "Animator.set_runtimeAnimatorController",
+                  "target": 147
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 146,
+              "objectArg": 477,
+              "argOwner": 1,
+              "argPos": [6.75,0]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Juliet, will you\u000abe mine?\u000a",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 2",
+              "itemArea": "Ocean"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 146,
+              "objectArg": 127,
+              "argOwner": 0,
+              "argPos": [69.5,69.5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 169,
+      "name": "Exploresse",
+      "owner": 1,
+      "pos": [-0.75,-145],
+      "facingLeft": false,
+      "text": {
+        "box": [-4.17,-144.45,2.67,-142.3],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 171,
+        "sprite": 2,
+        "pos": [-0.75,-144],
+        "sortY": -144,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "You’re awake! <var>Cat</var> has been acting... <wavy>strange.</wavy>",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "It started when <var>Cat</var> touched that Artifact you brought back.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Artifact",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Can you check on <var>Cat</var> outside?",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "villageCatFloatAway"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 169,
+              "objectArg": 479,
+              "argOwner": 1,
+              "argPos": [1.625,0.75]
+            },
+            {
+              "method": "NPC.TypeCurrentDialogue",
+              "target": 169
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Wha- What's happening?",
+              "delay": 1.5,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "<var>CatUpper</var> NOOO",
+              "delay": 1.5,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "NPC.StartWalkAtIndex",
+                  "target": 169,
+                  "int": 0
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "W-what is taking you away? Why??",
+              "delay": 1.5,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "NPC.StartWalkAtIndex",
+                  "target": 169,
+                  "int": 1
+                }
+              ]
+            },
+            {
+              "text": "Wait. Where is... everything??",
+              "delay": 2.5,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "NPC.StartWalkAtIndex",
+                  "target": 169,
+                  "int": 2
+                }
+              ]
+            },
+            {
+              "text": "Oh honey... you have to bring back <var>Cat</var>! I'll research what caused all this...",
+              "delay": 2,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "VarManager.SetBoolOn",
+                  "target": 472,
+                  "string": "villageExploresseSequenceDone"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "villageExploresseSequenceDone"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            },
+            {
+              "method": "NPC.Teleport",
+              "target": 169,
+              "objectArg": 480,
+              "argOwner": 1,
+              "argPos": [3,0.75]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Oh honey... you have to bring back <var>Cat</var>! I'll research what caused all this...",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "It's even <var>Cat</var>'s birthday tomorrow.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 2",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            },
+            {
+              "method": "NPC.Teleport",
+              "target": 169,
+              "objectArg": 481,
+              "argOwner": 1,
+              "argPos": [-0.75,-145]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "There's some global phenomenon that started last night.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Some people online have been calling it the \"Cataclysm\".",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Parts of the world are missing. Void, just like we saw outside.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Do you think that maybe...? No it can't be...",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Honey, maybe <var>Cat</var> fiddled with that Artifact you brought, and somehow caused this.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Oh, you found a piece of the world and were able to restore it?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Maybe... you can help fix this? Just please... be careful with that Artifact.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "And if you can, please find <var>Cat</var>. I'm worried...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Mittens"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Isn't this ol' Cathy's cat? She has a ton of cats.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Oh, she might know where <var>Cat</var> is!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Sigh... everything reminds me of them.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Autumn"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Isn't this ol' Cathy's cat? I think her three cats are out again.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Oh, she might know where <var>Cat</var> is!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Sigh... everything reminds me of them.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Cathy lives in the village center next to the bakery, but I don't think you have that slider yet.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Autumn"
+            },
+            {
+              "type": "item",
+              "item": "Slider 9",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Isn't this ol' Cathy's cat? I think her three cats are out again.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Oh, she might know where <var>Cat</var> is!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Sigh... everything reminds me of them.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "I just realized.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Has anyone been feeding <var>Cat</var>?",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 9",
+              "itemArea": "Ocean"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 170,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "What??",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "WHAT????",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Aliens?? Took <var>Cat</var>??",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "They exist??",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 9",
+              "itemArea": "MagiTech"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "GameObject.SetActive",
+              "target": 169,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 177,
+      "name": "Archeologist",
+      "owner": 2,
+      "pos": [-5,3],
+      "facingLeft": true,
+      "text": {
+        "box": [-8.42,3.55,-1.58,5.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 179,
+        "sprite": 2,
+        "pos": [-5,4],
+        "sortY": 4,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 178,
+              "bool": true
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "hmmm...",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "PlayerActionHints.TriggerHint",
+                  "target": 471,
+                  "string": "dialogue"
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "oh! another person??",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "PlayerActionHints.DisableHint",
+                  "target": 471,
+                  "string": "dialogue"
+                },
+                {
+                  "method": "SpriteRenderer.set_flipX",
+                  "target": 178,
+                  "bool": false
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "something <wavy>freaky</wavy> is going on. the world's straight disappeared!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "check out this little slider thing i found. looks almost like a piece of the world",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "omg... its back in the world again! how did you do that??",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "say, you wouldnt be interested in a research assistant job, would you?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "no..? thats fine... um... the spots taken anyway...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 4",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 483,
+              "argOwner": 2,
+              "argPos": [-7,4]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "so... what about these ruins.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            },
+            {
+              "type": "item",
+              "item": "Slider 6",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 483,
+              "argOwner": 2,
+              "argPos": [-7,4]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "ahA! it looks like those ruins pieces might connect!!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "31..62",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "an arrow? it must lead to a relic!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "how do i get there?",
+              "delay": 0.75,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "NPC.StartWalkAtIndex",
+                  "target": 177,
+                  "int": 0
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "this way? no...",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "over here?",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "NPC.StartWalkAtIndex",
+                  "target": 177,
+                  "int": 1
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "aHh im so lost! everything keeps moving!",
+              "delay": 2,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "SpriteRenderer.set_flipX",
+                  "target": 178,
+                  "bool": true
+                }
+              ]
+            },
+            {
+              "text": "you! follow that arrow!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 7",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 178,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "now these glyphs... we just need to find the final fragment.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "my research assistant was looking for it last. no idea where he is now...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "VillageFoundChad"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 178,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "you found chad?? tell him to bring me the final fragment already",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Ruins Fragment"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 178,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "tyy! now let me take a look...",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "VillageGrid.FillInHole",
+                  "target": 1
+                }
+              ],
+              "onEnd": [
+                {
+                  "method": "VillageGrid.ShufflePuzzle",
+                  "target": 1
+                }
+              ]
+            },
+            {
+              "text": "wOAH! everything is shakingggg",
+              "delay": 3,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "villageCompletion"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 178,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "aMAZING! did you see that?!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "shoot! i got a bit carried away didnt i",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "we need to <wavy>fix the village</wavy>!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "wow, everythings in the right place again, just like i remembered!",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "i think im onto something, explorer. these glyphs are related to whatever broke up the world.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "there's more in the caves up north. you should come!!",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "oh, make sure to grab a map from the Mayor first!",
+              "delay": 2,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "NPC.StartWalkAtIndex",
+                  "target": 177,
+                  "int": 0
+                }
+              ]
+            },
+            {
+              "text": "oh, make sure to grab a map from the Mayor first!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Map",
+              "itemArea": "Village"
+            },
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 485,
+              "argOwner": 0,
+              "argPos": [32,44]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 178,
+              "bool": true
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "stand clear!!",
+              "delay": 0.75,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "the caves await.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.Explode",
+                  "target": 1
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "i heard there are more relics in there. im gonna follow the trail to the source.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "caveDoorExploded"
+            },
+            {
+              "type": "item",
+              "item": "Slider 9",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 485,
+              "argOwner": 0,
+              "argPos": [32,44]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 178,
+              "bool": true
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "the caves await.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "i heard there are more relics in there. im gonna follow the trail to the source.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 177,
+              "objectArg": 127,
+              "argOwner": 0,
+              "argPos": [69.5,69.5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 199,
+      "name": "Archibald",
+      "owner": 3,
+      "pos": [1.5,6],
+      "facingLeft": false,
+      "text": {
+        "box": [-1.92,6.55,4.92,8.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 201,
+        "sprite": 2,
+        "pos": [1.5,7],
+        "sortY": 7,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Not so fast squirt!",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "GameObject.SetActive",
+                  "target": 197,
+                  "bool": false
+                },
+                {
+                  "method": "VarManager.SetBoolOn",
+                  "target": 472,
+                  "string": "villageOldManFirstLine"
+                },
+                {
+                  "method": "NPCAnimatorController.SetBoolToTrue",
+                  "target": 200,
+                  "string": "sus"
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Get me some coffee first, damn youngin. I left it at the beach...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "NPCAnimatorController.SetBoolToFalse",
+                  "target": 200,
+                  "string": "sus"
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Coffee",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Not so fast squirt!",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 4
+                },
+                {
+                  "method": "GameObject.SetActive",
+                  "target": 197,
+                  "bool": false
+                },
+                {
+                  "method": "NPCAnimatorController.SetBoolToTrue",
+                  "target": 200,
+                  "string": "sus"
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Get me some coffee- Already grabbed it, eh?",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "NPCAnimatorController.SetBoolToFalse",
+                  "target": 200,
+                  "string": "sus"
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Hmph, already cold.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 4
+                },
+                {
+                  "method": "PlayerActionHints.EnableDisabling",
+                  "target": 471,
+                  "string": "items"
+                },
+                {
+                  "method": "BoxCollider2D.set_enabled",
+                  "target": 197,
+                  "bool": true
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Coffee",
+              "itemArea": "Village"
+            },
+            {
+              "type": "flag",
+              "flag": "villageOldManFirstLine"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Finally my damn coffee… Took you long enough.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 4
+                },
+                {
+                  "method": "PlayerActionHints.EnableDisabling",
+                  "target": 471,
+                  "string": "items"
+                },
+                {
+                  "method": "BoxCollider2D.set_enabled",
+                  "target": 197,
+                  "bool": true
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Would you leave me alone already!?",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 199,
+              "objectArg": 486,
+              "argOwner": 3,
+              "argPos": [4,1.75]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Leave me alone, kid.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 237,
+      "name": "Kevin",
+      "owner": 4,
+      "pos": [-6,4],
+      "facingLeft": false,
+      "text": {
+        "box": [-9.42,4.55,-2.58,6.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 239,
+        "sprite": 2,
+        "pos": [-6,5],
+        "sortY": 5,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Help! My buoys have gotten tangled up. Mind untanglin' them for me?",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "PlayerActionHints.TriggerHint",
+                  "target": 471,
+                  "string": "items"
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Thanks a bundle! I don't have much, but you can have this strange junk I fished up.",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 5",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "I'm heading to the beach soon. Rumor is there are new fish in the water.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 237,
+              "objectArg": 487,
+              "argOwner": 0,
+              "argPos": [44,8]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Was gonna hit the ocean soon, but my boating license expired.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Boating License",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 237,
+              "objectArg": 487,
+              "argOwner": 0,
+              "argPos": [44,8]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "You've got your license! Hurry on now, let's set sail!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Ocean"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "GameObject.SetActive",
+              "target": 237,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 246,
+      "name": "TutorialSign",
+      "owner": 5,
+      "pos": [-6.75,0],
+      "facingLeft": false,
+      "text": {
+        "box": [-10.17,0.55,-3.33,2.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 248,
+        "sprite": 2,
+        "pos": [-6.75,1],
+        "sortY": 1,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "My lover, my darling! Please bring him back lest I stab myself!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 6",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Romeo? Wherefore art thou Romeo?",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "15",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Oh Romeo! You \u000awill never \u000aleave my \u000asight again.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 6
+                },
+                {
+                  "method": "Animator.set_runtimeAnimatorController",
+                  "target": 247
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Yes, oh\u000amy God, yes!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Ocean"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "GameObject.SetActive",
+              "target": 246,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 280,
+      "name": "TutorialSign",
+      "owner": 5,
+      "pos": [3,-145],
+      "facingLeft": false,
+      "text": {
+        "box": [-0.42,-144.45,6.42,-142.3],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 282,
+        "sprite": 2,
+        "pos": [3,-144],
+        "sortY": -144,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Dear Player,",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "No, this cat is not used in the upcoming puzzles.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "However, we will permit you to keep him for emotional support.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Please use him responsibly.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Sincerely, the Devs.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 283,
+      "name": "Pierre",
+      "owner": 6,
+      "pos": [-2,-3],
+      "facingLeft": false,
+      "text": {
+        "box": [-5.42,-2.45,1.42,-0.3],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 285,
+        "sprite": 2,
+        "pos": [-2,-2],
+        "sortY": -2,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Somethin's wrong. The fish aren't coming upstream anymore. I'll be out of a job!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "VarManager.SetBoolOn",
+                  "target": 472,
+                  "string": "villagePierreFirstLine"
+                }
+              ]
+            },
+            {
+              "text": "I could really use a fish right now, fish right now.\u000d",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "..._..6_...",
+              "stationaryTiles": []
+            },
+            {
+              "type": "flag",
+              "flag": "villagePierreFirstLine"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Ah, the ocean! If only I knew how to fish the open seas.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "But alas, I can only fish the river by the waterfall.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_..7_...",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "The river's together... is there a traffic jam downstream?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Something fishy is going on here...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "The fish are coming back! Time to whip out the old pole.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.ActivateSliderCollectible",
+                  "target": 1,
+                  "int": 8
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 283,
+              "objectArg": 488,
+              "argOwner": 0,
+              "argPos": [44,6]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Heard there was one in the caves, but also pirates. Scary!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Boating License",
+              "itemArea": "Caves"
+            },
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 283,
+              "objectArg": 488,
+              "argOwner": 0,
+              "argPos": [44,6]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Good luck out there, say hi to <var>Cat</var>.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "I'm going back to fishing the river.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Ocean"
+            },
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "GameObject.SetActive",
+              "target": 283,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 304,
+      "name": "Nemsy",
+      "owner": 7,
+      "pos": [-6.5,1.5],
+      "facingLeft": false,
+      "text": {
+        "box": [-9.92,2.05,-3.08,4.2],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 306,
+        "sprite": 2,
+        "pos": [-6.5,2.5],
+        "sortY": 2.5,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Hey there! Have you seen what's been going on lately?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Chunks of land missing everywhere, and these little slider pieces popping out of the ground!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "They've all been resurfacing ever since the earthquake last night.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "I'm not sure how to make sense of it. Maybe I should go digging for them!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Ruins Fragment"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Oh! Where'd you find that? That Archeologist was looking all over for that fragment.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "UIArtifactWorldMap.SetAreaStatusSilhouette",
+                  "target": 491,
+                  "string": "Military"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Did you hear? The railway in the Chloro Caves was shut down.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Apparently the bridge was destroyed.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Those scientists must be quite heated right now...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Did you hear? There's fighting at the Flats down east apparently.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "UIArtifactWorldMap.SetAreaStatusSilhouette",
+                  "target": 491,
+                  "string": "Military"
+                }
+              ]
+            },
+            {
+              "text": "Like, I've heard rumors of the military being deployed there!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "I wonder if they're the ones behind all this... or whoever they're fighting.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 324,
+      "name": "Chad",
+      "owner": 8,
+      "pos": [3.5,3],
+      "facingLeft": false,
+      "text": {
+        "box": [0.08,3.55,6.92,5.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 326,
+        "sprite": 2,
+        "pos": [3.5,4],
+        "sortY": 4,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Out of my way! Do you know who you're talking to?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "I… am Chad! And the credit for returning this fragment is mine!",
+              "delay": 3,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+                {
+                  "method": "ChadJump.JumpStarter",
+                  "target": 324
+                },
+                {
+                  "method": "VarManager.SetBoolOn",
+                  "target": 472,
+                  "string": "VillageFoundChad"
+                }
+              ]
+            },
+            {
+              "text": "Up here, short stuff. Ha! You can't even jump.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "What are you gonna do? Gonna cry?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Nothing can bring me down!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Woah, what's shaking?",
+              "delay": 1,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "My neck! My back! How will I get this to the archeologist now?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "You better not take my credit. I worked hard to become a Research Assistant.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "villageCompletion"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "What? How dare you take my credit?!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.StartWalkAtIndex",
+              "target": 324,
+              "int": 0
+            },
+            {
+              "method": "GameObject.SetActive",
+              "target": 328,
+              "bool": false
+            },
+            {
+              "method": "NPCAnimatorController.SetBoolToFalse",
+              "target": 325,
+              "string": "isFallen"
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "You won't beat me again, explorer. Chad never loses twice in a row!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "caveDoorExploded"
+            },
+            {
+              "type": "item",
+              "item": "Slider 9",
+              "itemArea": "None"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 324,
+              "objectArg": 492,
+              "argOwner": 0,
+              "argPos": [39,46]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 325,
+              "bool": true
+            },
+            {
+              "method": "GameObject.SetActive",
+              "target": 328,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "You won't beat me again, explorer. Chad never loses twice in a row!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 324,
+              "objectArg": 127,
+              "argOwner": 0,
+              "argPos": [69.5,69.5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 365,
+      "name": "Mike",
+      "owner": 9,
+      "pos": [0,-4.5],
+      "facingLeft": false,
+      "text": {
+        "box": [-3.42,-3.95,3.42,-1.8],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 367,
+        "sprite": 2,
+        "pos": [0,-3.5],
+        "sortY": -3.5,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Thanks for everything, partner. Please, take a map from my house.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Map",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Heard the fishermen east and archeologist up north are still lookin' for help.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Boating License",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Licensed, eh? Be careful with that thing.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 9",
+              "itemArea": "MagiTech"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "You've done a good thing, partner.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 397,
+      "name": "Cathy",
+      "owner": 9,
+      "pos": [-3,-145],
+      "facingLeft": false,
+      "text": {
+        "box": [-6.42,-144.45,0.42,-142.3],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 399,
+        "sprite": 2,
+        "pos": [-3,-144],
+        "sortY": -144,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Goodness, hello! The folks here call me Cathy.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "I have a bit of a connection with pets.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Your cat? <var>Cat</var>..? Let me try and sense where they are.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Somewhere... to the East... beyond the Ocean...",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "It feels like there are a number of people around <var>Cat</var>. They're being brought somewhere?",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "They're being stuffed in a bag? Thrown into the back of a truck?! Oh dear!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Or maybe my senses are getting mixed up with what I saw on the tele last night.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Sorry dear, I'm not of much help. Please visit whenever you need some Cathy Time though.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Or if you find my 3 cats!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Autumn and Tofu should still be out somewhere...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Mittens and Tofu should still be out somewhere...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Mittens and Autumn should still be out somewhere...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            },
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Tofu likes to hang out with the mayor.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            },
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Autumn likes to hang out in the storage building a bit south.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            },
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Mittens like to poke around the bakery looking for food sometimes.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Mittens"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Mittens! Thank you for returning him!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Autumn"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Autumn! Thank you for returning her!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Tofu"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Tofu! Thank you for returning him!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            },
+            {
+              "type": "spec"
+            },
+            {
+              "type": "spec"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "All the cats are back! Here, have some breadge as thanks.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.ActivateCollectible",
+                  "target": 1,
+                  "string": "Breadge"
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Good luck finding <var>Cat</var> and thanks for the help.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 434,
+      "name": "Carlton",
+      "owner": 9,
+      "pos": [5.0625,-143.9375],
+      "facingLeft": false,
+      "text": {
+        "box": [1.6425,-143.3875,8.4825,-141.2375],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 436,
+        "sprite": 2,
+        "pos": [5.0625,-142.9375],
+        "sortY": -142.9375,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Ah, I can finally get back to baking... and...",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Hunting for all nine of the rarest Breadge... and...",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Looking for The Legendary Burger!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "None"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Woah! You got a piece of Breadge?!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Rumor says that combining all nine can make something to rival the taste of The Legendary Burger.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Good luck on your quest, sous-chef!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Village"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Caves"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Ocean"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Jungle"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Desert"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Factory"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Mountain"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "Military"
+            },
+            {
+              "type": "item",
+              "item": "Breadge",
+              "itemArea": "MagiTech"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "WoAH! ALL NINE PIECES!!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "Maybe you were The Legendary Burger the whole time...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 41,
+      "name": "Alien Log Sign",
+      "owner": 0,
+      "pos": [55.5,2.5],
+      "facingLeft": false,
+      "text": {
+        "box": [52.08,3.05,58.92,5.2],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 43,
+        "sprite": 2,
+        "pos": [55.5,3.5],
+        "sortY": 3.5,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Operation Log 4: Objective Success.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "We have captured the specimen and are returning to main base beyond the Ocean.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 44,
+      "name": "Salmon",
+      "owner": 0,
+      "pos": [46.5,17],
+      "facingLeft": false,
+      "text": {
+        "box": [43.08,17.55,49.92,19.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 46,
+        "sprite": 2,
+        "pos": [46.5,18],
+        "sortY": 18,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "I need to get to the waterfall, it’s mating season!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 6",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "I need to get to the waterfall, it’s mating season!",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "But... it's so far... I can't wait to get going.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "..._..6_...",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 44,
+              "objectArg": 493,
+              "argOwner": 0,
+              "argPos": [46.5,17]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "It's so close! I can't swim on land, though.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "If I could swim up the river I could make it.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_..7_...",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "No time to lose, gotta blast!",
+              "delay": 0.8,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "VillageGrid.TurnFishOn",
+                  "target": 1
+                }
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "NPC.Teleport",
+                  "target": 44,
+                  "objectArg": 127,
+                  "argOwner": 0,
+                  "argPos": [69.5,69.5]
+                },
+                {
+                  "method": "ParticleSystem.Play",
+                  "target": 495
+                },
+                {
+                  "method": "ParticleSystem.Play",
+                  "target": 496
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 44,
+              "objectArg": 493,
+              "argOwner": 0,
+              "argPos": [46.5,17]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "The wife thanks you as well, by the way.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 51,
+      "name": "TutorialSign",
+      "owner": 0,
+      "pos": [38,48],
+      "facingLeft": false,
+      "text": {
+        "box": [34.58,48.55,41.42,50.7],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 53,
+        "sprite": 2,
+        "pos": [38,49],
+        "sortY": 49,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Stonybrook Village's tourist hot spot: \u000a\"The Face Rocks\"",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 128,
+      "name": "Fezziwig",
+      "owner": 0,
+      "pos": [69.5,69.5],
+      "facingLeft": true,
+      "text": {
+        "box": [66.08,70.05,72.92,72.2],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 130,
+        "sprite": 2,
+        "pos": [69.5,70.5],
+        "sortY": 70.5,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 127,
+              "argOwner": 0,
+              "argPos": [69.5,69.5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": true,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 483,
+              "argOwner": 2,
+              "argPos": [-7,4]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "The Archeologist is missing, huh.",
+              "delay": 0,
+              "waitForAction": true,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "I guess I'll have to do her job.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "spec"
+            },
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 483,
+              "argOwner": 2,
+              "argPos": [-7,4]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "The ruins... you got a connection!",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "31..62",
+              "stationaryTiles": []
+            },
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 483,
+              "argOwner": 2,
+              "argPos": [-7,4]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Woah! The diviner still works.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "item",
+              "item": "Slider 7",
+              "itemArea": "Village"
+            },
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 129,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Now... Just find the final part to this spell.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "playerCarryingItem",
+              "playerItem": "Ruins Fragment"
+            },
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 129,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Great! Now let me cast it...",
+              "delay": 2,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+                {
+                  "method": "AudioManager.Play",
+                  "target": 497,
+                  "string": "Puzzle Complete"
+                },
+                {
+                  "method": "VillageGrid.FillInHole",
+                  "target": 1
+                }
+              ],
+              "onEnd": [
+                {
+                  "method": "VillageGrid.ShufflePuzzle",
+                  "target": 1
+                }
+              ]
+            },
+            {
+              "text": "Fuwaaaaaaaaaa!",
+              "delay": 3,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "There! Now use The Artifact to reconnect the village.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "villageCompletion"
+            },
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            },
+            {
+              "method": "SpriteRenderer.set_flipX",
+              "target": 129,
+              "bool": false
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "There! Now use The Artifact to <wavy>reconnect the village.</wavy>",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "grid",
+              "pattern": "624_897_153",
+              "stationaryTiles": []
+            },
+            {
+              "type": "item",
+              "item": "Slider 3",
+              "itemArea": "Caves"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 484,
+              "argOwner": 2,
+              "argPos": [-1,5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Great! I'll be heading out now, take care.",
+              "delay": 3,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": true,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            },
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+                {
+                  "method": "VillageGrid.Explode",
+                  "target": 1
+                },
+                {
+                  "method": "NPC.Teleport",
+                  "target": 128,
+                  "objectArg": 127,
+                  "argOwner": 0,
+                  "argPos": [69.5,69.5]
+                },
+                {
+                  "method": "VarManager.SetBoolOn",
+                  "target": 472,
+                  "string": "villageFezziwigGone"
+                }
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "villageFezziwigGone"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 127,
+              "argOwner": 0,
+              "argPos": [69.5,69.5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        },
+        {
+          "conditions": [
+            {
+              "type": "flag",
+              "flag": "caveDoorExploded"
+            },
+            {
+              "type": "item",
+              "item": "Slider 9",
+              "itemArea": "Village"
+            }
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+            {
+              "method": "NPC.Teleport",
+              "target": 128,
+              "objectArg": 127,
+              "argOwner": 0,
+              "argPos": [69.5,69.5]
+            }
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "...",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "object": 138,
+      "name": "Dock Sign",
+      "owner": 0,
+      "pos": [49,8.8125],
+      "facingLeft": false,
+      "text": {
+        "box": [45.58,9.3625,52.42,11.5125],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 99
+      },
+      "ping": {
+        "object": 140,
+        "sprite": 2,
+        "pos": [49,9.8125],
+        "sortY": 9.8125,
+        "sortingLayerValue": 9,
+        "order": 0
+      },
+      "conds": [
+        {
+          "conditions": [
+          ],
+          "anyOf": false,
+          "alwaysStartFromBeginning": false,
+          "onConditionalEnter": [
+          ],
+          "onDialogueChainExhausted": [
+          ],
+          "dialogue": [
+            {
+              "text": "Boating license required.",
+              "delay": 0,
+              "waitForAction": false,
+              "manual": false,
+              "noRepeatEvents": false,
+              "dontInterrupt": false,
+              "onStart": [
+              ],
+              "onEnd": [
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "fadeDuration": 1,
   "objects": [
     {
@@ -9614,6 +14838,121 @@
     },
     {
       "path": "ArtifactCanvas",
+      "parent": -1,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Objects/RomeoStart",
+      "parent": 40,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Objects/RomeoStart/RomeoStart (1)",
+      "parent": 475,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/RomeoEnd",
+      "parent": 3,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk",
+      "parent": 3,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (1)",
+      "parent": 478,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (4)",
+      "parent": 478,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse Inside",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms",
+      "parent": 6,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/FezziwigStart",
+      "parent": 482,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/ArcheologistTexts",
+      "parent": 482,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Objects/ArcheologistRocks",
+      "parent": 40,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (3)/Objects/ArchibaldAway",
+      "parent": 9,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Objects/KevinDock",
+      "parent": 40,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Objects/PierreDock",
+      "parent": 40,
+      "active": true
+    },
+    {
+      "path": "ArtifactCanvas/ArtifactFrame",
+      "parent": 474,
+      "active": false
+    },
+    {
+      "path": "ArtifactCanvas/ArtifactFrame/ScreenMask",
+      "parent": 489,
+      "active": true
+    },
+    {
+      "path": "ArtifactCanvas/ArtifactFrame/ScreenMask/WorldMapPanel",
+      "parent": 490,
+      "active": false
+    },
+    {
+      "path": "Map/World Grid/Objects/ChadRocks",
+      "parent": 40,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/Beach/SamBeach",
+      "parent": 137,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles",
+      "parent": 308,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle",
+      "parent": 494,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle (2)",
+      "parent": 494,
+      "active": true
+    },
+    {
+      "path": "AudioManager",
       "parent": -1,
       "active": true
     }

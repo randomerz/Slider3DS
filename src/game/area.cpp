@@ -27,6 +27,7 @@ static void buildComponentIndex(Area& a) {
     for (size_t i = 0; i < a.collectibles.size(); i++) byObject[a.collectibles[i].object].push_back({K::Collectible, (int)i});
     for (size_t i = 0; i < a.conditionCheckers.size(); i++)
         byObject[a.conditionCheckers[i].object].push_back({K::ConditionChecker, (int)i});
+    for (size_t i = 0; i < a.npcs.size(); i++) byObject[a.npcs[i].object].push_back({K::Npc, (int)i});
     a.componentStart.assign(1, 0);
     a.componentRefs.clear();
     for (const auto& refs : byObject) {
@@ -38,6 +39,12 @@ static void buildComponentIndex(Area& a) {
 int Area::findObject(const std::string& path) const {
     for (size_t i = 0; i < objects.size(); i++)
         if (objects[i].path == path) return (int)i;
+    return -1;
+}
+
+int Area::npcOn(int object) const {
+    for (const ComponentRef& ref : components(object))
+        if (ref.kind == ComponentRef::Kind::Npc) return ref.index;
     return -1;
 }
 
@@ -96,6 +103,11 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         d.intArg = c["int"].asInt();
         d.stringArg = c["string"].asString();
         if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
+        if (d.method == CallDef::Method::NpcTeleport && c.has("objectArg")) {
+            d.data = (int)out.transformArgs.size();
+            out.transformArgs.push_back({c["objectArg"].asInt(-1), c["argOwner"].asInt(), c["argPos"].at(0).asFloat(),
+                                         c["argPos"].at(1).asFloat()});
+        }
         if (isTeleport(d.method)) {
             TeleportDef t;
             t.owner = c["owner"].asInt();
@@ -139,9 +151,15 @@ static ConditionDef readCondition(const Json& c) {
     return d;
 }
 
+static std::vector<ConditionDef> readConditions(const Json& j) {
+    std::vector<ConditionDef> conditions;
+    for (const Json& d : j.items()) conditions.push_back(readCondition(d));
+    return conditions;
+}
+
 static ConditionalsDef readConditionals(const Json& j, Area& out) {
     ConditionalsDef c;
-    for (const Json& d : j["conditions"].items()) c.conditions.push_back(readCondition(d));
+    c.conditions = readConditions(j["conditions"]);
     c.onSuccess = readCalls(j["onSuccess"], out);
     c.onFail = readCalls(j["onFail"], out);
     return c;
@@ -189,6 +207,44 @@ static void readObjectCollider(const Json& j, ObjectCollider& c) {
             first = false;
         }
     }
+}
+
+static NpcDef readNpc(const Json& j, Area& out) {
+    NpcDef n;
+    n.object = j["object"].asInt(-1);
+    n.name = j["name"].asString();
+    n.owner = j["owner"].asInt();
+    n.x = j["pos"].at(0).asFloat();
+    n.y = j["pos"].at(1).asFloat();
+    n.facingLeft = j["facingLeft"].asBool();
+    const Json& t = j["text"];
+    n.text.minX = t["box"].at(0).asFloat();
+    n.text.minY = t["box"].at(1).asFloat();
+    n.text.maxX = t["box"].at(2).asFloat();
+    n.text.maxY = t["box"].at(3).asFloat();
+    n.text.lineAdvance = t["lineAdvance"].asFloat(0.43f);
+    n.text.wordSpacing = t["wordSpacing"].asFloat();
+    n.text.charSpacing = t["charSpacing"].asFloat();
+    n.text.sortLayer = t["sortingLayerValue"].asInt();
+    n.text.order = t["order"].asInt();
+    if (j.has("ping")) {
+        n.pingObject = j["ping"]["object"].asInt(-1);
+        n.ping = readPlacement(j["ping"]);
+    }
+    for (const Json& c : j["conds"].items()) {
+        NpcCondDef d;
+        d.conditions = readConditions(c["conditions"]);
+        d.anyOf = c["anyOf"].asBool();
+        d.alwaysStartFromBeginning = c["alwaysStartFromBeginning"].asBool();
+        d.onEnter = readCalls(c["onConditionalEnter"], out);
+        d.onExhausted = readCalls(c["onDialogueChainExhausted"], out);
+        for (const Json& l : c["dialogue"].items())
+            d.dialogue.push_back({l["text"].asString(), l["delay"].asFloat(0.5f), l["waitForAction"].asBool(),
+                                  l["manual"].asBool(), l["noRepeatEvents"].asBool(), l["dontInterrupt"].asBool(),
+                                  readCalls(l["onStart"], out), readCalls(l["onEnd"], out)});
+        n.conds.push_back(std::move(d));
+    }
+    return n;
 }
 
 static UiPart readPart(const Json& j) {
@@ -272,11 +328,23 @@ static bool validate(const Area& a, std::string* error) {
         for (const Polygon& p : c.paths)
             if (p.size() % 2 != 0) return fail(error, "collider " + a.pathOf(c.object) + ": odd point list");
     }
+    std::vector<bool> isNpc(a.objects.size(), false);
+    for (const NpcDef& n : a.npcs)
+        if (objectOk(n.object)) isNpc[n.object] = true;
     auto callsOk = [&](const std::vector<CallDef>& calls) {
         using M = CallDef::Method;
         for (const CallDef& c : calls) {
             if (c.target != -1 && !objectOk(c.target)) return false;
-            if (c.method == M::SetActive && c.target == -1) return false;
+            if ((c.method == M::SetActive || c.method == M::SetFlipX) && c.target == -1) return false;
+            if ((c.method == M::NpcTriggerEnter || c.method == M::NpcTriggerExit || c.method == M::NpcTypeCurrent ||
+                 c.method == M::NpcTeleport) &&
+                (c.target == -1 || !isNpc[c.target]))
+                return false;
+            if (c.method == M::NpcTeleport) {
+                if (c.data < 0 || c.data >= (int)a.transformArgs.size()) return false;
+                const TransformArgDef& t = a.transformArgs[c.data];
+                if (!objectOk(t.object) || !ownerOk(t.owner)) return false;
+            }
             if (c.method == M::CheckConditions && (c.data < 0 || c.data >= (int)a.conditionCheckers.size())) return false;
             if (isTeleport(c.method)) {
                 if (c.data < 0 || c.data >= (int)a.teleports.size()) return false;
@@ -304,6 +372,14 @@ static bool validate(const Area& a, std::string* error) {
     for (const CollectibleDef& c : a.collectibles)
         if (!objectOk(c.object) || (c.sprite != -1 && !spriteIndexOk(c.sprite)) || !callsOk(c.onCollect))
             return fail(error, "collectible " + c.name + ": bad object, sprite or call");
+    for (const NpcDef& n : a.npcs) {
+        bool ok = objectOk(n.object) && ownerOk(n.owner) && (n.ping.sprite == -1 || (objectOk(n.pingObject) && placementOk(n.ping)));
+        for (const NpcCondDef& c : n.conds) {
+            ok = ok && callsOk(c.onEnter) && callsOk(c.onExhausted);
+            for (const DialogueDef& d : c.dialogue) ok = ok && callsOk(d.onStart) && callsOk(d.onEnd);
+        }
+        if (!ok) return fail(error, "npc " + n.name + ": bad object, owner, ping or call");
+    }
     for (const SpritePlacement* p : {&a.player.body, &a.player.boat, &a.player.actionIndicator})
         if (p->sprite != -1 && !placementOk(*p)) return fail(error, "player: bad sprite, anim or ppu");
     for (const TileDef& t : a.tiles)
@@ -413,6 +489,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& c : doc["collectibles"].items())
         out.collectibles.push_back({c["object"].asInt(-1), c["name"].asString(), c["area"].asString(),
                                     c["disableAtStart"].asBool(), c["sprite"].asInt(-1), readCalls(c["onCollect"], out)});
+    for (const Json& n : doc["npcs"].items()) out.npcs.push_back(readNpc(n, out));
     out.fadeDuration = doc["fadeDuration"].asFloat(1);
 
     if (doc.has("player")) {

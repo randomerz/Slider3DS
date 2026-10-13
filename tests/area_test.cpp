@@ -188,6 +188,7 @@ TEST(area_village_export_stats) {
           "triggers/checkers/interactions/events/collectibles " + std::to_string(a.triggerColliders.size()) + "/" +
               std::to_string(a.conditionCheckers.size()) + "/" + std::to_string(a.interactions.size()) + "/" +
               std::to_string(a.triggerEvents.size()) + "/" + std::to_string(a.collectibles.size()));
+    check(a.npcs.size() == 18, "npcs " + std::to_string(a.npcs.size()));
     check(a.player.actionIndicator.sprite >= 0, "player action indicator");
     check(a.player.body.sprite >= 0 && a.player.boat.sprite >= 0, "player body + boat sprites");
     size_t cells = 0;

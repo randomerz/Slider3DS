@@ -1,6 +1,6 @@
 // Village walkabout: the player walks the exported Village with the original's collision; the
 // camera follows. The new-game start is the Default spawn inside tile 1's house.
-//   D-pad / circle pad: walk          A: interact (doors, raft, ...)          START: quit
+//   D-pad / circle pad: walk          A: interact (doors, raft, NPC dialogue)  START: quit
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) start outdoors on tile 1 and add:
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
@@ -15,6 +15,7 @@
 #include "game/area_view.h"
 #include "game/artifact_ui.h"
 #include "game/dev_overlay.h"
+#include "game/font.h"
 #include "game/sprite_sheets.h"
 #include "game/world.h"
 #include "platform/platform.h"
@@ -59,8 +60,9 @@ int main(int, char**) {
 
     Area area;
     SpriteSheets sheets;
+    Font font;
     std::string error;
-    if (!loadArea("village/village.json", area, &error) || !sheets.load(area)) {
+    if (!loadArea("village/village.json", area, &error) || !sheets.load(area) || !font.load("fonts/dialogue.json", &error)) {
         printf("Failed to load village: %s\n", error.c_str());
         showLoadError();
         plat::shutdown();
@@ -69,6 +71,7 @@ int main(int, char**) {
 
     World world(area);
     AreaView view;
+    view.setFont(&font);
     ArtifactUI artifactUI;
     artifactUI.init(area, world.artifact);
     DevControls dev;
@@ -115,6 +118,7 @@ int main(int, char**) {
         frame++;
     }
 
+    font.unload();
     sheets.unload();
     plat::shutdown();
     return 0;

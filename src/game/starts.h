@@ -1,7 +1,8 @@
 // Unity's Start(): it runs once per component, the first time the component's object is active
 // (and the component enabled). The components with a Start the port mirrors:
 //   - ConditionChecker with checkOnStart: checks its conditionals;
-//   - Collectible with shouldDisableAtStart: hides its object (an event shows it later).
+//   - Collectible with shouldDisableAtStart: hides its object (an event shows it later);
+//   - NPC: picks its first conditional (Npcs::start).
 // (SGrid.Start, which hides collectibles already collected, is World::reloadObjects.)
 #pragma once
 

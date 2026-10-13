@@ -127,8 +127,9 @@ TEST(physics_slides_along_walls) {
 }
 
 TEST(physics_object_colliders_block) {
-    // Every active box-shaped object collider blocks a probe at its center once its tile is
-    // collected; a collider on an uncollected tile is off (the slot itself is solid instead).
+    // Every active box-shaped object collider blocks a probe at its center (where its object is
+    // now: NPCs move at Start) once its tile is collected; a collider on an uncollected tile is off
+    // (the slot itself is solid instead).
     const Area& area = village();
     check(area.objectColliders.size() > 150, "village has object colliders (" + std::to_string(area.objectColliders.size()) + ")");
     World world(area);
@@ -138,7 +139,7 @@ TEST(physics_object_colliders_block) {
     for (const ObjectCollider& c : area.objectColliders) {
         if (!world.objects.active(c) || c.kind != ObjectCollider::Kind::Poly || c.paths.size() != 1 || c.paths[0].size() != 8) continue;
         float bx, by;
-        grid.ownerBase(c.owner, bx, by);
+        world.objectBase(c.object, c.owner, bx, by);
         Blocker b = boxBlocker(world, probe(bx + (c.minX + c.maxX) * 0.5f, by + (c.minY + c.maxY) * 0.5f), false);
         check((bool)b, area.pathOf(c.object) + ": its center is blocked");
         tested++;
@@ -167,14 +168,13 @@ TEST(physics_npcs_and_items_block_collectibles_dont) {
     // circle. The solid ones stop the player; collectibles are triggers only.
     const Area& area = village();
     World world(area);
-    Grid& grid = world.grid;
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
-    for (const char* name : {"Objects/Romeo", "Objects/Knot/Knot Node (2)", "Objects/Mittens"}) {
+    for (const char* name : {"Objects/Nemsy", "Objects/Knot/Knot Node (2)", "Objects/Mittens"}) {
         const ObjectCollider* c = findCollider(area, name);
         check(c != nullptr, std::string("has ") + name);
         if (!c) continue;
         float bx, by;
-        grid.ownerBase(c->owner, bx, by);
+        world.objectBase(c->object, c->owner, bx, by);
         float x = bx + (c->minX + c->maxX) * 0.5f, y = by + c->minY - 1.5f;
         check(!ahead(world, x, y, 0, 0, false), std::string("below ") + name + " is free");
         walk(world, x, y, 0, STEP, false);

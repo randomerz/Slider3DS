@@ -29,6 +29,7 @@ void World::reloadObjects() {
         if (state.hasCollectible(c.name, c.area)) objects.setActive(area, c.object, false);
     triggers.reset(area);
     interactables.clear();
+    npcs.reset(area);
     starts.reset(area);
     starts.update(*this);
 }
@@ -83,9 +84,11 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
 
     // Start runs before an object's first update (here: before triggers can touch it), and again
-    // for what the triggers' calls activated. Both skip when nothing became active.
+    // for what calls activated. Each skips when nothing became active.
     starts.update(*this);
     triggers.update(*this);
+    starts.update(*this);
+    npcs.update(*this, dt);
     starts.update(*this);
     if (effects.fade > 0)
         effects.fade = area.fadeDuration > 0 ? std::max(0.0f, effects.fade - dt / area.fadeDuration) : 0;
@@ -102,6 +105,7 @@ void World::withdraw(const Interactable& it) {
 int World::priority(const Interactable& it) const {
     switch (it.kind) {
     case Interactable::Kind::Interaction: return area.interactions[it.index].priority;
+    case Interactable::Kind::Npc: return 0; // NPCDialogueContext's priority isn't serialized
     }
     return 0;
 }
@@ -109,6 +113,7 @@ int World::priority(const Interactable& it) const {
 bool World::showsPrompt(const Interactable& it) const {
     switch (it.kind) {
     case Interactable::Kind::Interaction: return true; // PlayerConditionals: IInteractable's default
+    case Interactable::Kind::Npc: return npcs.showsPrompt(area, it.index);
     }
     return true;
 }
@@ -127,6 +132,9 @@ void World::interact() {
             if (!in.isCarryingItem) runCalls(*this, in.onSuccess); // PlayerConditionals.CheckCondition
             break;
         }
+        case Interactable::Kind::Npc:
+            npcs.interact(*this, it.index);
+            break;
         }
     }
 }

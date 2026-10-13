@@ -1,4 +1,5 @@
-// Draws a World's area (tile layers, active world sprites, the player) through the platform layer.
+// Draws a World's area (tile layers, active world sprites, the player, NPCs' dialogue and message
+// pings) through the platform layer.
 //
 // Per frame: begin() sets the camera, then draw() draws everything visible in Unity's order:
 // sorting layer, then order in layer, then (GraphicsSettings custom sort axis (0,1,0)) higher sort
@@ -11,6 +12,8 @@
 #include <vector>
 
 #include "game/area.h"
+#include "game/dialogue_text.h"
+#include "game/font.h"
 #include "game/grid.h"
 #include "game/sprite_sheets.h"
 #include "game/world.h"
@@ -34,8 +37,10 @@ public:
     // `time` (seconds) drives animated tiles and sprites. Inactive STiles are drawn when showInactiveTiles.
     void begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
                bool showInactiveTiles);
-    // Draws the visible tile layers, active world sprites and the player with minSortLayer <=
-    // sorting layer value <= maxSortLayer, sorted together.
+    // The font NPC dialogue is drawn in (none: dialogue isn't drawn).
+    void setFont(const Font* font) { font_ = font; }
+    // Draws the visible tile layers, active world sprites, the player and NPCs' pings and dialogue
+    // with minSortLayer <= sorting layer value <= maxSortLayer, sorted together.
     void draw(const World& world, int minSortLayer = INT_MIN, int maxSortLayer = INT_MAX);
 
     // World -> screen pixel (top-left origin) with the current snapped camera.
@@ -47,22 +52,25 @@ public:
     int lastSpriteCount() const { return spriteCount_; } // sprites drawn since begin()
 
 private:
-    enum class ItemKind : uint8_t { Layer, Sprite, Player }; // tie order at equal sort keys
+    enum class ItemKind : uint8_t { Layer, Sprite, Player, Ping, Dialogue }; // tie order at equal sort keys
     struct Item {
         ItemKind kind;
-        int index;           // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order
+        int index; // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order; Ping, Dialogue: Area::npcs
         SortedSprite sprite; // sort keys (all kinds) and what to draw (sprites)
     };
 
     void drawLayer(const Area& area, const Grid& grid, const TileLayer& L);
     void drawSprite(const Area& area, const SortedSprite& sp); // if on screen
+    void drawDialogue(const World& world, int npc);
     // Screen top-left of `sp`; false if it is off screen.
     bool spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const;
 
     const SpriteSheets* sheets_ = nullptr; // set by begin()
+    const Font* font_ = nullptr;
     float camX_ = 0, camY_ = 0, ppu_ = 16, time_ = 0;
     int screenW_ = 0, screenH_ = 0;
     bool showInactive_ = false;
     int spriteCount_ = 0;
     std::vector<Item> items_; // reused every frame
+    std::vector<GlyphPlace> glyphs_;
 };

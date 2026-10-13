@@ -12,6 +12,21 @@ void GameState::setFlag(const std::string& name, bool value) {
     if (!value && it != flags_.end()) flags_.erase(it);
 }
 
+std::string GameState::str(const std::string& name) const {
+    for (const auto& s : strings_)
+        if (s.first == name) return s.second;
+    return name;
+}
+
+void GameState::setStr(const std::string& name, const std::string& value) {
+    for (auto& s : strings_)
+        if (s.first == name) {
+            s.second = value;
+            return;
+        }
+    strings_.emplace_back(name, value);
+}
+
 bool GameState::hasCollectible(const std::string& name, const std::string& area) const {
     return std::any_of(collectibles_.begin(), collectibles_.end(), [&](const Collectible& c) {
         return c.name == name && (area == "None" || c.area == area);

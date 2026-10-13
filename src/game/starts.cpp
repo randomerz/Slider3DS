@@ -25,8 +25,12 @@ void Starts::update(World& world) {
             if (!world.objects.activeInHierarchy(o)) continue;
             for (int r = area.componentStart[o]; r < area.componentStart[o + 1]; r++) {
                 const ComponentRef& ref = area.componentRefs[r];
-                if (started_[r] || (ref.kind != K::ConditionChecker && ref.kind != K::Collectible)) continue;
-                if (ref.kind == K::ConditionChecker) {
+                if (started_[r] || (ref.kind != K::ConditionChecker && ref.kind != K::Collectible && ref.kind != K::Npc))
+                    continue;
+                if (ref.kind == K::Npc) {
+                    started_[r] = 1;
+                    world.npcs.start(world, ref.index);
+                } else if (ref.kind == K::ConditionChecker) {
                     const ConditionCheckerDef& cc = area.conditionCheckers[ref.index];
                     if (!cc.enabled) continue;
                     started_[r] = 1;

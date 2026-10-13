@@ -1,6 +1,7 @@
 // Runtime state of an Area's scene objects (Area::objects): active state as changed by
-// GameObject.SetActive, and placement (owner STile + offset) for objects that move at runtime
-// (NPCs walking, collectibles re-attached, carried items). Starts as authored.
+// GameObject.SetActive, placement (owner STile + offset) for objects that move at runtime
+// (NPCs walking, collectibles re-attached, carried items) and sprite flips set by events. Starts as
+// authored.
 //
 // Like Unity: an object is active in the hierarchy only if it and every ancestor are active
 // (activeSelf), so SetActive on a parent hides or shows everything under it, and showing a parent
@@ -22,6 +23,8 @@ public:
     // Moves `object` (and its children): `owner` replaces the exported owner STile of its components
     // (-1 = keep theirs) and (dx, dy) is added to their exported positions.
     void setPlacement(const Area& area, int object, int owner, float dx, float dy);
+    // SpriteRenderer.flipX of the sprite on `object` (not inherited).
+    void setFlipX(int object, bool flip) { flipX_[object] = flip ? 1 : 0; }
 
     bool activeInHierarchy(int object) const { return inHierarchy_[object] != 0; }
     bool active(const WorldSprite& ws) const { return activeInHierarchy(ws.object); }
@@ -33,6 +36,8 @@ public:
     }
     float offsetX(int object) const { return offX_[object]; }
     float offsetY(int object) const { return offY_[object]; }
+    // The sprite's flipX as set at runtime: 1 / 0, or -1 = as exported.
+    int flipX(int object) const { return flipX_[object]; }
 
     // Bumped when active state / placement changes, so per-frame work can skip frames where what
     // it depends on didn't change (Starts watch activity; walking NPCs change placement every frame).
@@ -45,5 +50,6 @@ private:
     std::vector<uint8_t> self_, inHierarchy_;         // active, per object
     std::vector<int> selfOwner_, owner_;              // placement set on the object / effective; -1 = exported
     std::vector<float> selfDx_, selfDy_, offX_, offY_; // offset set on the object / effective (sum)
+    std::vector<int8_t> flipX_;
     uint32_t activeVersion_ = 0, placementVersion_ = 0;
 };

@@ -186,8 +186,8 @@ endif
 
 #---------------------------------------------------------------------------------
 # Exported game data (assets/, from the Unity exporter) -> RomFS:
-#   assets/sheets/<name>.png -> romfs/gfx/<name>.t3x   (tex3ds)
-#   assets/<area>/*.json     -> romfs/<area>/*.json   (copied)
+#   assets/sheets/<name>.png -> romfs/gfx/<name>.t3x   (tex3ds; incl. the font atlas, tools/make_font.py)
+#   assets/<dir>/*.json      -> romfs/<dir>/*.json    (copied: areas, fonts)
 # The .3dsx embeds RomFS, so it is rebuilt when any of these change.
 #---------------------------------------------------------------------------------
 SHEET_PNGS	:=	$(wildcard assets/sheets/*.png)

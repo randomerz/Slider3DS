@@ -10,6 +10,7 @@ void ObjectStates::init(const Area& area) {
     selfDy_.assign(n, 0);
     offX_.assign(n, 0);
     offY_.assign(n, 0);
+    flipX_.assign(n, -1);
     for (size_t i = 0; i < n; i++) self_[i] = area.objects[i].activeSelf;
     propagate(area, 0);
     activeVersion_++;

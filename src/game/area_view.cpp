@@ -74,10 +74,28 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         if (!inRange(ws.place.sortLayer) || !objects.active(ws) || !ownerShown(objects.owner(ws.object, ws.owner))) continue;
         float bx, by;
         world.objectBase(ws.object, ws.owner, bx, by);
-        const SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
+        SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
+        if (objects.flipX(ws.object) >= 0) // set by an event (SpriteRenderer.set_flipX)
+            sp.flags = (sp.flags & ~(uint32_t)plat::FLIP_X) | (objects.flipX(ws.object) ? (uint32_t)plat::FLIP_X : 0u);
         float px, py;
         if (!spriteRect(area, sp, px, py)) continue;
         items_.push_back({ItemKind::Sprite, (int)i, sp});
+    }
+    for (int i = 0; i < (int)area.npcs.size(); i++) {
+        const NpcDef& n = area.npcs[i];
+        if (!objects.activeInHierarchy(n.object) || !ownerShown(objects.owner(n.object, n.owner))) continue;
+        float bx, by;
+        world.objectBase(n.object, n.owner, bx, by);
+        if (world.npcs.pingShown(i) && n.ping.sprite >= 0 && inRange(n.ping.sortLayer))
+            items_.push_back({ItemKind::Ping, i, placeSprite(area, n.ping, bx, by, time_)});
+        if (world.npcs.textShown(i) && font_ && inRange(n.text.sortLayer)) {
+            // A world-space canvas: sorted by its layer and order, then its position.
+            Item it{ItemKind::Dialogue, i, {}};
+            it.sprite.sortLayer = n.text.sortLayer;
+            it.sprite.order = n.text.order;
+            it.sprite.sortY = by + n.y;
+            items_.push_back(it);
+        }
     }
     const Player& pl = world.player;
     const uint32_t facing = pl.facingLeft ? (uint32_t)plat::FLIP_X : 0u;
@@ -100,7 +118,29 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
 
     for (const Item& it : items_) {
         if (it.kind == ItemKind::Layer) drawLayer(area, grid, area.layers[it.index]);
+        else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
         else drawSprite(area, it.sprite);
+    }
+}
+
+void AreaView::drawDialogue(const World& world, int npc) {
+    const NpcDef& n = world.area.npcs[npc];
+    const DialogueText& text = world.npcs.text(npc);
+    const Typer& typer = world.npcs.typer(npc);
+    layoutDialogue(font_->def(), text, n.text, ppu_, glyphs_);
+    float bx, by, sx, sy;
+    world.objectBase(n.object, n.owner, bx, by);
+    worldToScreen(bx + n.text.minX, by + n.text.minY, sx, sy); // the box's bottom-left
+    // Every backing first, then the letters (the BG font's text renders under the text's).
+    for (int pass = 0; pass < 2; pass++) {
+        for (int i = 0; i < (int)text.chars.size(); i++) {
+            if (!glyphVisible(text.chars[i]) || !typer.shown(i)) continue;
+            const Glyph& g = font_->def().glyph(text.chars[i]);
+            const GlyphRect& r = pass == 0 ? g.fill : g.text;
+            const float y = sy - glyphs_[i].y - typer.waveOffset(i) * ppu_;
+            font_->draw(r, sx + glyphs_[i].x + r.ox, y + r.oy);
+            spriteCount_++;
+        }
     }
 }
 

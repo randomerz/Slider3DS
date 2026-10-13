@@ -283,13 +283,27 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         collect(t.onExit);
     }
     for (const CollectibleDef& c : area.collectibles) collect(c.onCollect);
+    for (const NpcDef& n : area.npcs)
+        for (const NpcCondDef& c : n.conds) {
+            collect(c.onEnter);
+            collect(c.onExhausted);
+            for (const DialogueDef& d : c.dialogue) {
+                collect(d.onStart);
+                collect(d.onEnd);
+            }
+        }
     const std::set<std::string> expected = {
-        "ArtifactScreenHider.AddScreensAndShow", "ArtifactWorldMapAffector.UpdateStatus", "Breadge.Pickup",
-        "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark", "KnotBox.SetToCorrectPositions",
-        "NPC.OnDialogueTriggerEnter", "NPC.OnDialogueTriggerExit", "PlayerAction.SetItemSortingOrderDec",
-        "PlayerAction.SetItemSortingOrderInc", "PlayerActionHints.DisableHint", "PlayerActionHints.TriggerHint",
-        "PlaySound.PlayString", "UIClick.Click", "VillageGrid.OnHouseExit", "VillageGrid.OnWaterfallEntry",
-        "VillageGrid.PlayDigSound", "VillageGrid.RemoveSlider2Tracker",
+        "Animator.set_runtimeAnimatorController", "ArtifactScreenHider.AddScreensAndShow",
+        "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "BoxCollider2D.set_enabled", "Breadge.Pickup",
+        "ChadJump.JumpStarter", "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
+        "KnotBox.SetToCorrectPositions", "NPC.StartValidWalk", "NPC.StartWalkAtIndex",
+        "NPCAnimatorController.SetBoolToFalse", "NPCAnimatorController.SetBoolToTrue", "ParticleSystem.Play",
+        "PlaySound.PlayString", "PlayerAction.SetItemSortingOrderDec", "PlayerAction.SetItemSortingOrderInc",
+        "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
+        "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.ActivateCollectible",
+        "VillageGrid.ActivateSliderCollectible", "VillageGrid.Explode", "VillageGrid.FillInHole",
+        "VillageGrid.OnHouseExit", "VillageGrid.OnWaterfallEntry", "VillageGrid.PlayDigSound",
+        "VillageGrid.RemoveSlider2Tracker", "VillageGrid.ShufflePuzzle", "VillageGrid.TurnFishOn",
     };
     std::string got;
     for (const std::string& n : unsupported) got += n + ", ";

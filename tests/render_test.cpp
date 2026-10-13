@@ -5,6 +5,7 @@
 // After an intended rendering or export change, regenerate and review the diff:
 //   SLIDER3DS_UPDATE_GOLDENS=1 build-pc/Debug/slider3ds_tests.exe render
 // On a mismatch the actual draw list is written to <build>/test-out/<scene>.txt for inspection.
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -319,7 +320,8 @@ TEST(render_start_check_goldens) {
 }
 
 TEST(render_action_indicator_while_an_interaction_is_offered) {
-    // PlayerAction's indicator above the player shows only while an interaction is on offer.
+    // PlayerAction's indicator above the player shows while an offered interactable asks for it: a
+    // door always, an NPC once its line waiting for the player is typed.
     const Area& area = village();
     SpriteSheets sheets;
     AreaView view;
@@ -329,24 +331,74 @@ TEST(render_action_indicator_while_an_interaction_is_offered) {
         testResetDrawCalls();
         view.begin(area, sheets, world.player.x, world.player.y, plat::TOP_W, plat::TOP_H, 0, false);
         view.draw(world);
+        // Where it goes above the player (NPCs' message pings use the same sprite).
+        const SortedSprite sp = placeSprite(area, area.player.actionIndicator, world.player.x, world.player.y, 0);
+        float x, y;
+        view.worldToScreen(sp.x - indicator.pivotX / indicator.ppu, sp.y + (indicator.h - indicator.pivotY) / indicator.ppu, x, y);
         for (const DrawCall& c : testDrawCalls())
-            if (c.sheet == area.sheetNames[indicator.sheet] && c.sx == indicator.x && c.sy == indicator.y) return true;
+            if (c.sheet == area.sheetNames[indicator.sheet] && c.sx == indicator.x && c.sy == indicator.y &&
+                c.x == std::round(x) && c.y == std::round(y))
+                return true;
         return false;
+    };
+    // Stands the player on the center of `object`'s trigger.
+    auto standOnTrigger = [&](World& world, int object) {
+        for (const ObjectCollider& c : area.triggerColliders)
+            if (c.object == object) {
+                float bx, by;
+                world.objectBase(c.object, c.owner, bx, by);
+                world.player.x = bx + (c.minX + c.maxX) * 0.5f;
+                world.player.y = by + (c.minY + c.maxY) * 0.5f - area.player.footBox.offY;
+            }
+        world.update(1.0f / 60.0f, 0, 0, false);
     };
     World world(area);
     world.placeAt(*area.spawn("Default"));
     world.update(1.0f / 60.0f, 0, 0, false);
     check(world.interactables.empty() && !indicatorDrawn(world), "nothing on offer by the bed: no indicator");
-    // Onto tile 1's house exit (its trigger's center).
-    const int exitObject = area.findObject("Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction");
-    for (const ObjectCollider& c : area.triggerColliders)
-        if (c.object == exitObject) {
-            float bx, by;
-            world.grid.ownerBase(c.owner, bx, by);
-            world.player.x = bx + (c.minX + c.maxX) * 0.5f;
-            world.player.y = by + (c.minY + c.maxY) * 0.5f - area.player.footBox.offY;
-        }
+    const int exploresseObject = area.findObject("Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse");
+    const int exploresse = area.npcOn(exploresseObject);
+    standOnTrigger(world, exploresseObject);
+    check(exploresse >= 0 && world.npcs.typer(exploresse).typing(), "next to Exploresse: she starts talking");
+    check(!world.interactables.empty() && !indicatorDrawn(world), "she's on offer, but no indicator while typing");
+    for (int i = 0; i < 600 && world.npcs.typer(exploresse).typing(); i++) world.update(1.0f / 60.0f, 0, 0, false);
     world.update(1.0f / 60.0f, 0, 0, false);
-    check(!world.interactables.empty(), "on the exit: it's on offer");
+    check(indicatorDrawn(world), "her line is typed and waits for the player: the indicator shows");
+    standOnTrigger(world, area.findObject("Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction"));
+    check(!world.interactables.empty(), "on tile 1's house exit: it's on offer");
     check(indicatorDrawn(world), "the indicator shows");
+}
+
+TEST(render_npc_dialogue_goldens) {
+    // Exploresse's greeting typed over her head: part-way, and fully typed (the wavy "strange."
+    // bobbing, the " ..." waiting for the player). The camera is on her.
+    const Area& area = village();
+    SpriteSheets sheets;
+    Font font;
+    AreaView view;
+    std::string error;
+    check(sheets.load(area) && font.load("fonts/dialogue.json", &error), "sheets and font load " + error);
+    view.setFont(&font);
+    GoldenSet goldens("dialogue.txt");
+    const int npc = area.npcOn(area.findObject("Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse"));
+    check(npc >= 0, "Exploresse");
+    if (npc < 0) return;
+    const NpcDef& n = area.npcs[npc];
+    World world = sceneWorld();
+    float bx, by;
+    world.grid.ownerBase(n.owner, bx, by);
+    world.player.x = bx + n.x - 0.5f;
+    world.player.y = by + n.y;
+    auto shoot = [&](const char* name) {
+        testResetDrawCalls();
+        view.begin(area, sheets, bx + n.x, by + n.y + 1, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        goldens.compare(name, 50);
+    };
+    for (int i = 0; i < 20; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.npcs.typer(npc).typing(), "still typing after 20 frames");
+    shoot("exploresse_typing");
+    for (int i = 0; i < 600 && world.npcs.typer(npc).typing(); i++) world.update(1.0f / 60.0f, 0, 0, false);
+    world.update(1.0f / 60.0f, 0, 0, false);
+    shoot("exploresse_typed");
 }

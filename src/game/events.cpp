@@ -65,6 +65,21 @@ void runCall(World& world, const CallDef& c) {
     case M::ChangeScenes:
         world.effects.leftArea = true;
         break;
+    case M::NpcTriggerEnter:
+        world.npcs.triggerEnter(world, world.area.npcOn(c.target));
+        break;
+    case M::NpcTriggerExit:
+        world.npcs.triggerExit(world, world.area.npcOn(c.target));
+        break;
+    case M::NpcTypeCurrent:
+        world.npcs.typeCurrentLine(world, world.area.npcOn(c.target));
+        break;
+    case M::NpcTeleport:
+        Npcs::teleport(world, world.area.npcOn(c.target), world.area.transformArgs[c.data]);
+        break;
+    case M::SetFlipX:
+        world.objects.setFlipX(c.target, c.boolArg);
+        break;
     case M::Unsupported:
         break;
     }
