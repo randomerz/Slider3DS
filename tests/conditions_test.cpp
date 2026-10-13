@@ -68,6 +68,7 @@ TEST(starts_run_when_their_object_first_activates) {
     check(buried >= 0 && slider7 < area.collectibles.size(), "the buried slider and its collectible exist");
     if (buried < 0 || slider7 == area.collectibles.size()) return;
     const int object = area.collectibles[slider7].object;
+    world.setTileActive(5, true); // its tile (uncollected tiles' objects are all off)
     check(!world.starts.started(area, ComponentRef::Kind::Collectible, (int)slider7), "not started while its parent is hidden");
     world.objects.setActive(area, buried, true);
     check(world.objects.activeInHierarchy(object), "shown with its parent ...");
@@ -157,8 +158,11 @@ TEST(start_checks_rock_and_hole_follow_slider_7) {
     check(rockObject >= 0 && holeObject >= 0, "tile 5 has the rock and the hole");
     if (rockObject < 0 || holeObject < 0) return;
     World world(area);
+    check(!world.objects.activeInHierarchy(rockObject) && !world.objects.activeInHierarchy(holeObject),
+          "tile 5 uncollected: neither (its objects are off, STile.Awake)");
+    world.setTileActive(5, true);
     check(world.objects.activeInHierarchy(rockObject) && !world.objects.activeInHierarchy(holeObject),
-          "without Slider 7: rock, no hole");
+          "tile 5 collected, without Slider 7: rock, no hole (their checks ran on collection)");
     world.state.setCollectible("Slider 7", "Village", true);
     world.reloadObjects();
     check(!world.objects.activeInHierarchy(rockObject) && world.objects.activeInHierarchy(holeObject),

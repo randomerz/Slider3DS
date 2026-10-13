@@ -104,7 +104,7 @@ struct Scene {
 };
 
 void allButNine(World& world) {
-    for (int id = 1; id <= 8; id++) world.grid.setTileActive(id, true);
+    for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
     world.artifact.init(world.grid);
 }
 
@@ -168,7 +168,7 @@ TEST(render_artifact_goldens) {
         ArtifactUI ui;
         explicit Setup(bool allButNine) {
             if (allButNine)
-                for (int id = 1; id <= 8; id++) world.grid.setTileActive(id, true);
+                for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
             world.artifact.init(world.grid);
             ui.init(village(), world.artifact);
         }

@@ -110,7 +110,7 @@ TEST(events_disabled_at_start_collectibles_are_hidden) {
     World world(area);
     const std::string path = "Map/Village 8Puzzle/STile (2)/Objects/Slider 3 Collectible";
     check(!world.objects.activeInHierarchy(area.findObject(path)), "Slider 3 starts hidden");
-    world.grid.setTileActive(2, true); // its tile, so the trigger could collide
+    world.setTileActive(2, true); // its tile, so the trigger could collide
     check(standIn(world, path), "standing where Slider 3 would be");
     world.update(DT, 0, 0, false);
     check(!world.state.hasCollectible("Slider 3", "Village") && !world.grid.tileActive(3), "nothing collected");

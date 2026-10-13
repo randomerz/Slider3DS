@@ -7,6 +7,7 @@
 #include "game/area.h"
 #include "game/physics.h"
 #include "game/world.h"
+#include "platform/platform.h"
 #include "test.h"
 #include "test_platform.h"
 
@@ -20,7 +21,8 @@ constexpr float DT = 1.0f / 60.0f;
 //   2 "NoBoat"    interaction excluded on water: flag "noBoat"
 //   3 "NoLand"    interaction excluded on land: flag "noLand"
 //   4 "Carry"     interaction that needs a carried item: flag "carry"
-// plus "Other" (no trigger) holding an interaction with an unsupported call and one with priority use.
+// plus "Other" (no trigger) holding two interactions: priority 0 (an unsupported call, then flag
+// "low") and priority 1 (flag "high").
 const char* TRIGGER_AREA = R"json({
   "ppu": 16,
   "grid": {"width": 1, "height": 1, "targetGrid": "1", "housingOffset": -150},
@@ -42,8 +44,9 @@ const char* TRIGGER_AREA = R"json({
     {"object": 2, "addToOnAction": true, "excludeBoat": true, "onSuccess": [{"method": "VarManager.SetBoolOn", "string": "noBoat"}]},
     {"object": 3, "addToOnAction": true, "excludeLand": true, "onSuccess": [{"method": "VarManager.SetBoolOn", "string": "noLand"}]},
     {"object": 4, "addToOnAction": true, "isCarryingItem": true, "onSuccess": [{"method": "VarManager.SetBoolOn", "string": "carry"}]},
-    {"object": 5, "addToOnAction": true, "onSuccess": [{"method": "CowProp.Moo", "target": 5}]},
-    {"object": 5, "addToOnAction": true, "onSuccess": [{"method": "VarManager.SetBoolOn", "string": "high"}]}],
+    {"object": 5, "addToOnAction": true, "onSuccess": [{"method": "CowProp.Moo", "target": 5},
+                                                       {"method": "VarManager.SetBoolOn", "string": "low"}]},
+    {"object": 5, "addToOnAction": true, "priority": 1, "onSuccess": [{"method": "VarManager.SetBoolOn", "string": "high"}]}],
   "player": {"footBox": {"offset": [0, 0], "size": [0.5, 0.5]}, "boatBox": {"offset": [0, 0], "size": [1, 0.5]}}
 })json";
 
@@ -143,18 +146,15 @@ TEST(triggers_interact_runs_the_highest_priority_only) {
     // PlayerAction.Interact: only the offered interactables with the highest priority run; an
     // unsupported call (CowProp.Moo) does nothing.
     World world(triggerArea());
-    world.offer({Interactable::Kind::Interaction, 4, 0});
-    world.offer({Interactable::Kind::Interaction, 5, 0});
+    world.offer({Interactable::Kind::Interaction, 4});
+    world.offer({Interactable::Kind::Interaction, 5});
+    world.offer({Interactable::Kind::Interaction, 5}); // offered twice: listed once
+    check(world.interactables.size() == 2, "two on offer");
     world.interact();
-    check(world.state.flag("high"), "same priority: both run (the unsupported one quietly)");
-    world.state.setFlag("high", false);
+    check(world.state.flag("high") && !world.state.flag("low"), "only the higher priority runs");
     world.withdraw({Interactable::Kind::Interaction, 5});
-    world.offer({Interactable::Kind::Interaction, 5, -1});
     world.interact();
-    check(!world.state.flag("high"), "lower priority than another on offer: doesn't run");
-    world.withdraw({Interactable::Kind::Interaction, 4});
-    world.interact();
-    check(world.state.flag("high"), "alone: runs");
+    check(world.state.flag("low"), "alone, the lower one runs (its unsupported call quietly does nothing)");
 }
 
 TEST(triggers_tiles_sliding_without_the_player_turn_their_triggers_off) {
@@ -163,7 +163,7 @@ TEST(triggers_tiles_sliding_without_the_player_turn_their_triggers_off) {
     // into the empty middle slot.
     const Area& area = village();
     World world(area);
-    for (int id = 1; id <= 8; id++) world.grid.setTileActive(id, true);
+    for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
     world.artifact.init(world.grid);
     const ObjectCollider* trigger = nullptr;
     for (const ObjectCollider& c : area.triggerColliders)
@@ -200,7 +200,7 @@ TEST(physics_resting_player_is_pushed_out) {
     // Box2D pushes a resting body out too: a player left overlapping the well moves out without input.
     const Area& area = village();
     World world(area);
-    for (const STileDef& d : area.stiles) world.grid.setTileActive(d.islandId, true);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int well = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Well");
     for (const ObjectCollider& c : area.objectColliders)
         if (c.object == well) {
@@ -219,7 +219,7 @@ TEST(objects_runtime_placement_moves_colliders) {
     // ObjectStates placement: moving an object moves its colliders (NPC walking, carried items).
     const Area& area = village();
     World world(area);
-    for (const STileDef& d : area.stiles) world.grid.setTileActive(d.islandId, true);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int well = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Well");
     float cx = 0, cy = 0;
     for (const ObjectCollider& c : area.objectColliders)
@@ -233,6 +233,35 @@ TEST(objects_runtime_placement_moves_colliders) {
     check(blockedAt(cx, cy).kind == Blocker::Object && !blockedAt(cx + 5, cy), "the well where it was exported");
     world.objects.setPlacement(area, well, -1, 5, 0);
     check(!blockedAt(cx, cy) && blockedAt(cx + 5, cy).kind == Blocker::Object, "moved 5 units right");
+}
+
+TEST(objects_placement_follows_the_hierarchy_and_owner) {
+    // Moving a parent moves its children's colliders; an owner override makes an object follow
+    // another tile (its exported position then counts from that tile's center).
+    const Area& area = village();
+    World world(area);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
+    const int house = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House5");
+    const int decorations = area.objects[house].parent;
+    const ObjectCollider* c = nullptr;
+    for (const ObjectCollider& oc : area.objectColliders)
+        if (oc.object == house) c = &oc;
+    check(c != nullptr && decorations >= 0, "House5 has a collider and a parent");
+    if (!c || decorations < 0) return;
+    auto blockedAt = [&](float x, float y) {
+        return boxBlocker(world, {x - 0.01f, y - 0.01f, x + 0.01f, y + 0.01f}, false).kind == Blocker::Object;
+    };
+    float bx, by;
+    world.grid.ownerBase(9, bx, by);
+    const float lx = (c->minX + c->maxX) * 0.5f, ly = (c->minY + c->maxY) * 0.5f; // local to tile 9
+    check(blockedAt(bx + lx, by + ly), "House5 where exported");
+    world.objects.setPlacement(area, decorations, -1, 0, 3);
+    check(!blockedAt(bx + lx, by + ly) && blockedAt(bx + lx, by + ly + 3), "moving its parent moved it up 3");
+    world.objects.setPlacement(area, decorations, -1, 0, 0);
+    world.objects.setPlacement(area, house, 1, 0, 0); // now counted from tile 1
+    float ax, ay;
+    world.grid.ownerBase(1, ax, ay);
+    check(!blockedAt(bx + lx, by + ly) && blockedAt(ax + lx, ay + ly), "an owner override puts it on tile 1");
 }
 
 TEST(calls_unsupported_in_the_village_are_pinned) {
@@ -265,4 +294,18 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
     std::string got;
     for (const std::string& n : unsupported) got += n + ", ";
     check(unsupported == expected, "unsupported call methods: " + got);
+
+    // Drift check both ways: the exporter's report lists the methods its PortMethods doesn't
+    // cover; the port's SLIDER_CALL_METHODS decides what loads as Unsupported. They must agree.
+    std::string report;
+    check(plat::readFile("village/export_report.txt", report), "read the export report");
+    std::set<std::string> reported;
+    const std::string prefix = "Calls to ", suffix = " are not run by the port yet";
+    for (size_t at = report.find(prefix); at != std::string::npos; at = report.find(prefix, at + 1)) {
+        const size_t end = report.find(suffix, at);
+        if (end != std::string::npos) reported.insert(report.substr(at + prefix.size(), end - at - prefix.size()));
+    }
+    std::string rep;
+    for (const std::string& n : reported) rep += n + ", ";
+    check(reported == unsupported, "exporter report agrees with the port (report: " + rep + ")");
 }

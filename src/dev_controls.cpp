@@ -19,7 +19,7 @@ bool DevControls::update(const plat::Input& in, World& world) {
         // Collect (or drop) Sliders 2-8, then reload the scene objects as a save with them would.
         collected = !collected;
         for (int id = 2; id <= 8; id++) {
-            world.grid.setTileActive(id, collected);
+            world.setTileActive(id, collected);
             world.state.setCollectible("Slider " + std::to_string(id), "Village", collected);
         }
         world.reloadObjects();

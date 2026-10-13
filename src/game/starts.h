@@ -16,8 +16,8 @@ class Starts {
 public:
     void reset(const Area& area); // nothing started (a fresh scene load)
     // Runs Start for every component that hasn't started and now is active, object by object,
-    // until none are left (a Start may activate other objects). Does nothing if no object changed
-    // since the last call.
+    // until none are left (a Start may activate other objects). Does nothing if no object's active
+    // state changed since the last call.
     void update(World& world);
 
     bool started(const Area& area, ComponentRef::Kind kind, int index) const;

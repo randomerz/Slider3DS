@@ -68,7 +68,7 @@ TEST(physics_spawns_start_free) {
     const Area& area = village();
     World world(area);
     Grid& grid = world.grid;
-    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     check(area.spawns.size() >= 4, "has spawns");
     for (const Spawn& s : area.spawns) {
         float x, y;
@@ -133,7 +133,7 @@ TEST(physics_object_colliders_block) {
     check(area.objectColliders.size() > 150, "village has object colliders (" + std::to_string(area.objectColliders.size()) + ")");
     World world(area);
     Grid& grid = world.grid;
-    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     int tested = 0;
     for (const ObjectCollider& c : area.objectColliders) {
         if (!world.objects.active(c) || c.kind != ObjectCollider::Kind::Poly || c.paths.size() != 1 || c.paths[0].size() != 8) continue;
@@ -157,7 +157,7 @@ TEST(physics_object_colliders_block) {
     Blocker b = ahead(world, x, y, 0, 0.01f, false);
     check(b.kind == Blocker::Object && describe(area, b).find("Well") != std::string::npos,
           "walking up stops at the well (" + describe(area, b) + ")");
-    grid.setTileActive(9, false);
+    world.setTileActive(9, false);
     b = ahead(world, x, y, 0, 0.01f, false);
     check(b.kind == Blocker::InactiveTile, "uncollected tile 9: its slot blocks instead (" + describe(area, b) + ")");
 }
@@ -168,7 +168,7 @@ TEST(physics_npcs_and_items_block_collectibles_dont) {
     const Area& area = village();
     World world(area);
     Grid& grid = world.grid;
-    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     for (const char* name : {"Objects/Romeo", "Objects/Knot/Knot Node (2)", "Objects/Mittens"}) {
         const ObjectCollider* c = findCollider(area, name);
         check(c != nullptr, std::string("has ") + name);
@@ -192,7 +192,7 @@ TEST(physics_inactive_tile_is_solid) {
     const Area& area = village();
     World world(area);
     Grid& grid = world.grid;
-    grid.setTileActive(8, true);
+    world.setTileActive(8, true);
     const TileState* t9 = grid.tile(9);
     check(t9 && !t9->active, "tile 9 exists and starts inactive");
     if (!t9) return;
@@ -200,7 +200,7 @@ TEST(physics_inactive_tile_is_solid) {
     Blocker b = boxBlocker(world, probe(edge - 0.25f, 17.0f, 0.5f, 0.0f), false);
     check(b.kind == Blocker::InactiveTile && b.index == 9, "inactive tile 9 blocks (" + describe(area, b) + ")");
     check(!boxBlocked(world, probe(edge - 0.25f, 17.0f), false), "control: just left of the slot is free");
-    grid.setTileActive(9, true);
+    world.setTileActive(9, true);
     b = boxBlocker(world, probe(edge - 0.25f, 17.0f, 0.5f, 0.0f), false);
     check(b.kind != Blocker::InactiveTile, "collected tile 9 no longer blocks as a slot (" + describe(area, b) + ")");
 }
@@ -235,8 +235,8 @@ TEST(physics_slide_fences_block_in_world_and_house) {
     World world(area);
     Grid& grid = world.grid;
     // Everything collected except 9 (the empty slot, middle), then slide tile 7 (2,1) left into it.
-    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
-    grid.setTileActive(9, false);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
+    world.setTileActive(9, false);
     Blocker before = boxBlocker(world, probe(25.0f, 7.0f, 0.0f, 3.0f), false);
     grid.startMove(SMove::swap(2, 1, 1, 1, 7, 9), 0, 1);
     // The move covers slots (1,1) and (2,1); their bottom edge is at y = 8.5.
@@ -291,7 +291,7 @@ TEST(physics_slides_around_round_colliders) {
     const Area& area = village();
     World world(area);
     Grid& grid = world.grid;
-    for (const STileDef& d : area.stiles) grid.setTileActive(d.islandId, true);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const Hitbox& hb = area.player.footBox;
     int lanes = 0;
     for (const ObjectCollider& knot : area.objectColliders) {

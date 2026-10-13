@@ -27,15 +27,14 @@ struct Player {
 };
 
 // Something the action button can use (Unity's IInteractable in PlayerAction.availableInteractables).
-// Only PlayerConditionals so far; NPCs and items join as more kinds.
+// Only PlayerConditionals so far; NPCs and items join as more kinds. Its priority and prompt are
+// asked for when needed (World::priority / showsPrompt): an NPC's change with its dialogue.
 struct Interactable {
     enum class Kind : uint8_t { Interaction }; // Interaction: Area::interactions[index]
     Kind kind;
     int index;
-    int priority = 0;        // IInteractable.InteractionPriority (PlayerConditionals: 0)
-    bool showsPrompt = true; // DisplayInteractionPrompt: shows the indicator above the player
 
-    bool sameAs(const Interactable& o) const { return kind == o.kind && index == o.index; }
+    bool operator==(const Interactable& o) const { return kind == o.kind && index == o.index; }
 };
 
 // Screen-level effects events ask for (UIEffects, SceneChanger), for the frontend to show.
@@ -53,9 +52,13 @@ public:
     explicit World(const Area& area);
 
     // Scene objects as a fresh load with the current state would have them (e.g. after changing
-    // the state in a dev control): authored, then SGrid.Start (collected collectibles hidden),
-    // then every component's Start. Touches no triggers.
+    // the state in a dev control): authored, uncollected tiles' objects off (STile.Awake), then
+    // SGrid.Start (collected collectibles hidden), then every component's Start. Trigger contacts
+    // reset too, so the next update re-enters the triggers the player stands in, as after a load.
     void reloadObjects();
+    // STile.SetTileActive: the tile joins (or leaves) the grid, with its objects and tilemaps (whose
+    // components then Start).
+    void setTileActive(int islandId, bool active);
     // Puts the player at a spawn point (SceneSpawns), in the boat if it says so.
     void placeAt(const Spawn& spawn);
     // Puts the player at (x, y) on foot (or the nearest spot where it fits, if any).
@@ -72,6 +75,8 @@ public:
     void offer(const Interactable& it);
     void withdraw(const Interactable& it);
     void interact();
+    int priority(const Interactable& it) const;     // IInteractable.InteractionPriority
+    bool showsPrompt(const Interactable& it) const; // IInteractable.DisplayInteractionPrompt
     bool promptShown() const; // any offered interactable shows the prompt (the indicator)
 
     // World position a component of `object` is placed relative to: its owner STile's center (the

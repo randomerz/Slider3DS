@@ -42,12 +42,13 @@ void runCall(World& world, const CallDef& c) {
     }
     case M::TeleportTransform: {
         const TeleportDef& t = world.area.teleports[c.data];
-        world.grid.ownerBase(t.goToOwner, bx, by);
+        if (t.goTo >= 0) world.objectBase(t.goTo, t.goToOwner, bx, by);
+        else world.grid.ownerBase(t.goToOwner, bx, by);
         teleport(world, bx + t.goToX + t.dx, by + t.goToY + t.dy, t.tpToHouse);
         break;
     }
     case M::ActivateSTile:
-        world.grid.setTileActive(c.intArg, true);
+        world.setTileActive(c.intArg, true);
         break;
     case M::SetFlagOn:
         world.state.setFlag(c.stringArg, true);

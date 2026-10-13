@@ -15,7 +15,7 @@ bool Starts::started(const Area& area, ComponentRef::Kind kind, int index) const
 }
 
 void Starts::update(World& world) {
-    if (!fresh_ && world.objects.version() == seenVersion_) return;
+    if (!fresh_ && world.objects.activeVersion() == seenVersion_) return;
     fresh_ = false;
     const Area& area = world.area;
     using K = ComponentRef::Kind;
@@ -40,5 +40,5 @@ void Starts::update(World& world) {
             }
         }
     }
-    seenVersion_ = world.objects.version();
+    seenVersion_ = world.objects.activeVersion();
 }

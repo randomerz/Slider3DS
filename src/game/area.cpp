@@ -105,6 +105,7 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
             t.dy = c["dPos"].at(1).asFloat();
             t.tpToHouse = c["tpToHouse"].asBool();
             t.hasGoTo = c.has("goToPos");
+            t.goTo = c["goTo"].asInt(-1);
             t.goToOwner = c["goToOwner"].asInt();
             t.goToX = c["goToPos"].at(0).asFloat();
             t.goToY = c["goToPos"].at(1).asFloat();
@@ -282,12 +283,16 @@ static bool validate(const Area& a, std::string* error) {
                 const TeleportDef& t = a.teleports[c.data];
                 if (!ownerOk(t.owner) || !ownerOk(t.goToOwner)) return false;
                 if (c.method == M::TeleportTransform && !t.hasGoTo) return false;
+                if (t.goTo != -1 && !objectOk(t.goTo)) return false;
             }
         }
         return true;
     };
     for (const ObjectCollider& c : a.triggerColliders)
         if (!objectOk(c.object) || !ownerOk(c.owner)) return fail(error, "trigger collider: bad object or owner");
+    for (const STileDef& s : a.stiles)
+        if ((s.objectsObject != -1 && !objectOk(s.objectsObject)) || (s.tileMapsObject != -1 && !objectOk(s.tileMapsObject)))
+            return fail(error, "stile " + std::to_string(s.islandId) + ": bad objects / allTileMaps index");
     for (const ConditionCheckerDef& cc : a.conditionCheckers)
         if (!objectOk(cc.object) || !callsOk(cc.conditionals.onSuccess) || !callsOk(cc.conditionals.onFail))
             return fail(error, "condition checker: bad object or call");
@@ -356,7 +361,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
 
     for (const Json& s : doc["stiles"].items())
         out.stiles.push_back({s["islandId"].asInt(), s["name"].asString(), s["x"].asInt(), s["y"].asInt(),
-                              s["width"].asInt(), s["isTileActive"].asBool()});
+                              s["width"].asInt(), s["isTileActive"].asBool(), s["objects"].asInt(-1),
+                              s["allTileMaps"].asInt(-1)});
 
     for (int i = 0; i < 3; i++) out.background[i] = (uint8_t)doc["background"].at(i).asInt();
 
@@ -400,7 +406,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& c : doc["interactions"].items())
         out.interactions.push_back({c["object"].asInt(-1), c["addToOnAction"].asBool(), c["excludeBoat"].asBool(),
                                     c["excludeLand"].asBool(), c["isCarryingItem"].asBool(), c["itemName"].asString(),
-                                    readCalls(c["onSuccess"], out)});
+                                    c["priority"].asInt(), readCalls(c["onSuccess"], out)});
     for (const Json& c : doc["triggerEvents"].items())
         out.triggerEvents.push_back({c["object"].asInt(-1), c["onPlayerEnter"].asBool(true), readCalls(c["onEnter"], out),
                                      readCalls(c["onExit"], out)});

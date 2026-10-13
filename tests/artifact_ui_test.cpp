@@ -17,7 +17,7 @@ struct Fixture {
     ArtifactUI ui;
     explicit Fixture(bool allButNine = false) {
         if (allButNine)
-            for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
+            for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
         artifact.init(grid);
         ui.init(village(), artifact);
     }

@@ -12,7 +12,8 @@ void ObjectStates::init(const Area& area) {
     offY_.assign(n, 0);
     for (size_t i = 0; i < n; i++) self_[i] = area.objects[i].activeSelf;
     propagate(area, 0);
-    version_++;
+    activeVersion_++;
+    placementVersion_++;
 }
 
 // Effective state for objects [from, end): Area lists parents before children, so one pass in
@@ -38,7 +39,7 @@ void ObjectStates::setActive(const Area& area, int object, bool active) {
     if (self_[object] == (uint8_t)active) return;
     self_[object] = active;
     propagate(area, (size_t)object);
-    version_++;
+    activeVersion_++;
 }
 
 void ObjectStates::setPlacement(const Area& area, int object, int owner, float dx, float dy) {
@@ -46,5 +47,5 @@ void ObjectStates::setPlacement(const Area& area, int object, int owner, float d
     selfDx_[object] = dx;
     selfDy_[object] = dy;
     propagate(area, (size_t)object);
-    version_++;
+    placementVersion_++;
 }

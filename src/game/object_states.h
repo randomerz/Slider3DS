@@ -34,8 +34,10 @@ public:
     float offsetX(int object) const { return offX_[object]; }
     float offsetY(int object) const { return offY_[object]; }
 
-    // Bumped by every change, so per-frame work can skip frames where nothing changed.
-    uint32_t version() const { return version_; }
+    // Bumped when active state / placement changes, so per-frame work can skip frames where what
+    // it depends on didn't change (Starts watch activity; walking NPCs change placement every frame).
+    uint32_t activeVersion() const { return activeVersion_; }
+    uint32_t placementVersion() const { return placementVersion_; }
 
 private:
     void propagate(const Area& area, size_t from);
@@ -43,5 +45,5 @@ private:
     std::vector<uint8_t> self_, inHierarchy_;         // active, per object
     std::vector<int> selfOwner_, owner_;              // placement set on the object / effective; -1 = exported
     std::vector<float> selfDx_, selfDy_, offX_, offY_; // offset set on the object / effective (sum)
-    uint32_t version_ = 0;
+    uint32_t activeVersion_ = 0, placementVersion_ = 0;
 };

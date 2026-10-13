@@ -6,6 +6,15 @@
 #include "game/events.h"
 #include "game/physics.h"
 
+namespace {
+
+void setTileObjects(World& world, const STileDef& s, bool active) {
+    if (s.objectsObject >= 0) world.objects.setActive(world.area, s.objectsObject, active);
+    if (s.tileMapsObject >= 0) world.objects.setActive(world.area, s.tileMapsObject, active);
+}
+
+} // namespace
+
 World::World(const Area& a) : area(a) {
     grid.init(area);
     artifact.init(grid);
@@ -14,6 +23,7 @@ World::World(const Area& a) : area(a) {
 
 void World::reloadObjects() {
     objects.init(area);
+    for (const STileDef& s : area.stiles) setTileObjects(*this, s, grid.tileActive(s.islandId));
     // SGrid.Start: collectibles already in the inventory stay picked up.
     for (const CollectibleDef& c : area.collectibles)
         if (state.hasCollectible(c.name, c.area)) objects.setActive(area, c.object, false);
@@ -21,6 +31,12 @@ void World::reloadObjects() {
     interactables.clear();
     starts.reset(area);
     starts.update(*this);
+}
+
+void World::setTileActive(int islandId, bool active) {
+    grid.setTileActive(islandId, active);
+    if (const STileDef* s = area.stile(islandId)) setTileObjects(*this, *s, active);
+    starts.update(*this); // Start runs before the newly active objects' first update
 }
 
 void World::placeAt(const Spawn& spawn) {
@@ -66,32 +82,45 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     }
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
 
+    // Start runs before an object's first update (here: before triggers can touch it), and again
+    // for what the triggers' calls activated. Both skip when nothing became active.
+    starts.update(*this);
     triggers.update(*this);
-    starts.update(*this); // components that became active this frame (e.g. shown by a trigger)
+    starts.update(*this);
     if (effects.fade > 0)
         effects.fade = area.fadeDuration > 0 ? std::max(0.0f, effects.fade - dt / area.fadeDuration) : 0;
 }
 
 void World::offer(const Interactable& it) {
-    for (const Interactable& o : interactables)
-        if (o.sameAs(it)) return;
-    interactables.push_back(it);
+    if (std::find(interactables.begin(), interactables.end(), it) == interactables.end()) interactables.push_back(it);
 }
 
 void World::withdraw(const Interactable& it) {
-    interactables.erase(std::remove_if(interactables.begin(), interactables.end(),
-                                       [&](const Interactable& o) { return o.sameAs(it); }),
-                        interactables.end());
+    interactables.erase(std::remove(interactables.begin(), interactables.end(), it), interactables.end());
+}
+
+int World::priority(const Interactable& it) const {
+    switch (it.kind) {
+    case Interactable::Kind::Interaction: return area.interactions[it.index].priority;
+    }
+    return 0;
+}
+
+bool World::showsPrompt(const Interactable& it) const {
+    switch (it.kind) {
+    case Interactable::Kind::Interaction: return true; // PlayerConditionals: IInteractable's default
+    }
+    return true;
 }
 
 void World::interact() {
     if (interactables.empty()) return;
-    int highest = interactables[0].priority;
-    for (const Interactable& it : interactables) highest = std::max(highest, it.priority);
+    int highest = priority(interactables[0]);
+    for (const Interactable& it : interactables) highest = std::max(highest, priority(it));
     // Calls may change what's on offer (a door teleports the player away), so run a snapshot.
     const std::vector<Interactable> offered = interactables;
     for (const Interactable& it : offered) {
-        if (it.priority != highest) continue;
+        if (priority(it) != highest) continue;
         switch (it.kind) {
         case Interactable::Kind::Interaction: {
             const InteractionDef& in = area.interactions[it.index];
@@ -103,7 +132,7 @@ void World::interact() {
 }
 
 bool World::promptShown() const {
-    return std::any_of(interactables.begin(), interactables.end(), [](const Interactable& it) { return it.showsPrompt; });
+    return std::any_of(interactables.begin(), interactables.end(), [&](const Interactable& it) { return showsPrompt(it); });
 }
 
 void World::objectBase(int object, int exportedOwner, float& x, float& y) const {

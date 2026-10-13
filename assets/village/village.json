@@ -15,7 +15,9 @@
       "x": 0,
       "y": 0,
       "width": 17,
-      "isTileActive": true
+      "isTileActive": true,
+      "objects": 3,
+      "allTileMaps": 4
     },
     {
       "islandId": 2,
@@ -23,7 +25,9 @@
       "x": 1,
       "y": 2,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 6,
+      "allTileMaps": 7
     },
     {
       "islandId": 3,
@@ -31,7 +35,9 @@
       "x": 2,
       "y": 0,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 9,
+      "allTileMaps": 10
     },
     {
       "islandId": 4,
@@ -39,7 +45,9 @@
       "x": 2,
       "y": 2,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 12,
+      "allTileMaps": 13
     },
     {
       "islandId": 5,
@@ -47,7 +55,9 @@
       "x": 1,
       "y": 0,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 15,
+      "allTileMaps": 16
     },
     {
       "islandId": 6,
@@ -55,7 +65,9 @@
       "x": 0,
       "y": 2,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 18,
+      "allTileMaps": 19
     },
     {
       "islandId": 7,
@@ -63,7 +75,9 @@
       "x": 2,
       "y": 1,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 21,
+      "allTileMaps": 22
     },
     {
       "islandId": 8,
@@ -71,7 +85,9 @@
       "x": 0,
       "y": 1,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 24,
+      "allTileMaps": 25
     },
     {
       "islandId": 9,
@@ -79,7 +95,9 @@
       "x": 1,
       "y": 1,
       "width": 17,
-      "isTileActive": false
+      "isTileActive": false,
+      "objects": 27,
+      "allTileMaps": 28
     }
   ],
   "background": [102,102,102],
@@ -111,7 +129,7 @@
   ],
   "worldSprites": [
     {
-      "object": 2,
+      "object": 30,
       "owner": 0,
       "sprite": 0,
       "pos": [0,0],
@@ -121,7 +139,7 @@
       "flip": 0
     },
     {
-      "object": 3,
+      "object": 31,
       "owner": 0,
       "sprite": 0,
       "pos": [17,0],
@@ -131,7 +149,7 @@
       "flip": 0
     },
     {
-      "object": 4,
+      "object": 32,
       "owner": 0,
       "sprite": 0,
       "pos": [34,0],
@@ -141,7 +159,7 @@
       "flip": 0
     },
     {
-      "object": 5,
+      "object": 33,
       "owner": 0,
       "sprite": 0,
       "pos": [0,17],
@@ -151,7 +169,7 @@
       "flip": 0
     },
     {
-      "object": 6,
+      "object": 34,
       "owner": 0,
       "sprite": 0,
       "pos": [17,17],
@@ -161,7 +179,7 @@
       "flip": 0
     },
     {
-      "object": 7,
+      "object": 35,
       "owner": 0,
       "sprite": 0,
       "pos": [34,17],
@@ -171,7 +189,7 @@
       "flip": 0
     },
     {
-      "object": 8,
+      "object": 36,
       "owner": 0,
       "sprite": 0,
       "pos": [0,34],
@@ -181,7 +199,7 @@
       "flip": 0
     },
     {
-      "object": 9,
+      "object": 37,
       "owner": 0,
       "sprite": 0,
       "pos": [17,34],
@@ -191,7 +209,7 @@
       "flip": 0
     },
     {
-      "object": 10,
+      "object": 38,
       "owner": 0,
       "sprite": 0,
       "pos": [34,34],
@@ -201,7 +219,7 @@
       "flip": 0
     },
     {
-      "object": 14,
+      "object": 42,
       "owner": 0,
       "sprite": 1,
       "pos": [55.5,2.5],
@@ -211,7 +229,7 @@
       "flip": 0
     },
     {
-      "object": 15,
+      "object": 43,
       "owner": 0,
       "sprite": 2,
       "pos": [55.5,2.5],
@@ -221,7 +239,7 @@
       "flip": 0
     },
     {
-      "object": 17,
+      "object": 45,
       "owner": 0,
       "sprite": 3,
       "pos": [46.5,17],
@@ -232,7 +250,7 @@
       "anim": 0
     },
     {
-      "object": 18,
+      "object": 46,
       "owner": 0,
       "sprite": 2,
       "pos": [46.5,17],
@@ -242,7 +260,7 @@
       "flip": 0
     },
     {
-      "object": 20,
+      "object": 48,
       "owner": 0,
       "sprite": 5,
       "pos": [46,3],
@@ -252,7 +270,7 @@
       "flip": 0
     },
     {
-      "object": 22,
+      "object": 50,
       "owner": 0,
       "sprite": 6,
       "pos": [35,46],
@@ -262,7 +280,7 @@
       "flip": 0
     },
     {
-      "object": 24,
+      "object": 52,
       "owner": 0,
       "sprite": 7,
       "pos": [38,48],
@@ -272,7 +290,7 @@
       "flip": 0
     },
     {
-      "object": 25,
+      "object": 53,
       "owner": 0,
       "sprite": 2,
       "pos": [38,48],
@@ -282,7 +300,7 @@
       "flip": 0
     },
     {
-      "object": 27,
+      "object": 55,
       "owner": 0,
       "sprite": 8,
       "pos": [45,5],
@@ -292,7 +310,7 @@
       "flip": 0
     },
     {
-      "object": 29,
+      "object": 57,
       "owner": 0,
       "sprite": 9,
       "pos": [39.5,43.75],
@@ -303,7 +321,7 @@
       "anim": 1
     },
     {
-      "object": 30,
+      "object": 58,
       "owner": 0,
       "sprite": 11,
       "pos": [38.5,44.75],
@@ -314,7 +332,7 @@
       "anim": 2
     },
     {
-      "object": 33,
+      "object": 61,
       "owner": 0,
       "sprite": 13,
       "pos": [73,20],
@@ -326,7 +344,7 @@
       "animStart": 0.75
     },
     {
-      "object": 34,
+      "object": 62,
       "owner": 0,
       "sprite": 21,
       "pos": [73,20],
@@ -338,7 +356,7 @@
       "animStart": 0.75
     },
     {
-      "object": 35,
+      "object": 63,
       "owner": 0,
       "sprite": 14,
       "pos": [64,20],
@@ -349,7 +367,7 @@
       "anim": 3
     },
     {
-      "object": 36,
+      "object": 64,
       "owner": 0,
       "sprite": 22,
       "pos": [64,20],
@@ -360,7 +378,7 @@
       "anim": 4
     },
     {
-      "object": 37,
+      "object": 65,
       "owner": 0,
       "sprite": 29,
       "pos": [68.5,20],
@@ -371,7 +389,7 @@
       "anim": 5
     },
     {
-      "object": 38,
+      "object": 66,
       "owner": 0,
       "sprite": 14,
       "pos": [73,29],
@@ -382,7 +400,7 @@
       "anim": 3
     },
     {
-      "object": 39,
+      "object": 67,
       "owner": 0,
       "sprite": 22,
       "pos": [73,29],
@@ -393,7 +411,7 @@
       "anim": 4
     },
     {
-      "object": 40,
+      "object": 68,
       "owner": 0,
       "sprite": 37,
       "pos": [73,24.5],
@@ -404,7 +422,7 @@
       "anim": 6
     },
     {
-      "object": 41,
+      "object": 69,
       "owner": 0,
       "sprite": 14,
       "pos": [73,38],
@@ -416,7 +434,7 @@
       "animStart": 0.25
     },
     {
-      "object": 42,
+      "object": 70,
       "owner": 0,
       "sprite": 22,
       "pos": [73,38],
@@ -428,7 +446,7 @@
       "animStart": 0.25
     },
     {
-      "object": 43,
+      "object": 71,
       "owner": 0,
       "sprite": 37,
       "pos": [73,33.5],
@@ -440,7 +458,7 @@
       "animStart": 0.25
     },
     {
-      "object": 44,
+      "object": 72,
       "owner": 0,
       "sprite": 29,
       "pos": [77.5,38],
@@ -452,7 +470,7 @@
       "animStart": 0.25
     },
     {
-      "object": 45,
+      "object": 73,
       "owner": 0,
       "sprite": 14,
       "pos": [64,4],
@@ -464,7 +482,7 @@
       "animStart": 0.5
     },
     {
-      "object": 46,
+      "object": 74,
       "owner": 0,
       "sprite": 22,
       "pos": [64,4],
@@ -476,7 +494,7 @@
       "animStart": 0.5
     },
     {
-      "object": 47,
+      "object": 75,
       "owner": 0,
       "sprite": 29,
       "pos": [68.5,4],
@@ -488,7 +506,7 @@
       "animStart": 0.5
     },
     {
-      "object": 48,
+      "object": 76,
       "owner": 0,
       "sprite": 37,
       "pos": [64,-0.5],
@@ -500,7 +518,7 @@
       "animStart": 0.5
     },
     {
-      "object": 49,
+      "object": 77,
       "owner": 0,
       "sprite": 14,
       "pos": [73,4],
@@ -512,7 +530,7 @@
       "animStart": 0.25
     },
     {
-      "object": 50,
+      "object": 78,
       "owner": 0,
       "sprite": 22,
       "pos": [73,4],
@@ -524,7 +542,7 @@
       "animStart": 0.25
     },
     {
-      "object": 51,
+      "object": 79,
       "owner": 0,
       "sprite": 37,
       "pos": [73,-0.5],
@@ -536,7 +554,7 @@
       "animStart": 0.25
     },
     {
-      "object": 52,
+      "object": 80,
       "owner": 0,
       "sprite": 14,
       "pos": [73,-5],
@@ -547,7 +565,7 @@
       "anim": 3
     },
     {
-      "object": 53,
+      "object": 81,
       "owner": 0,
       "sprite": 22,
       "pos": [73,-5],
@@ -558,7 +576,7 @@
       "anim": 4
     },
     {
-      "object": 54,
+      "object": 82,
       "owner": 0,
       "sprite": 37,
       "pos": [73,-9.5],
@@ -569,7 +587,7 @@
       "anim": 6
     },
     {
-      "object": 55,
+      "object": 83,
       "owner": 0,
       "sprite": 14,
       "pos": [73,-14],
@@ -581,7 +599,7 @@
       "animStart": 0.75
     },
     {
-      "object": 56,
+      "object": 84,
       "owner": 0,
       "sprite": 22,
       "pos": [73,-14],
@@ -593,7 +611,7 @@
       "animStart": 0.75
     },
     {
-      "object": 57,
+      "object": 85,
       "owner": 0,
       "sprite": 29,
       "pos": [77.5,-14],
@@ -605,7 +623,7 @@
       "animStart": 0.75
     },
     {
-      "object": 58,
+      "object": 86,
       "owner": 0,
       "sprite": 14,
       "pos": [64,29],
@@ -617,7 +635,7 @@
       "animStart": 0.25
     },
     {
-      "object": 59,
+      "object": 87,
       "owner": 0,
       "sprite": 22,
       "pos": [64,29],
@@ -629,7 +647,7 @@
       "animStart": 0.25
     },
     {
-      "object": 60,
+      "object": 88,
       "owner": 0,
       "sprite": 37,
       "pos": [64,24.5],
@@ -641,7 +659,7 @@
       "animStart": 0.25
     },
     {
-      "object": 61,
+      "object": 89,
       "owner": 0,
       "sprite": 14,
       "pos": [55,29],
@@ -653,7 +671,7 @@
       "animStart": 0.5
     },
     {
-      "object": 62,
+      "object": 90,
       "owner": 0,
       "sprite": 22,
       "pos": [55,29],
@@ -665,7 +683,7 @@
       "animStart": 0.5
     },
     {
-      "object": 63,
+      "object": 91,
       "owner": 0,
       "sprite": 29,
       "pos": [59.5,29],
@@ -677,7 +695,7 @@
       "animStart": 0.5
     },
     {
-      "object": 64,
+      "object": 92,
       "owner": 0,
       "sprite": 14,
       "pos": [55,-5],
@@ -689,7 +707,7 @@
       "animStart": 0.5
     },
     {
-      "object": 65,
+      "object": 93,
       "owner": 0,
       "sprite": 22,
       "pos": [55,-5],
@@ -701,7 +719,7 @@
       "animStart": 0.5
     },
     {
-      "object": 66,
+      "object": 94,
       "owner": 0,
       "sprite": 29,
       "pos": [59.5,-5],
@@ -713,7 +731,7 @@
       "animStart": 0.5
     },
     {
-      "object": 67,
+      "object": 95,
       "owner": 0,
       "sprite": 13,
       "pos": [64,-5],
@@ -725,7 +743,7 @@
       "animStart": 0.25
     },
     {
-      "object": 68,
+      "object": 96,
       "owner": 0,
       "sprite": 21,
       "pos": [64,-5],
@@ -737,7 +755,7 @@
       "animStart": 0.25
     },
     {
-      "object": 69,
+      "object": 97,
       "owner": 0,
       "sprite": 14,
       "pos": [65,16.5],
@@ -749,7 +767,7 @@
       "animStart": 0.75
     },
     {
-      "object": 70,
+      "object": 98,
       "owner": 0,
       "sprite": 22,
       "pos": [65,16.5],
@@ -761,7 +779,7 @@
       "animStart": 0.75
     },
     {
-      "object": 71,
+      "object": 99,
       "owner": 0,
       "sprite": 14,
       "pos": [65,7.5],
@@ -773,7 +791,7 @@
       "animStart": 0.75
     },
     {
-      "object": 72,
+      "object": 100,
       "owner": 0,
       "sprite": 22,
       "pos": [65,7.5],
@@ -785,7 +803,7 @@
       "animStart": 0.75
     },
     {
-      "object": 73,
+      "object": 101,
       "owner": 0,
       "sprite": 45,
       "pos": [27.5,53.5],
@@ -795,7 +813,7 @@
       "flip": 0
     },
     {
-      "object": 74,
+      "object": 102,
       "owner": 0,
       "sprite": 45,
       "pos": [21.5,45.5],
@@ -805,7 +823,7 @@
       "flip": 0
     },
     {
-      "object": 75,
+      "object": 103,
       "owner": 0,
       "sprite": 45,
       "pos": [46,55],
@@ -815,7 +833,7 @@
       "flip": 0
     },
     {
-      "object": 76,
+      "object": 104,
       "owner": 0,
       "sprite": 45,
       "pos": [7,51],
@@ -825,7 +843,7 @@
       "flip": 0
     },
     {
-      "object": 77,
+      "object": 105,
       "owner": 0,
       "sprite": 45,
       "pos": [-12,44],
@@ -835,7 +853,7 @@
       "flip": 0
     },
     {
-      "object": 78,
+      "object": 106,
       "owner": 0,
       "sprite": 46,
       "pos": [31.5,47],
@@ -846,7 +864,7 @@
       "anim": 7
     },
     {
-      "object": 79,
+      "object": 107,
       "owner": 0,
       "sprite": 46,
       "pos": [33,-13],
@@ -857,7 +875,7 @@
       "anim": 7
     },
     {
-      "object": 80,
+      "object": 108,
       "owner": 0,
       "sprite": 46,
       "pos": [34.5,-23.5],
@@ -868,7 +886,7 @@
       "anim": 7
     },
     {
-      "object": 81,
+      "object": 109,
       "owner": 0,
       "sprite": 46,
       "pos": [37.5,-22.25],
@@ -879,7 +897,7 @@
       "anim": 7
     },
     {
-      "object": 82,
+      "object": 110,
       "owner": 0,
       "sprite": 46,
       "pos": [45,-20],
@@ -890,7 +908,7 @@
       "anim": 7
     },
     {
-      "object": 83,
+      "object": 111,
       "owner": 0,
       "sprite": 50,
       "pos": [14,-13],
@@ -901,7 +919,7 @@
       "anim": 8
     },
     {
-      "object": 84,
+      "object": 112,
       "owner": 0,
       "sprite": 50,
       "pos": [-0.5,-20.5],
@@ -912,7 +930,7 @@
       "anim": 8
     },
     {
-      "object": 85,
+      "object": 113,
       "owner": 0,
       "sprite": 46,
       "pos": [-13,-11],
@@ -923,7 +941,7 @@
       "anim": 7
     },
     {
-      "object": 86,
+      "object": 114,
       "owner": 0,
       "sprite": 46,
       "pos": [-27.5,9.5],
@@ -934,7 +952,7 @@
       "anim": 7
     },
     {
-      "object": 87,
+      "object": 115,
       "owner": 0,
       "sprite": 46,
       "pos": [-24.5,36.5],
@@ -945,7 +963,7 @@
       "anim": 7
     },
     {
-      "object": 88,
+      "object": 116,
       "owner": 0,
       "sprite": 50,
       "pos": [-13,14],
@@ -956,7 +974,7 @@
       "anim": 8
     },
     {
-      "object": 89,
+      "object": 117,
       "owner": 0,
       "sprite": 46,
       "pos": [-16,26],
@@ -967,7 +985,7 @@
       "anim": 7
     },
     {
-      "object": 90,
+      "object": 118,
       "owner": 0,
       "sprite": 46,
       "pos": [-19.5,37.5],
@@ -978,7 +996,7 @@
       "anim": 7
     },
     {
-      "object": 91,
+      "object": 119,
       "owner": 0,
       "sprite": 54,
       "pos": [50,-18],
@@ -989,7 +1007,7 @@
       "anim": 9
     },
     {
-      "object": 92,
+      "object": 120,
       "owner": 0,
       "sprite": 57,
       "pos": [39,49],
@@ -999,7 +1017,7 @@
       "flip": 0
     },
     {
-      "object": 93,
+      "object": 121,
       "owner": 0,
       "sprite": 58,
       "pos": [30,44],
@@ -1009,7 +1027,7 @@
       "flip": 0
     },
     {
-      "object": 94,
+      "object": 122,
       "owner": 0,
       "sprite": 59,
       "pos": [41,44.5],
@@ -1019,7 +1037,7 @@
       "flip": 0
     },
     {
-      "object": 95,
+      "object": 123,
       "owner": 0,
       "sprite": 60,
       "pos": [33.5,50],
@@ -1029,7 +1047,7 @@
       "flip": 0
     },
     {
-      "object": 96,
+      "object": 124,
       "owner": 0,
       "sprite": 45,
       "pos": [19.5,55.5],
@@ -1039,7 +1057,7 @@
       "flip": 0
     },
     {
-      "object": 97,
+      "object": 125,
       "owner": 0,
       "sprite": 61,
       "pos": [62.5,19.75],
@@ -1049,7 +1067,7 @@
       "flip": 0
     },
     {
-      "object": 98,
+      "object": 126,
       "owner": 0,
       "sprite": 62,
       "pos": [62.5,19.75],
@@ -1060,7 +1078,7 @@
       "anim": 10
     },
     {
-      "object": 101,
+      "object": 129,
       "owner": 0,
       "sprite": 66,
       "pos": [69.5,69.5],
@@ -1071,7 +1089,7 @@
       "anim": 11
     },
     {
-      "object": 102,
+      "object": 130,
       "owner": 0,
       "sprite": 2,
       "pos": [69.5,69.5],
@@ -1081,7 +1099,7 @@
       "flip": 0
     },
     {
-      "object": 105,
+      "object": 133,
       "owner": 0,
       "sprite": 68,
       "pos": [36.5,51.5],
@@ -1091,7 +1109,7 @@
       "flip": 0
     },
     {
-      "object": 106,
+      "object": 134,
       "owner": 0,
       "sprite": 69,
       "pos": [36.5,51.5],
@@ -1101,7 +1119,7 @@
       "flip": 0
     },
     {
-      "object": 107,
+      "object": 135,
       "owner": 0,
       "sprite": 70,
       "pos": [36.5,51.5],
@@ -1111,7 +1129,7 @@
       "flip": 0
     },
     {
-      "object": 108,
+      "object": 136,
       "owner": 0,
       "sprite": 71,
       "pos": [36.5,51.5],
@@ -1121,7 +1139,7 @@
       "flip": 0
     },
     {
-      "object": 111,
+      "object": 139,
       "owner": 0,
       "sprite": 7,
       "pos": [49,8.8125],
@@ -1131,7 +1149,7 @@
       "flip": 0
     },
     {
-      "object": 112,
+      "object": 140,
       "owner": 0,
       "sprite": 2,
       "pos": [49,8.8125],
@@ -1141,7 +1159,7 @@
       "flip": 0
     },
     {
-      "object": 113,
+      "object": 141,
       "owner": 0,
       "sprite": 72,
       "pos": [52.5,7.5],
@@ -1152,7 +1170,7 @@
       "anim": 12
     },
     {
-      "object": 114,
+      "object": 142,
       "owner": 0,
       "sprite": 82,
       "pos": [52.875,7.5],
@@ -1163,7 +1181,7 @@
       "anim": 13
     },
     {
-      "object": 119,
+      "object": 144,
       "owner": 1,
       "sprite": 90,
       "pos": [4.5,0.0625],
@@ -1174,7 +1192,7 @@
       "anim": 14
     },
     {
-      "object": 120,
+      "object": 145,
       "owner": 1,
       "sprite": 92,
       "pos": [1,3],
@@ -1184,7 +1202,7 @@
       "flip": 0
     },
     {
-      "object": 122,
+      "object": 147,
       "owner": 1,
       "sprite": 93,
       "pos": [6.75,0],
@@ -1195,7 +1213,7 @@
       "anim": 15
     },
     {
-      "object": 123,
+      "object": 148,
       "owner": 1,
       "sprite": 2,
       "pos": [6.75,0],
@@ -1205,7 +1223,7 @@
       "flip": 0
     },
     {
-      "object": 127,
+      "object": 151,
       "owner": 1,
       "sprite": 96,
       "pos": [-7,-6.5],
@@ -1215,7 +1233,7 @@
       "flip": 0
     },
     {
-      "object": 128,
+      "object": 152,
       "owner": 1,
       "sprite": 97,
       "pos": [-7,-6],
@@ -1225,7 +1243,7 @@
       "flip": 0
     },
     {
-      "object": 129,
+      "object": 153,
       "owner": 1,
       "sprite": 46,
       "pos": [5,4],
@@ -1236,7 +1254,7 @@
       "anim": 7
     },
     {
-      "object": 130,
+      "object": 154,
       "owner": 1,
       "sprite": 50,
       "pos": [-5,-2],
@@ -1247,7 +1265,7 @@
       "anim": 8
     },
     {
-      "object": 131,
+      "object": 155,
       "owner": 1,
       "sprite": 50,
       "pos": [-3,4.75],
@@ -1258,7 +1276,7 @@
       "anim": 8
     },
     {
-      "object": 132,
+      "object": 156,
       "owner": 1,
       "sprite": 98,
       "pos": [0,-4],
@@ -1268,7 +1286,7 @@
       "flip": 0
     },
     {
-      "object": 133,
+      "object": 157,
       "owner": 1,
       "sprite": 99,
       "pos": [-4,1],
@@ -1278,7 +1296,7 @@
       "flip": 0
     },
     {
-      "object": 134,
+      "object": 158,
       "owner": 1,
       "sprite": 100,
       "pos": [-4,-4],
@@ -1288,7 +1306,7 @@
       "flip": 0
     },
     {
-      "object": 137,
+      "object": 161,
       "owner": 1,
       "sprite": 101,
       "pos": [-4.5,-145.5],
@@ -1298,7 +1316,7 @@
       "flip": 0
     },
     {
-      "object": 138,
+      "object": 162,
       "owner": 1,
       "sprite": 102,
       "pos": [-5,-144],
@@ -1308,7 +1326,7 @@
       "flip": 0
     },
     {
-      "object": 139,
+      "object": 163,
       "owner": 1,
       "sprite": 103,
       "pos": [3,-146.5],
@@ -1318,7 +1336,7 @@
       "flip": 0
     },
     {
-      "object": 140,
+      "object": 164,
       "owner": 1,
       "sprite": 104,
       "pos": [-5,-147],
@@ -1328,7 +1346,7 @@
       "flip": 0
     },
     {
-      "object": 141,
+      "object": 165,
       "owner": 1,
       "sprite": 105,
       "pos": [0,-144],
@@ -1338,7 +1356,7 @@
       "flip": 0
     },
     {
-      "object": 142,
+      "object": 166,
       "owner": 1,
       "sprite": 106,
       "pos": [2.375,-144],
@@ -1348,7 +1366,7 @@
       "flip": 0
     },
     {
-      "object": 144,
+      "object": 168,
       "owner": 1,
       "sprite": 107,
       "pos": [2.375,-145],
@@ -1358,7 +1376,7 @@
       "flip": 0
     },
     {
-      "object": 146,
+      "object": 170,
       "owner": 1,
       "sprite": 108,
       "pos": [-0.75,-145],
@@ -1369,7 +1387,7 @@
       "anim": 16
     },
     {
-      "object": 147,
+      "object": 171,
       "owner": 1,
       "sprite": 2,
       "pos": [-0.75,-145],
@@ -1379,7 +1397,7 @@
       "flip": 0
     },
     {
-      "object": 148,
+      "object": 172,
       "owner": 1,
       "sprite": 110,
       "pos": [-2,-144.25],
@@ -1389,7 +1407,7 @@
       "flip": 0
     },
     {
-      "object": 149,
+      "object": 173,
       "owner": 1,
       "sprite": 111,
       "pos": [-2,-144.2501],
@@ -1400,7 +1418,7 @@
       "anim": 17
     },
     {
-      "object": 150,
+      "object": 174,
       "owner": 1,
       "sprite": 113,
       "pos": [-3.0625,-143.8125],
@@ -1410,7 +1428,7 @@
       "flip": 0
     },
     {
-      "object": 154,
+      "object": 176,
       "owner": 2,
       "sprite": 6,
       "pos": [-7,3.5],
@@ -1420,7 +1438,7 @@
       "flip": 0
     },
     {
-      "object": 156,
+      "object": 178,
       "owner": 2,
       "sprite": 114,
       "pos": [-5,3],
@@ -1431,7 +1449,7 @@
       "anim": 18
     },
     {
-      "object": 157,
+      "object": 179,
       "owner": 2,
       "sprite": 2,
       "pos": [-5,3],
@@ -1441,7 +1459,7 @@
       "flip": 0
     },
     {
-      "object": 158,
+      "object": 180,
       "owner": 2,
       "sprite": 117,
       "pos": [-2,7],
@@ -1451,7 +1469,7 @@
       "flip": 0
     },
     {
-      "object": 159,
+      "object": 181,
       "owner": 2,
       "sprite": 118,
       "pos": [-3,7],
@@ -1461,7 +1479,7 @@
       "flip": 0
     },
     {
-      "object": 160,
+      "object": 182,
       "owner": 2,
       "sprite": 119,
       "pos": [-2.3125,7],
@@ -1471,7 +1489,7 @@
       "flip": 0
     },
     {
-      "object": 161,
+      "object": 183,
       "owner": 2,
       "sprite": 120,
       "pos": [-1.625,7],
@@ -1481,7 +1499,7 @@
       "flip": 0
     },
     {
-      "object": 162,
+      "object": 184,
       "owner": 2,
       "sprite": 121,
       "pos": [-1,7],
@@ -1491,7 +1509,7 @@
       "flip": 0
     },
     {
-      "object": 166,
+      "object": 187,
       "owner": 2,
       "sprite": 122,
       "pos": [-7,8],
@@ -1501,7 +1519,7 @@
       "flip": 0
     },
     {
-      "object": 167,
+      "object": 188,
       "owner": 2,
       "sprite": 123,
       "pos": [-7,6.5],
@@ -1511,7 +1529,7 @@
       "flip": 0
     },
     {
-      "object": 168,
+      "object": 189,
       "owner": 2,
       "sprite": 124,
       "pos": [-7,8],
@@ -1521,7 +1539,7 @@
       "flip": 0
     },
     {
-      "object": 169,
+      "object": 190,
       "owner": 2,
       "sprite": 100,
       "pos": [-5,6],
@@ -1531,7 +1549,7 @@
       "flip": 0
     },
     {
-      "object": 170,
+      "object": 191,
       "owner": 2,
       "sprite": 98,
       "pos": [4,3],
@@ -1541,7 +1559,7 @@
       "flip": 0
     },
     {
-      "object": 171,
+      "object": 192,
       "owner": 2,
       "sprite": 125,
       "pos": [-7,1],
@@ -1551,7 +1569,7 @@
       "flip": 0
     },
     {
-      "object": 172,
+      "object": 193,
       "owner": 2,
       "sprite": 99,
       "pos": [-2,0],
@@ -1561,7 +1579,7 @@
       "flip": 0
     },
     {
-      "object": 173,
+      "object": 194,
       "owner": 2,
       "sprite": 50,
       "pos": [5,3],
@@ -1572,7 +1590,7 @@
       "anim": 8
     },
     {
-      "object": 174,
+      "object": 195,
       "owner": 2,
       "sprite": 46,
       "pos": [-3.5,0.5],
@@ -1583,7 +1601,7 @@
       "anim": 7
     },
     {
-      "object": 175,
+      "object": 196,
       "owner": 2,
       "sprite": 126,
       "pos": [-3.5,-5.5],
@@ -1594,7 +1612,7 @@
       "anim": 19
     },
     {
-      "object": 179,
+      "object": 198,
       "owner": 3,
       "sprite": 6,
       "pos": [0.5,5],
@@ -1604,7 +1622,7 @@
       "flip": 0
     },
     {
-      "object": 181,
+      "object": 200,
       "owner": 3,
       "sprite": 128,
       "pos": [1.5,6],
@@ -1615,7 +1633,7 @@
       "anim": 20
     },
     {
-      "object": 182,
+      "object": 201,
       "owner": 3,
       "sprite": 2,
       "pos": [1.5,6],
@@ -1625,7 +1643,7 @@
       "flip": 0
     },
     {
-      "object": 186,
+      "object": 204,
       "owner": 3,
       "sprite": 130,
       "pos": [7,-6.5],
@@ -1635,7 +1653,7 @@
       "flip": 0
     },
     {
-      "object": 187,
+      "object": 205,
       "owner": 3,
       "sprite": 131,
       "pos": [7,-6],
@@ -1645,7 +1663,7 @@
       "flip": 0
     },
     {
-      "object": 188,
+      "object": 206,
       "owner": 3,
       "sprite": 46,
       "pos": [-2,-3],
@@ -1656,7 +1674,7 @@
       "anim": 7
     },
     {
-      "object": 189,
+      "object": 207,
       "owner": 3,
       "sprite": 50,
       "pos": [-4,3],
@@ -1667,7 +1685,7 @@
       "anim": 8
     },
     {
-      "object": 190,
+      "object": 208,
       "owner": 3,
       "sprite": 46,
       "pos": [3,-4],
@@ -1678,7 +1696,7 @@
       "anim": 7
     },
     {
-      "object": 191,
+      "object": 209,
       "owner": 3,
       "sprite": 50,
       "pos": [1,1],
@@ -1689,7 +1707,7 @@
       "anim": 8
     },
     {
-      "object": 192,
+      "object": 210,
       "owner": 3,
       "sprite": 132,
       "pos": [6,0],
@@ -1699,7 +1717,7 @@
       "flip": 0
     },
     {
-      "object": 193,
+      "object": 211,
       "owner": 3,
       "sprite": 132,
       "pos": [-4,-1],
@@ -1709,7 +1727,7 @@
       "flip": 0
     },
     {
-      "object": 194,
+      "object": 212,
       "owner": 3,
       "sprite": 132,
       "pos": [5,3],
@@ -1719,7 +1737,7 @@
       "flip": 0
     },
     {
-      "object": 195,
+      "object": 213,
       "owner": 3,
       "sprite": 133,
       "pos": [0,-5],
@@ -1729,7 +1747,7 @@
       "flip": 0
     },
     {
-      "object": 196,
+      "object": 214,
       "owner": 3,
       "sprite": 100,
       "pos": [5,-4],
@@ -1739,7 +1757,7 @@
       "flip": 0
     },
     {
-      "object": 197,
+      "object": 215,
       "owner": 3,
       "sprite": 125,
       "pos": [5,-2],
@@ -1749,7 +1767,7 @@
       "flip": 0
     },
     {
-      "object": 198,
+      "object": 216,
       "owner": 3,
       "sprite": 99,
       "pos": [1,-6],
@@ -1759,7 +1777,7 @@
       "flip": 0
     },
     {
-      "object": 200,
+      "object": 218,
       "owner": 3,
       "sprite": 90,
       "pos": [-7.5,4.25],
@@ -1770,7 +1788,7 @@
       "anim": 14
     },
     {
-      "object": 201,
+      "object": 219,
       "owner": 3,
       "sprite": 126,
       "pos": [-2.5,-4.5],
@@ -1781,7 +1799,7 @@
       "anim": 19
     },
     {
-      "object": 202,
+      "object": 220,
       "owner": 3,
       "sprite": 126,
       "pos": [4.5,4.5],
@@ -1792,7 +1810,7 @@
       "anim": 19
     },
     {
-      "object": 203,
+      "object": 221,
       "owner": 3,
       "sprite": 134,
       "pos": [-5,1],
@@ -1804,7 +1822,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 208,
+      "object": 224,
       "owner": 4,
       "sprite": 142,
       "pos": [-6.5,-3.5],
@@ -1814,7 +1832,7 @@
       "flip": 0
     },
     {
-      "object": 210,
+      "object": 226,
       "owner": 4,
       "sprite": 142,
       "pos": [-0.5,5.5],
@@ -1824,7 +1842,7 @@
       "flip": 0
     },
     {
-      "object": 212,
+      "object": 228,
       "owner": 4,
       "sprite": 142,
       "pos": [3.5,-1.5],
@@ -1834,7 +1852,7 @@
       "flip": 0
     },
     {
-      "object": 214,
+      "object": 230,
       "owner": 4,
       "sprite": 142,
       "pos": [-5,-5.5],
@@ -1844,7 +1862,7 @@
       "flip": 0
     },
     {
-      "object": 216,
+      "object": 232,
       "owner": 4,
       "sprite": 142,
       "pos": [-3.5,3.5],
@@ -1854,7 +1872,7 @@
       "flip": 0
     },
     {
-      "object": 218,
+      "object": 234,
       "owner": 4,
       "sprite": 142,
       "pos": [2,3.5],
@@ -1864,7 +1882,7 @@
       "flip": 0
     },
     {
-      "object": 220,
+      "object": 236,
       "owner": 4,
       "sprite": 142,
       "pos": [-1.5,-5],
@@ -1874,7 +1892,7 @@
       "flip": 0
     },
     {
-      "object": 222,
+      "object": 238,
       "owner": 4,
       "sprite": 143,
       "pos": [-6,4],
@@ -1885,7 +1903,7 @@
       "anim": 22
     },
     {
-      "object": 223,
+      "object": 239,
       "owner": 4,
       "sprite": 2,
       "pos": [-6,4],
@@ -1895,7 +1913,7 @@
       "flip": 0
     },
     {
-      "object": 228,
+      "object": 243,
       "owner": 4,
       "sprite": 6,
       "pos": [-3,4],
@@ -1905,7 +1923,7 @@
       "flip": 0
     },
     {
-      "object": 229,
+      "object": 244,
       "owner": 4,
       "sprite": 134,
       "pos": [4.75,3],
@@ -1917,7 +1935,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 230,
+      "object": 245,
       "owner": 4,
       "sprite": 134,
       "pos": [-7,-6],
@@ -1929,7 +1947,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 234,
+      "object": 247,
       "owner": 5,
       "sprite": 145,
       "pos": [-6.75,0],
@@ -1940,7 +1958,7 @@
       "anim": 23
     },
     {
-      "object": 235,
+      "object": 248,
       "owner": 5,
       "sprite": 2,
       "pos": [-6.75,0],
@@ -1950,7 +1968,7 @@
       "flip": 0
     },
     {
-      "object": 236,
+      "object": 249,
       "owner": 5,
       "sprite": 147,
       "pos": [2.25,3.5],
@@ -1960,7 +1978,7 @@
       "flip": 0
     },
     {
-      "object": 239,
+      "object": 252,
       "owner": 5,
       "sprite": 6,
       "pos": [0.5,-2.5],
@@ -1970,7 +1988,7 @@
       "flip": 0
     },
     {
-      "object": 240,
+      "object": 253,
       "owner": 5,
       "sprite": 148,
       "pos": [0.375,-2.375],
@@ -1980,7 +1998,7 @@
       "flip": 0
     },
     {
-      "object": 241,
+      "object": 254,
       "owner": 5,
       "sprite": 149,
       "pos": [0.5,-2.5],
@@ -1990,7 +2008,7 @@
       "flip": 0
     },
     {
-      "object": 246,
+      "object": 258,
       "owner": 5,
       "sprite": 6,
       "pos": [-8.5,-2],
@@ -2000,7 +2018,7 @@
       "flip": 0
     },
     {
-      "object": 247,
+      "object": 259,
       "owner": 5,
       "sprite": 50,
       "pos": [3,-2.5],
@@ -2011,7 +2029,7 @@
       "anim": 8
     },
     {
-      "object": 248,
+      "object": 260,
       "owner": 5,
       "sprite": 150,
       "pos": [-0.75,2.5],
@@ -2021,7 +2039,7 @@
       "flip": 0
     },
     {
-      "object": 249,
+      "object": 261,
       "owner": 5,
       "sprite": 151,
       "pos": [5.5,1],
@@ -2031,7 +2049,7 @@
       "flip": 0
     },
     {
-      "object": 250,
+      "object": 262,
       "owner": 5,
       "sprite": 152,
       "pos": [4.25,1.5],
@@ -2041,7 +2059,7 @@
       "flip": 0
     },
     {
-      "object": 251,
+      "object": 263,
       "owner": 5,
       "sprite": 153,
       "pos": [5,4.5],
@@ -2051,7 +2069,7 @@
       "flip": 0
     },
     {
-      "object": 252,
+      "object": 264,
       "owner": 5,
       "sprite": 134,
       "pos": [4,-2.5],
@@ -2063,7 +2081,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 253,
+      "object": 265,
       "owner": 5,
       "sprite": 134,
       "pos": [-6,8],
@@ -2075,7 +2093,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 256,
+      "object": 268,
       "owner": 5,
       "sprite": 154,
       "pos": [0,-145.5],
@@ -2085,7 +2103,7 @@
       "flip": 0
     },
     {
-      "object": 257,
+      "object": 269,
       "owner": 5,
       "sprite": 155,
       "pos": [2,-144],
@@ -2095,7 +2113,7 @@
       "flip": 0
     },
     {
-      "object": 258,
+      "object": 270,
       "owner": 5,
       "sprite": 155,
       "pos": [1,-144],
@@ -2105,7 +2123,7 @@
       "flip": 0
     },
     {
-      "object": 259,
+      "object": 271,
       "owner": 5,
       "sprite": 151,
       "pos": [5,-144],
@@ -2115,7 +2133,7 @@
       "flip": 0
     },
     {
-      "object": 260,
+      "object": 272,
       "owner": 5,
       "sprite": 151,
       "pos": [6,-146],
@@ -2125,7 +2143,7 @@
       "flip": 0
     },
     {
-      "object": 261,
+      "object": 273,
       "owner": 5,
       "sprite": 152,
       "pos": [3.75,-144],
@@ -2135,7 +2153,7 @@
       "flip": 0
     },
     {
-      "object": 262,
+      "object": 274,
       "owner": 5,
       "sprite": 152,
       "pos": [5,-145],
@@ -2145,7 +2163,7 @@
       "flip": 0
     },
     {
-      "object": 263,
+      "object": 275,
       "owner": 5,
       "sprite": 156,
       "pos": [6,-144],
@@ -2155,7 +2173,7 @@
       "flip": 0
     },
     {
-      "object": 264,
+      "object": 276,
       "owner": 5,
       "sprite": 151,
       "pos": [1,-147],
@@ -2165,7 +2183,7 @@
       "flip": 0
     },
     {
-      "object": 265,
+      "object": 277,
       "owner": 5,
       "sprite": 152,
       "pos": [5,-147],
@@ -2175,7 +2193,7 @@
       "flip": 0
     },
     {
-      "object": 267,
+      "object": 279,
       "owner": 5,
       "sprite": 157,
       "pos": [1.25,-145.5],
@@ -2186,7 +2204,7 @@
       "anim": 24
     },
     {
-      "object": 269,
+      "object": 281,
       "owner": 5,
       "sprite": 7,
       "pos": [3,-145],
@@ -2196,7 +2214,7 @@
       "flip": 0
     },
     {
-      "object": 270,
+      "object": 282,
       "owner": 5,
       "sprite": 2,
       "pos": [3,-145],
@@ -2206,7 +2224,7 @@
       "flip": 0
     },
     {
-      "object": 274,
+      "object": 284,
       "owner": 6,
       "sprite": 159,
       "pos": [-2,-3],
@@ -2217,7 +2235,7 @@
       "anim": 25
     },
     {
-      "object": 275,
+      "object": 285,
       "owner": 6,
       "sprite": 2,
       "pos": [-2,-3],
@@ -2227,7 +2245,7 @@
       "flip": 0
     },
     {
-      "object": 279,
+      "object": 288,
       "owner": 6,
       "sprite": 161,
       "pos": [7,8],
@@ -2237,7 +2255,7 @@
       "flip": 0
     },
     {
-      "object": 280,
+      "object": 289,
       "owner": 6,
       "sprite": 162,
       "pos": [7,6.5],
@@ -2247,7 +2265,7 @@
       "flip": 0
     },
     {
-      "object": 281,
+      "object": 290,
       "owner": 6,
       "sprite": 163,
       "pos": [7,8],
@@ -2257,7 +2275,7 @@
       "flip": 0
     },
     {
-      "object": 282,
+      "object": 291,
       "owner": 6,
       "sprite": 46,
       "pos": [1,-6],
@@ -2268,7 +2286,7 @@
       "anim": 7
     },
     {
-      "object": 284,
+      "object": 293,
       "owner": 6,
       "sprite": 6,
       "pos": [-2,-6],
@@ -2278,7 +2296,7 @@
       "flip": 0
     },
     {
-      "object": 285,
+      "object": 294,
       "owner": 6,
       "sprite": 46,
       "pos": [-3,1],
@@ -2289,7 +2307,7 @@
       "anim": 7
     },
     {
-      "object": 286,
+      "object": 295,
       "owner": 6,
       "sprite": 50,
       "pos": [5,2],
@@ -2300,7 +2318,7 @@
       "anim": 8
     },
     {
-      "object": 287,
+      "object": 296,
       "owner": 6,
       "sprite": 164,
       "pos": [-1,6],
@@ -2310,7 +2328,7 @@
       "flip": 0
     },
     {
-      "object": 288,
+      "object": 297,
       "owner": 6,
       "sprite": 100,
       "pos": [5,6],
@@ -2320,7 +2338,7 @@
       "flip": 0
     },
     {
-      "object": 289,
+      "object": 298,
       "owner": 6,
       "sprite": 125,
       "pos": [4,0],
@@ -2330,7 +2348,7 @@
       "flip": 1
     },
     {
-      "object": 290,
+      "object": 299,
       "owner": 6,
       "sprite": 99,
       "pos": [6,-3],
@@ -2340,7 +2358,7 @@
       "flip": 0
     },
     {
-      "object": 291,
+      "object": 300,
       "owner": 6,
       "sprite": 126,
       "pos": [-6.5,3.5],
@@ -2351,7 +2369,7 @@
       "anim": 19
     },
     {
-      "object": 292,
+      "object": 301,
       "owner": 6,
       "sprite": 134,
       "pos": [-1,0],
@@ -2363,7 +2381,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 293,
+      "object": 302,
       "owner": 6,
       "sprite": 134,
       "pos": [-7,-4],
@@ -2375,7 +2393,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 294,
+      "object": 303,
       "owner": 6,
       "sprite": 165,
       "pos": [-5,5.5],
@@ -2385,7 +2403,7 @@
       "flip": 0
     },
     {
-      "object": 298,
+      "object": 305,
       "owner": 7,
       "sprite": 166,
       "pos": [-6.5,1.5],
@@ -2396,7 +2414,7 @@
       "anim": 26
     },
     {
-      "object": 299,
+      "object": 306,
       "owner": 7,
       "sprite": 2,
       "pos": [-6.5,1.5],
@@ -2406,7 +2424,7 @@
       "flip": 0
     },
     {
-      "object": 303,
+      "object": 309,
       "owner": 7,
       "sprite": 50,
       "pos": [3,-2],
@@ -2417,7 +2435,7 @@
       "anim": 8
     },
     {
-      "object": 304,
+      "object": 310,
       "owner": 7,
       "sprite": 46,
       "pos": [-3,2],
@@ -2428,7 +2446,7 @@
       "anim": 7
     },
     {
-      "object": 305,
+      "object": 311,
       "owner": 7,
       "sprite": 133,
       "pos": [-5,-6],
@@ -2438,7 +2456,7 @@
       "flip": 0
     },
     {
-      "object": 306,
+      "object": 312,
       "owner": 7,
       "sprite": 133,
       "pos": [7,-7],
@@ -2448,7 +2466,7 @@
       "flip": 0
     },
     {
-      "object": 307,
+      "object": 313,
       "owner": 7,
       "sprite": 133,
       "pos": [6,7],
@@ -2458,7 +2476,7 @@
       "flip": 0
     },
     {
-      "object": 308,
+      "object": 314,
       "owner": 7,
       "sprite": 132,
       "pos": [6,-1],
@@ -2468,7 +2486,7 @@
       "flip": 0
     },
     {
-      "object": 309,
+      "object": 315,
       "owner": 7,
       "sprite": 132,
       "pos": [0.5,-1.25],
@@ -2478,7 +2496,7 @@
       "flip": 0
     },
     {
-      "object": 310,
+      "object": 316,
       "owner": 7,
       "sprite": 168,
       "pos": [5,0],
@@ -2488,7 +2506,7 @@
       "flip": 1
     },
     {
-      "object": 311,
+      "object": 317,
       "owner": 7,
       "sprite": 126,
       "pos": [5.5,-2.5],
@@ -2499,7 +2517,7 @@
       "anim": 19
     },
     {
-      "object": 312,
+      "object": 318,
       "owner": 7,
       "sprite": 126,
       "pos": [-1,-0.5],
@@ -2510,7 +2528,7 @@
       "anim": 19
     },
     {
-      "object": 313,
+      "object": 319,
       "owner": 7,
       "sprite": 126,
       "pos": [-5.5,5.5],
@@ -2521,7 +2539,7 @@
       "anim": 19
     },
     {
-      "object": 314,
+      "object": 320,
       "owner": 7,
       "sprite": 134,
       "pos": [-1,1],
@@ -2533,7 +2551,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 315,
+      "object": 321,
       "owner": 7,
       "sprite": 134,
       "pos": [-7,5.5],
@@ -2545,7 +2563,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 316,
+      "object": 322,
       "owner": 7,
       "sprite": 134,
       "pos": [-3,-6.5],
@@ -2557,7 +2575,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 317,
+      "object": 323,
       "owner": 7,
       "sprite": 134,
       "pos": [-3.5,-7.5],
@@ -2569,7 +2587,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 321,
+      "object": 325,
       "owner": 8,
       "sprite": 169,
       "pos": [3.5,3],
@@ -2580,7 +2598,7 @@
       "anim": 27
     },
     {
-      "object": 322,
+      "object": 326,
       "owner": 8,
       "sprite": 2,
       "pos": [3.5,3],
@@ -2590,7 +2608,7 @@
       "flip": 0
     },
     {
-      "object": 325,
+      "object": 329,
       "owner": 8,
       "sprite": 171,
       "pos": [3.5,3.8125],
@@ -2600,7 +2618,7 @@
       "flip": 0
     },
     {
-      "object": 326,
+      "object": 330,
       "owner": 8,
       "sprite": 172,
       "pos": [3.5,-2.5],
@@ -2610,7 +2628,7 @@
       "flip": 0
     },
     {
-      "object": 330,
+      "object": 333,
       "owner": 8,
       "sprite": 50,
       "pos": [3,5],
@@ -2621,7 +2639,7 @@
       "anim": 8
     },
     {
-      "object": 331,
+      "object": 334,
       "owner": 8,
       "sprite": 46,
       "pos": [-4,-3],
@@ -2632,7 +2650,7 @@
       "anim": 7
     },
     {
-      "object": 333,
+      "object": 336,
       "owner": 8,
       "sprite": 6,
       "pos": [6,0],
@@ -2642,7 +2660,7 @@
       "flip": 0
     },
     {
-      "object": 335,
+      "object": 338,
       "owner": 8,
       "sprite": 157,
       "pos": [5,-2.5],
@@ -2653,7 +2671,7 @@
       "anim": 24
     },
     {
-      "object": 336,
+      "object": 339,
       "owner": 8,
       "sprite": 173,
       "pos": [5,3.5],
@@ -2663,7 +2681,7 @@
       "flip": 0
     },
     {
-      "object": 337,
+      "object": 340,
       "owner": 8,
       "sprite": 126,
       "pos": [-3.5,-6.5],
@@ -2674,7 +2692,7 @@
       "anim": 19
     },
     {
-      "object": 338,
+      "object": 341,
       "owner": 8,
       "sprite": 134,
       "pos": [2,1],
@@ -2686,7 +2704,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 339,
+      "object": 342,
       "owner": 8,
       "sprite": 134,
       "pos": [-1.5,-2],
@@ -2698,7 +2716,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 340,
+      "object": 343,
       "owner": 8,
       "sprite": 134,
       "pos": [-5,5],
@@ -2710,7 +2728,7 @@
       "animRandom": 1.75
     },
     {
-      "object": 341,
+      "object": 344,
       "owner": 8,
       "sprite": 164,
       "pos": [-4,5.5],
@@ -2720,7 +2738,7 @@
       "flip": 0
     },
     {
-      "object": 342,
+      "object": 345,
       "owner": 8,
       "sprite": 174,
       "pos": [2,0],
@@ -2730,7 +2748,7 @@
       "flip": 0
     },
     {
-      "object": 343,
+      "object": 346,
       "owner": 8,
       "sprite": 132,
       "pos": [7,-6],
@@ -2740,7 +2758,7 @@
       "flip": 0
     },
     {
-      "object": 346,
+      "object": 349,
       "owner": 8,
       "sprite": 175,
       "pos": [0.5,-150],
@@ -2750,7 +2768,7 @@
       "flip": 0
     },
     {
-      "object": 347,
+      "object": 350,
       "owner": 8,
       "sprite": 155,
       "pos": [5.5,-149],
@@ -2760,7 +2778,7 @@
       "flip": 0
     },
     {
-      "object": 348,
+      "object": 351,
       "owner": 8,
       "sprite": 176,
       "pos": [4.5,-149],
@@ -2770,7 +2788,7 @@
       "flip": 0
     },
     {
-      "object": 349,
+      "object": 352,
       "owner": 8,
       "sprite": 104,
       "pos": [1.5,-149],
@@ -2780,7 +2798,7 @@
       "flip": 0
     },
     {
-      "object": 350,
+      "object": 353,
       "owner": 8,
       "sprite": 154,
       "pos": [6,-151.375],
@@ -2790,7 +2808,7 @@
       "flip": 0
     },
     {
-      "object": 351,
+      "object": 354,
       "owner": 8,
       "sprite": 177,
       "pos": [5,-152.25],
@@ -2800,7 +2818,7 @@
       "flip": 0
     },
     {
-      "object": 352,
+      "object": 355,
       "owner": 8,
       "sprite": 178,
       "pos": [3,-148.75],
@@ -2810,7 +2828,7 @@
       "flip": 0
     },
     {
-      "object": 353,
+      "object": 356,
       "owner": 8,
       "sprite": 179,
       "pos": [5,-152.5],
@@ -2820,7 +2838,7 @@
       "flip": 0
     },
     {
-      "object": 354,
+      "object": 357,
       "owner": 8,
       "sprite": 180,
       "pos": [6.125,-153.25],
@@ -2830,7 +2848,7 @@
       "flip": 0
     },
     {
-      "object": 355,
+      "object": 358,
       "owner": 8,
       "sprite": 181,
       "pos": [0,-153],
@@ -2840,7 +2858,7 @@
       "flip": 0
     },
     {
-      "object": 356,
+      "object": 359,
       "owner": 8,
       "sprite": 182,
       "pos": [0.25,-151],
@@ -2850,7 +2868,7 @@
       "flip": 0
     },
     {
-      "object": 357,
+      "object": 360,
       "owner": 8,
       "sprite": 182,
       "pos": [0,-151.5],
@@ -2860,7 +2878,7 @@
       "flip": 0
     },
     {
-      "object": 358,
+      "object": 361,
       "owner": 8,
       "sprite": 182,
       "pos": [5.75,-150],
@@ -2870,7 +2888,7 @@
       "flip": 1
     },
     {
-      "object": 359,
+      "object": 362,
       "owner": 8,
       "sprite": 183,
       "pos": [1,-152.5],
@@ -2880,7 +2898,7 @@
       "flip": 0
     },
     {
-      "object": 360,
+      "object": 363,
       "owner": 8,
       "sprite": 183,
       "pos": [4,-150.5],
@@ -2890,7 +2908,7 @@
       "flip": 1
     },
     {
-      "object": 361,
+      "object": 364,
       "owner": 8,
       "sprite": 183,
       "pos": [0.25,-149],
@@ -2900,7 +2918,7 @@
       "flip": 0
     },
     {
-      "object": 365,
+      "object": 366,
       "owner": 9,
       "sprite": 184,
       "pos": [0,-4.5],
@@ -2911,7 +2929,7 @@
       "anim": 28
     },
     {
-      "object": 366,
+      "object": 367,
       "owner": 9,
       "sprite": 2,
       "pos": [0,-4.5],
@@ -2921,7 +2939,7 @@
       "flip": 0
     },
     {
-      "object": 368,
+      "object": 369,
       "owner": 9,
       "sprite": 186,
       "pos": [6.5,5.25],
@@ -2932,7 +2950,7 @@
       "anim": 29
     },
     {
-      "object": 369,
+      "object": 370,
       "owner": 9,
       "sprite": 188,
       "pos": [2.5,3],
@@ -2943,7 +2961,7 @@
       "anim": 30
     },
     {
-      "object": 370,
+      "object": 371,
       "owner": 9,
       "sprite": 11,
       "pos": [3,3.25],
@@ -3587,7 +3605,7 @@
   ],
   "objectColliders": [
     {
-      "object": 13,
+      "object": 41,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -3596,7 +3614,7 @@
       ]
     },
     {
-      "object": 16,
+      "object": 44,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -3605,7 +3623,7 @@
       ]
     },
     {
-      "object": 23,
+      "object": 51,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -3614,7 +3632,7 @@
       ]
     },
     {
-      "object": 28,
+      "object": 56,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3623,7 +3641,7 @@
       ]
     },
     {
-      "object": 33,
+      "object": 61,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3632,7 +3650,7 @@
       ]
     },
     {
-      "object": 35,
+      "object": 63,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3641,7 +3659,7 @@
       ]
     },
     {
-      "object": 38,
+      "object": 66,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3650,7 +3668,7 @@
       ]
     },
     {
-      "object": 41,
+      "object": 69,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3659,7 +3677,7 @@
       ]
     },
     {
-      "object": 45,
+      "object": 73,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3668,7 +3686,7 @@
       ]
     },
     {
-      "object": 49,
+      "object": 77,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3677,7 +3695,7 @@
       ]
     },
     {
-      "object": 52,
+      "object": 80,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3686,7 +3704,7 @@
       ]
     },
     {
-      "object": 55,
+      "object": 83,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3695,7 +3713,7 @@
       ]
     },
     {
-      "object": 58,
+      "object": 86,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3704,7 +3722,7 @@
       ]
     },
     {
-      "object": 61,
+      "object": 89,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3713,7 +3731,7 @@
       ]
     },
     {
-      "object": 64,
+      "object": 92,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3722,7 +3740,7 @@
       ]
     },
     {
-      "object": 67,
+      "object": 95,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3731,7 +3749,7 @@
       ]
     },
     {
-      "object": 69,
+      "object": 97,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3740,7 +3758,7 @@
       ]
     },
     {
-      "object": 71,
+      "object": 99,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3749,7 +3767,7 @@
       ]
     },
     {
-      "object": 73,
+      "object": 101,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3758,7 +3776,7 @@
       ]
     },
     {
-      "object": 74,
+      "object": 102,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3767,7 +3785,7 @@
       ]
     },
     {
-      "object": 75,
+      "object": 103,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3776,7 +3794,7 @@
       ]
     },
     {
-      "object": 76,
+      "object": 104,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3785,7 +3803,7 @@
       ]
     },
     {
-      "object": 77,
+      "object": 105,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3794,7 +3812,7 @@
       ]
     },
     {
-      "object": 78,
+      "object": 106,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3803,7 +3821,7 @@
       ]
     },
     {
-      "object": 79,
+      "object": 107,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3812,7 +3830,7 @@
       ]
     },
     {
-      "object": 80,
+      "object": 108,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3821,7 +3839,7 @@
       ]
     },
     {
-      "object": 81,
+      "object": 109,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3830,7 +3848,7 @@
       ]
     },
     {
-      "object": 82,
+      "object": 110,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3839,7 +3857,7 @@
       ]
     },
     {
-      "object": 83,
+      "object": 111,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3848,7 +3866,7 @@
       ]
     },
     {
-      "object": 84,
+      "object": 112,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3857,7 +3875,7 @@
       ]
     },
     {
-      "object": 85,
+      "object": 113,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3866,7 +3884,7 @@
       ]
     },
     {
-      "object": 86,
+      "object": 114,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3875,7 +3893,7 @@
       ]
     },
     {
-      "object": 87,
+      "object": 115,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3884,7 +3902,7 @@
       ]
     },
     {
-      "object": 88,
+      "object": 116,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3893,7 +3911,7 @@
       ]
     },
     {
-      "object": 89,
+      "object": 117,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3902,7 +3920,7 @@
       ]
     },
     {
-      "object": 90,
+      "object": 118,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3911,7 +3929,7 @@
       ]
     },
     {
-      "object": 91,
+      "object": 119,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3920,7 +3938,7 @@
       ]
     },
     {
-      "object": 92,
+      "object": 120,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3929,7 +3947,7 @@
       ]
     },
     {
-      "object": 93,
+      "object": 121,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3938,7 +3956,7 @@
       ]
     },
     {
-      "object": 94,
+      "object": 122,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3947,7 +3965,7 @@
       ]
     },
     {
-      "object": 95,
+      "object": 123,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3956,7 +3974,7 @@
       ]
     },
     {
-      "object": 96,
+      "object": 124,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3965,7 +3983,7 @@
       ]
     },
     {
-      "object": 97,
+      "object": 125,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3974,7 +3992,7 @@
       ]
     },
     {
-      "object": 100,
+      "object": 128,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -3983,7 +4001,7 @@
       ]
     },
     {
-      "object": 107,
+      "object": 135,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -3992,7 +4010,7 @@
       ]
     },
     {
-      "object": 107,
+      "object": 135,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -4001,7 +4019,7 @@
       ]
     },
     {
-      "object": 110,
+      "object": 138,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -4010,7 +4028,7 @@
       ]
     },
     {
-      "object": 118,
+      "object": 143,
       "owner": 1,
       "layer": "Item",
       "kind": "circle",
@@ -4018,7 +4036,7 @@
       "radius": 0.5
     },
     {
-      "object": 120,
+      "object": 145,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4027,7 +4045,7 @@
       ]
     },
     {
-      "object": 121,
+      "object": 146,
       "owner": 1,
       "layer": "NPC",
       "kind": "poly",
@@ -4036,7 +4054,7 @@
       ]
     },
     {
-      "object": 129,
+      "object": 153,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4045,7 +4063,7 @@
       ]
     },
     {
-      "object": 130,
+      "object": 154,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4054,7 +4072,7 @@
       ]
     },
     {
-      "object": 131,
+      "object": 155,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4063,7 +4081,7 @@
       ]
     },
     {
-      "object": 132,
+      "object": 156,
       "owner": 1,
       "layer": "Default",
       "kind": "circle",
@@ -4071,7 +4089,7 @@
       "radius": 0.3
     },
     {
-      "object": 133,
+      "object": 157,
       "owner": 1,
       "layer": "Default",
       "kind": "circle",
@@ -4079,7 +4097,7 @@
       "radius": 0.3
     },
     {
-      "object": 134,
+      "object": 158,
       "owner": 1,
       "layer": "Default",
       "kind": "circle",
@@ -4087,7 +4105,7 @@
       "radius": 0.1
     },
     {
-      "object": 137,
+      "object": 161,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4096,7 +4114,7 @@
       ]
     },
     {
-      "object": 138,
+      "object": 162,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4105,7 +4123,7 @@
       ]
     },
     {
-      "object": 139,
+      "object": 163,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4114,7 +4132,7 @@
       ]
     },
     {
-      "object": 140,
+      "object": 164,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4123,7 +4141,7 @@
       ]
     },
     {
-      "object": 141,
+      "object": 165,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4132,7 +4150,7 @@
       ]
     },
     {
-      "object": 142,
+      "object": 166,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4141,7 +4159,7 @@
       ]
     },
     {
-      "object": 145,
+      "object": 169,
       "owner": 1,
       "layer": "NPC",
       "kind": "poly",
@@ -4150,7 +4168,7 @@
       ]
     },
     {
-      "object": 148,
+      "object": 172,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4159,7 +4177,7 @@
       ]
     },
     {
-      "object": 150,
+      "object": 174,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -4168,7 +4186,7 @@
       ]
     },
     {
-      "object": 155,
+      "object": 177,
       "owner": 2,
       "layer": "NPC",
       "kind": "poly",
@@ -4177,7 +4195,7 @@
       ]
     },
     {
-      "object": 169,
+      "object": 190,
       "owner": 2,
       "layer": "Default",
       "kind": "circle",
@@ -4185,7 +4203,7 @@
       "radius": 0.1
     },
     {
-      "object": 170,
+      "object": 191,
       "owner": 2,
       "layer": "Default",
       "kind": "circle",
@@ -4193,7 +4211,7 @@
       "radius": 0.3
     },
     {
-      "object": 171,
+      "object": 192,
       "owner": 2,
       "layer": "Default",
       "kind": "circle",
@@ -4201,7 +4219,7 @@
       "radius": 0.3
     },
     {
-      "object": 172,
+      "object": 193,
       "owner": 2,
       "layer": "Default",
       "kind": "circle",
@@ -4209,7 +4227,7 @@
       "radius": 0.3
     },
     {
-      "object": 173,
+      "object": 194,
       "owner": 2,
       "layer": "Default",
       "kind": "poly",
@@ -4218,7 +4236,7 @@
       ]
     },
     {
-      "object": 174,
+      "object": 195,
       "owner": 2,
       "layer": "Default",
       "kind": "poly",
@@ -4227,7 +4245,7 @@
       ]
     },
     {
-      "object": 175,
+      "object": 196,
       "owner": 2,
       "layer": "Default",
       "kind": "poly",
@@ -4236,7 +4254,7 @@
       ]
     },
     {
-      "object": 180,
+      "object": 199,
       "owner": 3,
       "layer": "NPC",
       "kind": "poly",
@@ -4245,7 +4263,7 @@
       ]
     },
     {
-      "object": 188,
+      "object": 206,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4254,7 +4272,7 @@
       ]
     },
     {
-      "object": 189,
+      "object": 207,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4263,7 +4281,7 @@
       ]
     },
     {
-      "object": 190,
+      "object": 208,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4272,7 +4290,7 @@
       ]
     },
     {
-      "object": 191,
+      "object": 209,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4281,7 +4299,7 @@
       ]
     },
     {
-      "object": 192,
+      "object": 210,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4290,7 +4308,7 @@
       ]
     },
     {
-      "object": 193,
+      "object": 211,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4299,7 +4317,7 @@
       ]
     },
     {
-      "object": 194,
+      "object": 212,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4308,7 +4326,7 @@
       ]
     },
     {
-      "object": 195,
+      "object": 213,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4317,7 +4335,7 @@
       ]
     },
     {
-      "object": 196,
+      "object": 214,
       "owner": 3,
       "layer": "Default",
       "kind": "circle",
@@ -4325,7 +4343,7 @@
       "radius": 0.1
     },
     {
-      "object": 197,
+      "object": 215,
       "owner": 3,
       "layer": "Default",
       "kind": "circle",
@@ -4333,7 +4351,7 @@
       "radius": 0.3
     },
     {
-      "object": 198,
+      "object": 216,
       "owner": 3,
       "layer": "Default",
       "kind": "circle",
@@ -4341,7 +4359,7 @@
       "radius": 0.3
     },
     {
-      "object": 199,
+      "object": 217,
       "owner": 3,
       "layer": "Default",
       "kind": "circle",
@@ -4349,7 +4367,7 @@
       "radius": 0.5
     },
     {
-      "object": 201,
+      "object": 219,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4358,7 +4376,7 @@
       ]
     },
     {
-      "object": 202,
+      "object": 220,
       "owner": 3,
       "layer": "Default",
       "kind": "poly",
@@ -4367,7 +4385,7 @@
       ]
     },
     {
-      "object": 207,
+      "object": 223,
       "owner": 4,
       "layer": "Item",
       "kind": "circle",
@@ -4375,7 +4393,7 @@
       "radius": 0.4
     },
     {
-      "object": 209,
+      "object": 225,
       "owner": 4,
       "layer": "Item",
       "kind": "circle",
@@ -4383,7 +4401,7 @@
       "radius": 0.4
     },
     {
-      "object": 211,
+      "object": 227,
       "owner": 4,
       "layer": "Item",
       "kind": "circle",
@@ -4391,7 +4409,7 @@
       "radius": 0.4
     },
     {
-      "object": 213,
+      "object": 229,
       "owner": 4,
       "layer": "Item",
       "kind": "circle",
@@ -4399,7 +4417,7 @@
       "radius": 0.4
     },
     {
-      "object": 215,
+      "object": 231,
       "owner": 4,
       "layer": "Item",
       "kind": "circle",
@@ -4407,7 +4425,7 @@
       "radius": 0.4
     },
     {
-      "object": 217,
+      "object": 233,
       "owner": 4,
       "layer": "Item",
       "kind": "circle",
@@ -4415,7 +4433,7 @@
       "radius": 0.4
     },
     {
-      "object": 219,
+      "object": 235,
       "owner": 4,
       "layer": "Item",
       "kind": "circle",
@@ -4423,7 +4441,7 @@
       "radius": 0.4
     },
     {
-      "object": 221,
+      "object": 237,
       "owner": 4,
       "layer": "NPC",
       "kind": "poly",
@@ -4432,7 +4450,7 @@
       ]
     },
     {
-      "object": 233,
+      "object": 246,
       "owner": 5,
       "layer": "NPC",
       "kind": "poly",
@@ -4441,7 +4459,7 @@
       ]
     },
     {
-      "object": 236,
+      "object": 249,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4450,7 +4468,7 @@
       ]
     },
     {
-      "object": 247,
+      "object": 259,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4459,7 +4477,7 @@
       ]
     },
     {
-      "object": 248,
+      "object": 260,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4468,7 +4486,7 @@
       ]
     },
     {
-      "object": 249,
+      "object": 261,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4477,7 +4495,7 @@
       ]
     },
     {
-      "object": 250,
+      "object": 262,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4486,7 +4504,7 @@
       ]
     },
     {
-      "object": 251,
+      "object": 263,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4495,7 +4513,7 @@
       ]
     },
     {
-      "object": 256,
+      "object": 268,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4504,7 +4522,7 @@
       ]
     },
     {
-      "object": 257,
+      "object": 269,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4513,7 +4531,7 @@
       ]
     },
     {
-      "object": 258,
+      "object": 270,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4522,7 +4540,7 @@
       ]
     },
     {
-      "object": 259,
+      "object": 271,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4531,7 +4549,7 @@
       ]
     },
     {
-      "object": 260,
+      "object": 272,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4540,7 +4558,7 @@
       ]
     },
     {
-      "object": 261,
+      "object": 273,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4549,7 +4567,7 @@
       ]
     },
     {
-      "object": 262,
+      "object": 274,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4558,7 +4576,7 @@
       ]
     },
     {
-      "object": 263,
+      "object": 275,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4567,7 +4585,7 @@
       ]
     },
     {
-      "object": 264,
+      "object": 276,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4576,7 +4594,7 @@
       ]
     },
     {
-      "object": 265,
+      "object": 277,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -4585,7 +4603,7 @@
       ]
     },
     {
-      "object": 266,
+      "object": 278,
       "owner": 5,
       "layer": "Item",
       "kind": "circle",
@@ -4593,7 +4611,7 @@
       "radius": 0.4375
     },
     {
-      "object": 268,
+      "object": 280,
       "owner": 5,
       "layer": "NPC",
       "kind": "poly",
@@ -4602,7 +4620,7 @@
       ]
     },
     {
-      "object": 273,
+      "object": 283,
       "owner": 6,
       "layer": "NPC",
       "kind": "poly",
@@ -4611,7 +4629,7 @@
       ]
     },
     {
-      "object": 282,
+      "object": 291,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -4620,7 +4638,7 @@
       ]
     },
     {
-      "object": 285,
+      "object": 294,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -4629,7 +4647,7 @@
       ]
     },
     {
-      "object": 286,
+      "object": 295,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -4638,7 +4656,7 @@
       ]
     },
     {
-      "object": 287,
+      "object": 296,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -4647,7 +4665,7 @@
       ]
     },
     {
-      "object": 288,
+      "object": 297,
       "owner": 6,
       "layer": "Default",
       "kind": "circle",
@@ -4655,7 +4673,7 @@
       "radius": 0.1
     },
     {
-      "object": 289,
+      "object": 298,
       "owner": 6,
       "layer": "Default",
       "kind": "circle",
@@ -4663,7 +4681,7 @@
       "radius": 0.3
     },
     {
-      "object": 290,
+      "object": 299,
       "owner": 6,
       "layer": "Default",
       "kind": "circle",
@@ -4671,7 +4689,7 @@
       "radius": 0.3
     },
     {
-      "object": 291,
+      "object": 300,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -4680,7 +4698,7 @@
       ]
     },
     {
-      "object": 294,
+      "object": 303,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -4689,7 +4707,7 @@
       ]
     },
     {
-      "object": 297,
+      "object": 304,
       "owner": 7,
       "layer": "NPC",
       "kind": "poly",
@@ -4698,7 +4716,7 @@
       ]
     },
     {
-      "object": 303,
+      "object": 309,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4707,7 +4725,7 @@
       ]
     },
     {
-      "object": 304,
+      "object": 310,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4716,7 +4734,7 @@
       ]
     },
     {
-      "object": 305,
+      "object": 311,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4725,7 +4743,7 @@
       ]
     },
     {
-      "object": 306,
+      "object": 312,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4734,7 +4752,7 @@
       ]
     },
     {
-      "object": 307,
+      "object": 313,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4743,7 +4761,7 @@
       ]
     },
     {
-      "object": 308,
+      "object": 314,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4752,7 +4770,7 @@
       ]
     },
     {
-      "object": 309,
+      "object": 315,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4761,7 +4779,7 @@
       ]
     },
     {
-      "object": 310,
+      "object": 316,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4770,7 +4788,7 @@
       ]
     },
     {
-      "object": 311,
+      "object": 317,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4779,7 +4797,7 @@
       ]
     },
     {
-      "object": 312,
+      "object": 318,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4788,7 +4806,7 @@
       ]
     },
     {
-      "object": 313,
+      "object": 319,
       "owner": 7,
       "layer": "Default",
       "kind": "poly",
@@ -4797,7 +4815,7 @@
       ]
     },
     {
-      "object": 320,
+      "object": 324,
       "owner": 8,
       "layer": "NPC",
       "kind": "poly",
@@ -4806,7 +4824,7 @@
       ]
     },
     {
-      "object": 324,
+      "object": 328,
       "owner": 8,
       "layer": "Item",
       "kind": "circle",
@@ -4814,7 +4832,7 @@
       "radius": 0.375
     },
     {
-      "object": 326,
+      "object": 330,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4823,7 +4841,7 @@
       ]
     },
     {
-      "object": 330,
+      "object": 333,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4832,7 +4850,7 @@
       ]
     },
     {
-      "object": 331,
+      "object": 334,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4841,7 +4859,7 @@
       ]
     },
     {
-      "object": 334,
+      "object": 337,
       "owner": 8,
       "enabled": false,
       "layer": "Item",
@@ -4850,7 +4868,7 @@
       "radius": 0.4375
     },
     {
-      "object": 336,
+      "object": 339,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4859,7 +4877,7 @@
       ]
     },
     {
-      "object": 337,
+      "object": 340,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4868,7 +4886,7 @@
       ]
     },
     {
-      "object": 341,
+      "object": 344,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4877,7 +4895,7 @@
       ]
     },
     {
-      "object": 342,
+      "object": 345,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4886,7 +4904,7 @@
       ]
     },
     {
-      "object": 343,
+      "object": 346,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4895,7 +4913,7 @@
       ]
     },
     {
-      "object": 346,
+      "object": 349,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4904,7 +4922,7 @@
       ]
     },
     {
-      "object": 347,
+      "object": 350,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4913,7 +4931,7 @@
       ]
     },
     {
-      "object": 348,
+      "object": 351,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4922,7 +4940,7 @@
       ]
     },
     {
-      "object": 349,
+      "object": 352,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4931,7 +4949,7 @@
       ]
     },
     {
-      "object": 350,
+      "object": 353,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4940,7 +4958,7 @@
       ]
     },
     {
-      "object": 351,
+      "object": 354,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4949,7 +4967,7 @@
       ]
     },
     {
-      "object": 352,
+      "object": 355,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4958,7 +4976,7 @@
       ]
     },
     {
-      "object": 353,
+      "object": 356,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4967,7 +4985,7 @@
       ]
     },
     {
-      "object": 354,
+      "object": 357,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4976,7 +4994,7 @@
       ]
     },
     {
-      "object": 355,
+      "object": 358,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4985,7 +5003,7 @@
       ]
     },
     {
-      "object": 356,
+      "object": 359,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -4994,7 +5012,7 @@
       ]
     },
     {
-      "object": 357,
+      "object": 360,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -5003,7 +5021,7 @@
       ]
     },
     {
-      "object": 358,
+      "object": 361,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -5012,7 +5030,7 @@
       ]
     },
     {
-      "object": 359,
+      "object": 362,
       "owner": 8,
       "enabled": false,
       "layer": "Default",
@@ -5022,7 +5040,7 @@
       ]
     },
     {
-      "object": 360,
+      "object": 363,
       "owner": 8,
       "enabled": false,
       "layer": "Default",
@@ -5032,7 +5050,7 @@
       ]
     },
     {
-      "object": 361,
+      "object": 364,
       "owner": 8,
       "enabled": false,
       "layer": "Default",
@@ -5042,7 +5060,7 @@
       ]
     },
     {
-      "object": 364,
+      "object": 365,
       "owner": 9,
       "layer": "NPC",
       "kind": "poly",
@@ -5051,7 +5069,7 @@
       ]
     },
     {
-      "object": 367,
+      "object": 368,
       "owner": 9,
       "layer": "Item",
       "kind": "circle",
@@ -5059,7 +5077,7 @@
       "radius": 0.5
     },
     {
-      "object": 369,
+      "object": 370,
       "owner": 9,
       "layer": "Default",
       "kind": "poly",
@@ -5526,7 +5544,7 @@
   ],
   "triggerColliders": [
     {
-      "object": 13,
+      "object": 41,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -5535,7 +5553,7 @@
       ]
     },
     {
-      "object": 16,
+      "object": 44,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -5544,7 +5562,7 @@
       ]
     },
     {
-      "object": 19,
+      "object": 47,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -5553,7 +5571,7 @@
       ]
     },
     {
-      "object": 21,
+      "object": 49,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -5562,7 +5580,7 @@
       ]
     },
     {
-      "object": 23,
+      "object": 51,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -5571,7 +5589,7 @@
       ]
     },
     {
-      "object": 26,
+      "object": 54,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -5580,7 +5598,7 @@
       ]
     },
     {
-      "object": 28,
+      "object": 56,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -5589,7 +5607,7 @@
       ]
     },
     {
-      "object": 100,
+      "object": 128,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -5598,7 +5616,7 @@
       ]
     },
     {
-      "object": 105,
+      "object": 133,
       "owner": 0,
       "layer": "Default",
       "kind": "poly",
@@ -5616,7 +5634,7 @@
       ]
     },
     {
-      "object": 110,
+      "object": 138,
       "owner": 0,
       "layer": "NPC",
       "kind": "poly",
@@ -5661,7 +5679,7 @@
       ]
     },
     {
-      "object": 121,
+      "object": 146,
       "owner": 1,
       "layer": "NPC",
       "kind": "poly",
@@ -5688,7 +5706,7 @@
       ]
     },
     {
-      "object": 143,
+      "object": 167,
       "owner": 1,
       "layer": "Default",
       "kind": "poly",
@@ -5697,7 +5715,7 @@
       ]
     },
     {
-      "object": 145,
+      "object": 169,
       "owner": 1,
       "layer": "NPC",
       "kind": "poly",
@@ -5706,7 +5724,7 @@
       ]
     },
     {
-      "object": 153,
+      "object": 175,
       "owner": 2,
       "layer": "Default",
       "kind": "poly",
@@ -5715,7 +5733,7 @@
       ]
     },
     {
-      "object": 155,
+      "object": 177,
       "owner": 2,
       "layer": "NPC",
       "kind": "poly",
@@ -5724,7 +5742,7 @@
       ]
     },
     {
-      "object": 166,
+      "object": 187,
       "owner": 2,
       "layer": "Default",
       "kind": "poly",
@@ -5733,7 +5751,7 @@
       ]
     },
     {
-      "object": 178,
+      "object": 197,
       "owner": 3,
       "enabled": false,
       "layer": "Default",
@@ -5743,7 +5761,7 @@
       ]
     },
     {
-      "object": 180,
+      "object": 199,
       "owner": 3,
       "layer": "NPC",
       "kind": "poly",
@@ -5752,7 +5770,7 @@
       ]
     },
     {
-      "object": 221,
+      "object": 237,
       "owner": 4,
       "layer": "NPC",
       "kind": "poly",
@@ -5761,7 +5779,7 @@
       ]
     },
     {
-      "object": 227,
+      "object": 242,
       "owner": 4,
       "layer": "Default",
       "kind": "poly",
@@ -5770,7 +5788,7 @@
       ]
     },
     {
-      "object": 233,
+      "object": 246,
       "owner": 5,
       "layer": "NPC",
       "kind": "poly",
@@ -5788,7 +5806,7 @@
       ]
     },
     {
-      "object": 237,
+      "object": 250,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -5797,7 +5815,7 @@
       ]
     },
     {
-      "object": 238,
+      "object": 251,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -5806,7 +5824,7 @@
       ]
     },
     {
-      "object": 245,
+      "object": 257,
       "owner": 5,
       "layer": "Default",
       "kind": "poly",
@@ -5824,7 +5842,7 @@
       ]
     },
     {
-      "object": 268,
+      "object": 280,
       "owner": 5,
       "layer": "NPC",
       "kind": "poly",
@@ -5833,7 +5851,7 @@
       ]
     },
     {
-      "object": 273,
+      "object": 283,
       "owner": 6,
       "layer": "NPC",
       "kind": "poly",
@@ -5851,7 +5869,7 @@
       ]
     },
     {
-      "object": 279,
+      "object": 288,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -5860,7 +5878,7 @@
       ]
     },
     {
-      "object": 283,
+      "object": 292,
       "owner": 6,
       "layer": "Default",
       "kind": "poly",
@@ -5869,7 +5887,7 @@
       ]
     },
     {
-      "object": 297,
+      "object": 304,
       "owner": 7,
       "layer": "NPC",
       "kind": "poly",
@@ -5878,7 +5896,7 @@
       ]
     },
     {
-      "object": 320,
+      "object": 324,
       "owner": 8,
       "layer": "NPC",
       "kind": "poly",
@@ -5896,7 +5914,7 @@
       ]
     },
     {
-      "object": 332,
+      "object": 335,
       "owner": 8,
       "layer": "Default",
       "kind": "poly",
@@ -5914,7 +5932,7 @@
       ]
     },
     {
-      "object": 364,
+      "object": 365,
       "owner": 9,
       "layer": "NPC",
       "kind": "poly",
@@ -5923,7 +5941,7 @@
       ]
     },
     {
-      "object": 369,
+      "object": 370,
       "owner": 9,
       "layer": "Default",
       "kind": "poly",
@@ -6033,7 +6051,7 @@
   ],
   "conditionCheckers": [
     {
-      "object": 206,
+      "object": 222,
       "checkOnStart": true,
       "conditions": [
         {
@@ -6045,14 +6063,14 @@
       "onSuccess": [
         {
           "method": "KnotBox.SetToCorrectPositions",
-          "target": 206
+          "target": 222
         }
       ],
       "onFail": [
       ]
     },
     {
-      "object": 240,
+      "object": 253,
       "checkOnStart": true,
       "conditions": [
         {
@@ -6064,7 +6082,7 @@
       "onSuccess": [
         {
           "method": "GameObject.SetActive",
-          "target": 240,
+          "target": 253,
           "bool": false
         }
       ],
@@ -6072,7 +6090,7 @@
       ]
     },
     {
-      "object": 241,
+      "object": 254,
       "checkOnStart": true,
       "conditions": [
         {
@@ -6086,7 +6104,7 @@
       "onFail": [
         {
           "method": "GameObject.SetActive",
-          "target": 241,
+          "target": 254,
           "bool": false
         }
       ]
@@ -6104,7 +6122,7 @@
       "onSuccess": [
         {
           "method": "VillageGrid.OnWaterfallEntry",
-          "target": 115
+          "target": 1
         },
         {
           "method": "SceneChanger.ChangeScenes",
@@ -6120,7 +6138,7 @@
       ]
     },
     {
-      "object": 107,
+      "object": 135,
       "checkOnStart": true,
       "conditions": [
         {
@@ -6131,24 +6149,24 @@
       "onSuccess": [
         {
           "method": "GameObject.SetActive",
-          "target": 107,
+          "target": 135,
           "bool": false
         },
         {
           "method": "GameObject.SetActive",
-          "target": 105,
+          "target": 133,
           "bool": true
         }
       ],
       "onFail": [
         {
           "method": "GameObject.SetActive",
-          "target": 107,
+          "target": 135,
           "bool": true
         },
         {
           "method": "GameObject.SetActive",
-          "target": 105,
+          "target": 133,
           "bool": false
         }
       ]
@@ -6166,25 +6184,25 @@
       "onSuccess": [
         {
           "method": "GameObject.SetActive",
-          "target": 114,
+          "target": 142,
           "bool": true
         },
         {
           "method": "GameObject.SetActive",
-          "target": 113,
+          "target": 141,
           "bool": false
         }
       ],
       "onFail": [
         {
           "method": "GameObject.SetActive",
-          "target": 114,
+          "target": 142,
           "bool": false
         }
       ]
     },
     {
-      "object": 114,
+      "object": 142,
       "checkOnStart": true,
       "conditions": [
         {
@@ -6194,7 +6212,7 @@
       "onSuccess": [
         {
           "method": "GameObject.SetActive",
-          "target": 114,
+          "target": 142,
           "bool": false
         },
         {
@@ -6204,7 +6222,7 @@
         },
         {
           "method": "GameObject.SetActive",
-          "target": 113,
+          "target": 141,
           "bool": false
         }
       ],
@@ -6257,7 +6275,7 @@
         },
         {
           "method": "VillageGrid.OnHouseExit",
-          "target": 115
+          "target": 1
         },
         {
           "method": "PlayerActionHints.DisableHint",
@@ -6289,7 +6307,7 @@
       ]
     },
     {
-      "object": 237,
+      "object": 250,
       "addToOnAction": true,
       "excludeBoat": false,
       "excludeLand": false,
@@ -6298,17 +6316,17 @@
       "onSuccess": [
         {
           "method": "GameObject.SetActive",
-          "target": 238,
+          "target": 251,
           "bool": true
         },
         {
           "method": "GameObject.SetActive",
-          "target": 241,
+          "target": 254,
           "bool": true
         },
         {
           "method": "VillageGrid.PlayDigSound",
-          "target": 115
+          "target": 1
         }
       ]
     },
@@ -6379,7 +6397,7 @@
       ]
     },
     {
-      "object": 369,
+      "object": 370,
       "addToOnAction": true,
       "excludeBoat": false,
       "excludeLand": false,
@@ -6388,7 +6406,7 @@
       "onSuccess": [
         {
           "method": "DogProp.Bark",
-          "target": 369
+          "target": 370
         }
       ]
     },
@@ -6540,7 +6558,7 @@
       ]
     },
     {
-      "object": 28,
+      "object": 56,
       "addToOnAction": true,
       "excludeBoat": false,
       "excludeLand": false,
@@ -6549,7 +6567,7 @@
       "onSuccess": [
         {
           "method": "CowProp.Moo",
-          "target": 28
+          "target": 56
         }
       ]
     },
@@ -6568,7 +6586,7 @@
         },
         {
           "method": "GameObject.SetActive",
-          "target": 114,
+          "target": 142,
           "bool": false
         },
         {
@@ -6605,7 +6623,7 @@
         },
         {
           "method": "GameObject.SetActive",
-          "target": 114,
+          "target": 142,
           "bool": true
         },
         {
@@ -6630,18 +6648,18 @@
   ],
   "triggerEvents": [
     {
-      "object": 121,
+      "object": 146,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 121
+          "target": 146
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 121
+          "target": 146
         }
       ]
     },
@@ -6669,39 +6687,39 @@
       ]
     },
     {
-      "object": 145,
+      "object": 169,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 145
+          "target": 169
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 145
+          "target": 169
         }
       ]
     },
     {
-      "object": 155,
+      "object": 177,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 155
+          "target": 177
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 155
+          "target": 177
         }
       ]
     },
     {
-      "object": 166,
+      "object": 187,
       "onPlayerEnter": true,
       "onEnter": [
         {
@@ -6719,82 +6737,82 @@
       ]
     },
     {
-      "object": 180,
+      "object": 199,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 180
+          "target": 199
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 180
+          "target": 199
         }
       ]
     },
     {
-      "object": 221,
+      "object": 237,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 221
+          "target": 237
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 221
+          "target": 237
         }
       ]
     },
     {
-      "object": 233,
+      "object": 246,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 233
+          "target": 246
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 233
+          "target": 246
         }
       ]
     },
     {
-      "object": 268,
+      "object": 280,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 268
+          "target": 280
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 268
+          "target": 280
         }
       ]
     },
     {
-      "object": 273,
+      "object": 283,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 273
+          "target": 283
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 273
+          "target": 283
         }
       ]
     },
@@ -6812,7 +6830,7 @@
       ]
     },
     {
-      "object": 279,
+      "object": 288,
       "onPlayerEnter": true,
       "onEnter": [
         {
@@ -6830,50 +6848,50 @@
       ]
     },
     {
-      "object": 297,
+      "object": 304,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 297
+          "target": 304
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 297
+          "target": 304
         }
       ]
     },
     {
-      "object": 320,
+      "object": 324,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 320
+          "target": 324
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 320
+          "target": 324
         }
       ]
     },
     {
-      "object": 364,
+      "object": 365,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 364
+          "target": 365
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 364
+          "target": 365
         }
       ]
     },
@@ -6910,76 +6928,76 @@
       ]
     },
     {
-      "object": 13,
+      "object": 41,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 13
+          "target": 41
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 13
+          "target": 41
         }
       ]
     },
     {
-      "object": 16,
+      "object": 44,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 16
+          "target": 44
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 16
+          "target": 44
         }
       ]
     },
     {
-      "object": 23,
+      "object": 51,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 23
+          "target": 51
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 23
+          "target": 51
         }
       ]
     },
     {
-      "object": 100,
+      "object": 128,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 100
+          "target": 128
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 100
+          "target": 128
         }
       ]
     },
     {
-      "object": 105,
+      "object": 133,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "SceneChanger.ChangeScenes",
-          "target": 105
+          "target": 133
         }
       ],
       "onExit": [
@@ -6998,18 +7016,18 @@
       ]
     },
     {
-      "object": 110,
+      "object": 138,
       "onPlayerEnter": true,
       "onEnter": [
         {
           "method": "NPC.OnDialogueTriggerEnter",
-          "target": 110
+          "target": 138
         }
       ],
       "onExit": [
         {
           "method": "NPC.OnDialogueTriggerExit",
-          "target": 110
+          "target": 138
         }
       ]
     },
@@ -7029,7 +7047,7 @@
   ],
   "collectibles": [
     {
-      "object": 143,
+      "object": 167,
       "name": "Artifact",
       "area": "Village",
       "disableAtStart": false,
@@ -7043,7 +7061,7 @@
       ]
     },
     {
-      "object": 153,
+      "object": 175,
       "name": "Slider 3",
       "area": "Village",
       "disableAtStart": true,
@@ -7051,7 +7069,7 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 153,
+          "target": 175,
           "int": 3
         },
         {
@@ -7062,7 +7080,7 @@
       ]
     },
     {
-      "object": 178,
+      "object": 197,
       "name": "Slider 4",
       "area": "Village",
       "disableAtStart": false,
@@ -7070,13 +7088,13 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 178,
+          "target": 197,
           "int": 4
         }
       ]
     },
     {
-      "object": 227,
+      "object": 242,
       "name": "Slider 5",
       "area": "Village",
       "disableAtStart": true,
@@ -7084,13 +7102,13 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 227,
+          "target": 242,
           "int": 5
         }
       ]
     },
     {
-      "object": 238,
+      "object": 251,
       "name": "Slider 7",
       "area": "Village",
       "disableAtStart": true,
@@ -7098,18 +7116,18 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 238,
+          "target": 251,
           "int": 7
         },
         {
           "method": "GameObject.SetActive",
-          "target": 237,
+          "target": 250,
           "bool": false
         }
       ]
     },
     {
-      "object": 245,
+      "object": 257,
       "name": "Slider 6",
       "area": "Village",
       "disableAtStart": true,
@@ -7117,13 +7135,13 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 245,
+          "target": 257,
           "int": 6
         }
       ]
     },
     {
-      "object": 283,
+      "object": 292,
       "name": "Slider 8",
       "area": "Village",
       "disableAtStart": true,
@@ -7131,13 +7149,13 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 283,
+          "target": 292,
           "int": 8
         }
       ]
     },
     {
-      "object": 332,
+      "object": 335,
       "name": "Slider 9",
       "area": "Village",
       "disableAtStart": true,
@@ -7145,7 +7163,7 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 332,
+          "target": 335,
           "int": 9
         }
       ]
@@ -7186,7 +7204,7 @@
       ]
     },
     {
-      "object": 19,
+      "object": 47,
       "name": "Coffee",
       "area": "Village",
       "disableAtStart": false,
@@ -7195,7 +7213,7 @@
       ]
     },
     {
-      "object": 21,
+      "object": 49,
       "name": "Slider 2",
       "area": "Village",
       "disableAtStart": false,
@@ -7203,17 +7221,17 @@
       "onCollect": [
         {
           "method": "Collectible.ActivateSTile",
-          "target": 21,
+          "target": 49,
           "int": 2
         },
         {
           "method": "VillageGrid.RemoveSlider2Tracker",
-          "target": 115
+          "target": 1
         }
       ]
     },
     {
-      "object": 26,
+      "object": 54,
       "name": "Boating License",
       "area": "Caves",
       "disableAtStart": true,
@@ -7230,53 +7248,193 @@
       "active": true
     },
     {
+      "path": "Map/Village 8Puzzle",
+      "parent": 0,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects",
+      "parent": 2,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps",
+      "parent": 2,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects",
+      "parent": 5,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps",
+      "parent": 5,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (3)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (3)/Objects",
+      "parent": 8,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps",
+      "parent": 8,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects",
+      "parent": 11,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps",
+      "parent": 11,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects",
+      "parent": 14,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps",
+      "parent": 14,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/Objects",
+      "parent": 17,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps",
+      "parent": 17,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (7)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (7)/Objects",
+      "parent": 20,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps",
+      "parent": 20,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/Objects",
+      "parent": 23,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps",
+      "parent": 23,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)",
+      "parent": 1,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/Objects",
+      "parent": 26,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps",
+      "parent": 26,
+      "active": true
+    },
+    {
       "path": "Map/BGFrame",
       "parent": 0,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (1)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (2)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (3)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (4)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (5)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (6)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (7)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (8)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (9)",
-      "parent": 1,
+      "parent": 29,
       "active": true
     },
     {
@@ -7286,1807 +7444,1667 @@
     },
     {
       "path": "Map/World Grid/Objects",
-      "parent": 11,
+      "parent": 39,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Alien Log Sign",
-      "parent": 12,
+      "parent": 40,
       "active": false
     },
     {
       "path": "Map/World Grid/Objects/Alien Log Sign/NPC Sprite",
-      "parent": 13,
+      "parent": 41,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Alien Log Sign/NPC Sprite/Ping",
-      "parent": 14,
+      "parent": 42,
       "active": false
     },
     {
       "path": "Map/World Grid/Objects/Sam",
-      "parent": 12,
+      "parent": 40,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Sam/NPC Sprite",
-      "parent": 16,
+      "parent": 44,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Sam/NPC Sprite/Ping",
-      "parent": 17,
+      "parent": 45,
       "active": false
     },
     {
       "path": "Map/World Grid/Objects/Coffee",
-      "parent": 12,
+      "parent": 40,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Coffee/Coffee Sprite",
-      "parent": 19,
+      "parent": 47,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Slider 2 Collectible",
-      "parent": 12,
+      "parent": 40,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Slider 2 Collectible/Slider Sprite",
-      "parent": 21,
+      "parent": 49,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Face Rocks Sign",
-      "parent": 12,
+      "parent": 40,
       "active": false
     },
     {
       "path": "Map/World Grid/Objects/Face Rocks Sign/NPC Sprite",
-      "parent": 23,
+      "parent": 51,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Face Rocks Sign/NPC Sprite/Ping",
-      "parent": 24,
+      "parent": 52,
       "active": false
     },
     {
       "path": "Map/World Grid/Objects/TEMP LICENSE",
-      "parent": 12,
+      "parent": 40,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/TEMP LICENSE/Rope Sprite",
-      "parent": 26,
+      "parent": 54,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Cow",
-      "parent": 12,
+      "parent": 40,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Cow/Cow Sprite",
-      "parent": 28,
+      "parent": 56,
       "active": true
     },
     {
       "path": "Map/World Grid/Objects/Cow/Cow Sprite/Emote",
-      "parent": 29,
+      "parent": 57,
       "active": false
     },
     {
       "path": "Map/World Grid/BaseDecorations",
-      "parent": 11,
+      "parent": 39,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys",
-      "parent": 31,
+      "parent": 59,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (1)",
-      "parent": 32,
+      "parent": 60,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (1)/BuoySplash",
-      "parent": 33,
+      "parent": 61,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy",
-      "parent": 32,
+      "parent": 60,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy/BuoySplash",
-      "parent": 35,
+      "parent": 63,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy/BuoyLineHorz",
-      "parent": 35,
+      "parent": 63,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (2)",
-      "parent": 32,
+      "parent": 60,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (2)/BuoySplash",
-      "parent": 38,
+      "parent": 66,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (2)/BuoyLineVert Variant",
-      "parent": 38,
+      "parent": 66,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)",
-      "parent": 32,
+      "parent": 60,
       "active": true
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoySplash",
-      "parent": 41,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoyLineVert Variant",
-      "parent": 41,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoyLineHorz",
-      "parent": 41,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoySplash",
-      "parent": 45,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoyLineHorz",
-      "parent": 45,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoyLineVert Variant",
-      "parent": 45,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)/BuoySplash",
-      "parent": 49,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)/BuoyLineVert Variant",
-      "parent": 49,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)/BuoySplash",
-      "parent": 52,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)/BuoyLineVert Variant",
-      "parent": 52,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)/BuoySplash",
-      "parent": 55,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)/BuoyLineHorz",
-      "parent": 55,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)/BuoySplash",
-      "parent": 58,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)/BuoyLineVert Variant",
-      "parent": 58,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)/BuoySplash",
-      "parent": 61,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)/BuoyLineHorz",
-      "parent": 61,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)/BuoySplash",
-      "parent": 64,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)/BuoyLineHorz",
-      "parent": 64,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (21)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (21)/BuoySplash",
-      "parent": 67,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (24)",
-      "parent": 32,
-      "active": true
-    },
-    {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (24)/BuoySplash",
       "parent": 69,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (25)",
-      "parent": 32,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoyLineVert Variant",
+      "parent": 69,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (25)/BuoySplash",
-      "parent": 71,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoyLineHorz",
+      "parent": 69,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Pine1",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Pine1 (1)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoySplash",
+      "parent": 73,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Pine1 (2)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoyLineHorz",
+      "parent": 73,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Pine1 (3)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoyLineVert Variant",
+      "parent": 73,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Pine1 (4)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (4)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)/BuoySplash",
+      "parent": 77,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (2)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)/BuoyLineVert Variant",
+      "parent": 77,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (7)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (8)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)/BuoySplash",
+      "parent": 80,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (9)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)/BuoyLineVert Variant",
+      "parent": 80,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree2 (1)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree2 (2)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)/BuoySplash",
+      "parent": 83,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (1)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)/BuoyLineHorz",
+      "parent": 83,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (3)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (5)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)/BuoySplash",
+      "parent": 86,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree2",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)/BuoyLineVert Variant",
+      "parent": 86,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tree1 (6)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)/BuoySplash",
+      "parent": 89,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Palm1 Variant",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)/BuoyLineHorz",
+      "parent": 89,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Stalagmite",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tall Stalagmite2",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)/BuoySplash",
+      "parent": 92,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Thin Stalagmite",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)/BuoyLineHorz",
+      "parent": 92,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Tall Stalagmite1",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (21)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/Pine1 (5)",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (21)/BuoySplash",
+      "parent": 95,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/OceanRockSmall1",
-      "parent": 31,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (24)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/BaseDecorations/OceanRockSmall1/OceanRockSmallSplash",
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (24)/BuoySplash",
       "parent": 97,
       "active": true
     },
     {
-      "path": "Map/World Grid/OffMap",
-      "parent": 11,
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (25)",
+      "parent": 60,
       "active": true
     },
     {
-      "path": "Map/World Grid/OffMap/Fezziwig",
+      "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (25)/BuoySplash",
       "parent": 99,
       "active": true
     },
     {
-      "path": "Map/World Grid/OffMap/Fezziwig/NPC Sprite",
-      "parent": 100,
+      "path": "Map/World Grid/BaseDecorations/Pine1",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/OffMap/Fezziwig/NPC Sprite/Ping",
-      "parent": 101,
-      "active": false
-    },
-    {
-      "path": "Map/World Grid/Alcove",
-      "parent": 11,
+      "path": "Map/World Grid/BaseDecorations/Pine1 (1)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Alcove/Cave Door",
-      "parent": 103,
+      "path": "Map/World Grid/BaseDecorations/Pine1 (2)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Alcove/Cave Door/Scene Change Collider",
-      "parent": 104,
+      "path": "Map/World Grid/BaseDecorations/Pine1 (3)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Alcove/Cave Door/Scene Change Collider/Dither",
-      "parent": 105,
+      "path": "Map/World Grid/BaseDecorations/Pine1 (4)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Alcove/Cave Door/Rocks Blocking Door",
-      "parent": 104,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (4)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Alcove/Cave Door/CeilingRocks",
-      "parent": 104,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (2)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Beach",
-      "parent": 11,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (7)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Beach/Dock Sign",
-      "parent": 109,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (8)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Beach/Dock Sign/NPC Sprite",
-      "parent": 110,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (9)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Beach/Dock Sign/NPC Sprite/Ping",
-      "parent": 111,
-      "active": false
-    },
-    {
-      "path": "Map/World Grid/Beach/Floating Wood",
-      "parent": 109,
+      "path": "Map/World Grid/BaseDecorations/Tree2 (1)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/World Grid/Beach/Raft",
-      "parent": 109,
-      "active": false
-    },
-    {
-      "path": "Map/Village 8Puzzle",
-      "parent": 0,
+      "path": "Map/World Grid/BaseDecorations/Tree2 (2)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)",
-      "parent": 115,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (1)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/Objects",
-      "parent": 116,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (3)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/Objects/Boomo",
-      "parent": 117,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (5)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/Objects/Boomo/Sprite",
-      "parent": 118,
+      "path": "Map/World Grid/BaseDecorations/Tree2",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/Objects/House2",
-      "parent": 117,
+      "path": "Map/World Grid/BaseDecorations/Tree1",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo",
-      "parent": 117,
+      "path": "Map/World Grid/BaseDecorations/Tree1 (6)",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite",
-      "parent": 121,
+      "path": "Map/World Grid/BaseDecorations/Palm1 Variant",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite/Ping",
-      "parent": 122,
-      "active": false
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps",
-      "parent": 116,
+      "path": "Map/World Grid/BaseDecorations/Stalagmite",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps",
-      "parent": 124,
+      "path": "Map/World Grid/BaseDecorations/Tall Stalagmite2",
+      "parent": 59,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations",
+      "path": "Map/World Grid/BaseDecorations/Thin Stalagmite",
+      "parent": 59,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tall Stalagmite1",
+      "parent": 59,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Pine1 (5)",
+      "parent": 59,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/OceanRockSmall1",
+      "parent": 59,
+      "active": true
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/OceanRockSmall1/OceanRockSmallSplash",
       "parent": 125,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Ruins",
-      "parent": 126,
+      "path": "Map/World Grid/OffMap",
+      "parent": 39,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
+      "path": "Map/World Grid/OffMap/Fezziwig",
       "parent": 127,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree1",
-      "parent": 126,
+      "path": "Map/World Grid/OffMap/Fezziwig/NPC Sprite",
+      "parent": 128,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree2",
-      "parent": 126,
+      "path": "Map/World Grid/OffMap/Fezziwig/NPC Sprite/Ping",
+      "parent": 129,
+      "active": false
+    },
+    {
+      "path": "Map/World Grid/Alcove",
+      "parent": 39,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree2 (1)",
-      "parent": 126,
+      "path": "Map/World Grid/Alcove/Cave Door",
+      "parent": 131,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock1",
-      "parent": 126,
+      "path": "Map/World Grid/Alcove/Cave Door/Scene Change Collider",
+      "parent": 132,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
-      "parent": 126,
+      "path": "Map/World Grid/Alcove/Cave Door/Scene Change Collider/Dither",
+      "parent": 133,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
-      "parent": 126,
+      "path": "Map/World Grid/Alcove/Cave Door/Rocks Blocking Door",
+      "parent": 132,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps",
-      "parent": 124,
+      "path": "Map/World Grid/Alcove/Cave Door/CeilingRocks",
+      "parent": 132,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations",
-      "parent": 135,
+      "path": "Map/World Grid/Beach",
+      "parent": 39,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/DoubleBed",
-      "parent": 136,
+      "path": "Map/World Grid/Beach/Dock Sign",
+      "parent": 137,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/NightStand2",
-      "parent": 136,
+      "path": "Map/World Grid/Beach/Dock Sign/NPC Sprite",
+      "parent": 138,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk2",
-      "parent": 136,
+      "path": "Map/World Grid/Beach/Dock Sign/NPC Sprite/Ping",
+      "parent": 139,
+      "active": false
+    },
+    {
+      "path": "Map/World Grid/Beach/Floating Wood",
+      "parent": 137,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/PetBed",
-      "parent": 136,
+      "path": "Map/World Grid/Beach/Raft",
+      "parent": 137,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Boomo",
+      "parent": 3,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk3",
-      "parent": 136,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk3 (1)",
-      "parent": 136,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Artifact",
-      "parent": 136,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Artifact/Item Sprite",
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Boomo/Sprite",
       "parent": 143,
       "active": true
     },
     {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/House2",
+      "parent": 3,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo",
+      "parent": 3,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite",
+      "parent": 146,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite/Ping",
+      "parent": 147,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps",
+      "parent": 4,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations",
+      "parent": 149,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Ruins",
+      "parent": 150,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
+      "parent": 151,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree1",
+      "parent": 150,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree2",
+      "parent": 150,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree2 (1)",
+      "parent": 150,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock1",
+      "parent": 150,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
+      "parent": 150,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
+      "parent": 150,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps",
+      "parent": 4,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations",
+      "parent": 159,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/DoubleBed",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/NightStand2",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk2",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/PetBed",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk3",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk3 (1)",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Artifact",
+      "parent": 160,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Artifact/Item Sprite",
+      "parent": 167,
+      "active": true
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse",
-      "parent": 136,
+      "parent": 160,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse/NPC Sprite",
-      "parent": 145,
+      "parent": 169,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse/NPC Sprite/Ping",
-      "parent": 146,
+      "parent": 170,
       "active": false
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/ComputerBox1",
-      "parent": 136,
+      "parent": 160,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/ComputerBox1/Computer2 Variant",
-      "parent": 148,
+      "parent": 172,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/ComputerBox2 Variant",
-      "parent": 136,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)",
-      "parent": 115,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/Objects",
-      "parent": 151,
+      "parent": 160,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Slider 3 Collectible",
-      "parent": 152,
+      "parent": 6,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Slider 3 Collectible/Slider Sprite",
-      "parent": 153,
+      "parent": 175,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Archeologist",
-      "parent": 152,
+      "parent": 6,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Archeologist/NPC Sprite",
-      "parent": 155,
+      "parent": 177,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Archeologist/NPC Sprite/Ping",
-      "parent": 156,
+      "parent": 178,
       "active": false
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText",
-      "parent": 152,
+      "parent": 6,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (1)",
-      "parent": 158,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (2)",
-      "parent": 158,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (3)",
-      "parent": 158,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/Missing Piece",
-      "parent": 158,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps",
-      "parent": 151,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps",
-      "parent": 163,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations",
-      "parent": 164,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins (1)",
-      "parent": 166,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
-      "parent": 166,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Tree2 (4)",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Tree1",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Bush",
-      "parent": 165,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (3)",
-      "parent": 115,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (3)/Objects",
-      "parent": 176,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (3)/Objects/Slider 4 Collectible",
-      "parent": 177,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (3)/Objects/Slider 4 Collectible/Slider Sprite",
-      "parent": 178,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald",
-      "parent": 177,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald/NPC Sprite",
       "parent": 180,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald/NPC Sprite/Ping",
-      "parent": 181,
-      "active": false
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps",
-      "parent": 176,
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (2)",
+      "parent": 180,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps",
-      "parent": 183,
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (3)",
+      "parent": 180,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations",
-      "parent": 184,
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/Missing Piece",
+      "parent": 180,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Ruins",
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps",
+      "parent": 7,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations",
       "parent": 185,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins",
       "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (8)",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins (1)",
+      "parent": 187,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree2 (6)",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
+      "parent": 187,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (6)",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
+      "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree2",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock",
+      "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2",
+      "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log (1)",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3",
+      "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log (2)",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Tree2 (4)",
+      "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Rock Variant",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Tree1",
+      "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Bush",
+      "parent": 186,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2 Variant",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (3)/Objects/Slider 4 Collectible",
+      "parent": 9,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (3)/Objects/Slider 4 Collectible/Slider Sprite",
+      "parent": 197,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Cat1",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald",
+      "parent": 9,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Cat1/Sprite",
+      "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald/NPC Sprite",
       "parent": 199,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Bush",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald/NPC Sprite/Ping",
+      "parent": 200,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps",
+      "parent": 10,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Bush (1)",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations",
+      "parent": 202,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Sprout",
-      "parent": 185,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Ruins",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)",
-      "parent": 115,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects",
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
       "parent": 204,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot",
-      "parent": 205,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (8)",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node",
-      "parent": 206,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree2 (6)",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node/ItemSprite",
-      "parent": 207,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (6)",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)",
-      "parent": 206,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree2",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)/ItemSprite",
-      "parent": 209,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)",
-      "parent": 206,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log (1)",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)/ItemSprite",
-      "parent": 211,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log (2)",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)",
-      "parent": 206,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Rock Variant",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)/ItemSprite",
-      "parent": 213,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)",
-      "parent": 206,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2 Variant",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)/ItemSprite",
-      "parent": 215,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)",
-      "parent": 206,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Cat1",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)/ItemSprite",
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Cat1/Sprite",
       "parent": 217,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)",
-      "parent": 206,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Bush",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)/ItemSprite",
-      "parent": 219,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Bush (1)",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin",
-      "parent": 205,
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Sprout",
+      "parent": 203,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin/Kevin Sprite",
-      "parent": 221,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot",
+      "parent": 12,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin/Kevin Sprite/Ping",
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node",
       "parent": 222,
-      "active": false
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps",
-      "parent": 204,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps",
-      "parent": 224,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node/ItemSprite",
+      "parent": 223,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations",
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)",
+      "parent": 222,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)/ItemSprite",
       "parent": 225,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Slider 5 Collectible",
-      "parent": 226,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)",
+      "parent": 222,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Slider 5 Collectible/Slider Sprite",
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)/ItemSprite",
       "parent": 227,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Sprout",
-      "parent": 226,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)",
+      "parent": 222,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
-      "parent": 226,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)/ItemSprite",
+      "parent": 229,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)",
-      "parent": 115,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)",
+      "parent": 222,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects",
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)/ItemSprite",
       "parent": 231,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet",
-      "parent": 232,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)",
+      "parent": 222,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet/NPC Sprite",
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)/ItemSprite",
       "parent": 233,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet/NPC Sprite/Ping",
-      "parent": 234,
-      "active": false
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects/House7 (1)",
-      "parent": 232,
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)",
+      "parent": 222,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider",
-      "parent": 232,
-      "active": false
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)/ItemSprite",
+      "parent": 235,
+      "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider/Slider 7 Collectible",
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin",
+      "parent": 12,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin/Kevin Sprite",
       "parent": 237,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider/Slider 7 Collectible/Slider Sprite",
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin/Kevin Sprite/Ping",
       "parent": 238,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps",
+      "parent": 13,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations",
+      "parent": 240,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Slider 5 Collectible",
+      "parent": 241,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Slider 5 Collectible/Slider Sprite",
+      "parent": 242,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Sprout",
+      "parent": 241,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
+      "parent": 241,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet",
+      "parent": 15,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet/NPC Sprite",
+      "parent": 246,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet/NPC Sprite/Ping",
+      "parent": 247,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/House7 (1)",
+      "parent": 15,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider",
+      "parent": 15,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider/Slider 7 Collectible",
+      "parent": 250,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider/Slider 7 Collectible/Slider Sprite",
+      "parent": 251,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Rock",
-      "parent": 232,
+      "parent": 15,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Hole",
-      "parent": 232,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps",
-      "parent": 231,
+      "parent": 15,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps",
-      "parent": 242,
+      "parent": 16,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations",
-      "parent": 243,
+      "parent": 255,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Slider 6 Collectible",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Slider 6 Collectible/Slider Sprite",
-      "parent": 245,
+      "parent": 257,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Tree2 (1)",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Bulliten Board",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Crate1",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Crate2 Variant",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Pot Variant",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Sprout",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
-      "parent": 244,
+      "parent": 256,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps",
-      "parent": 242,
+      "parent": 16,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations",
-      "parent": 254,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Desk1",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/NightStand1",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/NightStand1 (1)",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1 (1)",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant (1)",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate3 Variant",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1 (2)",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant (2)",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Autumn",
-      "parent": 255,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Autumn/Sprite",
       "parent": 266,
       "active": true
     },
     {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Desk1",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/NightStand1",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/NightStand1 (1)",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1 (1)",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant (1)",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate3 Variant",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1 (2)",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant (2)",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Autumn",
+      "parent": 267,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Autumn/Sprite",
+      "parent": 278,
+      "active": true
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Dear Player Sign",
-      "parent": 255,
+      "parent": 267,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Dear Player Sign/NPC Sprite",
-      "parent": 268,
+      "parent": 280,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Dear Player Sign/NPC Sprite/Ping",
-      "parent": 269,
+      "parent": 281,
       "active": false
     },
     {
-      "path": "Map/Village 8Puzzle/STile (6)",
-      "parent": 115,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/Objects",
-      "parent": 271,
-      "active": true
-    },
-    {
       "path": "Map/Village 8Puzzle/STile (6)/Objects/Pierre",
-      "parent": 272,
+      "parent": 18,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/Objects/Pierre/Pierre Sprite",
-      "parent": 273,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/Objects/Pierre/Pierre Sprite/Ping",
-      "parent": 274,
-      "active": false
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps",
-      "parent": 271,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps",
-      "parent": 276,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations",
-      "parent": 277,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins",
-      "parent": 278,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins (1)",
-      "parent": 279,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
-      "parent": 279,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree1 (2)",
-      "parent": 278,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Slider 8 Collectible",
-      "parent": 278,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Slider 8 Collectible/Slider Sprite",
       "parent": 283,
       "active": true
     },
     {
+      "path": "Map/Village 8Puzzle/STile (6)/Objects/Pierre/Pierre Sprite/Ping",
+      "parent": 284,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps",
+      "parent": 19,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations",
+      "parent": 286,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins",
+      "parent": 287,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins (1)",
+      "parent": 288,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
+      "parent": 288,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree1 (2)",
+      "parent": 287,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Slider 8 Collectible",
+      "parent": 287,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Slider 8 Collectible/Slider Sprite",
+      "parent": 292,
+      "active": true
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree1 (3)",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree2",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/CaveRock1",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2 Variant",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Bush",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Sprout",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
-      "parent": 278,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tall Stalagmite4",
-      "parent": 278,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (7)",
-      "parent": 115,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (7)/Objects",
-      "parent": 295,
+      "parent": 287,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/Objects/Nemsy",
-      "parent": 296,
+      "parent": 21,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/Objects/Nemsy/NPC Sprite",
-      "parent": 297,
+      "parent": 304,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/Objects/Nemsy/NPC Sprite/Ping",
-      "parent": 298,
+      "parent": 305,
       "active": false
     },
     {
-      "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps",
-      "parent": 295,
-      "active": true
-    },
-    {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps",
-      "parent": 300,
+      "parent": 22,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations",
-      "parent": 301,
+      "parent": 307,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Tree2 (5)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Tree1 (5)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Rock Variant",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Rock Variant (1)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Rock Variant (2)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Log",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Log (1)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Fallen Log",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Bush",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Bush (1)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Bush (2)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout (2)",
-      "parent": 302,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout (3)",
-      "parent": 302,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)",
-      "parent": 115,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/Objects",
-      "parent": 318,
+      "parent": 308,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad",
-      "parent": 319,
+      "parent": 24,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite",
-      "parent": 320,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/Ping",
-      "parent": 321,
-      "active": false
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation",
-      "parent": 321,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation/Ruins Fragment",
-      "parent": 323,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation/Ruins Fragment/ItemSprite",
       "parent": 324,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (8)/Objects/House4 (1)",
-      "parent": 319,
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/Ping",
+      "parent": 325,
+      "active": false
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation",
+      "parent": 325,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps",
-      "parent": 318,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps",
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation/Ruins Fragment",
       "parent": 327,
       "active": true
     },
     {
-      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations",
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation/Ruins Fragment/ItemSprite",
       "parent": 328,
       "active": true
     },
     {
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/House4 (1)",
+      "parent": 24,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps",
+      "parent": 25,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations",
+      "parent": 331,
+      "active": true
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Tree2 (2)",
-      "parent": 329,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Tree1 (1)",
-      "parent": 329,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Slider 9 Collectible",
-      "parent": 329,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Slider 9 Collectible/Slider Sprite",
       "parent": 332,
       "active": true
     },
     {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Tree1 (1)",
+      "parent": 332,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Slider 9 Collectible",
+      "parent": 332,
+      "active": true
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Slider 9 Collectible/Slider Sprite",
+      "parent": 335,
+      "active": true
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Cat2 Variant",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Cat2 Variant/Sprite",
-      "parent": 334,
+      "parent": 337,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Rock Column",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Bush",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Sprout",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Sprout (2)",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/CaveRock1",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/CaveRock2 Variant",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Log",
-      "parent": 329,
+      "parent": 332,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps",
-      "parent": 327,
+      "parent": 25,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations",
-      "parent": 344,
+      "parent": 347,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Bed",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/NightStand1",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Clock",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/PetBed",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Desk1",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_chair1",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Shelf_H3 Variant",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/WorkshopBench5 Variant",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomMop",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomToilet",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_paperstack1",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_paperstack1 (1)",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_paperstack1 (2)",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_papers1",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_papers1 (1)",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_papers1 (2)",
-      "parent": 345,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (9)",
-      "parent": 115,
-      "active": true
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (9)/Objects",
-      "parent": 362,
+      "parent": 348,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mike",
-      "parent": 363,
+      "parent": 27,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mike/NPC Sprite",
-      "parent": 364,
+      "parent": 365,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mike/NPC Sprite/Ping",
-      "parent": 365,
+      "parent": 366,
       "active": false
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mittens",
-      "parent": 363,
+      "parent": 27,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mittens/Sprite",
-      "parent": 367,
+      "parent": 368,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Dog Variant 1",
-      "parent": 363,
+      "parent": 27,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Dog Variant 1/Emote",
-      "parent": 369,
+      "parent": 370,
       "active": false
     },
     {
-      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps",
-      "parent": 362,
-      "active": true
-    },
-    {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps",
-      "parent": 371,
+      "parent": 28,
       "active": true
     },
     {
@@ -9196,7 +9214,7 @@
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps",
-      "parent": 371,
+      "parent": 28,
       "active": true
     },
     {
@@ -9476,7 +9494,7 @@
     },
     {
       "path": "Map/World Grid/Beach/Scene Change",
-      "parent": 109,
+      "parent": 137,
       "active": true
     },
     {
@@ -9486,7 +9504,7 @@
     },
     {
       "path": "Map/World Grid/Beach/EnableRaftCollider",
-      "parent": 109,
+      "parent": 137,
       "active": true
     },
     {
@@ -9496,12 +9514,12 @@
     },
     {
       "path": "Map/World Grid/Beach/Raft/Collider",
-      "parent": 114,
+      "parent": 142,
       "active": true
     },
     {
       "path": "Map/World Grid/Beach/Dock",
-      "parent": 109,
+      "parent": 137,
       "active": false
     },
     {
@@ -9511,42 +9529,42 @@
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/House2/HouseTPDown",
-      "parent": 120,
+      "parent": 145,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Artifact Prompt Trigger",
-      "parent": 117,
+      "parent": 3,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
-      "parent": 136,
+      "parent": 160,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/House7 (1)/HouseTPDown",
-      "parent": 236,
+      "parent": 249,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
-      "parent": 255,
+      "parent": 267,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/Objects/Waterfall Entrance",
-      "parent": 272,
+      "parent": 18,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/House4 (1)/HouseTPDown",
-      "parent": 326,
+      "parent": 330,
       "active": true
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
-      "parent": 345,
+      "parent": 348,
       "active": true
     },
     {

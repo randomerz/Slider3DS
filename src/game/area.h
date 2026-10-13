@@ -172,6 +172,7 @@ struct TeleportDef {
     float dx = 0, dy = 0; // dPos
     bool tpToHouse = false;
     bool hasGoTo = false; // goTo set (UPPTransform needs it)
+    int goTo = -1;        // goTo's Area::objects index (it may move at runtime)
     int goToOwner = 0;
     float goToX = 0, goToY = 0;
 };
@@ -199,6 +200,7 @@ struct InteractionDef {
     bool excludeBoat = false, excludeLand = false; // not offered on water / on land
     bool isCarryingItem = false; // needs the player to carry an item (named itemName, if set)
     std::string itemName;
+    int priority = 0; // IInteractable.InteractionPriority (PlayerConditionals doesn't override it: 0)
     std::vector<CallDef> onSuccess;
 };
 
@@ -284,6 +286,9 @@ struct STileDef {
     int x, y;  // starting grid slot; the tile is centered on (x * width, y * width)
     int width; // STILE_WIDTH (17)
     bool active; // collected at the start
+    // Area::objects indices STile.SetTileActive switches with the tile (its "objects" and
+    // "allTileMaps"), -1 = none.
+    int objectsObject = -1, tileMapsObject = -1;
 };
 
 // Loaded, read-only area data. Runtime state (tile slots, slides, fences) is in Grid.
