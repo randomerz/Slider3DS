@@ -86,8 +86,11 @@ void ArtifactUI::selectButton(Grid& grid, Artifact& artifact, int x, int y, bool
     }
 }
 
-void ArtifactUI::update(const plat::Input& in, const Area& area, Grid& grid, Artifact& artifact, int playerStile,
-                        float dt) {
+void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
+    const Area& area = world.area;
+    Grid& grid = world.grid;
+    Artifact& artifact = world.artifact;
+    const int playerStile = world.player.stile;
     if (!area.artifact.present) return;
     const bool touching = in.touching;
     int sx = -1, sy = -1;
@@ -157,7 +160,10 @@ bool ArtifactUI::buttonPressed(const Grid& grid, const Artifact& artifact, int i
     return islandId == selectedId_ || (grid.tileActive(islandId) && artifact.tileInActiveMove(islandId));
 }
 
-void ArtifactUI::draw(const Area& area, const Grid& grid, const Artifact& artifact, const SpriteSheets& sheets) const {
+void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
+    const Area& area = world.area;
+    const Grid& grid = world.grid;
+    const Artifact& artifact = world.artifact;
     const ArtifactDef& def = area.artifact;
     if (!def.present) return;
     // UI rect (min corner + size, y up, UI px) relative to a screen-pixel origin -> screen top-left.

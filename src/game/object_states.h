@@ -1,15 +1,13 @@
-// Runtime active state of an Area's GameObjects (world sprites and object colliders), as changed by
+// Runtime active state of an Area's scene objects (Area::objects), as changed by
 // GameObject.SetActive from start checks, conditions and events. Starts as authored.
 //
-// Like Unity's activeInHierarchy: an object is active only if it and every ancestor are active
+// Like Unity: an object is active in the hierarchy only if it and every ancestor are active
 // (activeSelf), so SetActive on a parent hides or shows everything under it, and showing a parent
-// again leaves children that are inactive themselves hidden.
+// again leaves children that are inactive themselves hidden. Components (world sprites,
+// colliders, start checks) are active when their object is, and they are enabled.
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
-#include <string>
-#include <utility>
 #include <vector>
 
 #include "game/area.h"
@@ -17,17 +15,14 @@
 class ObjectStates {
 public:
     void init(const Area& area);
-    // GameObject.SetActive(active) on the object at hierarchy path `path`.
-    void setActive(const Area& area, const std::string& path, bool active);
+    // GameObject.SetActive(active) on Area::objects[object].
+    void setActive(const Area& area, int object, bool active);
 
-    bool spriteActive(size_t i) const { return sprites_[i] != 0; }   // Area::worldSprites index
-    bool colliderActive(size_t i) const { return colliders_[i] != 0; } // Area::objectColliders index
+    bool activeInHierarchy(int object) const { return inHierarchy_[object] != 0; }
+    bool active(const WorldSprite& ws) const { return activeInHierarchy(ws.object); }
+    bool active(const ObjectCollider& c) const { return c.enabled && activeInHierarchy(c.object); }
+    bool active(const StartCheck& sc) const { return sc.enabled && activeInHierarchy(sc.object); }
 
 private:
-    // activeInHierarchy (&& enabled) of the object at `path`, from the overrides and its authored
-    // inactive ancestors.
-    bool compute(const std::string& path, const std::vector<std::string>& inactiveAt, bool enabled) const;
-
-    std::vector<std::pair<std::string, bool>> overrides_; // activeSelf set at runtime, by path
-    std::vector<uint8_t> sprites_, colliders_;
+    std::vector<uint8_t> self_, inHierarchy_; // per Area::objects index
 };

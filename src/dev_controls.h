@@ -1,0 +1,19 @@
+// Dev-build controls (SLIDER_DEV builds only; see main.cpp's header for the button map).
+#pragma once
+
+#include <cstddef>
+
+#include "game/world.h"
+#include "platform/platform.h"
+
+struct DevControls {
+    bool noclip = false;       // X: walk through everything (shows the position point)
+    bool showInactive = false; // Y: draw uncollected STiles too
+    bool showPerf = true;      // SELECT: the perf overlay
+    bool collected = false;    // B: tiles 2-8 collected
+    size_t spawnIndex = 0;     // L / R: the spawn last jumped to
+
+    // Handles this frame's dev buttons. Returns true while A is held: the D-pad then slides the
+    // player's tile instead of walking.
+    bool update(const plat::Input& in, World& world);
+};

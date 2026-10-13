@@ -10,8 +10,8 @@
 #include <string>
 
 #include "game/area.h"
-#include "game/grid.h"
-#include "game/object_states.h"
+
+class World;
 
 // What overlaps a box. kind None = nothing does.
 struct Blocker {
@@ -35,13 +35,13 @@ inline Box hitboxAt(const Hitbox& hb, float x, float y) {
 
 // What overlaps the box's interior (touching is fine). Collision maps follow the water state and
 // the owning tile's position; inactive STiles are solid over their whole slot and their house
-// interior; the grid's slide fences and the active object colliders (`objects`) block too. Tiles
+// interior; the grid's slide fences and the active object colliders block too. Tiles
 // with colliders switched off (Grid: sliding in a move the player isn't riding) are skipped, with
 // their objects.
-Blocker boxBlocker(const Area& area, const Grid& grid, const ObjectStates& objects, const Box& box, bool onWater);
+Blocker boxBlocker(const World& world, const Box& box, bool onWater);
 
-inline bool boxBlocked(const Area& area, const Grid& grid, const ObjectStates& objects, const Box& box, bool onWater) {
-    return (bool)boxBlocker(area, grid, objects, box, onWater);
+inline bool boxBlocked(const World& world, const Box& box, bool onWater) {
+    return (bool)boxBlocker(world, box, onWater);
 }
 
 // Human-readable blocker ("slide border", "inactive STile 9", "STile 1 <tilemap path>",
@@ -53,5 +53,8 @@ std::string describe(const Area& area, const Blocker& b);
 // around it. A box that already overlaps something (a tile slid onto the player) is first pushed
 // out to the nearest free spot, as Box2D would; one buried deeper than a unit walks free. Returns
 // true if it moved.
-bool moveWithCollision(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x,
-                       float& y, float dx, float dy, bool onWater);
+bool moveWithCollision(const World& world, const Hitbox& hb, float& x, float& y, float dx, float dy, bool onWater);
+
+// The nearest point to (x, y) where hitbox `hb` (on foot) is free, searching outward in half-unit
+// rings up to 8 units; false (and x, y unchanged) if there is none.
+bool findFreeNear(const World& world, const Hitbox& hb, float& x, float& y);

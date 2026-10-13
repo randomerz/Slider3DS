@@ -365,6 +365,12 @@ std::vector<int> Grid::update(float dt) {
     return finished;
 }
 
+bool Grid::tileMoving(int islandId) const {
+    for (const Anim& a : anims_)
+        if (a.islandId == islandId) return true;
+    return false;
+}
+
 int Grid::stileUnder(float x, float y, int current) const {
     int best = 0;
     const float half = tileWidth_ * 0.5f;

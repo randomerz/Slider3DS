@@ -18,8 +18,8 @@
 #include "game/area_view.h"
 #include "game/artifact_ui.h"
 #include "game/artifact.h"
-#include "game/conditions.h"
 #include "game/grid.h"
+#include "game/world.h"
 #include "platform/platform.h"
 #include "test.h"
 #include "test_platform.h"
@@ -61,7 +61,12 @@ public:
         fresh_ << "# Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64\n";
     }
     ~GoldenSet() {
-        if (!update_) return;
+        if (!update_) {
+            for (const auto& g : goldens_)
+                if (!compared_.count(g.first))
+                    check(false, g.first + ": golden entry in " + path_ + " no test compares (re-bless to drop it)");
+            return;
+        }
         std::ofstream(path_, std::ios::binary) << fresh_.str();
         printf("    wrote %s\n", path_.c_str());
     }
@@ -72,6 +77,7 @@ public:
         char value[64];
         snprintf(value, sizeof value, "%zu:%016llx", calls.size(), (unsigned long long)fnv1a(text));
         fresh_ << name << ' ' << value << '\n';
+        compared_.insert(name);
         check(calls.size() >= minDraws, name + " draws something (" + std::to_string(calls.size()) + ")");
         if (update_) return;
         auto it = goldens_.find(name);
@@ -86,6 +92,7 @@ private:
     std::string path_;
     bool update_ = false;
     std::map<std::string, std::string> goldens_;
+    std::set<std::string> compared_;
     std::ostringstream fresh_;
 };
 
@@ -93,11 +100,19 @@ struct Scene {
     const char* name;
     float camX, camY, time;
     bool showInactive;
-    std::function<void(Grid&, Artifact&)> setup;
+    std::function<void(World&)> setup;
 };
 
-void allButNine(Grid& grid, Artifact&) {
-    for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
+void allButNine(World& world) {
+    for (int id = 1; id <= 8; id++) world.grid.setTileActive(id, true);
+    world.artifact.init(world.grid);
+}
+
+// A new-game World with the player parked far off screen (scenes that want it place it).
+World sceneWorld() {
+    World world(village());
+    world.player.x = world.player.y = 10000;
+    return world;
 }
 
 } // namespace
@@ -118,30 +133,26 @@ TEST(render_goldens) {
         {"all_top_left", -2, 36, 0, false, allButNine},
         {"mid_slide",
          17, 17, 0, false,
-         [](Grid& grid, Artifact& artifact) {
-             allButNine(grid, artifact);
-             artifact.init(grid);
-             artifact.tryMove(grid, 2, 1, 1, 1, 0); // tile 7 left into the empty middle
-             for (int i = 0; i < 40; i++) artifact.update(grid, 1.0f / 60.0f, 0);
+         [](World& w) {
+             allButNine(w);
+             w.artifact.tryMove(w.grid, 2, 1, 1, 1, 0); // tile 7 left into the empty middle
+             for (int i = 0; i < 40; i++) w.artifact.update(w.grid, 1.0f / 60.0f, 0);
          }},
         {"shuffled",
          17, 17, 0, false,
-         [](Grid& grid, Artifact& artifact) {
-             allButNine(grid, artifact);
-             artifact.setGrid(grid, "182_043_765");
+         [](World& w) {
+             allButNine(w);
+             w.artifact.setGrid(w.grid, "182_043_765");
          }},
     };
 
     GoldenSet goldens("render.txt");
     for (const Scene& sc : scenes) {
-        Grid grid;
-        grid.init(area);
-        Artifact artifact;
-        artifact.init(grid);
-        if (sc.setup) sc.setup(grid, artifact);
+        World world = sceneWorld();
+        if (sc.setup) sc.setup(world);
         testResetDrawCalls();
         view.begin(area, sheets, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
-        view.draw(area, grid, villageObjects());
+        view.draw(world);
         goldens.compare(sc.name, 50);
     }
 }
@@ -153,15 +164,13 @@ TEST(render_artifact_goldens) {
     GoldenSet goldens("artifact.txt");
 
     struct Setup {
-        Grid grid;
-        Artifact artifact;
+        World world{village()};
         ArtifactUI ui;
         explicit Setup(bool allButNine) {
-            grid.init(village());
             if (allButNine)
-                for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
-            artifact.init(grid);
-            ui.init(village(), artifact);
+                for (int id = 1; id <= 8; id++) world.grid.setTileActive(id, true);
+            world.artifact.init(world.grid);
+            ui.init(village(), world.artifact);
         }
         void touch(bool down, int x, int y, int frames = 1) {
             for (int i = 0; i < frames; i++) {
@@ -171,13 +180,13 @@ TEST(render_artifact_goldens) {
                 ui.slotCenter(village(), x, y, cx, cy);
                 in.touchX = (int)cx + (down && i > 0 ? i : 0); // wiggle to start drags
                 in.touchY = (int)cy;
-                ui.update(in, village(), grid, artifact, 0, 1.0f / 60.0f);
-                artifact.update(grid, 1.0f / 60.0f, 0);
+                ui.update(in, world, 1.0f / 60.0f);
+                world.artifact.update(world.grid, 1.0f / 60.0f, 0);
             }
         }
         void render(const SpriteSheets& sheets) {
             testResetDrawCalls();
-            ui.draw(village(), grid, artifact, sheets);
+            ui.draw(world, sheets);
         }
     };
 
@@ -219,13 +228,14 @@ TEST(render_layer_ranges_compose) {
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
-    Grid grid;
-    grid.init(area);
-    for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
+    World world = sceneWorld();
+    allButNine(world);
+    world.player.x = 17; // in view, so its sorting layer is covered too
+    world.player.y = 17;
 
     testResetDrawCalls();
     view.begin(area, sheets, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
-    view.draw(area, grid, villageObjects());
+    view.draw(world);
     const std::string all = drawListText(testDrawCalls());
     const int allCount = view.lastSpriteCount();
 
@@ -233,10 +243,11 @@ TEST(render_layer_ranges_compose) {
     view.begin(area, sheets, 17, 17, plat::TOP_W, plat::TOP_H, 0, false);
     std::set<int> sortLayers;
     for (const TileLayer& L : area.layers) sortLayers.insert(L.sortLayer);
-    for (const WorldSprite& ws : area.worldSprites) sortLayers.insert(ws.sortLayer);
+    for (const WorldSprite& ws : area.worldSprites) sortLayers.insert(ws.place.sortLayer);
+    sortLayers.insert(area.player.body.sortLayer);
     int layersSeen = 0;
     for (int sl : sortLayers) {
-        view.draw(area, grid, villageObjects(), nullptr, 0, sl, sl);
+        view.draw(world, sl, sl);
         layersSeen++;
     }
     check(layersSeen > 1, "the export uses several sorting layers (" + std::to_string(layersSeen) + ")");
@@ -252,20 +263,20 @@ TEST(render_player_y_sorts_with_world_sprites) {
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
-    Grid grid;
-    grid.init(area);
+    World world = sceneWorld();
     size_t treeIndex = area.worldSprites.size();
     for (size_t i = 0; i < area.worldSprites.size(); i++)
-        if (area.worldSprites[i].owner == 1 && area.worldSprites[i].path.find("Decorations/Tree1") != std::string::npos)
+        if (area.worldSprites[i].owner == 1 &&
+            area.pathOf(area.worldSprites[i].object).find("Decorations/Tree1") != std::string::npos)
             treeIndex = i;
     check(treeIndex < area.worldSprites.size(), "tile 1 has a Tree1");
     if (treeIndex == area.worldSprites.size()) return;
     const WorldSprite& tree = area.worldSprites[treeIndex];
-    const PlayerSpriteDef& body = area.player.body;
-    check(body.sortLayer == tree.sortLayer && body.order == tree.order, "player and tree share layer + order");
+    const SpritePlacement& body = area.player.body;
+    check(body.sortLayer == tree.place.sortLayer && body.order == tree.place.order, "player and tree share layer + order");
 
     float bx, by;
-    grid.ownerBase(1, bx, by);
+    world.grid.ownerBase(1, bx, by);
     auto drawIndex = [&](const std::vector<DrawCall>& calls, int sprite) {
         const SpriteDef& S = area.sprites[sprite];
         for (size_t i = 0; i < calls.size(); i++)
@@ -273,20 +284,18 @@ TEST(render_player_y_sorts_with_world_sprites) {
         return -1;
     };
     for (float dy : {-0.5f, 0.5f}) {
-        SortedSprite p;
-        p.sprite = body.sprite;
-        p.x = bx + tree.x + 0.5f;
-        p.y = by + tree.sortY + dy - body.sortY;
-        p.sortY = p.y + body.sortY;
-        p.sortLayer = body.sortLayer;
-        p.order = body.order;
+        world.player.x = bx + tree.place.x + 0.5f;
+        world.player.y = by + tree.place.sortY + dy - body.sortY;
         testResetDrawCalls();
-        view.begin(area, sheets, p.x, p.y, plat::TOP_W, plat::TOP_H, 0, false);
-        view.draw(area, grid, villageObjects(), &p, 1);
-        const int ti = drawIndex(testDrawCalls(), AreaView::worldSpriteFrame(area, tree, treeIndex, 0));
-        const int pi = drawIndex(testDrawCalls(), p.sprite);
+        view.begin(area, sheets, world.player.x, world.player.y, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        const SortedSprite treeSprite = placeSprite(area, tree.place, bx, by, AreaView::animTime(area, tree, treeIndex, 0));
+        const SortedSprite playerSprite = placeSprite(area, body, world.player.x, world.player.y, 0);
+        const int ti = drawIndex(testDrawCalls(), treeSprite.sprite);
+        const int pi = drawIndex(testDrawCalls(), playerSprite.sprite);
         check(ti >= 0 && pi >= 0, "tree and player both drawn");
-        check(dy < 0 ? pi > ti : pi < ti, dy < 0 ? "player below the tree is drawn in front" : "player above the tree is drawn behind");
+        check(dy < 0 ? pi > ti : pi < ti,
+              dy < 0 ? "player below the tree is drawn in front" : "player above the tree is drawn behind");
     }
 }
 
@@ -299,16 +308,12 @@ TEST(render_start_check_goldens) {
     check(sheets.load(area), "sheets load");
     GoldenSet goldens("objects.txt");
     for (bool exploded : {false, true}) {
-        Grid grid;
-        grid.init(area);
-        GameState state;
-        state.setFlag("caveDoorExploded", exploded);
-        ObjectStates objects;
-        objects.init(area);
-        runStartChecks(area, state, grid, objects);
+        World world = sceneWorld();
+        world.state.setFlag("caveDoorExploded", exploded);
+        world.reloadObjects();
         testResetDrawCalls();
         view.begin(area, sheets, 36.5f, 50.0f, plat::TOP_W, plat::TOP_H, 0, false);
-        view.draw(area, grid, objects);
+        view.draw(world);
         goldens.compare(exploded ? "cave_door_exploded" : "cave_door_new_game", 50);
     }
 }

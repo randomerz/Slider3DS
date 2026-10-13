@@ -1,7 +1,10 @@
 #include "game/physics.h"
 
+#include "game/world.h"
+
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 
 namespace {
 
@@ -99,7 +102,9 @@ bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
 
 } // namespace
 
-Blocker boxBlocker(const Area& area, const Grid& grid, const ObjectStates& objects, const Box& box, bool onWater) {
+Blocker boxBlocker(const World& world, const Box& box, bool onWater) {
+    const Area& area = world.area;
+    const Grid& grid = world.grid;
     const Box in = inner(box);
 
     // Edge colliders fencing a slide in progress.
@@ -145,7 +150,7 @@ Blocker boxBlocker(const Area& area, const Grid& grid, const ObjectStates& objec
 
     for (size_t i = 0; i < area.objectColliders.size(); i++) {
         const ObjectCollider& c = area.objectColliders[i];
-        if (!objects.colliderActive(i) || !ownerCollides(grid, c.owner)) continue;
+        if (!world.objects.active(c) || !ownerCollides(grid, c.owner)) continue;
         float bx, by;
         grid.ownerBase(c.owner, bx, by);
         if (objectHit(c, bx, by, in)) return {Blocker::Object, (int)i};
@@ -162,7 +167,7 @@ std::string describe(const Area& area, const Blocker& b) {
         const CollisionLayer& L = area.collision[b.index];
         return (L.owner ? "STile " + std::to_string(L.owner) + " " : std::string()) + L.path;
     }
-    case Blocker::Object: return "object " + area.objectColliders[b.index].path;
+    case Blocker::Object: return "object " + area.pathOf(area.objectColliders[b.index].object);
     }
     return "";
 }
@@ -171,9 +176,9 @@ namespace {
 
 // Moves (x, y) by up to (dx, dy), stopping where the box would first overlap something (bisected
 // to 1/64 of the step, well under a pixel). Returns the fraction of the step taken.
-float sweep(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x, float& y,
+float sweep(const World& world, const Hitbox& hb, float& x, float& y,
             float dx, float dy, bool onWater) {
-    auto freeAt = [&](float t) { return !boxBlocked(area, grid, objects, hitboxAt(hb, x + t * dx, y + t * dy), onWater); };
+    auto freeAt = [&](float t) { return !boxBlocked(world, hitboxAt(hb, x + t * dx, y + t * dy), onWater); };
     float t = 1;
     if (!freeAt(1)) {
         float lo = 0, hi = 1;
@@ -190,14 +195,14 @@ float sweep(const Area& area, const Grid& grid, const ObjectStates& objects, con
 
 // Box2D's push-out for a box that overlaps something: the nearest free spot within one unit, in
 // 1/16 steps along 8 directions. False if it is buried deeper than that.
-bool pushOut(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x, float& y,
+bool pushOut(const World& world, const Hitbox& hb, float& x, float& y,
              bool onWater) {
     static const float dirs[8][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {0.7071f, 0.7071f}, {-0.7071f, 0.7071f},
                                      {0.7071f, -0.7071f}, {-0.7071f, -0.7071f}};
     for (int k = 1; k <= 16; k++) {
         const float r = k / 16.0f;
         for (const auto& d : dirs) {
-            if (!boxBlocked(area, grid, objects, hitboxAt(hb, x + d[0] * r, y + d[1] * r), onWater)) {
+            if (!boxBlocked(world, hitboxAt(hb, x + d[0] * r, y + d[1] * r), onWater)) {
                 x += d[0] * r;
                 y += d[1] * r;
                 return true;
@@ -209,7 +214,7 @@ bool pushOut(const Area& area, const Grid& grid, const ObjectStates& objects, co
 
 // The contact normal at a box resting against something: the middle of the arc of directions it
 // can move in (probed 1/32 unit out in 16 directions). False if none or all are free.
-bool contactNormal(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float x, float y,
+bool contactNormal(const World& world, const Hitbox& hb, float x, float y,
                    bool onWater, float& nx, float& ny) {
     constexpr int N = 16;
     constexpr float R = 1.0f / 32.0f;
@@ -217,7 +222,7 @@ bool contactNormal(const Area& area, const Grid& grid, const ObjectStates& objec
     int freeCount = 0;
     for (int k = 0; k < N; k++) {
         const float a = k * 6.2831853f / N, cx = std::cos(a), cy = std::sin(a);
-        if (!boxBlocked(area, grid, objects, hitboxAt(hb, x + cx * R, y + cy * R), onWater)) {
+        if (!boxBlocked(world, hitboxAt(hb, x + cx * R, y + cy * R), onWater)) {
             nx += cx;
             ny += cy;
             freeCount++;
@@ -232,14 +237,14 @@ bool contactNormal(const Area& area, const Grid& grid, const ObjectStates& objec
 
 } // namespace
 
-bool moveWithCollision(const Area& area, const Grid& grid, const ObjectStates& objects, const Hitbox& hb, float& x,
+bool moveWithCollision(const World& world, const Hitbox& hb, float& x,
                        float& y, float dx, float dy, bool onWater) {
     if (dx == 0 && dy == 0) return false;
     bool moved = false;
-    if (boxBlocked(area, grid, objects, hitboxAt(hb, x, y), onWater)) {
+    if (boxBlocked(world, hitboxAt(hb, x, y), onWater)) {
         // Overlapping (e.g. a tile slid onto the player): pushed out first, like Box2D. Buried too
         // deep to push out, it walks free rather than getting stuck.
-        if (!pushOut(area, grid, objects, hb, x, y, onWater)) {
+        if (!pushOut(world, hb, x, y, onWater)) {
             x += dx;
             y += dy;
             return true;
@@ -249,20 +254,37 @@ bool moveWithCollision(const Area& area, const Grid& grid, const ObjectStates& o
     for (int axis = 0; axis < 2; axis++) {
         const float d = axis == 0 ? dx : dy;
         if (d == 0) continue;
-        const float t = axis == 0 ? sweep(area, grid, objects, hb, x, y, d, 0, onWater)
-                                  : sweep(area, grid, objects, hb, x, y, 0, d, onWater);
+        const float t = axis == 0 ? sweep(world, hb, x, y, d, 0, onWater)
+                                  : sweep(world, hb, x, y, 0, d, onWater);
         moved = moved || t > 0;
         if (t >= 1 || (axis == 0 ? dy : dx) != 0) continue;
         // Blocked moving along one axis only: Box2D pushes the box out along the contact normal, so
         // it slides around round or slanted colliders. Slide the rest of the step along the tangent.
         float nx, ny;
-        if (!contactNormal(area, grid, objects, hb, x, y, onWater, nx, ny)) continue;
+        if (!contactNormal(world, hb, x, y, onWater, nx, ny)) continue;
         const float rx = axis == 0 ? (1 - t) * d : 0, ry = axis == 0 ? 0 : (1 - t) * d;
         const float into = rx * nx + ry * ny;
         if (into >= 0) continue;
         const float tx = rx - into * nx, ty = ry - into * ny;
         if (tx * tx + ty * ty < 1e-8f) continue; // head-on into a flat face: stop, as Box2D does
-        if (sweep(area, grid, objects, hb, x, y, tx, ty, onWater) > 0) moved = true;
+        if (sweep(world, hb, x, y, tx, ty, onWater) > 0) moved = true;
     }
     return moved;
+}
+
+bool findFreeNear(const World& world, const Hitbox& hb, float& x, float& y) {
+    for (int r = 0; r <= 16; r++) {
+        for (int i = -r; i <= r; i++) {
+            for (int j = -r; j <= r; j++) {
+                if (std::abs(i) != r && std::abs(j) != r) continue; // ring only
+                const float tx = x + i * 0.5f, ty = y + j * 0.5f;
+                if (!boxBlocked(world, hitboxAt(hb, tx, ty), false)) {
+                    x = tx;
+                    y = ty;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }

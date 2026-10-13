@@ -1,64 +1,89 @@
-// Object active state (GameObject.SetActive with Unity's hierarchy rules), conditions, and the
-// Village's start checks (ConditionChecker.checkOnStart).
+// Object active state (GameObject.SetActive with Unity's hierarchy rules), conditions, and start
+// checks (ConditionChecker.checkOnStart) on synthetic areas and the Village.
 #include <string>
 
 #include "game/area.h"
 #include "game/conditions.h"
 #include "game/grid.h"
 #include "game/object_states.h"
+#include "game/world.h"
 #include "test.h"
 
 namespace {
 
-int spriteIndex(const Area& area, const std::string& path) {
+int spriteOf(const Area& area, const std::string& path) {
+    const int object = area.findObject(path);
     for (size_t i = 0; i < area.worldSprites.size(); i++)
-        if (area.worldSprites[i].path == path) return (int)i;
+        if (area.worldSprites[i].object == object) return (int)i;
     return -1;
 }
 
-int colliderIndex(const Area& area, const std::string& path) {
+int colliderOf(const Area& area, const std::string& path) {
+    const int object = area.findObject(path);
     for (size_t i = 0; i < area.objectColliders.size(); i++)
-        if (area.objectColliders[i].path == path) return (int)i;
+        if (area.objectColliders[i].object == object) return (int)i;
     return -1;
+}
+
+// Objects: 0 "A", 1 "A/B" (inactive itself), 2 "A/C", 3 "D" (inactive, holds a start check).
+Area hierarchy() {
+    Area area;
+    area.objects = {{"A", -1, true}, {"A/B", 0, false}, {"A/C", 0, true}, {"D", -1, false}};
+    return area;
 }
 
 } // namespace
 
-TEST(object_states_start_as_authored) {
-    const Area& area = village();
-    ObjectStates objects;
-    objects.init(area);
-    int inactive = 0;
-    for (size_t i = 0; i < area.worldSprites.size(); i++) {
-        check(objects.spriteActive(i) == area.worldSprites[i].active, area.worldSprites[i].path);
-        inactive += !area.worldSprites[i].active;
-    }
-    for (size_t i = 0; i < area.objectColliders.size(); i++)
-        check(objects.colliderActive(i) == area.objectColliders[i].active, area.objectColliders[i].path);
-    check(inactive > 0, "some world sprites start inactive (" + std::to_string(inactive) + ")");
-}
-
 TEST(object_states_follow_the_hierarchy) {
     // A/B is inactive itself; A/C is active. Hiding A hides both; showing A again shows only C.
-    Area area;
-    WorldSprite b, c, other;
-    b.path = "A/B";
-    b.active = false;
-    b.inactiveAt = {"A/B"};
-    c.path = "A/C";
-    other.path = "AB"; // shares the prefix but is not under A
-    area.worldSprites = {b, c, other};
-    ObjectStates objects;
-    objects.init(area);
-    CHECK(!objects.spriteActive(0) && objects.spriteActive(1) && objects.spriteActive(2));
-    objects.setActive(area, "A", false);
-    CHECK(!objects.spriteActive(0) && !objects.spriteActive(1) && objects.spriteActive(2));
-    objects.setActive(area, "A", true);
-    CHECK(!objects.spriteActive(0) && objects.spriteActive(1));
-    objects.setActive(area, "A/B", true);
-    CHECK(objects.spriteActive(0));
-    objects.setActive(area, "A", false);
-    CHECK(!objects.spriteActive(0) && !objects.spriteActive(1));
+    const Area area = hierarchy();
+    ObjectStates o;
+    o.init(area);
+    CHECK(o.activeInHierarchy(0) && !o.activeInHierarchy(1) && o.activeInHierarchy(2) && !o.activeInHierarchy(3));
+    o.setActive(area, 0, false);
+    CHECK(!o.activeInHierarchy(0) && !o.activeInHierarchy(1) && !o.activeInHierarchy(2));
+    o.setActive(area, 0, true);
+    CHECK(!o.activeInHierarchy(1) && o.activeInHierarchy(2));
+    o.setActive(area, 1, true);
+    CHECK(o.activeInHierarchy(1));
+    o.setActive(area, 0, false);
+    CHECK(!o.activeInHierarchy(1) && !o.activeInHierarchy(2));
+
+    ObjectCollider c;
+    c.object = 2;
+    c.enabled = false;
+    o.setActive(area, 0, true);
+    CHECK(o.activeInHierarchy(2) && !o.active(c)); // a disabled component stays off
+}
+
+TEST(start_checks_run_when_their_object_first_activates) {
+    // D's checker (flag "go": show A/B) doesn't run while D is inactive; it runs once D activates,
+    // and only once (Start), even if the state changes later.
+    Area area = hierarchy();
+    StartCheck sc;
+    sc.object = 3;
+    sc.conditionals.conditions.push_back({ConditionDef::Type::Flag, "go", "", "", {}});
+    sc.conditionals.onSuccess.push_back({1, true});
+    sc.conditionals.onFail.push_back({2, false});
+    area.startChecks.push_back(sc);
+    Grid grid;
+    GameState state;
+    state.setFlag("go", true);
+    ObjectStates o;
+    o.init(area);
+    StartChecks checks;
+    checks.reset(area);
+    checks.update(area, state, grid, o);
+    CHECK(!checks.started(0) && !o.activeInHierarchy(1));
+    o.setActive(area, 3, true);
+    checks.update(area, state, grid, o);
+    CHECK(checks.started(0) && o.activeInHierarchy(1) && o.activeInHierarchy(2));
+    state.setFlag("go", false);
+    checks.update(area, state, grid, o);
+    CHECK(o.activeInHierarchy(1) && o.activeInHierarchy(2)); // not run again
+    checks.reset(area); // a fresh load runs it again: now onFail
+    checks.update(area, state, grid, o);
+    CHECK(!o.activeInHierarchy(2));
 }
 
 TEST(conditions_check) {
@@ -67,25 +92,44 @@ TEST(conditions_check) {
     grid.init(area);
     GameState state;
     using T = ConditionDef::Type;
-    ConditionDef flag{T::Flag, "caveDoorExploded", "", "", {}};
-    ConditionDef noFlag{T::NoFlag, "caveDoorExploded", "", "", {}};
+    const ConditionDef flag{T::Flag, "caveDoorExploded", "", "", {}};
+    const ConditionDef noFlag{T::NoFlag, "caveDoorExploded", "", "", {}};
     CHECK(!checkCondition(flag, state, grid) && checkCondition(noFlag, state, grid));
     state.setFlag("caveDoorExploded", true);
     CHECK(checkCondition(flag, state, grid) && !checkCondition(noFlag, state, grid));
     state.setFlag("caveDoorExploded", false);
     CHECK(!checkCondition(flag, state, grid));
 
-    ConditionDef slider7{T::Item, "Slider 7", "Village", "", {}};
-    ConditionDef license{T::Item, "Boating License", "Caves", "", {}};
+    const ConditionDef slider7{T::Item, "Slider 7", "Village", "", {}};
     CHECK(!checkCondition(slider7, state, grid));
-    grid.setTileActive(7, true);
-    CHECK(checkCondition(slider7, state, grid) && !checkCondition(license, state, grid));
+    state.setCollectible("Slider 7", "Caves", true); // another area's doesn't count
+    CHECK(!checkCondition(slider7, state, grid));
+    state.setCollectible("Slider 7", "Village", true);
+    CHECK(checkCondition(slider7, state, grid));
 
-    ConditionDef grid1{T::Grid, "", "", "...._...._..1.", {}}; // never matches a 3x3 string
-    ConditionDef anyGrid{T::Grid, "", "", "", {}};
-    CHECK(!checkCondition(grid1, state, grid));
-    CHECK(checkCondition(anyGrid, state, grid) == CheckGrid::contains(grid.gridString(), ""));
+    // The start grid is "###_###_1##" (only tile 1, bottom-left).
+    const ConditionDef bottomLeft1{T::Grid, "", "", "..._..._1..", {}};
+    const ConditionDef topLeft1{T::Grid, "", "", "1.._..._...", {}};
+    CHECK(checkCondition(bottomLeft1, state, grid) && !checkCondition(topLeft1, state, grid));
+    const ConditionDef notTopLeft1{T::NoGrid, "", "", "1.._..._...", {}};
+    CHECK(checkCondition(notTopLeft1, state, grid));
     CHECK(!checkCondition({T::Unsupported, "", "", "", {}}, state, grid));
+    CHECK(!checkCondition({T::PlayerCarryingItem, "anything", "", "", {}}, state, grid));
+}
+
+TEST(conditions_grid_stationary) {
+    // GridStationary: the pattern matches and the listed tiles aren't sliding. The grid string
+    // changes as soon as a move starts; the animation follows.
+    World world(village());
+    CHECK(world.artifact.tryMove(world.grid, 0, 0, 0, 2, 0)); // tile 1 up to the top-left slot
+    world.artifact.update(world.grid, 1.0f / 60.0f, 0);
+    using T = ConditionDef::Type;
+    const ConditionDef tile1Still{T::GridStationary, "", "", world.grid.gridString(), {1}};
+    const ConditionDef tile2Still{T::GridStationary, "", "", world.grid.gridString(), {2}};
+    check(world.grid.tileMoving(1) && !world.grid.tileMoving(2), "tile 1 is sliding, tile 2 isn't");
+    CHECK(!checkCondition(tile1Still, world.state, world.grid) && checkCondition(tile2Still, world.state, world.grid));
+    for (int i = 0; i < 600 && !world.artifact.queueEmpty(); i++) world.artifact.update(world.grid, 1.0f / 60.0f, 0);
+    CHECK(!world.grid.tileMoving(1) && checkCondition(tile1Still, world.state, world.grid));
 }
 
 TEST(start_checks_cave_door) {
@@ -93,49 +137,48 @@ TEST(start_checks_cave_door) {
     // door (with its dither shadow) is hidden; with it, the other way round.
     const Area& area = village();
     const std::string door = "Map/World Grid/Alcove/Cave Door/";
-    const int rocks = spriteIndex(area, door + "Rocks Blocking Door");
-    const int dither = spriteIndex(area, door + "Scene Change Collider/Dither");
-    const int sceneChange = spriteIndex(area, door + "Scene Change Collider");
-    const int rocksCol = colliderIndex(area, door + "Rocks Blocking Door");
-    check(rocks >= 0 && dither >= 0 && sceneChange >= 0 && rocksCol >= 0, "cave door objects exported");
-    if (rocks < 0 || dither < 0 || sceneChange < 0 || rocksCol < 0) return;
-    check(area.worldSprites[dither].active, "authored: the dither is active (both shown without the check)");
+    const int rocks = spriteOf(area, door + "Rocks Blocking Door");
+    const int dither = spriteOf(area, door + "Scene Change Collider/Dither");
+    const int rocksCol = colliderOf(area, door + "Rocks Blocking Door");
+    check(rocks >= 0 && dither >= 0 && rocksCol >= 0, "cave door objects exported");
+    if (rocks < 0 || dither < 0 || rocksCol < 0) return;
+    const int ditherObject = area.worldSprites[dither].object;
+    check(area.objects[ditherObject].activeSelf && area.objects[area.objects[ditherObject].parent].activeSelf,
+          "authored: the dither and its door are active (both shown without the check)");
 
-    Grid grid;
-    grid.init(area);
-    GameState state;
-    ObjectStates objects;
-    objects.init(area);
-    runStartChecks(area, state, grid, objects);
-    check(objects.spriteActive(rocks) && objects.colliderActive(rocksCol), "new game: rocks shown and solid");
-    check(!objects.spriteActive(dither) && !objects.spriteActive(sceneChange), "new game: door and dither hidden");
+    World world(area);
+    check(world.objects.active(area.worldSprites[rocks]) && world.objects.active(area.objectColliders[rocksCol]),
+          "new game: rocks shown and solid");
+    check(!world.objects.active(area.worldSprites[dither]), "new game: door and dither hidden");
 
-    state.setFlag("caveDoorExploded", true);
-    objects.init(area);
-    runStartChecks(area, state, grid, objects);
-    check(!objects.spriteActive(rocks) && !objects.colliderActive(rocksCol), "exploded: rocks gone");
-    check(objects.spriteActive(dither) && objects.spriteActive(sceneChange), "exploded: door and dither shown");
+    world.state.setFlag("caveDoorExploded", true);
+    world.reloadObjects();
+    check(!world.objects.active(area.worldSprites[rocks]) && !world.objects.active(area.objectColliders[rocksCol]),
+          "exploded: rocks gone");
+    check(world.objects.active(area.worldSprites[dither]), "exploded: door and dither shown");
 }
 
 TEST(start_checks_rock_and_hole_follow_slider_7) {
     const Area& area = village();
-    const std::string base = "Map/Village 8Puzzle/STile (5)/Objects/";
-    int rock = -1, hole = -1;
-    for (size_t i = 0; i < area.worldSprites.size(); i++) {
-        if (area.worldSprites[i].path.rfind(base + "Rock/", 0) == 0 || area.worldSprites[i].path == base + "Rock") rock = (int)i;
-        if (area.worldSprites[i].path.rfind(base + "Hole/", 0) == 0 || area.worldSprites[i].path == base + "Hole") hole = (int)i;
-    }
-    check(rock >= 0 && hole >= 0, "tile 5 has the rock and the hole");
-    if (rock < 0 || hole < 0) return;
-    Grid grid;
-    grid.init(area);
-    GameState state;
-    ObjectStates objects;
-    objects.init(area);
-    runStartChecks(area, state, grid, objects);
-    check(objects.spriteActive(rock) && !objects.spriteActive(hole), "without Slider 7: rock, no hole");
-    grid.setTileActive(7, true);
-    objects.init(area);
-    runStartChecks(area, state, grid, objects);
-    check(!objects.spriteActive(rock) && objects.spriteActive(hole), "with Slider 7: hole, no rock");
+    const int rockObject = area.findObject("Map/Village 8Puzzle/STile (5)/Objects/Rock");
+    const int holeObject = area.findObject("Map/Village 8Puzzle/STile (5)/Objects/Hole");
+    check(rockObject >= 0 && holeObject >= 0, "tile 5 has the rock and the hole");
+    if (rockObject < 0 || holeObject < 0) return;
+    World world(area);
+    check(world.objects.activeInHierarchy(rockObject) && !world.objects.activeInHierarchy(holeObject),
+          "without Slider 7: rock, no hole");
+    world.state.setCollectible("Slider 7", "Village", true);
+    world.reloadObjects();
+    check(!world.objects.activeInHierarchy(rockObject) && world.objects.activeInHierarchy(holeObject),
+          "with Slider 7: hole, no rock");
+}
+
+TEST(start_checks_skip_the_inactive_raft) {
+    // The Raft's own checker sits on an inactive object, so on a new game it never starts.
+    const Area& area = village();
+    World world(area);
+    const int raft = area.findObject("Map/World Grid/Beach/Raft");
+    check(raft >= 0, "the raft object exists");
+    for (size_t i = 0; i < area.startChecks.size(); i++)
+        if (area.startChecks[i].object == raft) check(!world.startChecks.started(i), "the raft's check did not run");
 }

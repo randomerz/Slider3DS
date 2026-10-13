@@ -69,43 +69,45 @@ struct Anim {
     int frameAt(float t) const;
 };
 
-// A world SpriteRenderer (prop, tree, NPC, item, empty-slot frame). Drawn sorted among the tile
-// layers by (sortLayer, order, higher sortY first), like Unity's transparency sort.
-struct WorldSprite {
-    std::string path;
-    int owner = 0;      // STile islandId (positions relative to its center), 0 = world
-    int sprite = 0;     // index in Area::sprites (the authored frame; anim overrides it)
-    float x = 0, y = 0; // transform position (the sprite's pivot lands here)
+// A scene object (GameObject): what components belong to and GameObject.SetActive acts on. Area
+// lists them parents before children; runtime active state is in ObjectStates.
+struct SceneObject {
+    std::string path;      // hierarchy path, e.g. "Map/World Grid/Alcove/Cave Door"
+    int parent = -1;       // index in Area::objects, -1 = root
+    bool activeSelf = true; // authored
+};
+
+// A sprite as placed in the world: its pivot lands on (x, y) (relative to some base), and it sorts
+// among the tile layers by (sortLayer, order, higher sortY first), like Unity's transparency sort.
+struct SpritePlacement {
+    int sprite = -1;    // Area::sprites index (the authored frame; anim overrides it)
+    int anim = -1;      // Area::anims index, -1 = static
+    float x = 0, y = 0; // transform position
     float sortY = 0;    // sort point y (pivot or sprite center)
     int sortLayer = 0, order = 0;
     uint32_t flags = 0; // plat::DrawFlags (FLIP_X / FLIP_Y)
-    bool active = true; // authored state (activeInHierarchy); at runtime see ObjectStates
-    std::vector<std::string> inactiveAt; // paths of this object and its ancestors authored inactive
-    int anim = -1;      // Area::anims index, -1 = static
+};
+
+// A world SpriteRenderer (prop, tree, NPC, item, empty-slot frame).
+struct WorldSprite {
+    int object = 0;        // Area::objects index
+    int owner = 0;         // STile islandId (placement relative to its center), 0 = world
+    SpritePlacement place;
     float animStart = 0, animRandom = 0; // normalized start time, or a random one in [0, animRandom)
 };
 
 // A non-tilemap collider that blocks the player, in world units relative to its owner's center.
 struct ObjectCollider {
     enum class Kind { Poly, Circle, Edge };
-    std::string path;
+    int object = 0;      // Area::objects index
     int owner = 0;
-    bool active = true;  // authored state (enabled && activeInHierarchy); at runtime see ObjectStates
-    bool enabled = true; // the component itself
-    std::vector<std::string> inactiveAt; // paths of this object and its ancestors authored inactive
+    bool enabled = true; // the component itself (active also needs its object active in hierarchy)
     Kind kind = Kind::Poly;
     std::vector<Polygon> paths;       // Poly: closed polygons; Edge: one open polyline
     float cx = 0, cy = 0, radius = 0; // Circle
     float minX = 0, minY = 0, maxX = 0, maxY = 0; // bounds, for culling
 };
 
-// How the player is drawn: its sprite and, on water, the boat (relative to the player position).
-struct PlayerSpriteDef {
-    int sprite = -1; // -1 = none
-    float x = 0, y = 0, sortY = 0;
-    int sortLayer = 0, order = 0;
-    int anim = -1;
-};
 // One Condition (Condition.cs) as exported.
 struct ConditionDef {
     enum class Type { Item, Grid, GridStationary, NoGrid, Flag, NoFlag, PlayerCarryingItem, Unsupported };
@@ -113,30 +115,38 @@ struct ConditionDef {
     std::string name;     // Item: collectible name; Flag/NoFlag: flag; PlayerCarryingItem: item name
     std::string itemArea; // Item: the collectible's area ("Village")
     std::string pattern;  // grid conditions: CheckGrid.contains pattern
-    std::vector<int> stationaryTiles;
+    std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
 };
 
-// GameObject.SetActive(active) on the object at `target` (a hierarchy path).
+// GameObject.SetActive(active) on Area::objects[target].
 struct SetActiveCall {
-    std::string target;
+    int target = 0;
     bool active = true;
 };
 
-// A ConditionChecker that checks at Start: all conditions true -> onSuccess, else onFail. Only
-// the SetActive calls are kept (the exporter lists the others in its report).
-struct StartCheck {
-    std::string path;
-    bool active = true; // its object is active at Start (else it never runs)
+// Conditionals: all conditions true -> onSuccess, else onFail. Only the SetActive calls are kept
+// (the exporter lists the others in its report).
+struct ConditionalsDef {
     std::vector<ConditionDef> conditions;
     std::vector<SetActiveCall> onSuccess, onFail;
+};
+
+// A ConditionChecker with checkOnStart: checks its conditionals when its object first becomes
+// active (Unity's Start).
+struct StartCheck {
+    int object = 0;      // Area::objects index
+    bool enabled = true; // the component itself
+    ConditionalsDef conditionals;
 };
 
 // A box collider relative to the player position: center offset and full size (edge radius included).
 struct Hitbox {
     float offX = 0, offY = 0, w = 0, h = 0;
 };
+
+// How the player is drawn (relative to the player position; the boat only on water) and collides.
 struct PlayerDef {
-    PlayerSpriteDef body, boat;
+    SpritePlacement body, boat;
     Hitbox footBox, boatBox; // the player's collider on foot / on water
 };
 
@@ -193,6 +203,7 @@ struct Area {
     std::vector<CollisionLayer> collision;
     std::vector<std::vector<Polygon>> shapes; // collision shapes (each a list of polygons)
     std::vector<TileLayer> layers; // drawn layers only, in draw order
+    std::vector<SceneObject> objects; // parents before children
     std::vector<WorldSprite> worldSprites;
     std::vector<Anim> anims;
     std::vector<ObjectCollider> objectColliders;
@@ -205,6 +216,8 @@ struct Area {
 
     const STileDef* stile(int islandId) const;
     const Spawn* spawn(const char* name) const;
+    const std::string& pathOf(int object) const { return objects[object].path; }
+    int findObject(const std::string& path) const; // index in objects, -1 if none
 };
 
 // Loads e.g. "village/village.json" through plat::readFile, then checks every index in it

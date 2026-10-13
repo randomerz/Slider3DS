@@ -24,20 +24,33 @@ void AreaView::worldToScreen(float wx, float wy, float& sx, float& sy) const {
     sy = (camY_ - wy) * ppu_ + screenH_ * 0.5f;
 }
 
-int AreaView::worldSpriteFrame(const Area& area, const WorldSprite& ws, size_t index, float time) {
-    if (ws.anim < 0) return ws.sprite;
-    const Anim& an = area.anims[ws.anim];
+SortedSprite placeSprite(const Area& area, const SpritePlacement& p, float baseX, float baseY, float animTime,
+                         uint32_t flipFlags) {
+    SortedSprite out;
+    out.sprite = p.anim >= 0 ? area.anims[p.anim].frameAt(animTime) : p.sprite;
+    out.x = baseX + p.x;
+    out.y = baseY + p.y;
+    out.sortY = baseY + p.sortY;
+    out.sortLayer = p.sortLayer;
+    out.order = p.order;
+    out.flags = p.flags ^ flipFlags;
+    return out;
+}
+
+float AreaView::animTime(const Area& area, const WorldSprite& ws, size_t index, float time) {
+    if (ws.place.anim < 0) return time;
     float start = ws.animStart;
     if (ws.animRandom > 0) {
         // AnimationSetFrame's random start, fixed per sprite (a hash of its index) so runs repeat.
-        uint32_t h = (uint32_t)index * 2654435761u;
+        const uint32_t h = (uint32_t)index * 2654435761u;
         start = (float)(h >> 8) / (float)(1u << 24) * ws.animRandom;
     }
-    return an.frameAt(time + start * an.length);
+    return time + start * area.anims[ws.place.anim].length;
 }
 
-void AreaView::draw(const Area& area, const Grid& grid, const ObjectStates& objects, const SortedSprite* extras, size_t extraCount,
-                    int minSortLayer, int maxSortLayer) {
+void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
+    const Area& area = world.area;
+    const Grid& grid = world.grid;
     auto inRange = [&](int sortLayer) { return sortLayer >= minSortLayer && sortLayer <= maxSortLayer; };
     auto ownerShown = [&](int owner) { return owner == 0 || grid.tileActive(owner) || showInactive_; };
     items_.clear();
@@ -49,35 +62,40 @@ void AreaView::draw(const Area& area, const Grid& grid, const ObjectStates& obje
         float bx, by;
         grid.ownerBase(L.owner, bx, by);
         const float centerY = by + L.originY + L.minY + L.h * 0.5f;
-        items_.push_back({L.sortLayer, L.order, centerY, 0, (int)i, -1, 0, 0, 0});
+        Item it{ItemKind::Layer, (int)i, {}};
+        it.sprite.sortLayer = L.sortLayer;
+        it.sprite.order = L.order;
+        it.sprite.sortY = centerY;
+        items_.push_back(it);
     }
     for (size_t i = 0; i < area.worldSprites.size(); i++) {
         const WorldSprite& ws = area.worldSprites[i];
-        if (!inRange(ws.sortLayer) || !objects.spriteActive(i) || !ownerShown(ws.owner)) continue;
+        if (!inRange(ws.place.sortLayer) || !world.objects.active(ws) || !ownerShown(ws.owner)) continue;
         float bx, by;
         grid.ownerBase(ws.owner, bx, by);
-        const int frame = worldSpriteFrame(area, ws, i, time_);
+        const SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
         float px, py;
-        if (!spriteRect(area, frame, bx + ws.x, by + ws.y, ws.flags, px, py)) continue;
-        items_.push_back({ws.sortLayer, ws.order, by + ws.sortY, 1, (int)i, frame, bx + ws.x, by + ws.y, ws.flags});
+        if (!spriteRect(area, sp, px, py)) continue;
+        items_.push_back({ItemKind::Sprite, (int)i, sp});
     }
-    for (size_t i = 0; i < extraCount; i++) {
-        const SortedSprite& e = extras[i];
-        if (!inRange(e.sortLayer) || e.sprite < 0) continue;
-        items_.push_back({e.sortLayer, e.order, e.sortY, 2, (int)i, e.sprite, e.x, e.y, e.flags});
+    const Player& pl = world.player;
+    const uint32_t facing = pl.facingLeft ? (uint32_t)plat::FLIP_X : 0u;
+    for (const SpritePlacement* p : {&area.player.body, pl.onWater ? &area.player.boat : nullptr}) {
+        if (!p || p->sprite < 0 || !inRange(p->sortLayer)) continue;
+        items_.push_back({ItemKind::Player, (int)items_.size(), placeSprite(area, *p, pl.x, pl.y, time_, facing)});
     }
 
     std::sort(items_.begin(), items_.end(), [](const Item& a, const Item& b) {
-        if (a.sortLayer != b.sortLayer) return a.sortLayer < b.sortLayer;
-        if (a.order != b.order) return a.order < b.order;
-        if (a.sortY != b.sortY) return a.sortY > b.sortY;
+        if (a.sprite.sortLayer != b.sprite.sortLayer) return a.sprite.sortLayer < b.sprite.sortLayer;
+        if (a.sprite.order != b.sprite.order) return a.sprite.order < b.sprite.order;
+        if (a.sprite.sortY != b.sprite.sortY) return a.sprite.sortY > b.sprite.sortY;
         if (a.kind != b.kind) return a.kind < b.kind;
         return a.index < b.index;
     });
 
     for (const Item& it : items_) {
-        if (it.kind == 0) drawLayer(area, grid, area.layers[it.index]);
-        else drawSprite(area, it.sprite, it.x, it.y, it.flags);
+        if (it.kind == ItemKind::Layer) drawLayer(area, grid, area.layers[it.index]);
+        else drawSprite(area, it.sprite);
     }
 }
 
@@ -117,19 +135,18 @@ void AreaView::drawLayer(const Area& area, const Grid& grid, const TileLayer& L)
     }
 }
 
-bool AreaView::spriteRect(const Area& area, int sprite, float x, float y, uint32_t flags, float& px, float& py) const {
-    const SpriteDef& S = area.sprites[sprite];
+bool AreaView::spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const {
+    const SpriteDef& S = area.sprites[sp.sprite];
     // The pivot sits on (x, y). A flipped sprite mirrors around its pivot, like Unity's flipX/flipY.
-    const float left = (flags & plat::FLIP_X) ? x - (S.w - S.pivotX) / S.ppu : x - S.pivotX / S.ppu;
-    const float top = (flags & plat::FLIP_Y) ? y + S.pivotY / S.ppu : y + (S.h - S.pivotY) / S.ppu;
+    const float left = (sp.flags & plat::FLIP_X) ? sp.x - (S.w - S.pivotX) / S.ppu : sp.x - S.pivotX / S.ppu;
+    const float top = (sp.flags & plat::FLIP_Y) ? sp.y + S.pivotY / S.ppu : sp.y + (S.h - S.pivotY) / S.ppu;
     worldToScreen(left, top, px, py);
-    const float wPx = S.w * ppu_ / S.ppu, hPx = S.h * ppu_ / S.ppu;
-    return px < screenW_ && py < screenH_ && px + wPx > 0 && py + hPx > 0;
+    return px < screenW_ && py < screenH_ && px + S.w > 0 && py + S.h > 0;
 }
 
-void AreaView::drawSprite(const Area& area, int sprite, float x, float y, uint32_t flags) {
+void AreaView::drawSprite(const Area& area, const SortedSprite& sp) {
     float px, py;
-    if (!spriteRect(area, sprite, x, y, flags, px, py)) return;
-    sheets_->draw(area, sprite, px, py, flags);
+    if (!spriteRect(area, sp, px, py)) return;
+    sheets_->draw(area, sp.sprite, px, py, sp.flags);
     spriteCount_++;
 }

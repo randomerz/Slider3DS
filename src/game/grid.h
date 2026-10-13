@@ -110,6 +110,7 @@ public:
     // Advances animations by dt seconds. Returns the ids of moves that finished this step.
     std::vector<int> update(float dt);
     bool moving() const { return !active_.empty(); }
+    bool tileMoving(int islandId) const; // STile.IsMoving: the tile is animating in a move
 
     // The tile under a world point (SGrid.GetSTileUnderneath): active tiles whose slot square
     // (or house square below it) contains the point. Prefers `current`, else the lowest id. 0 = none.

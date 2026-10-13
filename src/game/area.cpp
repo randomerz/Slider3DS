@@ -18,6 +18,12 @@ const Spawn* Area::spawn(const char* name) const {
     return nullptr;
 }
 
+int Area::findObject(const std::string& path) const {
+    for (size_t i = 0; i < objects.size(); i++)
+        if (objects[i].path == path) return (int)i;
+    return -1;
+}
+
 int Anim::frameAt(float t) const {
     if (frames.empty()) return -1;
     if (length > 0) t = loop ? std::fmod(t, length) : std::min(t, length);
@@ -32,45 +38,53 @@ static bool fail(std::string* error, const std::string& msg) {
     return false;
 }
 
-static void readPlayerSprite(const Json& j, PlayerSpriteDef& p) {
+// A sprite placement: "sprite", "pos", "sortY", "sortingLayerValue", "order", optional "flip", "anim".
+static SpritePlacement readPlacement(const Json& j) {
+    SpritePlacement p;
     p.sprite = j["sprite"].asInt(-1);
+    p.anim = j["anim"].asInt(-1);
     p.x = j["pos"].at(0).asFloat();
     p.y = j["pos"].at(1).asFloat();
-    p.sortY = j["sortY"].asFloat();
+    p.sortY = j["sortY"].asFloat(p.y);
     p.sortLayer = j["sortingLayerValue"].asInt();
     p.order = j["order"].asInt();
-    p.anim = j["anim"].asInt(-1);
-}
-
-static std::vector<std::string> readStrings(const Json& j) {
-    std::vector<std::string> out;
-    for (const Json& v : j.items()) out.push_back(v.asString());
-    return out;
+    p.flags = (uint32_t)j["flip"].asInt() & 3u; // bit0 X, bit1 Y = plat::FLIP_X | FLIP_Y
+    return p;
 }
 
 static void readCalls(const Json& j, std::vector<SetActiveCall>& out) {
     for (const Json& c : j.items())
-        if (c.has("active")) out.push_back({c["target"].asString(), c["active"].asBool()});
+        if (c.has("target")) out.push_back({c["target"].asInt(-1), c["active"].asBool()});
+}
+
+static ConditionDef readCondition(const Json& c) {
+    using T = ConditionDef::Type;
+    ConditionDef d;
+    const std::string& type = c["type"].asString();
+    if (type == "item") {
+        d.type = T::Item;
+        d.name = c["item"].asString();
+        d.itemArea = c["itemArea"].asString();
+    } else if (type == "grid" || type == "noGrid" || type == "gridStationary") {
+        d.type = type == "grid" ? T::Grid : type == "noGrid" ? T::NoGrid : T::GridStationary;
+        d.pattern = c["pattern"].asString();
+        for (const Json& t : c["stationaryTiles"].items()) d.stationaryTiles.push_back(t.asInt());
+    } else if (type == "flag" || type == "noFlag") {
+        d.type = type == "flag" ? T::Flag : T::NoFlag;
+        d.name = c["flag"].asString();
+    } else if (type == "playerCarryingItem") {
+        d.type = T::PlayerCarryingItem;
+        d.name = c["playerItem"].asString();
+    }
+    return d;
 }
 
 static void readStartCheck(const Json& j, StartCheck& sc) {
-    using T = ConditionDef::Type;
-    sc.path = j["path"].asString();
-    sc.active = j["active"].asBool(true);
-    for (const Json& c : j["conditions"].items()) {
-        ConditionDef d;
-        const std::string& type = c["type"].asString();
-        d.type = type == "item" ? T::Item : type == "grid" ? T::Grid : type == "gridStationary" ? T::GridStationary
-               : type == "noGrid" ? T::NoGrid : type == "flag" ? T::Flag : type == "noFlag" ? T::NoFlag
-               : type == "playerCarryingItem" ? T::PlayerCarryingItem : T::Unsupported;
-        d.name = c.has("item") ? c["item"].asString() : c.has("flag") ? c["flag"].asString() : c["playerItem"].asString();
-        d.itemArea = c["itemArea"].asString();
-        d.pattern = c["pattern"].asString();
-        for (const Json& t : c["stationaryTiles"].items()) d.stationaryTiles.push_back(t.asInt());
-        sc.conditions.push_back(std::move(d));
-    }
-    readCalls(j["onSuccess"], sc.onSuccess);
-    readCalls(j["onFail"], sc.onFail);
+    sc.object = j["object"].asInt(-1);
+    sc.enabled = j["enabled"].asBool(true);
+    for (const Json& c : j["conditions"].items()) sc.conditionals.conditions.push_back(readCondition(c));
+    readCalls(j["onSuccess"], sc.conditionals.onSuccess);
+    readCalls(j["onFail"], sc.conditionals.onFail);
 }
 
 static Hitbox readHitbox(const Json& j) {
@@ -78,11 +92,9 @@ static Hitbox readHitbox(const Json& j) {
 }
 
 static void readObjectCollider(const Json& j, ObjectCollider& c) {
-    c.path = j["path"].asString();
+    c.object = j["object"].asInt(-1);
     c.owner = j["owner"].asInt();
-    c.active = j["active"].asBool(true);
     c.enabled = j["enabled"].asBool(true);
-    c.inactiveAt = readStrings(j["inactiveAt"]);
     const std::string& kind = j["kind"].asString();
     auto readPoints = [](const Json& pts) {
         Polygon p;
@@ -174,25 +186,43 @@ static bool validate(const Area& a, std::string* error) {
         if (!ownerOk(sp.owner)) return fail(error, "spawn " + sp.name + ": unknown owner STile");
     auto spriteIndexOk = [&](int s) { return s >= 0 && s < (int)a.sprites.size(); };
     auto animOk = [&](int i) { return i == -1 || (i >= 0 && i < (int)a.anims.size()); };
+    auto objectOk = [&](int i) { return i >= 0 && i < (int)a.objects.size(); };
+    // World sprites are drawn 1:1 (SpriteSheets draws native pixels), so they must match the area's ppu.
+    auto placementOk = [&](const SpritePlacement& p) {
+        return spriteIndexOk(p.sprite) && animOk(p.anim) && a.sprites[p.sprite].ppu == (float)a.ppu;
+    };
+    for (size_t i = 0; i < a.objects.size(); i++)
+        if (a.objects[i].parent < -1 || a.objects[i].parent >= (int)i)
+            return fail(error, "object " + a.objects[i].path + ": parent must come before it");
     for (const Anim& an : a.anims) {
         if (an.frames.empty() || an.frames.size() != an.times.size())
             return fail(error, "anim " + an.name + ": frames/times mismatch");
         for (int f : an.frames)
-            if (!spriteIndexOk(f)) return fail(error, "anim " + an.name + ": bad sprite index");
+            if (!spriteIndexOk(f) || a.sprites[f].ppu != (float)a.ppu) return fail(error, "anim " + an.name + ": bad sprite");
     }
     for (const WorldSprite& ws : a.worldSprites) {
-        if (!ownerOk(ws.owner)) return fail(error, "world sprite " + ws.path + ": unknown owner STile");
-        if (!spriteIndexOk(ws.sprite) || !animOk(ws.anim))
-            return fail(error, "world sprite " + ws.path + ": bad sprite or anim index");
+        if (!objectOk(ws.object)) return fail(error, "world sprite: bad object index");
+        if (!ownerOk(ws.owner)) return fail(error, "world sprite " + a.pathOf(ws.object) + ": unknown owner STile");
+        if (!placementOk(ws.place))
+            return fail(error, "world sprite " + a.pathOf(ws.object) + ": bad sprite, anim or ppu");
     }
     for (const ObjectCollider& c : a.objectColliders) {
-        if (!ownerOk(c.owner)) return fail(error, "collider " + c.path + ": unknown owner STile");
+        if (!objectOk(c.object)) return fail(error, "collider: bad object index");
+        if (!ownerOk(c.owner)) return fail(error, "collider " + a.pathOf(c.object) + ": unknown owner STile");
         for (const Polygon& p : c.paths)
-            if (p.size() % 2 != 0) return fail(error, "collider " + c.path + ": odd point list");
+            if (p.size() % 2 != 0) return fail(error, "collider " + a.pathOf(c.object) + ": odd point list");
     }
-    for (const PlayerSpriteDef* p : {&a.player.body, &a.player.boat})
-        if ((p->sprite != -1 && !spriteIndexOk(p->sprite)) || !animOk(p->anim))
-            return fail(error, "player: bad sprite or anim index");
+    for (const StartCheck& sc : a.startChecks) {
+        if (!objectOk(sc.object)) return fail(error, "start check: bad object index");
+        for (const auto* calls : {&sc.conditionals.onSuccess, &sc.conditionals.onFail})
+            for (const SetActiveCall& call : *calls)
+                if (!objectOk(call.target)) return fail(error, "start check " + a.pathOf(sc.object) + ": bad SetActive target");
+    }
+    for (const SpritePlacement* p : {&a.player.body, &a.player.boat})
+        if (p->sprite != -1 && !placementOk(*p)) return fail(error, "player: bad sprite, anim or ppu");
+    for (const TileDef& t : a.tiles)
+        for (int f : t.frames)
+            if (spriteIndexOk(f) && a.sprites[f].ppu != (float)a.ppu) return fail(error, "tile: sprite ppu differs from the area's");
     if (a.artifact.present) {
         const ArtifactDef& d = a.artifact;
         auto spriteOk = [&](int s) { return s >= 0 && s < (int)a.sprites.size(); };
@@ -249,20 +279,14 @@ bool loadArea(const char* path, Area& out, std::string* error) {
 
     for (int i = 0; i < 3; i++) out.background[i] = (uint8_t)doc["background"].at(i).asInt();
 
+    for (const Json& o : doc["objects"].items())
+        out.objects.push_back({o["path"].asString(), o["parent"].asInt(-1), o["active"].asBool(true)});
+
     for (const Json& s : doc["worldSprites"].items()) {
         WorldSprite ws;
-        ws.path = s["path"].asString();
+        ws.object = s["object"].asInt(-1);
         ws.owner = s["owner"].asInt();
-        ws.sprite = s["sprite"].asInt(-1);
-        ws.x = s["pos"].at(0).asFloat();
-        ws.y = s["pos"].at(1).asFloat();
-        ws.sortY = s["sortY"].asFloat(ws.y);
-        ws.sortLayer = s["sortingLayerValue"].asInt();
-        ws.order = s["order"].asInt();
-        ws.flags = (uint32_t)s["flip"].asInt() & 3u; // bit0 X, bit1 Y = plat::FLIP_X | FLIP_Y
-        ws.active = s["active"].asBool(true);
-        ws.inactiveAt = readStrings(s["inactiveAt"]);
-        ws.anim = s["anim"].asInt(-1);
+        ws.place = readPlacement(s);
         ws.animStart = s["animStart"].asFloat();
         ws.animRandom = s["animRandom"].asFloat();
         out.worldSprites.push_back(std::move(ws));
@@ -291,8 +315,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
 
     if (doc.has("player")) {
-        if (doc["player"].has("body")) readPlayerSprite(doc["player"]["body"], out.player.body);
-        if (doc["player"].has("boat")) readPlayerSprite(doc["player"]["boat"], out.player.boat);
+        if (doc["player"].has("body")) out.player.body = readPlacement(doc["player"]["body"]);
+        if (doc["player"].has("boat")) out.player.boat = readPlacement(doc["player"]["boat"]);
         out.player.footBox = readHitbox(doc["player"]["footBox"]);
         out.player.boatBox = readHitbox(doc["player"]["boatBox"]);
     }

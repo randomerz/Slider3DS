@@ -9,8 +9,9 @@ namespace {
 constexpr size_t VILLAGE_LAYERS = 76, VILLAGE_COLLISION = 35, VILLAGE_SHAPES = 9, VILLAGE_TILES = 168,
                  VILLAGE_SPRITES = 514, VILLAGE_FILLED_CELLS = 27554;
 
-// A minimal valid area: 1x1 grid, one sheet/sprite/tile, one visual and one collision tilemap, a
-// world sprite with a one-frame anim, an object collider and the player.
+// A minimal valid area: 1x1 grid, one sheet/sprite/tile, one visual and one collision tilemap,
+// scene objects, a world sprite with a one-frame anim, two object colliders, a start check and the
+// player.
 // Each `replace` pair breaks one thing for the validation tests.
 std::string fixture(const std::string& from = "", const std::string& to = "") {
     std::string s = R"json({
@@ -20,13 +21,19 @@ std::string fixture(const std::string& from = "", const std::string& to = "") {
   "spawns": [{"name": "Default", "owner": 1, "pos": [0, 0], "inBoat": false}],
   "collisionShapes": [[[0, 0, 1, 0, 1, 1, 0, 1]]],
   "sheets": [{"name": "sheetA"}],
-  "sprites": [{"sheet": 0, "rect": [0, 0, 16, 16], "pivot": [8, 8], "ppu": 16}],
+  "sprites": [{"sheet": 0, "rect": [0, 0, 16, 16], "pivot": [8, 8], "ppu": 16},
+              {"sheet": 0, "rect": [0, 0, 32, 32], "pivot": [16, 16], "ppu": 32}],
   "tiles": [{"frames": [0], "fps": 0}],
   "anims": [{"name": "Idle", "frames": [0], "times": [0], "length": 1, "loop": true}],
-  "worldSprites": [{"path": "WS", "owner": 1, "sprite": 0, "pos": [1, 2], "sortY": 2, "sortingLayerValue": 7,
-                    "order": 0, "flip": 1, "active": true, "anim": 0}],
-  "objectColliders": [{"path": "OC", "owner": 1, "active": true, "kind": "poly", "paths": [[0, 0, 1, 0, 1, 1, 0, 1]]},
-                      {"path": "CI", "owner": 0, "active": true, "kind": "circle", "center": [3, 4], "radius": 0.5}],
+  "objects": [{"path": "Root", "parent": -1, "active": true}, {"path": "Root/WS", "parent": 0, "active": false},
+              {"path": "Root/OC", "parent": 0, "active": true}],
+  "worldSprites": [{"object": 1, "owner": 1, "sprite": 0, "pos": [1, 2], "sortY": 2, "sortingLayerValue": 7,
+                    "order": 0, "flip": 1, "anim": 0}],
+  "objectColliders": [{"object": 2, "owner": 1, "kind": "poly", "paths": [[0, 0, 1, 0, 1, 1, 0, 1]]},
+                      {"object": 2, "owner": 0, "enabled": false, "kind": "circle", "center": [3, 4], "radius": 0.5}],
+  "startChecks": [{"object": 0, "conditions": [{"type": "flag", "flag": "f"}],
+                   "onSuccess": [{"method": "GameObject.SetActive", "target": 1, "active": true}],
+                   "onFail": [{"method": "KnotBox.Reset", "targetPath": "Root"}]}],
   "player": {"body": {"sprite": 0, "pos": [0, 0], "sortY": 0.5, "sortingLayerValue": 7, "order": 0, "anim": 0}},
   "tilemaps": [
     {"kind": "visual", "path": "VIS", "owner": 1, "active": true, "origin": [0, 0], "tileAnchor": [0.5, 0.5],
@@ -59,10 +66,15 @@ TEST(area_fixture_loads) {
     check(loadFixture(fixture(), a, err), "valid fixture loads: " + err);
     CHECK(a.stiles.size() == 1 && a.layers.size() == 1 && a.collision.size() == 1 && a.shapes.size() == 1);
     CHECK(a.layers.size() == 1 && a.layers[0].cell(0, 0) == 0 && a.layers[0].cell(1, 0) == -1);
-    CHECK(a.worldSprites.size() == 1 && a.worldSprites[0].anim == 0 && a.worldSprites[0].flags == 1 &&
-          a.worldSprites[0].sortY == 2);
-    CHECK(a.objectColliders.size() == 2 && a.objectColliders[0].maxX == 1 &&
-          a.objectColliders[1].kind == ObjectCollider::Kind::Circle && a.objectColliders[1].minY == 3.5f);
+    CHECK(a.objects.size() == 3 && a.objects[1].parent == 0 && !a.objects[1].activeSelf && a.findObject("Root/OC") == 2);
+    CHECK(a.worldSprites.size() == 1 && a.worldSprites[0].object == 1 && a.worldSprites[0].place.anim == 0 &&
+          a.worldSprites[0].place.flags == 1 && a.worldSprites[0].place.sortY == 2);
+    CHECK(a.objectColliders.size() == 2 && a.objectColliders[0].maxX == 1 && a.objectColliders[1].object == 2 &&
+          !a.objectColliders[1].enabled && a.objectColliders[1].kind == ObjectCollider::Kind::Circle &&
+          a.objectColliders[1].minY == 3.5f);
+    // Only SetActive calls are kept.
+    CHECK(a.startChecks.size() == 1 && a.startChecks[0].conditionals.conditions.size() == 1 &&
+          a.startChecks[0].conditionals.onSuccess.size() == 1 && a.startChecks[0].conditionals.onFail.empty());
     CHECK(a.player.body.sprite == 0 && a.player.body.sortY == 0.5f && a.player.boat.sprite == -1);
 }
 
@@ -91,10 +103,16 @@ TEST(area_validation_rejects_bad_indices) {
         {R"("width": 1, "height": 1)", R"("width": 2, "height": 1)", "fewer STiles than slots"},
         {R"("frames": [0], "times")", R"("frames": [7], "times")", "anim frame -> missing sprite"},
         {R"("times": [0])", R"("times": [0, 1])", "anim frames/times mismatch"},
-        {R"("path": "WS", "owner": 1, "sprite": 0)", R"("path": "WS", "owner": 1, "sprite": 3)", "world sprite -> missing sprite"},
-        {R"("active": true, "anim": 0}],)", R"("active": true, "anim": 2}],)", "world sprite -> missing anim"},
-        {R"("path": "WS", "owner": 1)", R"("path": "WS", "owner": 5)", "world sprite owner is not an STile"},
-        {R"("path": "OC", "owner": 1)", R"("path": "OC", "owner": 5)", "collider owner is not an STile"},
+        {R"("object": 1, "owner": 1, "sprite": 0)", R"("object": 1, "owner": 1, "sprite": 3)", "world sprite -> missing sprite"},
+        {R"("object": 1, "owner": 1, "sprite": 0)", R"("object": 1, "owner": 1, "sprite": 1)", "world sprite ppu != area ppu"},
+        {R"("order": 0, "flip": 1, "anim": 0})", R"("order": 0, "flip": 1, "anim": 2})", "world sprite -> missing anim"},
+        {R"("object": 1, "owner": 1)", R"("object": 1, "owner": 5)", "world sprite owner is not an STile"},
+        {R"("object": 1, "owner": 1)", R"("object": 3, "owner": 1)", "world sprite -> missing object"},
+        {R"("object": 2, "owner": 1)", R"("object": 2, "owner": 5)", "collider owner is not an STile"},
+        {R"("object": 2, "owner": 1)", R"("object": -1, "owner": 1)", "collider -> missing object"},
+        {R"("path": "Root/WS", "parent": 0)", R"("path": "Root/WS", "parent": 2)", "object parent after it"},
+        {R"("target": 1, "active": true)", R"("target": 7, "active": true)", "start check -> missing SetActive target"},
+        {R"("startChecks": [{"object": 0)", R"("startChecks": [{"object": 9)", "start check -> missing object"},
         {R"([[0, 0, 1, 0, 1, 1, 0, 1]]},)", R"([[0, 0, 1, 0, 1, 1, 0]]},)", "collider odd point list"},
         {R"("body": {"sprite": 0)", R"("body": {"sprite": 9)", "player -> missing sprite"},
     };

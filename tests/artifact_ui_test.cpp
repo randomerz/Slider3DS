@@ -9,12 +9,13 @@ namespace {
 
 constexpr float DT = 1.0f / 60.0f;
 
+// A world with no player on a tile (stile 0), so no move keeps walls for it.
 struct Fixture {
-    Grid grid;
-    Artifact artifact;
+    World world{village()};
+    Grid& grid = world.grid;
+    Artifact& artifact = world.artifact;
     ArtifactUI ui;
     explicit Fixture(bool allButNine = false) {
-        grid.init(village());
         if (allButNine)
             for (int id = 1; id <= 8; id++) grid.setTileActive(id, true);
         artifact.init(grid);
@@ -25,7 +26,7 @@ struct Fixture {
         in.touching = touching;
         in.touchX = (int)x;
         in.touchY = (int)y;
-        ui.update(in, village(), grid, artifact, 0, DT);
+        ui.update(in, world, DT);
         artifact.update(grid, DT, 0);
     }
     void tap(int sx, int sy) {

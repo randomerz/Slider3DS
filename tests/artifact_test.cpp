@@ -4,6 +4,7 @@
 
 #include "game/artifact.h"
 #include "game/physics.h"
+#include "game/world.h"
 #include "test.h"
 
 namespace {
@@ -89,34 +90,32 @@ TEST(artifact_set_grid_resyncs) {
     CHECK(!artifact.setGrid(grid, "nonsense") && artifact.gridString(grid) == grid.gridString());
 }
 
-TEST(artifact_player_rides_tile) {
-    Grid grid;
-    grid.init(village());
-    Artifact artifact;
-    artifact.init(grid);
-    const Area& area = village();
-    float px = 0, py = 3; // on tile 1, outdoors
-    int under = grid.stileUnder(px, py);
-    CHECK(under == 1);
-    CHECK(artifact.tryMove(grid, 0, 0, 0, 1, under));
+TEST(world_player_rides_tile) {
+    // World::update: the player standing on tile 1 rides it as it slides up one slot; while it
+    // slides, the player is fenced in and the slot it slid over (tile 8's) isn't solid.
+    World world(village());
+    world.player.x = 0;
+    world.player.y = 3; // on tile 1, outdoors
+    world.player.stile = world.grid.stileUnder(0, 3);
+    CHECK(world.player.stile == 1);
+    CHECK(world.artifact.tryMove(world.grid, 0, 0, 0, 1, world.player.stile));
     // Tile 8 (the empty slot above) jumped below and has its collider off while 1 slides over it.
-    CHECK(grid.tile(8)->collidersOff == 1);
+    CHECK(world.grid.tile(8)->collidersOff == 1);
     bool fencedIn = false, tile8Solid = false;
-    for (int i = 0; i < 120 && !artifact.queueEmpty(); i++) {
-        under = grid.stileUnder(px, py, under);
-        float oy = grid.tile(under)->posY;
-        artifact.update(grid, DT, under);
-        py += (grid.tile(under)->posY - oy) * grid.tileWidth();
+    for (int i = 0; i < 120 && !world.artifact.queueEmpty(); i++) {
+        world.update(DT, 0, 0, false);
         if (i == 30) {
-            fencedIn = boxBlocker(area, grid, villageObjects(), {px + 8.0f, py - 0.01f, px + 9.0f, py + 0.01f}, false).kind == Blocker::Wall;
-            Blocker b = boxBlocker(area, grid, villageObjects(), {-0.01f, -3.01f, 0.01f, -2.99f}, false); // inside tile 8's new slot
+            const float px = world.player.x, py = world.player.y;
+            fencedIn = boxBlocker(world, {px + 8.0f, py - 0.01f, px + 9.0f, py + 0.01f}, false).kind == Blocker::Wall;
+            Blocker b = boxBlocker(world, {-0.01f, -3.01f, 0.01f, -2.99f}, false); // inside tile 8's new slot
             tile8Solid = b.kind == Blocker::InactiveTile && b.index == 8;
         }
     }
-    check(std::fabs(py - 20.0f) < 1e-3f, "player rode tile 1 up one slot (y " + std::to_string(py) + ")");
+    check(std::fabs(world.player.y - 20.0f) < 1e-3f, "player rode tile 1 up one slot (y " + std::to_string(world.player.y) + ")");
+    CHECK(world.player.stile == 1);
     CHECK(fencedIn);
     check(!tile8Solid, "tile 8's slot is not solid mid-slide (its collider is off)");
-    CHECK(grid.walls().empty() && grid.tile(8)->collidersOff == 0);
-    Blocker after = boxBlocker(area, grid, villageObjects(), {-0.01f, -3.01f, 0.01f, -2.99f}, false);
+    CHECK(world.grid.walls().empty() && world.grid.tile(8)->collidersOff == 0);
+    Blocker after = boxBlocker(world, {-0.01f, -3.01f, 0.01f, -2.99f}, false);
     check(after.kind == Blocker::InactiveTile && after.index == 8, "tile 8's slot is solid again after the slide");
 }
