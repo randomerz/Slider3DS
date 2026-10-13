@@ -96,7 +96,9 @@ struct WorldSprite {
     float animStart = 0, animRandom = 0; // normalized start time, or a random one in [0, animRandom)
 };
 
-// A non-tilemap collider that blocks the player, in world units relative to its owner's center.
+// A non-tilemap collider: solid (Area::objectColliders, blocks the player) or a trigger
+// (Area::triggerColliders). World units relative to its owner's center (plus the object's runtime
+// offset, ObjectStates).
 struct ObjectCollider {
     enum class Kind { Poly, Circle, Edge };
     int object = 0;      // Area::objects index
@@ -118,21 +120,40 @@ struct ConditionDef {
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
 };
 
-// One UnityEvent persistent call, as exported. `method` is the subset game/events runs; the rest
-// load as Unsupported (the exporter's report lists them by name).
+// The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
+//   SetActive               GameObject.SetActive(boolArg) on target
+//   TeleportHard            PlayerPositionChanger.UPPHard: player to dPos
+//   TeleportRelativePlayer  UPPRelativePlayer: player += dPos
+//   TeleportRelativeMe      UPPRelativeMe: player to the changer's position + dPos
+//   TeleportTransform       UPPTransform: player to goTo's position + dPos
+//   ActivateSTile           Collectible.ActivateSTile(intArg): SGrid.CollectSTile
+//   SetFlagOn               VarManager.SetBoolOn(stringArg)
+//   SetOnWater              WaterLandColliderManager.SetOnWater(boolArg)
+//   FadeFromBlack           UIEffectApplier.FadeFromBlack
+//   CheckConditions         ConditionChecker.CheckConditions on conditionCheckers[data]
+//   ChangeScenes            SceneChanger.ChangeScenes (leaves the Village)
+// To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
+// and its name in the exporter's PortMethods (area_test pins the names still unsupported).
+#define SLIDER_CALL_METHODS(X)                                         \
+    X(SetActive, "GameObject.SetActive")                               \
+    X(TeleportHard, "PlayerPositionChanger.UPPHard")                   \
+    X(TeleportRelativePlayer, "PlayerPositionChanger.UPPRelativePlayer") \
+    X(TeleportRelativeMe, "PlayerPositionChanger.UPPRelativeMe")       \
+    X(TeleportTransform, "PlayerPositionChanger.UPPTransform")         \
+    X(ActivateSTile, "Collectible.ActivateSTile")                      \
+    X(SetFlagOn, "VarManager.SetBoolOn")                               \
+    X(SetOnWater, "WaterLandColliderManager.SetOnWater")               \
+    X(FadeFromBlack, "UIEffectApplier.FadeFromBlack")                  \
+    X(CheckConditions, "ConditionChecker.CheckConditions")             \
+    X(ChangeScenes, "SceneChanger.ChangeScenes")
+
+// One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
+// (and do nothing); the exporter's report lists them by name.
 struct CallDef {
     enum class Method {
-        SetActive,            // GameObject.SetActive(boolArg) on target
-        TeleportHard,         // PlayerPositionChanger.UPPHard: player to dPos
-        TeleportRelativePlayer, // UPPRelativePlayer: player += dPos
-        TeleportRelativeMe,   // UPPRelativeMe: player to the changer's position + dPos
-        TeleportTransform,    // UPPTransform: player to goTo's position + dPos
-        ActivateSTile,        // Collectible.ActivateSTile(intArg): SGrid.CollectSTile
-        SetFlagOn,            // VarManager.SetBoolOn(stringArg)
-        SetOnWater,           // WaterLandColliderManager.SetOnWater(boolArg)
-        FadeFromBlack,        // UIEffectApplier.FadeFromBlack
-        CheckConditions,      // ConditionChecker.CheckConditions on conditionCheckers[checker]
-        ChangeScenes,         // SceneChanger.ChangeScenes (leaves the Village)
+#define SLIDER_CALL_ENUM(id, name) id,
+        SLIDER_CALL_METHODS(SLIDER_CALL_ENUM)
+#undef SLIDER_CALL_ENUM
         Unsupported,
     };
     Method method = Method::Unsupported;
@@ -141,11 +162,18 @@ struct CallDef {
     bool boolArg = false;
     int intArg = 0;
     std::string stringArg;
-    // PlayerPositionChanger: its position (owner-relative), offset, house flag, goTo position.
-    int owner = 0, goToOwner = 0;
-    float x = 0, y = 0, dx = 0, dy = 0, goToX = 0, goToY = 0;
+    int data = -1; // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index
+};
+
+// What a PlayerPositionChanger call needs of its component.
+struct TeleportDef {
+    int owner = 0;      // the changer's STile (its position is relative to it), 0 = world
+    float x = 0, y = 0; // the changer's position
+    float dx = 0, dy = 0; // dPos
     bool tpToHouse = false;
-    int checker = -1; // CheckConditions: Area::conditionCheckers index
+    bool hasGoTo = false; // goTo set (UPPTransform needs it)
+    int goToOwner = 0;
+    float goToX = 0, goToY = 0;
 };
 
 // Conditionals: all conditions true -> onSuccess, else onFail.
@@ -188,6 +216,21 @@ struct CollectibleDef {
     bool disableAtStart = false; // Start hides it (shown later by an event)
     int sprite = -1;
     std::vector<CallDef> onCollect;
+};
+
+// A behaviour component on a scene object (an entry in one of the Area's per-kind vectors), for
+// handling things by object: what reacts when the player touches an object's trigger, which
+// components have a Start. Built at load.
+struct ComponentRef {
+    enum class Kind : uint8_t { TriggerEvent, Interaction, Collectible, ConditionChecker };
+    Kind kind;
+    int index; // into triggerEvents / interactions / collectibles / conditionCheckers
+};
+
+struct ComponentRange {
+    const ComponentRef *first, *last;
+    const ComponentRef* begin() const { return first; }
+    const ComponentRef* end() const { return last; }
 };
 
 // A box collider relative to the player position: center offset and full size (edge radius included).
@@ -261,10 +304,19 @@ struct Area {
     std::vector<ObjectCollider> objectColliders;
     std::vector<ObjectCollider> triggerColliders; // of objects with interactions, trigger events, collectibles
     std::vector<ConditionCheckerDef> conditionCheckers;
+    std::vector<TeleportDef> teleports; // payloads of teleport calls (CallDef::data)
     std::vector<InteractionDef> interactions;
     std::vector<TriggerEventDef> triggerEvents;
     std::vector<CollectibleDef> collectibles;
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
+    // Each object's components (derived at load): componentRefs[componentStart[o] .. componentStart[o + 1]),
+    // per object in the kind order TriggerEvent, Interaction, Collectible, ConditionChecker.
+    std::vector<int> componentStart;
+    std::vector<ComponentRef> componentRefs;
+    ComponentRange components(int object) const {
+        const ComponentRef* base = componentRefs.data();
+        return {base + componentStart[object], base + componentStart[object + 1]};
+    }
     PlayerDef player;
     ArtifactDef artifact;
     std::vector<TileDef> tiles;

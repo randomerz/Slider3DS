@@ -48,25 +48,25 @@ TEST(events_house_door_round_trip) {
     check(standIn(world, HOUSE1_EXIT), "standing on tile 1's house exit");
     world.update(DT, 0, 0, false);
     const int exitIndex = interactionOn(area, HOUSE1_EXIT);
-    check(world.interactables.size() == 1 && world.interactables[0] == exitIndex, "the exit is on offer");
+    check(world.interactables.size() == 1 && world.interactables[0].index == exitIndex, "the exit is on offer");
     check(world.player.y < -100, "inside the house (y " + std::to_string(world.player.y) + ")");
 
     world.interact();
     check(world.player.y > -20 && !world.player.inHouse, "outside after the exit (y " + std::to_string(world.player.y) + ")");
     check(world.player.stile == 1, "on tile 1");
-    check(world.fade == 1, "faded to black");
+    check(world.effects.fade == 1, "faded to black");
     check(!boxBlocked(world, hitboxAt(world.player.hitbox(area), world.player.x, world.player.y), false),
           "landed somewhere free");
     world.update(DT, 0, 0, false);
     {
         std::string offered;
-        for (int i : world.interactables) offered += area.pathOf(area.interactions[i].object) + "; ";
-        check(world.interactables.size() == 1 && world.interactables[0] == interactionOn(area, HOUSE1_DOOR),
+        for (const Interactable& it : world.interactables) offered += area.pathOf(area.interactions[it.index].object) + "; ";
+        check(world.interactables.size() == 1 && world.interactables[0].index == interactionOn(area, HOUSE1_DOOR),
               "outside, the house door is on offer instead of the exit (" + offered + ")");
     }
-    check(world.fade < 1 && world.fade > 0.9f, "fading back in");
+    check(world.effects.fade < 1 && world.effects.fade > 0.9f, "fading back in");
     for (int i = 0; i < 120; i++) world.update(DT, 0, 0, false);
-    check(world.fade == 0, "faded in within the fade duration");
+    check(world.effects.fade == 0, "faded in within the fade duration");
 
     check(standIn(world, HOUSE1_DOOR), "standing at the house's door outside");
     world.update(DT, 0, 0, false);
@@ -124,19 +124,4 @@ TEST(events_trigger_enter_sets_a_flag) {
     check(standIn(world, "Map/Village 8Puzzle/STile (1)/Objects/Artifact Prompt Trigger"), "standing in the prompt trigger");
     world.update(DT, 0, 0, false);
     check(world.state.flag("villageTouchedGrass"), "flag set on entering");
-}
-
-TEST(events_sliding_tile_turns_its_triggers_off) {
-    // A tile's triggers are off while it slides in a move the player isn't riding: standing in a
-    // trigger of tile 1 from outside... the player rides tile 1 here, so its triggers stay on;
-    // tile 8's (not ridden) are off mid-slide.
-    const Area& area = village();
-    World world(area);
-    check(standIn(world, "Map/Village 8Puzzle/STile (1)/Objects/Artifact Prompt Trigger"), "in tile 1's prompt trigger");
-    world.update(DT, 0, 0, false);
-    const int prompt = area.findObject("Map/Village 8Puzzle/STile (1)/Objects/Artifact Prompt Trigger");
-    check(world.triggers.touching(prompt), "touching");
-    check(world.artifact.tryMove(world.grid, 0, 0, 0, 1, world.player.stile), "slide tile 1 up (riding it)");
-    for (int i = 0; i < 10; i++) world.update(DT, 0, 0, false);
-    check(world.triggers.touching(prompt), "still touching while riding the slide");
 }

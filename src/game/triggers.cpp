@@ -18,13 +18,7 @@ void enterInteraction(World& world, int index) {
     // Offered unless it needs an item (none carried yet) or excludes where the player is.
     if (in.isCarryingItem) return;
     if ((world.player.onWater && in.excludeBoat) || (!world.player.onWater && in.excludeLand)) return;
-    if (std::find(world.interactables.begin(), world.interactables.end(), index) == world.interactables.end())
-        world.interactables.push_back(index);
-}
-
-void exitInteraction(World& world, int index) {
-    auto& v = world.interactables;
-    v.erase(std::remove(v.begin(), v.end(), index), v.end());
+    world.offer({Interactable::Kind::Interaction, index});
 }
 
 void pickUp(World& world, const CollectibleDef& c) {
@@ -34,19 +28,28 @@ void pickUp(World& world, const CollectibleDef& c) {
     runCalls(world, c.onCollect);
 }
 
-// The object's behaviours react to the player entering (or leaving) its trigger.
+// The object's components react to the player entering (or leaving) its trigger.
 void dispatch(World& world, int object, bool enter) {
     const Area& area = world.area;
-    for (const TriggerEventDef& te : area.triggerEvents)
-        if (te.object == object && te.onPlayerEnter) runCalls(world, enter ? te.onEnter : te.onExit);
-    for (size_t i = 0; i < area.interactions.size(); i++)
-        if (area.interactions[i].object == object) {
-            if (enter) enterInteraction(world, (int)i);
-            else exitInteraction(world, (int)i);
+    using K = ComponentRef::Kind;
+    for (const ComponentRef& ref : area.components(object)) {
+        switch (ref.kind) {
+        case K::TriggerEvent: {
+            const TriggerEventDef& te = area.triggerEvents[ref.index];
+            if (te.onPlayerEnter) runCalls(world, enter ? te.onEnter : te.onExit);
+            break;
         }
-    if (enter)
-        for (const CollectibleDef& c : area.collectibles)
-            if (c.object == object) pickUp(world, c);
+        case K::Interaction:
+            if (enter) enterInteraction(world, ref.index);
+            else world.withdraw({Interactable::Kind::Interaction, ref.index});
+            break;
+        case K::Collectible:
+            if (enter) pickUp(world, area.collectibles[ref.index]);
+            break;
+        case K::ConditionChecker:
+            break;
+        }
+    }
 }
 
 } // namespace
@@ -54,10 +57,22 @@ void dispatch(World& world, int object, bool enter) {
 void TriggerTracker::reset(const Area& area) {
     touching_.assign(area.objects.size(), 0);
     now_.assign(area.objects.size(), 0);
+    lastOnWater_ = -1;
 }
 
 void TriggerTracker::update(World& world) {
     const Area& area = world.area;
+    // Player.SetIsOnWater swaps the player's collider (foot <-> boat): Unity sends every trigger
+    // an exit for the old one and an enter for the new one.
+    const int onWater = world.player.onWater ? 1 : 0;
+    if (lastOnWater_ >= 0 && onWater != lastOnWater_)
+        for (size_t o = 0; o < touching_.size(); o++)
+            if (touching_[o]) {
+                touching_[o] = 0;
+                dispatch(world, (int)o, false);
+            }
+    lastOnWater_ = onWater;
+
     const Box box = hitboxAt(world.player.hitbox(area), world.player.x, world.player.y);
     std::fill(now_.begin(), now_.end(), (uint8_t)0);
     for (const ObjectCollider& c : area.triggerColliders)

@@ -5,31 +5,6 @@
 #include "game/events.h"
 #include "game/world.h"
 
-namespace {
-
-void setIn(std::vector<std::string>& set, const std::string& key, bool present) {
-    auto it = std::find(set.begin(), set.end(), key);
-    if (present && it == set.end()) set.push_back(key);
-    if (!present && it != set.end()) set.erase(it);
-}
-
-bool contains(const std::vector<std::string>& set, const std::string& key) {
-    return std::find(set.begin(), set.end(), key) != set.end();
-}
-
-} // namespace
-
-bool GameState::flag(const std::string& name) const { return contains(flags_, name); }
-void GameState::setFlag(const std::string& name, bool value) { setIn(flags_, name, value); }
-
-bool GameState::hasCollectible(const std::string& name, const std::string& area) const {
-    return contains(collectibles_, area + "/" + name);
-}
-
-void GameState::setCollectible(const std::string& name, const std::string& area, bool collected) {
-    setIn(collectibles_, area + "/" + name, collected);
-}
-
 bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& grid) {
     using T = ConditionDef::Type;
     switch (c.type) {

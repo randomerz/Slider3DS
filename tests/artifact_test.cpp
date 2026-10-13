@@ -94,9 +94,8 @@ TEST(world_player_rides_tile) {
     // World::update: the player standing on tile 1 rides it as it slides up one slot; while it
     // slides, the player is fenced in and the slot it slid over (tile 8's) isn't solid.
     World world(village());
-    world.player.x = 0;
-    world.player.y = 3; // on tile 1, outdoors
-    world.player.stile = world.grid.stileUnder(0, 3);
+    world.placeNear(0, 3); // on tile 1, outdoors (somewhere free: a resting player is pushed out)
+    const float startY = world.player.y;
     CHECK(world.player.stile == 1);
     CHECK(world.artifact.tryMove(world.grid, 0, 0, 0, 1, world.player.stile));
     // Tile 8 (the empty slot above) jumped below and has its collider off while 1 slides over it.
@@ -105,13 +104,16 @@ TEST(world_player_rides_tile) {
     for (int i = 0; i < 120 && !world.artifact.queueEmpty(); i++) {
         world.update(DT, 0, 0, false);
         if (i == 30) {
-            const float px = world.player.x, py = world.player.y;
-            fencedIn = boxBlocker(world, {px + 8.0f, py - 0.01f, px + 9.0f, py + 0.01f}, false).kind == Blocker::Wall;
+            float tx, ty; // tile 1's center; its right edge (a fence while it slides) is 8.5 to the right
+            world.grid.ownerBase(1, tx, ty);
+            const float py = world.player.y;
+            fencedIn = boxBlocker(world, {tx + 8.0f, py - 0.01f, tx + 9.0f, py + 0.01f}, false).kind == Blocker::Wall;
             Blocker b = boxBlocker(world, {-0.01f, -3.01f, 0.01f, -2.99f}, false); // inside tile 8's new slot
             tile8Solid = b.kind == Blocker::InactiveTile && b.index == 8;
         }
     }
-    check(std::fabs(world.player.y - 20.0f) < 1e-3f, "player rode tile 1 up one slot (y " + std::to_string(world.player.y) + ")");
+    check(std::fabs(world.player.y - startY - 17.0f) < 1e-3f,
+          "player rode tile 1 up one slot (moved " + std::to_string(world.player.y - startY) + ")");
     CHECK(world.player.stile == 1);
     CHECK(fencedIn);
     check(!tile8Solid, "tile 8's slot is not solid mid-slide (its collider is off)");

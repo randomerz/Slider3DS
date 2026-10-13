@@ -22,20 +22,30 @@ void runCall(World& world, const CallDef& c) {
     case M::SetActive:
         world.objects.setActive(world.area, c.target, c.boolArg);
         break;
-    case M::TeleportHard:
-        teleport(world, c.dx, c.dy, c.tpToHouse);
+    case M::TeleportHard: {
+        const TeleportDef& t = world.area.teleports[c.data];
+        teleport(world, t.dx, t.dy, t.tpToHouse);
         break;
-    case M::TeleportRelativePlayer:
-        teleport(world, world.player.x + c.dx, world.player.y + c.dy, c.tpToHouse);
+    }
+    case M::TeleportRelativePlayer: {
+        const TeleportDef& t = world.area.teleports[c.data];
+        teleport(world, world.player.x + t.dx, world.player.y + t.dy, t.tpToHouse);
         break;
-    case M::TeleportRelativeMe:
-        world.grid.ownerBase(c.owner, bx, by);
-        teleport(world, bx + c.x + c.dx, by + c.y + c.dy, c.tpToHouse);
+    }
+    case M::TeleportRelativeMe: {
+        // The changer is the call's target object (it may have moved at runtime).
+        const TeleportDef& t = world.area.teleports[c.data];
+        if (c.target >= 0) world.objectBase(c.target, t.owner, bx, by);
+        else world.grid.ownerBase(t.owner, bx, by);
+        teleport(world, bx + t.x + t.dx, by + t.y + t.dy, t.tpToHouse);
         break;
-    case M::TeleportTransform:
-        world.grid.ownerBase(c.goToOwner, bx, by);
-        teleport(world, bx + c.goToX + c.dx, by + c.goToY + c.dy, c.tpToHouse);
+    }
+    case M::TeleportTransform: {
+        const TeleportDef& t = world.area.teleports[c.data];
+        world.grid.ownerBase(t.goToOwner, bx, by);
+        teleport(world, bx + t.goToX + t.dx, by + t.goToY + t.dy, t.tpToHouse);
         break;
+    }
     case M::ActivateSTile:
         world.grid.setTileActive(c.intArg, true);
         break;
@@ -46,13 +56,13 @@ void runCall(World& world, const CallDef& c) {
         world.player.onWater = c.boolArg;
         break;
     case M::FadeFromBlack:
-        world.fade = 1;
+        world.effects.fade = 1;
         break;
     case M::CheckConditions:
-        runConditionals(world, world.area.conditionCheckers[c.checker].conditionals);
+        runConditionals(world, world.area.conditionCheckers[c.data].conditionals);
         break;
     case M::ChangeScenes:
-        world.leftArea = true;
+        world.effects.leftArea = true;
         break;
     case M::Unsupported:
         break;

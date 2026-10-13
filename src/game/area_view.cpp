@@ -53,6 +53,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     const Grid& grid = world.grid;
     auto inRange = [&](int sortLayer) { return sortLayer >= minSortLayer && sortLayer <= maxSortLayer; };
     auto ownerShown = [&](int owner) { return owner == 0 || grid.tileActive(owner) || showInactive_; };
+    const ObjectStates& objects = world.objects;
     items_.clear();
 
     // Tile layers sort as whole renderers, by the center of their bounds.
@@ -70,9 +71,9 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     }
     for (size_t i = 0; i < area.worldSprites.size(); i++) {
         const WorldSprite& ws = area.worldSprites[i];
-        if (!inRange(ws.place.sortLayer) || !world.objects.active(ws) || !ownerShown(ws.owner)) continue;
+        if (!inRange(ws.place.sortLayer) || !objects.active(ws) || !ownerShown(objects.owner(ws.object, ws.owner))) continue;
         float bx, by;
-        grid.ownerBase(ws.owner, bx, by);
+        world.objectBase(ws.object, ws.owner, bx, by);
         const SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
         float px, py;
         if (!spriteRect(area, sp, px, py)) continue;
@@ -81,7 +82,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     const Player& pl = world.player;
     const uint32_t facing = pl.facingLeft ? (uint32_t)plat::FLIP_X : 0u;
     const SpritePlacement* playerParts[] = {&area.player.body, pl.onWater ? &area.player.boat : nullptr,
-                                            world.interactables.empty() ? nullptr : &area.player.actionIndicator};
+                                            world.promptShown() ? &area.player.actionIndicator : nullptr};
     for (const SpritePlacement* p : playerParts) {
         if (!p || p->sprite < 0 || !inRange(p->sortLayer)) continue;
         // The body flips with facing (SpriteRenderer.flipX); its children (boat, indicator) don't.

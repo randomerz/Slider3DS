@@ -154,9 +154,9 @@ Blocker boxBlocker(const World& world, const Box& box, bool onWater) {
 }
 
 bool colliderOverlaps(const World& world, const ObjectCollider& c, const Box& box) {
-    if (!world.objects.active(c) || !ownerCollides(world.grid, c.owner)) return false;
+    if (!world.objects.active(c) || !ownerCollides(world.grid, world.objects.owner(c.object, c.owner))) return false;
     float bx, by;
-    world.grid.ownerBase(c.owner, bx, by);
+    world.objectBase(c.object, c.owner, bx, by);
     return objectHit(c, bx, by, inner(box));
 }
 
@@ -195,14 +195,13 @@ float sweep(const World& world, const Hitbox& hb, float& x, float& y,
     return t;
 }
 
-// Box2D's push-out for a box that overlaps something: the nearest free spot within one unit, in
-// 1/16 steps along 8 directions. False if it is buried deeper than that.
-bool pushOut(const World& world, const Hitbox& hb, float& x, float& y,
-             bool onWater) {
+// Box2D's push-out for a box that overlaps something: the nearest free spot along 8 directions,
+// in 1/16 steps within a unit, then 1/4 steps out to 4 units. False if it is buried deeper.
+bool pushOut(const World& world, const Hitbox& hb, float& x, float& y, bool onWater) {
     static const float dirs[8][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {0.7071f, 0.7071f}, {-0.7071f, 0.7071f},
                                      {0.7071f, -0.7071f}, {-0.7071f, -0.7071f}};
-    for (int k = 1; k <= 16; k++) {
-        const float r = k / 16.0f;
+    for (int k = 1; k <= 16 + 12; k++) {
+        const float r = k <= 16 ? k / 16.0f : 1.0f + (k - 16) / 4.0f;
         for (const auto& d : dirs) {
             if (!boxBlocked(world, hitboxAt(hb, x + d[0] * r, y + d[1] * r), onWater)) {
                 x += d[0] * r;
@@ -241,18 +240,19 @@ bool contactNormal(const World& world, const Hitbox& hb, float x, float y,
 
 bool moveWithCollision(const World& world, const Hitbox& hb, float& x,
                        float& y, float dx, float dy, bool onWater) {
-    if (dx == 0 && dy == 0) return false;
     bool moved = false;
     if (boxBlocked(world, hitboxAt(hb, x, y), onWater)) {
-        // Overlapping (e.g. a tile slid onto the player): pushed out first, like Box2D. Buried too
-        // deep to push out, it walks free rather than getting stuck.
+        // Overlapping (a tile slid onto the player, a collider switched on around it): pushed out
+        // first, like Box2D, even when not moving. Buried deeper than the push-out reaches (only
+        // possible inside an uncollected slot), it walks free rather than being stuck for good.
         if (!pushOut(world, hb, x, y, onWater)) {
             x += dx;
             y += dy;
-            return true;
+            return dx != 0 || dy != 0;
         }
         moved = true;
     }
+    if (dx == 0 && dy == 0) return moved;
     for (int axis = 0; axis < 2; axis++) {
         const float d = axis == 0 ? dx : dy;
         if (d == 0) continue;

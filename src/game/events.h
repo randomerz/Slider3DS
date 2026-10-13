@@ -1,6 +1,5 @@
-// Runs exported UnityEvent calls (CallDef) against the World: the methods the Village needs that
-// the port supports so far (see CallDef::Method). Unsupported calls do nothing; the exporter's
-// report lists them.
+// Runs exported UnityEvent calls (CallDef) against the World: the methods the port supports so far
+// (SLIDER_CALL_METHODS in area.h). Unsupported calls do nothing; the exporter's report lists them.
 #pragma once
 
 #include <vector>

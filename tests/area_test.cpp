@@ -93,8 +93,17 @@ TEST(area_fixture_loads) {
     CHECK(a.interactions.size() == 1 && a.interactions[0].addToOnAction && a.interactions[0].excludeBoat &&
           !a.interactions[0].excludeLand && a.interactions[0].onSuccess.size() == 2);
     const CallDef& tp = a.interactions[0].onSuccess[0];
-    CHECK(tp.method == M::TeleportRelativeMe && tp.owner == 1 && tp.x == 1 && tp.y == 2 && tp.dy == -3 && tp.tpToHouse);
-    CHECK(a.interactions[0].onSuccess[1].method == M::CheckConditions && a.interactions[0].onSuccess[1].checker == 0);
+    CHECK(tp.method == M::TeleportRelativeMe && tp.data >= 0 && tp.data < (int)a.teleports.size());
+    if (tp.data >= 0 && tp.data < (int)a.teleports.size()) {
+        const TeleportDef& t = a.teleports[tp.data];
+        CHECK(t.owner == 1 && t.x == 1 && t.y == 2 && t.dy == -3 && t.tpToHouse && !t.hasGoTo);
+    }
+    CHECK(a.interactions[0].onSuccess[1].method == M::CheckConditions && a.interactions[0].onSuccess[1].data == 0);
+    // Each object's components: Root/OC (2) has the trigger event, then the interaction.
+    CHECK(a.componentStart.size() == a.objects.size() + 1);
+    auto refs = a.components(2);
+    CHECK(refs.end() - refs.begin() == 2 && refs.begin()[0].kind == ComponentRef::Kind::TriggerEvent &&
+          refs.begin()[1].kind == ComponentRef::Kind::Interaction);
     CHECK(a.triggerEvents.size() == 1 && a.triggerEvents[0].onEnter.size() == 1 &&
           a.triggerEvents[0].onEnter[0].method == M::SetFlagOn && a.triggerEvents[0].onEnter[0].stringArg == "touched");
     CHECK(a.collectibles.size() == 1 && a.collectibles[0].name == "Slider 2" && a.collectibles[0].disableAtStart &&

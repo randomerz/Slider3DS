@@ -68,11 +68,11 @@ TEST(starts_run_when_their_object_first_activates) {
     check(buried >= 0 && slider7 < area.collectibles.size(), "the buried slider and its collectible exist");
     if (buried < 0 || slider7 == area.collectibles.size()) return;
     const int object = area.collectibles[slider7].object;
-    check(!world.starts.collectibleStarted(slider7), "not started while its parent is hidden");
+    check(!world.starts.started(area, ComponentRef::Kind::Collectible, (int)slider7), "not started while its parent is hidden");
     world.objects.setActive(area, buried, true);
     check(world.objects.activeInHierarchy(object), "shown with its parent ...");
     world.starts.update(world);
-    check(world.starts.collectibleStarted(slider7) && !world.objects.activeInHierarchy(object), "... then its Start hides it");
+    check(world.starts.started(area, ComponentRef::Kind::Collectible, (int)slider7) && !world.objects.activeInHierarchy(object), "... then its Start hides it");
     world.objects.setActive(area, object, true); // shown by an event later: Start doesn't run again
     world.starts.update(world);
     check(world.objects.activeInHierarchy(object), "and an event can show it afterwards");
@@ -174,7 +174,7 @@ TEST(start_checks_skip_the_inactive_raft) {
     int found = 0;
     for (size_t i = 0; i < area.conditionCheckers.size(); i++)
         if (area.conditionCheckers[i].object == raft) {
-            check(!world.starts.checkerStarted(i), "the raft's check did not run");
+            check(!world.starts.started(area, ComponentRef::Kind::ConditionChecker, (int)i), "the raft's check did not run");
             found++;
         }
     check(found == 1, "the raft has a checker");

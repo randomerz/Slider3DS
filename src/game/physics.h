@@ -55,8 +55,8 @@ std::string describe(const Area& area, const Blocker& b);
 // Moves the player at (x, y) with hitbox `hb` by (dx, dy): X first, then Y, each as far as it goes
 // before touching a collider; a single-axis step blocked by a round or slanted collider slides
 // around it. A box that already overlaps something (a tile slid onto the player) is first pushed
-// out to the nearest free spot, as Box2D would; one buried deeper than a unit walks free. Returns
-// true if it moved.
+// out to the nearest free spot, as Box2D would, also when (dx, dy) is zero; one buried deeper than
+// the push-out reaches (4 units) walks free. Returns true if it moved.
 bool moveWithCollision(const World& world, const Hitbox& hb, float& x, float& y, float dx, float dy, bool onWater);
 
 // The nearest point to (x, y) where hitbox `hb` (on foot) is free, searching outward in half-unit

@@ -18,6 +18,23 @@ const Spawn* Area::spawn(const char* name) const {
     return nullptr;
 }
 
+// Area::componentStart / componentRefs from the per-kind vectors (objects already validated).
+static void buildComponentIndex(Area& a) {
+    using K = ComponentRef::Kind;
+    std::vector<std::vector<ComponentRef>> byObject(a.objects.size());
+    for (size_t i = 0; i < a.triggerEvents.size(); i++) byObject[a.triggerEvents[i].object].push_back({K::TriggerEvent, (int)i});
+    for (size_t i = 0; i < a.interactions.size(); i++) byObject[a.interactions[i].object].push_back({K::Interaction, (int)i});
+    for (size_t i = 0; i < a.collectibles.size(); i++) byObject[a.collectibles[i].object].push_back({K::Collectible, (int)i});
+    for (size_t i = 0; i < a.conditionCheckers.size(); i++)
+        byObject[a.conditionCheckers[i].object].push_back({K::ConditionChecker, (int)i});
+    a.componentStart.assign(1, 0);
+    a.componentRefs.clear();
+    for (const auto& refs : byObject) {
+        a.componentRefs.insert(a.componentRefs.end(), refs.begin(), refs.end());
+        a.componentStart.push_back((int)a.componentRefs.size());
+    }
+}
+
 int Area::findObject(const std::string& path) const {
     for (size_t i = 0; i < objects.size(); i++)
         if (objects[i].path == path) return (int)i;
@@ -54,26 +71,22 @@ static SpritePlacement readPlacement(const Json& j) {
 
 static CallDef::Method callMethod(const std::string& name) {
     using M = CallDef::Method;
-    static const std::pair<const char*, M> methods[] = {
-        {"GameObject.SetActive", M::SetActive},
-        {"PlayerPositionChanger.UPPHard", M::TeleportHard},
-        {"PlayerPositionChanger.UPPRelativePlayer", M::TeleportRelativePlayer},
-        {"PlayerPositionChanger.UPPRelativeMe", M::TeleportRelativeMe},
-        {"PlayerPositionChanger.UPPTransform", M::TeleportTransform},
-        {"Collectible.ActivateSTile", M::ActivateSTile},
-        {"VarManager.SetBoolOn", M::SetFlagOn},
-        {"WaterLandColliderManager.SetOnWater", M::SetOnWater},
-        {"UIEffectApplier.FadeFromBlack", M::FadeFromBlack},
-        {"ConditionChecker.CheckConditions", M::CheckConditions},
-        {"SceneChanger.ChangeScenes", M::ChangeScenes},
-    };
-    for (const auto& m : methods)
-        if (name == m.first) return m.second;
+#define SLIDER_CALL_MATCH(id, exported) \
+    if (name == exported) return M::id;
+    SLIDER_CALL_METHODS(SLIDER_CALL_MATCH)
+#undef SLIDER_CALL_MATCH
     return M::Unsupported;
 }
 
-static std::vector<CallDef> readCalls(const Json& j) {
-    std::vector<CallDef> out;
+static bool isTeleport(CallDef::Method m) {
+    using M = CallDef::Method;
+    return m == M::TeleportHard || m == M::TeleportRelativePlayer || m == M::TeleportRelativeMe ||
+           m == M::TeleportTransform;
+}
+
+// Calls; teleport payloads go to out.teleports.
+static std::vector<CallDef> readCalls(const Json& j, Area& out) {
+    std::vector<CallDef> calls;
     for (const Json& c : j.items()) {
         CallDef d;
         d.name = c["method"].asString();
@@ -82,19 +95,25 @@ static std::vector<CallDef> readCalls(const Json& j) {
         d.boolArg = c["bool"].asBool();
         d.intArg = c["int"].asInt();
         d.stringArg = c["string"].asString();
-        d.owner = c["owner"].asInt();
-        d.x = c["pos"].at(0).asFloat();
-        d.y = c["pos"].at(1).asFloat();
-        d.dx = c["dPos"].at(0).asFloat();
-        d.dy = c["dPos"].at(1).asFloat();
-        d.tpToHouse = c["tpToHouse"].asBool();
-        d.goToOwner = c["goToOwner"].asInt();
-        d.goToX = c["goToPos"].at(0).asFloat();
-        d.goToY = c["goToPos"].at(1).asFloat();
-        d.checker = c["checker"].asInt(-1);
-        out.push_back(std::move(d));
+        if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
+        if (isTeleport(d.method)) {
+            TeleportDef t;
+            t.owner = c["owner"].asInt();
+            t.x = c["pos"].at(0).asFloat();
+            t.y = c["pos"].at(1).asFloat();
+            t.dx = c["dPos"].at(0).asFloat();
+            t.dy = c["dPos"].at(1).asFloat();
+            t.tpToHouse = c["tpToHouse"].asBool();
+            t.hasGoTo = c.has("goToPos");
+            t.goToOwner = c["goToOwner"].asInt();
+            t.goToX = c["goToPos"].at(0).asFloat();
+            t.goToY = c["goToPos"].at(1).asFloat();
+            d.data = (int)out.teleports.size();
+            out.teleports.push_back(t);
+        }
+        calls.push_back(std::move(d));
     }
-    return out;
+    return calls;
 }
 
 static ConditionDef readCondition(const Json& c) {
@@ -119,11 +138,11 @@ static ConditionDef readCondition(const Json& c) {
     return d;
 }
 
-static ConditionalsDef readConditionals(const Json& j) {
+static ConditionalsDef readConditionals(const Json& j, Area& out) {
     ConditionalsDef c;
     for (const Json& d : j["conditions"].items()) c.conditions.push_back(readCondition(d));
-    c.onSuccess = readCalls(j["onSuccess"]);
-    c.onFail = readCalls(j["onFail"]);
+    c.onSuccess = readCalls(j["onSuccess"], out);
+    c.onFail = readCalls(j["onFail"], out);
     return c;
 }
 
@@ -253,12 +272,17 @@ static bool validate(const Area& a, std::string* error) {
             if (p.size() % 2 != 0) return fail(error, "collider " + a.pathOf(c.object) + ": odd point list");
     }
     auto callsOk = [&](const std::vector<CallDef>& calls) {
+        using M = CallDef::Method;
         for (const CallDef& c : calls) {
             if (c.target != -1 && !objectOk(c.target)) return false;
-            if (c.method == CallDef::Method::SetActive && c.target == -1) return false;
-            if (c.method == CallDef::Method::CheckConditions && (c.checker < 0 || c.checker >= (int)a.conditionCheckers.size()))
-                return false;
-            if (!ownerOk(c.owner) || !ownerOk(c.goToOwner)) return false;
+            if (c.method == M::SetActive && c.target == -1) return false;
+            if (c.method == M::CheckConditions && (c.data < 0 || c.data >= (int)a.conditionCheckers.size())) return false;
+            if (isTeleport(c.method)) {
+                if (c.data < 0 || c.data >= (int)a.teleports.size()) return false;
+                const TeleportDef& t = a.teleports[c.data];
+                if (!ownerOk(t.owner) || !ownerOk(t.goToOwner)) return false;
+                if (c.method == M::TeleportTransform && !t.hasGoTo) return false;
+            }
         }
         return true;
     };
@@ -372,17 +396,17 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
     for (const Json& c : doc["conditionCheckers"].items())
         out.conditionCheckers.push_back({c["object"].asInt(-1), c["enabled"].asBool(true), c["checkOnStart"].asBool(),
-                                         readConditionals(c)});
+                                         readConditionals(c, out)});
     for (const Json& c : doc["interactions"].items())
         out.interactions.push_back({c["object"].asInt(-1), c["addToOnAction"].asBool(), c["excludeBoat"].asBool(),
                                     c["excludeLand"].asBool(), c["isCarryingItem"].asBool(), c["itemName"].asString(),
-                                    readCalls(c["onSuccess"])});
+                                    readCalls(c["onSuccess"], out)});
     for (const Json& c : doc["triggerEvents"].items())
-        out.triggerEvents.push_back({c["object"].asInt(-1), c["onPlayerEnter"].asBool(true), readCalls(c["onEnter"]),
-                                     readCalls(c["onExit"])});
+        out.triggerEvents.push_back({c["object"].asInt(-1), c["onPlayerEnter"].asBool(true), readCalls(c["onEnter"], out),
+                                     readCalls(c["onExit"], out)});
     for (const Json& c : doc["collectibles"].items())
         out.collectibles.push_back({c["object"].asInt(-1), c["name"].asString(), c["area"].asString(),
-                                    c["disableAtStart"].asBool(), c["sprite"].asInt(-1), readCalls(c["onCollect"])});
+                                    c["disableAtStart"].asBool(), c["sprite"].asInt(-1), readCalls(c["onCollect"], out)});
     out.fadeDuration = doc["fadeDuration"].asFloat(1);
 
     if (doc.has("player")) {
@@ -475,6 +499,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
 
     if (!validate(out, error)) return false;
+    buildComponentIndex(out);
 
     // Unity draws by (sorting layer, order); stable keeps file order within equal keys.
     std::stable_sort(out.layers.begin(), out.layers.end(), [](const TileLayer& a, const TileLayer& b) {

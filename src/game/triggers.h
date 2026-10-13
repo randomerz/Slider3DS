@@ -4,7 +4,8 @@
 //   - PlayerConditionals: offered as an interaction while inside (addToOnAction, unless excluded
 //     on water / land), or run on entering;
 //   - Collectible: picked up on entering (added to the GameState, hidden, onCollect run).
-// A trigger that turns off (object hidden, tile sliding) while the player is inside counts as an exit.
+// A trigger that turns off (object hidden, tile sliding) while the player is inside counts as an
+// exit, and so does the player's collider changing (onWater: foot <-> boat), followed by enters.
 #pragma once
 
 #include <cstdint>
@@ -24,4 +25,5 @@ public:
 
 private:
     std::vector<uint8_t> touching_, now_; // per Area::objects index
+    int lastOnWater_ = -1;                // the player's collider at the last update (-1 = none yet)
 };

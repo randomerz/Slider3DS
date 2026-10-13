@@ -1,11 +1,14 @@
 // The running game in one area: the loaded (read-only) Area plus every piece of runtime state,
 // and the per-frame simulation. Systems take the World rather than a growing list of its parts:
-// physics and AreaView read it, ArtifactUI and the update change it.
+// physics and AreaView read it, ArtifactUI, events and the update change it.
 #pragma once
+
+#include <cstdint>
+#include <vector>
 
 #include "game/area.h"
 #include "game/artifact.h"
-#include "game/conditions.h"
+#include "game/game_state.h"
 #include "game/grid.h"
 #include "game/object_states.h"
 #include "game/starts.h"
@@ -23,6 +26,24 @@ struct Player {
     const Hitbox& hitbox(const Area& area) const { return onWater ? area.player.boatBox : area.player.footBox; }
 };
 
+// Something the action button can use (Unity's IInteractable in PlayerAction.availableInteractables).
+// Only PlayerConditionals so far; NPCs and items join as more kinds.
+struct Interactable {
+    enum class Kind : uint8_t { Interaction }; // Interaction: Area::interactions[index]
+    Kind kind;
+    int index;
+    int priority = 0;        // IInteractable.InteractionPriority (PlayerConditionals: 0)
+    bool showsPrompt = true; // DisplayInteractionPrompt: shows the indicator above the player
+
+    bool sameAs(const Interactable& o) const { return kind == o.kind && index == o.index; }
+};
+
+// Screen-level effects events ask for (UIEffects, SceneChanger), for the frontend to show.
+struct ScreenEffects {
+    float fade = 0;        // FadeFromBlack: black overlay alpha, falls to 0 over area.fadeDuration
+    bool leftArea = false; // SceneChanger.ChangeScenes ran (the port ends at the Village)
+};
+
 class World {
 public:
     static constexpr float MOVE_SPEED = 5.0f; // world units per second (Player.moveSpeed)
@@ -31,8 +52,9 @@ public:
     // at the origin until placed.
     explicit World(const Area& area);
 
-    // Scene objects as a fresh load with the current state would have them: authored, then every
-    // Start runs again (e.g. after changing the state in a dev control). Touches nothing.
+    // Scene objects as a fresh load with the current state would have them (e.g. after changing
+    // the state in a dev control): authored, then SGrid.Start (collected collectibles hidden),
+    // then every component's Start. Touches no triggers.
     void reloadObjects();
     // Puts the player at a spawn point (SceneSpawns), in the boat if it says so.
     void placeAt(const Spawn& spawn);
@@ -40,11 +62,21 @@ public:
     void placeNear(float x, float y);
 
     // One frame: queued slides advance and the player rides the tile under it; the player walks
-    // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless noclip;
-    // triggers react to what it touches; then Starts run for components that became active.
+    // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless noclip
+    // (and is pushed out of anything it overlaps); triggers react to what it touches; then Starts
+    // run for components that became active.
     void update(float dt, float moveX, float moveY, bool noclip);
-    // The action button (PlayerAction): runs every interaction on offer.
+
+    // PlayerAction: offer / withdraw an interactable, and the action button: runs the offered
+    // interactables with the highest priority.
+    void offer(const Interactable& it);
+    void withdraw(const Interactable& it);
     void interact();
+    bool promptShown() const; // any offered interactable shows the prompt (the indicator)
+
+    // World position a component of `object` is placed relative to: its owner STile's center (the
+    // object's runtime owner, else `exportedOwner`) plus the object's runtime offset.
+    void objectBase(int object, int exportedOwner, float& x, float& y) const;
 
     const Area& area;
     Grid grid;
@@ -54,7 +86,6 @@ public:
     TriggerTracker triggers;
     GameState state;
     Player player;
-    std::vector<int> interactables; // Area::interactions on offer (PlayerAction.availableInteractables)
-    float fade = 0;                 // FadeFromBlack: overlay alpha, falls to 0 over area.fadeDuration
-    bool leftArea = false;          // SceneChanger.ChangeScenes ran (the port ends at the Village)
+    std::vector<Interactable> interactables; // on offer now
+    ScreenEffects effects;
 };
