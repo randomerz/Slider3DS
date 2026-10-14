@@ -85,6 +85,16 @@ void ObjectStates::propagate(const Area& area, int object) {
     }
 }
 
+const std::vector<int>& ObjectStates::moved(const Area& area) const {
+    if (movedVersion_ != placementVersion_) {
+        moved_.clear();
+        for (int i = 0; i < (int)owner_.size(); i++)
+            if (isMoved(area, i)) moved_.push_back(i);
+        movedVersion_ = placementVersion_;
+    }
+    return moved_;
+}
+
 void ObjectStates::setActive(const Area& area, int object, bool active) {
     if (self_[object] == (uint8_t)active) return;
     self_[object] = active;

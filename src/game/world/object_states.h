@@ -46,6 +46,11 @@ public:
     void setFlipX(int object, bool flip) { flipX_[object] = flip ? 1 : 0; }
     int flipX(int object) const { return flipX_[object]; }
 
+    // Objects not where they were exported (another owner, or an offset): physics checks their
+    // colliders on their own, as the per-owner broadphase groups place colliders as exported.
+    const std::vector<int>& moved(const Area& area) const;
+    bool isMoved(const Area& area, int object) const { return owner_[object] != area.objects[object].owner || offX_[object] != 0 || offY_[object] != 0; }
+
     // Bumped when active state / placement changes, so per-frame work can skip frames where what
     // it depends on didn't change (Starts watch activity; placement has no reader yet: for walks).
     uint32_t activeVersion() const { return activeVersion_; }
@@ -63,4 +68,6 @@ private:
     std::vector<int8_t> flipX_;
     std::vector<uint8_t> colliderEnabled_; // per ObjectCollider::slot
     uint32_t activeVersion_ = 0, placementVersion_ = 0;
+    mutable std::vector<int> moved_;       // moved(), as of movedVersion_
+    mutable uint32_t movedVersion_ = 0;
 };

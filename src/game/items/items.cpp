@@ -195,12 +195,29 @@ void Items::computeDrop(const World& world) {
     const float dx = p.lastMoveX / len, dy = p.lastMoveY / len;
     const float hx = 0.5f * (std::fabs(dx) * DROP_BOX_WIDTH + std::fabs(dy) * DROP_BOX_HEIGHT);
     const float hy = 0.5f * (std::fabs(dy) * DROP_BOX_WIDTH + std::fabs(dx) * DROP_BOX_HEIGHT);
-    const float step = 1.0f / 16;
-    float reach = MAX_DROP_DISTANCE;
-    for (float s = 0; s <= MAX_DROP_DISTANCE + 1e-4f; s += step) {
+    auto blockedAt = [&](float s) {
         const float cx = bx + dx * s, cy = by + dy * s;
-        if (boxBlocked(world, {cx - hx, cy - hy, cx + hx, cy + hy}, p.onWater)) {
-            reach = std::max(0.0f, s - step);
+        return boxBlocked(world, {cx - hx, cy - hy, cx + hx, cy + hy}, p.onWater);
+    };
+    float reach = MAX_DROP_DISTANCE;
+    // The whole sweep's bounds clear (open ground, the usual case): one query.
+    const float ex = bx + dx * MAX_DROP_DISTANCE, ey = by + dy * MAX_DROP_DISTANCE;
+    if (boxBlocked(world, {std::min(bx, ex) - hx, std::min(by, ey) - hy, std::max(bx, ex) + hx, std::max(by, ey) + hy}, p.onWater)) {
+        // Otherwise the first blocked step (steps shorter than the box, so nothing slips between),
+        // then bisection between it and the last clear one.
+        const float step = 1.0f / 8;
+        for (float s = 0; s <= MAX_DROP_DISTANCE + 1e-4f; s += step) {
+            if (!blockedAt(s)) continue;
+            float clear = s - step, hit = s;
+            if (clear < 0) {
+                reach = 0;
+                break;
+            }
+            for (int k = 0; k < 3; k++) {
+                const float mid = (clear + hit) * 0.5f;
+                (blockedAt(mid) ? hit : clear) = mid;
+            }
+            reach = clear;
             break;
         }
     }

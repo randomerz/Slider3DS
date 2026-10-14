@@ -89,6 +89,24 @@ bool objectHit(const ObjectCollider& c, float ox, float oy, const Box& in) {
     return false;
 }
 
+// A collision tilemap (its owner's center at (bx, by)) has a shape overlapping `in`.
+bool layerHitsBox(const Area& area, const CollisionLayer& L, float bx, float by, const Box& in) {
+    // Cell (cx, cy)'s min corner sits at (ox + cx, oy + cy); a shape may poke into its neighbours.
+    const float ox = bx + L.originX + L.minX, oy = by + L.originY + L.minY;
+    const int x0 = std::max(0, (int)std::floor(in.minX - ox) - 1);
+    const int x1 = std::min(L.w - 1, (int)std::floor(in.maxX - ox) + 1);
+    const int y0 = std::max(0, (int)std::floor(in.minY - oy) - 1);
+    const int y1 = std::min(L.h - 1, (int)std::floor(in.maxY - oy) + 1);
+    for (int cy = y0; cy <= y1; cy++)
+        for (int cx = x0; cx <= x1; cx++) {
+            const int s = L.cell(cx, cy);
+            if (s < 0) continue;
+            for (const Polygon& poly : area.shapes[s])
+                if (polygonHitsBox(poly.data(), poly.size() / 2, ox + cx, oy + cy, in)) return true;
+        }
+    return false;
+}
+
 bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
     switch (L.mode) {
     case CollisionMode::OnFoot: if (onWater) return false; break;
@@ -126,30 +144,41 @@ Blocker boxBlocker(const World& world, const Box& box, bool onWater, int ignoreC
             return {Blocker::InactiveTile, t.islandId};
     }
 
-    for (size_t li = 0; li < area.collision.size(); li++) {
-        const CollisionLayer& L = area.collision[li];
-        if (!layerEnabled(grid, L, onWater)) continue;
-        float bx, by;
-        grid.ownerBase(L.owner, bx, by);
-        // Cell (cx, cy)'s min corner sits at (ox + cx, oy + cy); a shape may poke into its neighbours.
-        const float ox = bx + L.originX + L.minX, oy = by + L.originY + L.minY;
-        int x0 = std::max(0, (int)std::floor(in.minX - ox) - 1);
-        int x1 = std::min(L.w - 1, (int)std::floor(in.maxX - ox) + 1);
-        int y0 = std::max(0, (int)std::floor(in.minY - oy) - 1);
-        int y1 = std::min(L.h - 1, (int)std::floor(in.maxY - oy) + 1);
-        for (int cy = y0; cy <= y1; cy++) {
-            for (int cx = x0; cx <= x1; cx++) {
-                int s = L.cell(cx, cy);
-                if (s < 0) continue;
-                for (const Polygon& poly : area.shapes[s])
-                    if (polygonHitsBox(poly.data(), poly.size() / 2, ox + cx, oy + cy, in))
-                        return {Blocker::Layer, (int)li};
-            }
-        }
+    // Broadphase: only owners whose colliders' bounds (at the owner's current position) touch the box.
+    // (islandIds are < 64: validated at load.)
+    const size_t owners = area.colliderGroups.size();
+    float baseX[64], baseY[64];
+    bool near[64];
+    for (size_t o = 0; o < owners && o < 64; o++) {
+        const ColliderGroup& g = area.colliderGroups[o];
+        near[o] = false;
+        if (g.empty()) continue;
+        grid.ownerBase((int)o, baseX[o], baseY[o]);
+        near[o] = boxesOverlap(in, {g.minX + baseX[o], g.minY + baseY[o], g.maxX + baseX[o], g.maxY + baseY[o]});
     }
 
-    for (size_t i = 0; i < area.objectColliders.size(); i++)
-        if ((int)i != ignoreCollider && colliderOverlaps(world, area.objectColliders[i], box)) return {Blocker::Object, (int)i};
+    for (size_t o = 0; o < owners && o < 64; o++) {
+        if (!near[o]) continue;
+        for (int li : area.colliderGroups[o].layers)
+            if (layerEnabled(grid, area.collision[li], onWater) && layerHitsBox(area, area.collision[li], baseX[o], baseY[o], in))
+                return {Blocker::Layer, li};
+    }
+
+    // Object colliders where they were exported, by owner; then those of objects moved since.
+    const ObjectStates& objects = world.objects;
+    for (size_t o = 0; o < owners && o < 64; o++) {
+        if (!near[o] || (o != 0 && !ownerCollides(grid, (int)o))) continue;
+        for (int i : area.colliderGroups[o].colliders) {
+            const ObjectCollider& c = area.objectColliders[i];
+            if (i == ignoreCollider || !objects.active(c) || objects.isMoved(area, c.object)) continue;
+            if (objectHit(c, baseX[o], baseY[o], in)) return {Blocker::Object, i};
+        }
+    }
+    for (int object : objects.moved(area))
+        for (int k = area.objectColliderStart[object]; k < area.objectColliderStart[object + 1]; k++) {
+            const int i = area.objectCollidersOf[k];
+            if (i != ignoreCollider && colliderOverlaps(world, area.objectColliders[i], box)) return {Blocker::Object, i};
+        }
     return {};
 }
 

@@ -5,6 +5,7 @@
 
 #include "game/events/conditions.h"
 #include "game/items/items.h"
+#include "game/physics/physics.h"
 #include "game/world/world.h"
 #include "test.h"
 #include "test_platform.h"
@@ -78,7 +79,8 @@ TEST(items_pick_up_animates_then_carries) {
     float x, y;
     world.objectPosition(0, x, y);
     check(near(x, 1) && near(y, 0), "during the animation the knot itself stays put");
-    check(world.objects.active(a.objectColliders[0]), "its collider too, until the end");
+    check(world.objects.active(a.objectColliders[0]) && boxBlocked(world, {0.9f, -0.1f, 1.1f, 0.1f}, false),
+          "its collider too, until the animation ends (AnimatePickUpEnd turns it off)");
     frames(world, 12); // 0.2 s: the sprite is on its way
     world.objectPosition(1, x, y);
     check(x < 1 && x > 0 && y > 0.25f && y < 1.0625f, "its sprite flies up toward the carry point");
@@ -86,6 +88,7 @@ TEST(items_pick_up_animates_then_carries) {
     world.objectPosition(0, x, y);
     check(!world.items.busy() && near(x, 0) && near(y, 0.8125f), "carried over the player's head");
     check(!world.objects.active(a.objectColliders[0]) && world.state.flag("picked"), "collider off, OnPickUp ran");
+    check(!boxBlocked(world, {0.9f, -0.1f, 1.1f, 0.1f}, false), "nothing solid left where it lay");
     frames(world, 30, 1, 0); // walk right
     world.objectPosition(0, x, y);
     check(near(x, world.player.x) && near(y, world.player.y + 0.8125f), "it follows the player");

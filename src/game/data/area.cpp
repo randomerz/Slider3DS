@@ -37,6 +37,44 @@ static void buildComponentIndex(Area& a) {
     }
 }
 
+// Area::colliderGroups / objectColliderStart / objectCollidersOf (objects and owners already validated).
+static void buildColliderIndex(Area& a) {
+    int maxOwner = 0;
+    for (const STileDef& s : a.stiles) maxOwner = std::max(maxOwner, s.islandId);
+    a.colliderGroups.assign(maxOwner + 1, ColliderGroup());
+    std::vector<bool> started(a.colliderGroups.size(), false);
+    auto grow = [&](int owner, float x0, float y0, float x1, float y1) {
+        ColliderGroup& g = a.colliderGroups[owner];
+        if (!started[owner]) {
+            g.minX = x0, g.minY = y0, g.maxX = x1, g.maxY = y1;
+            started[owner] = true;
+            return;
+        }
+        g.minX = std::min(g.minX, x0), g.minY = std::min(g.minY, y0);
+        g.maxX = std::max(g.maxX, x1), g.maxY = std::max(g.maxY, y1);
+    };
+    for (size_t i = 0; i < a.collision.size(); i++) {
+        const CollisionLayer& L = a.collision[i];
+        a.colliderGroups[L.owner].layers.push_back((int)i);
+        // (a cell's shape may poke one cell into its neighbours)
+        const float x0 = L.originX + L.minX, y0 = L.originY + L.minY;
+        grow(L.owner, x0 - 1, y0 - 1, x0 + L.w + 1, y0 + L.h + 1);
+    }
+    std::vector<std::vector<int>> byObject(a.objects.size());
+    for (size_t i = 0; i < a.objectColliders.size(); i++) {
+        const ObjectCollider& c = a.objectColliders[i];
+        a.colliderGroups[c.owner].colliders.push_back((int)i);
+        grow(c.owner, c.minX, c.minY, c.maxX, c.maxY);
+        byObject[c.object].push_back((int)i);
+    }
+    a.objectColliderStart.assign(1, 0);
+    a.objectCollidersOf.clear();
+    for (const auto& list : byObject) {
+        a.objectCollidersOf.insert(a.objectCollidersOf.end(), list.begin(), list.end());
+        a.objectColliderStart.push_back((int)a.objectCollidersOf.size());
+    }
+}
+
 int Area::findObject(const std::string& path) const {
     for (size_t i = 0; i < objects.size(); i++)
         if (objects[i].path == path) return (int)i;
@@ -379,7 +417,7 @@ static bool validate(const Area& a, std::string* error) {
         return fail(error, "grid: expected " + std::to_string(a.gridW * a.gridH) + " stiles");
     std::vector<bool> slotUsed(a.gridW * a.gridH, false);
     for (const STileDef& s : a.stiles) {
-        if (s.islandId <= 0 || s.width <= 0 || s.x < 0 || s.x >= a.gridW || s.y < 0 || s.y >= a.gridH ||
+        if (s.islandId <= 0 || s.islandId >= 64 || s.width <= 0 || s.x < 0 || s.x >= a.gridW || s.y < 0 || s.y >= a.gridH ||
             slotUsed[s.y * a.gridW + s.x])
             return fail(error, "stile " + std::to_string(s.islandId) + ": bad id, width or slot");
         slotUsed[s.y * a.gridW + s.x] = true;
@@ -783,6 +821,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
     if (!validate(out, error)) return false;
     buildComponentIndex(out);
+    buildColliderIndex(out);
 
     // Unity draws by (sorting layer, order); stable keeps file order within equal keys.
     std::stable_sort(out.layers.begin(), out.layers.end(), [](const TileLayer& a, const TileLayer& b) {

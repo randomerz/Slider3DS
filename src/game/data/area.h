@@ -416,6 +416,16 @@ struct AreaGridDef {
     int caveDoorRocks = -1;     // and hides these
 };
 
+// What collides on one owner (an STile, or 0 = the world), for physics' broadphase: its collision
+// tilemaps and the object colliders whose objects belong to it as exported, and their bounds
+// relative to the owner's center.
+struct ColliderGroup {
+    std::vector<int> layers;    // Area::collision indices
+    std::vector<int> colliders; // Area::objectColliders indices
+    float minX = 0, minY = 0, maxX = 0, maxY = 0;
+    bool empty() const { return layers.empty() && colliders.empty(); }
+};
+
 // A box collider relative to the player position: center offset and full size (edge radius included).
 struct Hitbox {
     float offX = 0, offY = 0, w = 0, h = 0;
@@ -512,6 +522,10 @@ struct Area {
         const ComponentRef* base = componentRefs.data();
         return {base + componentStart[object], base + componentStart[object + 1]};
     }
+    // Physics broadphase (derived at load): groups by owner islandId (index), and each object's
+    // solid colliders: objectCollidersOf[objectColliderStart[o] .. objectColliderStart[o + 1]).
+    std::vector<ColliderGroup> colliderGroups;
+    std::vector<int> objectColliderStart, objectCollidersOf;
     PlayerDef player;
     ArtifactDef artifact;
     std::vector<TileDef> tiles;
