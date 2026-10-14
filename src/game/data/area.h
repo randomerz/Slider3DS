@@ -122,6 +122,10 @@ struct ConditionDef {
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
 };
 
+// Whether a condition depends only on GameState and Grid (whose version() counters then tell when
+// it may have changed); a new condition kind must say which it is.
+bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type);
+
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
 //   SetActive               GameObject.SetActive(boolArg) on target
 //   TeleportHard            PlayerPositionChanger.UPPHard: player to dPos
@@ -284,10 +288,13 @@ struct NpcEmoteDef {
 struct NpcDef {
     int object = 0;
     std::string name;   // characterName
-    bool facingLeft = false; // spriteDefaultFacingLeft
+    bool facingLeft = false; // spriteDefaultFacingLeft (for walks: not read yet)
     NpcTextDef text;
     int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
     NpcEmoteDef emote;
+    // Some conditional reads more than the game state and the grid (PlayerCarryingItem, spec / not yet
+    // supported kinds), so its pick must be re-checked every frame (derived at load).
+    bool pollsEveryFrame = false;
     std::vector<NpcCondDef> conds;
 };
 

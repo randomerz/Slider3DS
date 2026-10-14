@@ -45,7 +45,7 @@ public:
     int flipX(int object) const { return flipX_[object]; }
 
     // Bumped when active state / placement changes, so per-frame work can skip frames where what
-    // it depends on didn't change (Starts watch activity; walking NPCs change placement every frame).
+    // it depends on didn't change (Starts watch activity; placement has no reader yet: for walks).
     uint32_t activeVersion() const { return activeVersion_; }
     uint32_t placementVersion() const { return placementVersion_; }
 

@@ -7244,8 +7244,6 @@
     {
       "object": 146,
       "name": "Romeo",
-      "owner": 1,
-      "pos": [6.75,0],
       "facingLeft": false,
       "text": {
         "box": [3.33,0.55,10.17,2.7],
@@ -7603,8 +7601,6 @@
     {
       "object": 169,
       "name": "Exploresse",
-      "owner": 1,
-      "pos": [-0.75,-145],
       "facingLeft": false,
       "text": {
         "box": [-4.17,-144.45,2.67,-142.3],
@@ -8403,8 +8399,6 @@
     {
       "object": 177,
       "name": "Archeologist",
-      "owner": 2,
-      "pos": [-5,3],
       "facingLeft": true,
       "text": {
         "box": [-8.42,3.55,-1.58,5.7],
@@ -9287,8 +9281,6 @@
     {
       "object": 199,
       "name": "Archibald",
-      "owner": 3,
-      "pos": [1.5,6],
       "facingLeft": false,
       "text": {
         "box": [-1.92,6.55,4.92,8.7],
@@ -9578,8 +9570,6 @@
     {
       "object": 237,
       "name": "Kevin",
-      "owner": 4,
-      "pos": [-6,4],
       "facingLeft": false,
       "text": {
         "box": [-9.42,4.55,-2.58,6.7],
@@ -9821,8 +9811,6 @@
     {
       "object": 246,
       "name": "TutorialSign",
-      "owner": 5,
-      "pos": [-6.75,0],
       "facingLeft": false,
       "text": {
         "box": [-10.17,0.55,-3.33,2.7],
@@ -10023,8 +10011,6 @@
     {
       "object": 280,
       "name": "TutorialSign",
-      "owner": 5,
-      "pos": [3,-145],
       "facingLeft": false,
       "text": {
         "box": [-0.42,-144.45,6.42,-142.3],
@@ -10139,8 +10125,6 @@
     {
       "object": 283,
       "name": "Pierre",
-      "owner": 6,
-      "pos": [-2,-3],
       "facingLeft": false,
       "text": {
         "box": [-5.42,-2.45,1.42,-0.3],
@@ -10484,8 +10468,6 @@
     {
       "object": 304,
       "name": "Nemsy",
-      "owner": 7,
-      "pos": [-6.5,1.5],
       "facingLeft": false,
       "text": {
         "box": [-9.92,2.05,-3.08,4.2],
@@ -10747,8 +10729,6 @@
     {
       "object": 324,
       "name": "Chad",
-      "owner": 8,
-      "pos": [3.5,3],
       "facingLeft": false,
       "text": {
         "box": [0.08,3.55,6.92,5.7],
@@ -11111,8 +11091,6 @@
     {
       "object": 365,
       "name": "Mike",
-      "owner": 9,
-      "pos": [0,-4.5],
       "facingLeft": false,
       "text": {
         "box": [-3.42,-3.95,3.42,-1.8],
@@ -11267,8 +11245,6 @@
     {
       "object": 397,
       "name": "Cathy",
-      "owner": 9,
-      "pos": [-3,-145],
       "facingLeft": false,
       "text": {
         "box": [-6.42,-144.45,0.42,-142.3],
@@ -11794,8 +11770,6 @@
     {
       "object": 434,
       "name": "Carlton",
-      "owner": 9,
-      "pos": [5.0625,-143.9375],
       "facingLeft": false,
       "text": {
         "box": [1.6425,-143.3875,8.4825,-141.2375],
@@ -12028,8 +12002,6 @@
     {
       "object": 41,
       "name": "Alien Log Sign",
-      "owner": 0,
-      "pos": [55.5,2.5],
       "facingLeft": false,
       "text": {
         "box": [52.08,3.05,58.92,5.2],
@@ -12102,8 +12074,6 @@
     {
       "object": 44,
       "name": "Salmon",
-      "owner": 0,
-      "pos": [46.5,17],
       "facingLeft": false,
       "text": {
         "box": [43.08,17.55,49.92,19.7],
@@ -12359,8 +12329,6 @@
     {
       "object": 51,
       "name": "TutorialSign",
-      "owner": 0,
-      "pos": [38,48],
       "facingLeft": false,
       "text": {
         "box": [34.58,48.55,41.42,50.7],
@@ -12419,8 +12387,6 @@
     {
       "object": 128,
       "name": "Fezziwig",
-      "owner": 0,
-      "pos": [69.5,69.5],
       "facingLeft": true,
       "text": {
         "box": [66.08,70.05,72.92,72.2],
@@ -12944,8 +12910,6 @@
     {
       "object": 138,
       "name": "Dock Sign",
-      "owner": 0,
-      "pos": [49,8.8125],
       "facingLeft": false,
       "text": {
         "box": [45.58,9.3625,52.42,11.5125],

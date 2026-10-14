@@ -139,7 +139,7 @@ void AreaView::drawDialogue(const World& world, int npc) {
     const Typer& typer = world.npcs.typer(npc);
     if (layouts_.size() != world.area.npcs.size()) layouts_.assign(world.area.npcs.size(), Layout());
     Layout& layout = layouts_[npc];
-    if (layout.textVersion != world.npcs.textVersion(npc)) {
+    if (layout.textVersion != world.npcs.textVersion(npc) || layout.glyphs.size() != text.chars.size()) {
         layoutDialogue(font_->def(), text, n.text, ppu_, layout.glyphs);
         layout.textVersion = world.npcs.textVersion(npc);
     }

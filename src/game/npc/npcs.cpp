@@ -145,7 +145,7 @@ void Npcs::typeCurrent(World& world, int npc) {
     // NPCConditionals.GetDialogueString: a line waiting for the player ends in a looping " ...".
     st.text = parseDialogue(l.waitForAction ? l.text + "<type> ...</type>" : l.text, world.state);
     st.typer.start(st.text);
-    st.textVersion++;
+    st.textVersion = ++textCounter_;
     setPing(world, npc, false); // DialogueDisplay.DisplaySentence
     st.typing = true;
     st.boxActive = true;
@@ -259,11 +259,12 @@ void Npcs::update(World& world, float dt) {
         }
         st.wasActive = active;
         if (!active) continue;
-        // NPCDialogueContext.Update, then NPC.Update. Conditions only read the game state and the
-        // grid, so the pick can't change while neither does.
+        // NPCDialogueContext.Update, then NPC.Update (re-picking the conditional; skipped while the
+        // game state and grid are unchanged, if that's all its conditions read).
         if (st.typing && st.typer.finished()) finishLine(world, i);
         tryDeactivate(world, i);
-        const bool changed = !st.polled || st.stateVersion != world.state.version() || st.gridVersion != world.grid.version();
+        const bool changed = !st.polled || area.npcs[i].pollsEveryFrame || st.stateVersion != world.state.version() ||
+                             st.gridVersion != world.grid.version();
         if (!dontInterruptShown(area, i) && changed) poll(world, i);
     }
     for (int i = 0; i < (int)s_.size(); i++) {

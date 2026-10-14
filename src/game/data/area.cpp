@@ -125,6 +125,21 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
     return calls;
 }
 
+bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type) {
+    using T = ConditionDef::Type;
+    switch (type) {
+    case T::Item:
+    case T::Grid:
+    case T::GridStationary:
+    case T::NoGrid:
+    case T::Flag:
+    case T::NoFlag: return true;
+    case T::PlayerCarryingItem:
+    case T::Unsupported: return false;
+    }
+    return false;
+}
+
 static ConditionDef readCondition(const Json& c) {
     using T = ConditionDef::Type;
     ConditionDef d;
@@ -247,6 +262,8 @@ static NpcDef readNpc(const Json& j, Area& out) {
                                   l["manual"].asBool(), l["noRepeatEvents"].asBool(), l["dontInterrupt"].asBool(),
                                   (uint8_t)l["emoteOnStart"].asInt(), (uint8_t)l["emoteOnLeave"].asInt(),
                                   readCalls(l["onStart"], out), readCalls(l["onEnd"], out)});
+        for (const ConditionDef& cd : d.conditions)
+            if (!conditionReadsOnlyStateAndGrid(cd.type)) n.pollsEveryFrame = true;
         n.conds.push_back(std::move(d));
     }
     return n;

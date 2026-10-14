@@ -1,5 +1,7 @@
 #include "game/events/events.h"
 
+#include <cmath>
+
 #include "game/events/conditions.h"
 #include "game/world/world.h"
 
@@ -74,8 +76,13 @@ void runCall(World& world, const CallDef& c) {
     case M::NpcTypeCurrent:
         world.npcs.typeCurrent(world, world.area.npcOn(c.target));
         break;
-    case M::NpcTeleport:
-        world.objects.moveOnto(world.area, c.target, c.objectArg);
+    case M::NpcTeleport: {
+        // NPC.Teleport: only if the NPC isn't already at the target's position (then it's reparented).
+        float ax, ay;
+        world.objectPosition(c.target, bx, by);
+        world.objectPosition(c.objectArg, ax, ay);
+        if (std::fabs(ax - bx) > 1e-4f || std::fabs(ay - by) > 1e-4f) world.objects.moveOnto(world.area, c.target, c.objectArg);
+    }
         break;
     case M::SetFlipX:
         world.objects.setFlipX(c.target, c.boolArg);

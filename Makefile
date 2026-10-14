@@ -44,7 +44,8 @@ endif
 APP_TITLE	:=	Slider
 APP_DESCRIPTION	:=	Slide chunks of the world to solve puzzles
 APP_AUTHOR	:=	boomo
-# Every folder under src/game holds sources (a new one is picked up automatically).
+# Every folder directly under src/game holds sources (a new one is picked up automatically; no
+# deeper nesting and no files directly in src/game: CMake uses the same rule).
 SOURCES		:=	src $(patsubst %/,%,$(sort $(dir $(wildcard src/game/*/*.cpp)))) src/platform/ctr
 DATA		:=	data
 INCLUDES	:=	src

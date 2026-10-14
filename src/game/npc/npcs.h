@@ -1,5 +1,5 @@
 // NPCs (NPC.cs + NPCDialogueContext + DialogueDisplay). Each NPC's current conditional is the
-// highest one in its list whose conditions hold, re-picked every frame (entering one runs its
+// highest one in its list whose conditions hold, re-checked whenever what they read may have changed (entering one runs its
 // onConditionalEnter). While the player is in the NPC's dialogue trigger it types the current
 // conditional's dialogue chain above its head, line by line: a line moves on after its delay, on
 // the action button (waitForAction: a looping " ..." shows), or by an event (manual); the action
@@ -42,7 +42,8 @@ public:
     bool textShown(int npc) const { return s_[npc].boxActive; }
     const DialogueText& text(int npc) const { return s_[npc].text; }
     const Typer& typer(int npc) const { return s_[npc].typer; }
-    uint32_t textVersion(int npc) const { return s_[npc].textVersion; } // bumped per typed line
+    // Identifies the line being shown: new for every line typed (also across reset()), for caches.
+    uint32_t textVersion(int npc) const { return s_[npc].textVersion; }
     bool pingShown(const World& world, int npc) const;
     int emote(int npc) const { return s_[npc].emote; } // NpcEmoteDef value shown, 0 = none
     // The emote sprite as it's drawn now (placement relative to the emote object's base), if one shows.
@@ -83,4 +84,5 @@ private:
     void setPing(World& world, int npc, bool shown); // DialogueDisplay.SetMessagePing
 
     std::vector<State> s_;
+    uint32_t textCounter_ = 0; // never reset: a cache keyed by textVersion can't see an old value again
 };

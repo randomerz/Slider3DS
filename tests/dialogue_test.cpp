@@ -5,9 +5,12 @@
 #include <string>
 
 #include "game/npc/dialogue_text.h"
-#include "game/render/font.h"
 #include "game/npc/npcs.h"
+#include "game/render/area_view.h"
+#include "game/render/font.h"
+#include "game/render/sprite_sheets.h"
 #include "game/world/world.h"
+#include "platform/platform.h"
 #include "test.h"
 #include "test_platform.h"
 
@@ -57,16 +60,21 @@ int typeOut(Typer& t, int limit = 1000) {
 //      then "Done".
 //   2 (flag "vanish"): entering hides the NPC itself. "Bye now".
 //   3 (flag "shout"): entering types at once (NPC.TypeCurrentDialogue). "Hey!" (dontInterrupt).
-// The nudges (UPPRelativePlayer by 1/128) count how often a call ran; flags can't. "Hello there" and
-// "Moved" show the Exclamation emote ("Npc/Emotes" (4), left of the face: intro sprite 0, then loop 1).
+//   4 (grid "21": tiles 1 and 2 swapped): "Swapped".
+//   5 (flag "stay"): entering teleports the NPC to "Here" (5), where it already is.
+// A second tile (2) sits right of tile 1.
+// The nudges (UPPRelativePlayer by 1/128) count how often a call ran; flags can't. "Hello there", "Bye"
+// and "Moved" show the Exclamation emote ("Npc/Emotes" (4), left of the face: intro sprite 0, then loop 1).
 const char* NPC_AREA = R"json({
   "ppu": 16,
-  "grid": {"width": 1, "height": 1, "targetGrid": "1", "housingOffset": -150},
-  "stiles": [{"islandId": 1, "name": "STile (1)", "x": 0, "y": 0, "width": 17, "isTileActive": true}],
+  "grid": {"width": 2, "height": 1, "targetGrid": "12", "housingOffset": -150},
+  "stiles": [{"islandId": 1, "name": "STile (1)", "x": 0, "y": 0, "width": 17, "isTileActive": true},
+             {"islandId": 2, "name": "STile (2)", "x": 1, "y": 0, "width": 17, "isTileActive": true}],
   "objects": [{"path": "Npc", "parent": -1, "active": true, "owner": 1}, {"path": "Npc/Talk", "parent": 0, "active": true, "owner": 1},
               {"path": "Spot", "parent": -1, "active": true, "owner": 1, "pos": [5, 1]},
               {"path": "Npc/Ping", "parent": 0, "active": false, "owner": 1, "pos": [0, 1]},
-              {"path": "Npc/Emotes", "parent": 0, "active": true, "owner": 1, "pos": [-0.5, 0.5]}],
+              {"path": "Npc/Emotes", "parent": 0, "active": true, "owner": 1, "pos": [-0.5, 0.5]},
+              {"path": "Here", "parent": -1, "active": true, "owner": 1, "pos": [0, 0]}],
   "sheets": [{"name": "s", "file": "s.png", "size": [32, 16]}],
   "sprites": [{"name": "ex0", "sheet": 0, "rect": [0, 0, 16, 16], "pivot": [8, 8], "ppu": 16},
               {"name": "exLoop", "sheet": 0, "rect": [16, 0, 16, 16], "pivot": [8, 8], "ppu": 16}],
@@ -89,7 +97,7 @@ const char* NPC_AREA = R"json({
          {"text": "Hello there", "delay": 0.5, "emoteOnStart": 2, "waitForAction": true, "manual": false, "noRepeatEvents": false,
           "dontInterrupt": false, "onStart": [{"method": "VarManager.SetBoolOn", "string": "start0"}],
           "onEnd": [{"method": "VarManager.SetBoolOn", "string": "end0"}]},
-         {"text": "Bye", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
+         {"text": "Bye", "delay": 0, "emoteOnStart": 2, "waitForAction": false, "manual": false, "noRepeatEvents": false,
           "dontInterrupt": false, "onStart": [], "onEnd": [{"method": "VarManager.SetBoolOn", "string": "end1"}, {"method": "PlayerPositionChanger.UPPRelativePlayer", "owner": 0, "pos": [0, 0], "dPos": [0.0078125, 0]}]}]},
       {"conditions": [{"type": "flag", "flag": "next"}], "anyOf": false, "alwaysStartFromBeginning": true,
        "onConditionalEnter": [{"method": "NPC.Teleport", "target": 0, "objectArg": 2},
@@ -110,7 +118,13 @@ const char* NPC_AREA = R"json({
        "onConditionalEnter": [{"method": "NPC.TypeCurrentDialogue", "target": 0}],
        "onDialogueChainExhausted": [],
        "dialogue": [{"text": "Hey!", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
-                     "dontInterrupt": true, "onStart": [], "onEnd": []}]}]}],
+                     "dontInterrupt": true, "onStart": [], "onEnd": []}]},
+      {"conditions": [{"type": "grid", "pattern": "21"}], "anyOf": false, "alwaysStartFromBeginning": false,
+       "onConditionalEnter": [], "onDialogueChainExhausted": [],
+       "dialogue": [{"text": "Swapped", "delay": 0}]},
+      {"conditions": [{"type": "flag", "flag": "stay"}], "anyOf": false, "alwaysStartFromBeginning": false,
+       "onConditionalEnter": [{"method": "NPC.Teleport", "target": 0, "objectArg": 5}], "onDialogueChainExhausted": [],
+       "dialogue": []}]}],
   "player": {"footBox": {"offset": [0, 0], "size": [0.5, 0.5]}, "boatBox": {"offset": [0, 0], "size": [1, 0.5]}}
 })json";
 
@@ -360,6 +374,9 @@ TEST(npcs_validation_rejects_bad_references) {
         {R"(, "objectArg": 2})", "}", "teleport without a target"},
         {R"("npcs": [{"object": 0)", R"("npcs": [{"object": 7)", "npc -> missing object"},
         {R"("pingObject": 3)", R"("pingObject": 8)", "npc -> missing ping object"},
+        {R"("intro": [-1, -1, 0,)", R"("intro": [-1, -1, 9,)", "emote -> missing anim"},
+        {R"("text": "Bye", "delay": 0, "emoteOnStart": 2)", R"("text": "Bye", "delay": 0, "emoteOnStart": 7)",
+         "emote value out of range"},
         {R"("box": [-3.42, 0.55, 3.42, 2.7])", R"("box": [3.42, 0.55, -3.42, 2.7])", "npc text box inside out"},
         {R"("owner": 1, "pos": [5, 1])", R"("owner": 4, "pos": [5, 1])", "object owner is not an STile"},
         {R"("object": 1, "owner": 1, "kind")", R"("object": 1, "owner": 0, "kind")", "component owner isn't its object's"},
@@ -433,4 +450,75 @@ TEST(npcs_emotes_show_beside_the_face) {
     world.update(DT, 0, 0, true);
     standAt(world, 5, 1);
     check(world.npcs.emoteSprite(world.area, 0, e) && e.x == 0.5f, "flipped: the emote moves to the other side");
+}
+
+TEST(npcs_recheck_when_the_grid_alone_changes) {
+    // Conditionals that read only the game state and the grid are re-checked when either changes:
+    // here only the grid does.
+    World world(npcArea());
+    standAt(world, 30, 0);
+    check(world.npcs.currentCond(0) == 0, "first conditional");
+    check(world.grid.setGrid("21"), "swap the tiles");
+    world.update(DT, 0, 0, true);
+    check(world.npcs.currentCond(0) == 4, "the grid conditional wins without any state change");
+    // Kinds that read more (carried items, specs) make an NPC re-check every frame.
+    const Area& v = village();
+    auto byName = [&](const char* name) {
+        for (const NpcDef& n : v.npcs)
+            if (n.name == name) return &n;
+        return (const NpcDef*)nullptr;
+    };
+    check(byName("Cathy") && byName("Cathy")->pollsEveryFrame, "Cathy (carried cats, specs) re-checks every frame");
+    check(byName("Mike") && !byName("Mike")->pollsEveryFrame, "Mike (items only) re-checks on changes");
+}
+
+TEST(npcs_teleport_onto_their_own_spot_does_nothing) {
+    // NPC.Teleport only moves (and reparents) when the target is somewhere else.
+    World world(npcArea());
+    standAt(world, 30, 0);
+    world.state.setFlag("stay", true);
+    world.update(DT, 0, 0, true);
+    check(world.npcs.currentCond(0) == 5 && world.objects.parent(0) == -1, "already there: not reparented");
+}
+
+TEST(npcs_line_versions_stay_unique_across_reloads) {
+    // AreaView caches a line's layout by textVersion, and survives World::reloadObjects.
+    World world(npcArea());
+    standAt(world, 0, 0);
+    const uint32_t before = world.npcs.textVersion(0);
+    world.reloadObjects();
+    standAt(world, 0, 0);
+    check(world.npcs.textShown(0) && world.npcs.textVersion(0) != before, "the reloaded NPC's first line has a new version");
+}
+
+TEST(npcs_emote_keeps_playing_across_lines_and_restarts_when_shown_again) {
+    World world(npcArea());
+    SpritePlacement e;
+    standAt(world, 0, 0);
+    waitTyped(world); // "Hello there" (Exclamation) typed: well past the 0.25 s intro
+    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 1, "looping");
+    world.interact(); // "Bye": Exclamation again
+    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 1, "the same emote on the next line keeps playing");
+    standAt(world, 30, 0); // the box closes: emoteOnLeave none
+    standAt(world, 0, 0);  // "Bye" again: Exclamation from the start
+    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 0, "turned off and on again: it restarts");
+}
+
+TEST(npcs_emote_hidden_with_its_npc) {
+    World world(npcArea());
+    SpriteSheets sheets;
+    check(sheets.load(world.area), "sheets load");
+    AreaView view;
+    auto emoteDraws = [&]() {
+        testResetDrawCalls();
+        view.begin(world.area, sheets, 0, 0, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        int n = 0;
+        for (const DrawCall& c : testDrawCalls()) n += c.sheet == "s";
+        return n;
+    };
+    standAt(world, 0, 0);
+    check(emoteDraws() == 1, "talking: the emote is drawn");
+    world.objects.setActive(world.area, 0, false);
+    check(emoteDraws() == 0, "the NPC hidden: so is its emote");
 }

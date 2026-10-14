@@ -25,15 +25,16 @@ void ObjectStates::init(const Area& area) {
 
 void ObjectStates::buildOrder() {
     const int n = (int)parent_.size();
-    // Children lists (in index order), then an iterative depth-first walk from each root.
-    std::vector<int> first(n, -1), next(n, -1), last(n, -1);
-    for (int i = 0; i < n; i++) {
+    // Children lists (built backwards, so each lists its children in index order), then an
+    // iterative depth-first walk from each root.
+    std::vector<int> first(n, -1), next(n, -1);
+    for (int i = n - 1; i >= 0; i--) {
         const int p = parent_[i];
         if (p < 0) continue;
-        if (last[p] < 0) first[p] = i;
-        else next[last[p]] = i;
-        last[p] = i;
+        next[i] = first[p];
+        first[p] = i;
     }
+    std::vector<int> reversed;
     order_.clear();
     at_.assign(n, 0);
     end_.assign(n, 0);
@@ -47,10 +48,10 @@ void ObjectStates::buildOrder() {
                 at_[o] = (int)order_.size();
                 order_.push_back(o);
                 stack.back() = ~o; // revisit after the children: mark the subtree's end
-                // Push children in reverse so they're visited in index order.
-                std::vector<int> kids;
-                for (int c = first[o]; c >= 0; c = next[c]) kids.push_back(c);
-                for (auto it = kids.rbegin(); it != kids.rend(); ++it) stack.push_back(*it);
+                // Push children last-first so they're visited in index order.
+                reversed.clear();
+                for (int c = first[o]; c >= 0; c = next[c]) reversed.push_back(c);
+                stack.insert(stack.end(), reversed.rbegin(), reversed.rend());
             } else {
                 end_[~o] = (int)order_.size();
                 stack.pop_back();
