@@ -1,6 +1,6 @@
 #include <string>
 
-#include "game/area.h"
+#include "game/data/area.h"
 #include "test.h"
 #include "test_platform.h"
 

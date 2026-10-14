@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "game/area.h"
+#include "game/data/area.h"
 
 struct TestRegistrar {
     TestRegistrar(const char* name, void (*fn)());

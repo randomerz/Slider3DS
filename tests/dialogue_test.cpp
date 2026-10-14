@@ -1,13 +1,13 @@
-// NPC dialogue: text parsing / layout / typing (game/dialogue_text) with the real dialogue font, and
-// the NPC dialogue state machine (game/npcs) on a small synthetic area and the Village.
+// NPC dialogue: text parsing / layout / typing (game/npc/dialogue_text) with the real dialogue font, and
+// the NPC dialogue state machine (game/npc/npcs) on a small synthetic area and the Village.
 #include <algorithm>
 #include <cmath>
 #include <string>
 
-#include "game/dialogue_text.h"
-#include "game/font.h"
-#include "game/npcs.h"
-#include "game/world.h"
+#include "game/npc/dialogue_text.h"
+#include "game/render/font.h"
+#include "game/npc/npcs.h"
+#include "game/world/world.h"
 #include "test.h"
 #include "test_platform.h"
 

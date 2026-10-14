@@ -4,9 +4,9 @@
 #include <set>
 #include <string>
 
-#include "game/area.h"
-#include "game/physics.h"
-#include "game/world.h"
+#include "game/data/area.h"
+#include "game/physics/physics.h"
+#include "game/world/world.h"
 #include "platform/platform.h"
 #include "test.h"
 #include "test_platform.h"

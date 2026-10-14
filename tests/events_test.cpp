@@ -2,9 +2,9 @@
 // placed in a trigger and the World updates, like a frame of play.
 #include <string>
 
-#include "game/area.h"
-#include "game/physics.h"
-#include "game/world.h"
+#include "game/data/area.h"
+#include "game/physics/physics.h"
+#include "game/world/world.h"
 #include "test.h"
 
 namespace {

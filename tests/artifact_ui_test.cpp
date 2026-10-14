@@ -2,7 +2,7 @@
 #include <cmath>
 #include <string>
 
-#include "game/artifact_ui.h"
+#include "game/ui/artifact_ui.h"
 #include "test.h"
 
 namespace {

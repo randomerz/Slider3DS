@@ -6,18 +6,18 @@
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
 //   L + D-pad: slide the tile you stand on          SELECT: toggle the perf overlay
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
-// add a perf overlay (game/dev_overlay).
+// add a perf overlay (game/dev/dev_overlay).
 #include <cstdio>
 #include <string>
 
 #include "dev_controls.h"
-#include "game/area.h"
-#include "game/area_view.h"
-#include "game/artifact_ui.h"
-#include "game/dev_overlay.h"
-#include "game/font.h"
-#include "game/sprite_sheets.h"
-#include "game/world.h"
+#include "game/data/area.h"
+#include "game/render/area_view.h"
+#include "game/ui/artifact_ui.h"
+#include "game/dev/dev_overlay.h"
+#include "game/render/font.h"
+#include "game/render/sprite_sheets.h"
+#include "game/world/world.h"
 #include "platform/platform.h"
 
 namespace {

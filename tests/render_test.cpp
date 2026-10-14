@@ -16,11 +16,11 @@
 #include <sstream>
 #include <string>
 
-#include "game/area_view.h"
-#include "game/artifact_ui.h"
-#include "game/artifact.h"
-#include "game/grid.h"
-#include "game/world.h"
+#include "game/render/area_view.h"
+#include "game/ui/artifact_ui.h"
+#include "game/grid/artifact.h"
+#include "game/grid/grid.h"
+#include "game/world/world.h"
 #include "platform/platform.h"
 #include "test.h"
 #include "test_platform.h"

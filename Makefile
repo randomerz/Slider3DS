@@ -44,7 +44,8 @@ endif
 APP_TITLE	:=	Slider
 APP_DESCRIPTION	:=	Slide chunks of the world to solve puzzles
 APP_AUTHOR	:=	boomo
-SOURCES		:=	src src/game src/platform/ctr
+# Every folder under src/game holds sources (a new one is picked up automatically).
+SOURCES		:=	src $(patsubst %/,%,$(sort $(dir $(wildcard src/game/*/*.cpp)))) src/platform/ctr
 DATA		:=	data
 INCLUDES	:=	src
 GRAPHICS	:=	gfx

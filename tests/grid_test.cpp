@@ -1,7 +1,7 @@
 // Grid model, grid strings, CheckGrid patterns and the slide curve.
 #include <string>
 
-#include "game/grid.h"
+#include "game/grid/grid.h"
 #include "test.h"
 
 namespace {

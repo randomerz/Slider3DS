@@ -1,4 +1,4 @@
-#include "game/json.h"
+#include "game/data/json.h"
 #include "test.h"
 
 TEST(json_parses_values) {

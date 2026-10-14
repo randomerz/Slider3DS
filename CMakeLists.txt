@@ -30,7 +30,7 @@ FetchContent_Declare(SDL2_image
 FetchContent_MakeAvailable(SDL2_image)
 
 # Platform-free game code, shared by the game and the tests.
-file(GLOB GAME_SOURCES CONFIGURE_DEPENDS src/game/*.cpp)
+file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS src/game/*.cpp)
 add_library(slider3ds_game STATIC ${GAME_SOURCES})
 target_include_directories(slider3ds_game PUBLIC src)
 

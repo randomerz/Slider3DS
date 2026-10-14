@@ -2,11 +2,11 @@
 // (ConditionChecker.checkOnStart, Collectible.shouldDisableAtStart) on a synthetic area and the Village.
 #include <string>
 
-#include "game/area.h"
-#include "game/conditions.h"
-#include "game/grid.h"
-#include "game/object_states.h"
-#include "game/world.h"
+#include "game/data/area.h"
+#include "game/events/conditions.h"
+#include "game/grid/grid.h"
+#include "game/world/object_states.h"
+#include "game/world/world.h"
 #include "test.h"
 
 namespace {

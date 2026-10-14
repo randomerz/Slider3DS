@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "game/world.h"
+#include "game/world/world.h"
 #include "platform/platform.h"
 
 struct DevControls {
