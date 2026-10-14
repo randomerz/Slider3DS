@@ -87,6 +87,14 @@ void runCall(World& world, const CallDef& c) {
     case M::SetFlipX:
         world.objects.setFlipX(c.target, c.boolArg);
         break;
+    case M::AnimSetBoolTrue:
+    case M::AnimSetBoolFalse:
+        world.animators.setBool(world.area, world.area.animatorDrivenBy(c.target), c.stringArg,
+                                c.method == M::AnimSetBoolTrue);
+        break;
+    case M::SetAnimatorController:
+        world.animators.setController(world.area, world.area.animatorOn(c.target), c.data);
+        break;
     case M::Unsupported:
         break;
     }

@@ -75,6 +75,8 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         float bx, by;
         world.objectBase(ws.object, bx, by);
         SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
+        const int animator = area.animatorOn(ws.object);
+        if (animator >= 0 && world.animators.sprite(animator) >= 0) sp.sprite = world.animators.sprite(animator);
         if (objects.flipX(ws.object) >= 0) // set by an event (SpriteRenderer.set_flipX)
             sp.flags = (sp.flags & ~(uint32_t)plat::FLIP_X) | (objects.flipX(ws.object) ? (uint32_t)plat::FLIP_X : 0u);
         float px, py;

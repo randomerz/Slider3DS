@@ -48,6 +48,24 @@ int Area::npcOn(int object) const {
     return -1;
 }
 
+int Area::animatorDrivenBy(int controllerObject) const {
+    for (size_t i = 0; i < animators.size(); i++)
+        if (animators[i].controllerObject == controllerObject) return (int)i;
+    return -1;
+}
+
+int AnimatorControllerDef::stateIndex(const std::string& n) const {
+    for (size_t i = 0; i < states.size(); i++)
+        if (states[i].name == n) return (int)i;
+    return -1;
+}
+
+int AnimatorControllerDef::paramIndex(const std::string& n) const {
+    for (size_t i = 0; i < params.size(); i++)
+        if (params[i] == n) return (int)i;
+    return -1;
+}
+
 int Anim::frameAt(float t) const {
     if (frames.empty()) return -1;
     if (length > 0) t = loop ? std::fmod(t, length) : std::min(t, length);
@@ -103,6 +121,7 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         d.intArg = c["int"].asInt();
         d.stringArg = c["string"].asString();
         if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
+        if (d.method == CallDef::Method::SetAnimatorController) d.data = c["controller"].asInt(-1);
         d.objectArg = c["objectArg"].asInt(-1);
         if (isTeleport(d.method)) {
             TeleportDef t;
@@ -236,6 +255,12 @@ static NpcDef readNpc(const Json& j, Area& out) {
     n.text.sortLayer = t["sortingLayerValue"].asInt();
     n.text.order = t["order"].asInt();
     n.pingObject = j["pingObject"].asInt(-1);
+    if (j.has("animator")) {
+        const Json& a = j["animator"];
+        n.animator = (int)out.animators.size();
+        out.animators.push_back({a["object"].asInt(-1), a["controller"].asInt(-1), a["keepState"].asBool(),
+                                 a["controllerObject"].asInt(-1)});
+    }
     if (j.has("emote")) {
         const Json& e = j["emote"];
         n.emote.object = e["object"].asInt(-1);
@@ -255,18 +280,46 @@ static NpcDef readNpc(const Json& j, Area& out) {
         d.anyOf = c["anyOf"].asBool();
         d.alwaysStartFromBeginning = c["alwaysStartFromBeginning"].asBool();
         d.emote = (uint8_t)c["emote"].asInt();
+        d.animationOnEnter = c["animationOnEnter"].asString();
         d.onEnter = readCalls(c["onConditionalEnter"], out);
         d.onExhausted = readCalls(c["onDialogueChainExhausted"], out);
         for (const Json& l : c["dialogue"].items())
             d.dialogue.push_back({l["text"].asString(), l["delay"].asFloat(0.5f), l["waitForAction"].asBool(),
                                   l["manual"].asBool(), l["noRepeatEvents"].asBool(), l["dontInterrupt"].asBool(),
                                   (uint8_t)l["emoteOnStart"].asInt(), (uint8_t)l["emoteOnLeave"].asInt(),
+                                  l["animationOnStart"].asString(), l["animationOnLeave"].asString(),
                                   readCalls(l["onStart"], out), readCalls(l["onEnd"], out)});
         for (const ConditionDef& cd : d.conditions)
             if (!conditionReadsOnlyStateAndGrid(cd.type)) n.pollsEveryFrame = true;
         n.conds.push_back(std::move(d));
     }
     return n;
+}
+
+static std::vector<AnimatorTransitionDef> readTransitions(const Json& j) {
+    std::vector<AnimatorTransitionDef> out;
+    for (const Json& t : j.items()) {
+        AnimatorTransitionDef d;
+        d.to = t["to"].asInt(-1);
+        d.exitTime = t["exitTime"].asFloat(-1);
+        for (const Json& c : t["conds"].items()) d.conds.push_back({c.at(0).asInt(-1), c.at(1).asBool()});
+        out.push_back(std::move(d));
+    }
+    return out;
+}
+
+static AnimatorControllerDef readController(const Json& j) {
+    AnimatorControllerDef c;
+    c.name = j["name"].asString();
+    for (const Json& p : j["params"].items()) {
+        c.params.push_back(p["name"].asString());
+        c.paramDefaults.push_back(p["default"].asBool() ? 1 : 0);
+    }
+    c.defaultState = j["default"].asInt();
+    for (const Json& s : j["states"].items())
+        c.states.push_back({s["name"].asString(), s["anim"].asInt(-1), s["speed"].asFloat(1), readTransitions(s["transitions"])});
+    c.anyState = readTransitions(j["any"]);
+    return c;
 }
 
 static UiPart readPart(const Json& j) {
@@ -354,6 +407,24 @@ static bool validate(const Area& a, std::string* error) {
         for (const Polygon& p : c.paths)
             if (p.size() % 2 != 0) return fail(error, "collider " + a.pathOf(c.object) + ": odd point list");
     }
+    for (const AnimatorControllerDef& c : a.animatorControllers) {
+        const int n = (int)c.states.size(), params = (int)c.params.size();
+        bool ok = c.paramDefaults.size() == c.params.size() && (n == 0 || (c.defaultState >= 0 && c.defaultState < n));
+        auto transitionsOk = [&](const std::vector<AnimatorTransitionDef>& ts) {
+            for (const AnimatorTransitionDef& t : ts) {
+                if (t.to < 0 || t.to >= n) return false;
+                for (const auto& k : t.conds)
+                    if (k.first < 0 || k.first >= params) return false;
+            }
+            return true;
+        };
+        for (const AnimatorStateDef& s : c.states) ok = ok && animOk(s.anim) && transitionsOk(s.transitions);
+        if (!ok || !transitionsOk(c.anyState)) return fail(error, "animator controller " + c.name + ": bad state, transition or anim");
+    }
+    for (const AnimatorDef& an : a.animators)
+        if (!objectOk(an.object) || an.controller < 0 || an.controller >= (int)a.animatorControllers.size() ||
+            (an.controllerObject != -1 && !objectOk(an.controllerObject)))
+            return fail(error, "animator: bad object or controller");
     std::vector<bool> isNpc(a.objects.size(), false);
     for (const NpcDef& n : a.npcs)
         if (objectOk(n.object)) isNpc[n.object] = true;
@@ -367,6 +438,11 @@ static bool validate(const Area& a, std::string* error) {
                 (c.target == -1 || !isNpc[c.target]))
                 return false;
             if (c.method == M::NpcTeleport && c.objectArg == -1) return false;
+            if ((c.method == M::AnimSetBoolTrue || c.method == M::AnimSetBoolFalse) && a.animatorDrivenBy(c.target) < 0)
+                return false;
+            if (c.method == M::SetAnimatorController &&
+                (c.target == -1 || a.animatorByObject[c.target] < 0 || c.data < 0 || c.data >= (int)a.animatorControllers.size()))
+                return false;
             if (c.method == M::CheckConditions && (c.data < 0 || c.data >= (int)a.conditionCheckers.size())) return false;
             if (isTeleport(c.method)) {
                 if (c.data < 0 || c.data >= (int)a.teleports.size()) return false;
@@ -521,6 +597,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& c : doc["collectibles"].items())
         out.collectibles.push_back({c["object"].asInt(-1), c["name"].asString(), c["area"].asString(),
                                     c["disableAtStart"].asBool(), c["sprite"].asInt(-1), readCalls(c["onCollect"], out)});
+    for (const Json& c : doc["animatorControllers"].items()) out.animatorControllers.push_back(readController(c));
     for (const Json& n : doc["npcs"].items()) out.npcs.push_back(readNpc(n, out));
     out.fadeDuration = doc["fadeDuration"].asFloat(1);
 
@@ -613,6 +690,12 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.layers.push_back(std::move(L));
     }
 
+    // Animators by object (before validation: calls are checked against it).
+    out.animatorByObject.assign(out.objects.size(), -1);
+    for (size_t i = 0; i < out.animators.size(); i++) {
+        const int o = out.animators[i].object;
+        if (o >= 0 && o < (int)out.objects.size()) out.animatorByObject[o] = (int)i;
+    }
     if (!validate(out, error)) return false;
     buildComponentIndex(out);
 

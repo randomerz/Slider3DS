@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 struct SpriteDef {
@@ -142,6 +143,8 @@ bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type);
 //   NpcTypeCurrent          NPC.TypeCurrentDialogue: (re)types its current line
 //   NpcTeleport             NPC.Teleport(objectArg): the NPC moves onto that object (and is parented to it)
 //   SetFlipX                SpriteRenderer.set_flipX(boolArg) on the target's sprite
+//   AnimSetBoolTrue/False   NPCAnimatorController.SetBoolToTrue/False(stringArg): the target drives an Animator
+//   SetAnimatorController   Animator.set_runtimeAnimatorController(animatorControllers[data]) on the target
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -160,7 +163,10 @@ bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type);
     X(NpcTriggerExit, "NPC.OnDialogueTriggerExit")                     \
     X(NpcTypeCurrent, "NPC.TypeCurrentDialogue")                       \
     X(NpcTeleport, "NPC.Teleport")                                     \
-    X(SetFlipX, "SpriteRenderer.set_flipX")
+    X(SetFlipX, "SpriteRenderer.set_flipX")                            \
+    X(AnimSetBoolTrue, "NPCAnimatorController.SetBoolToTrue")          \
+    X(AnimSetBoolFalse, "NPCAnimatorController.SetBoolToFalse")        \
+    X(SetAnimatorController, "Animator.set_runtimeAnimatorController")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -178,7 +184,40 @@ struct CallDef {
     bool boolArg = false;
     int intArg = 0;
     std::string stringArg;
-    int data = -1; // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index
+    // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index;
+    // SetAnimatorController: Area::animatorControllers index.
+    int data = -1;
+};
+
+// An Animator controller (base layer; an override controller's clips applied): bool parameters,
+// states playing a sprite clip, transitions on bool conditions and/or exit time (all instant).
+struct AnimatorTransitionDef {
+    int to = 0;           // state index
+    float exitTime = -1;  // normalized time it waits for, -1 = none
+    std::vector<std::pair<int, bool>> conds; // parameter index, value it must have
+};
+struct AnimatorStateDef {
+    std::string name;
+    int anim = -1;        // Area::anims index, -1 = no clip (the sprite keeps its last frame)
+    float speed = 1;
+    std::vector<AnimatorTransitionDef> transitions;
+};
+struct AnimatorControllerDef {
+    std::string name;
+    std::vector<std::string> params; // bools
+    std::vector<uint8_t> paramDefaults;
+    int defaultState = 0;
+    std::vector<AnimatorStateDef> states;
+    std::vector<AnimatorTransitionDef> anyState;
+    int stateIndex(const std::string& name) const; // -1 if none
+    int paramIndex(const std::string& name) const; // -1 if none
+};
+// An Animator on a scene object, driving the world sprite on that object.
+struct AnimatorDef {
+    int object = -1;
+    int controller = 0;      // Area::animatorControllers index at the start
+    bool keepState = false;  // keepAnimatorStateOnDisable (else re-enabling rebinds: default state, parameters)
+    int controllerObject = -1; // object of the NPCAnimatorController that drives it (calls target it), -1 = none
 };
 
 // What a PlayerPositionChanger call needs of its component.
@@ -245,6 +284,7 @@ struct DialogueDef {
     bool noRepeatEvents = false; // doNotRepeatEvents: onStart / onEnd run once
     bool dontInterrupt = false;  // leaving the trigger doesn't end it
     uint8_t emoteOnStart = 0, emoteOnLeave = 0; // NPCEmotes.Emotes shown when it starts / the box closes
+    std::string animationOnStart, animationOnLeave; // NPCAnimatorController.Play states, "" = none
     std::vector<CallDef> onStart, onEnd;
 };
 
@@ -255,6 +295,7 @@ struct NpcCondDef {
     bool anyOf = false;
     bool alwaysStartFromBeginning = false;
     uint8_t emote = 0;                          // emoteOnEnter (NPCEmotes.Emotes)
+    std::string animationOnEnter;               // NPCAnimatorController.Play state, "" = none
     std::vector<DialogueDef> dialogue;          // the dialogue chain
     std::vector<CallDef> onEnter, onExhausted;  // onConditionalEnter, onDialogueChainExhausted
 };
@@ -292,6 +333,7 @@ struct NpcDef {
     NpcTextDef text;
     int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
     NpcEmoteDef emote;
+    int animator = -1; // Area::animators index of its NPCAnimatorController's Animator, -1 = none
     // Some conditional reads more than the game state and the grid (PlayerCarryingItem, spec / not yet
     // supported kinds), so its pick must be re-checked every frame (derived at load).
     bool pollsEveryFrame = false;
@@ -392,6 +434,8 @@ struct Area {
     std::vector<TriggerEventDef> triggerEvents;
     std::vector<CollectibleDef> collectibles;
     std::vector<NpcDef> npcs;
+    std::vector<AnimatorControllerDef> animatorControllers;
+    std::vector<AnimatorDef> animators;
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
     // Each object's components (derived at load): componentRefs[componentStart[o] .. componentStart[o + 1]),
     // per object in the kind order TriggerEvent, Interaction, Collectible, ConditionChecker, Npc.
@@ -412,6 +456,9 @@ struct Area {
     const std::string& pathOf(int object) const { return objects[object].path; }
     int findObject(const std::string& path) const; // index in objects, -1 if none
     int npcOn(int object) const; // index in npcs of the NPC on `object`, -1 if none
+    int animatorOn(int object) const { return animatorByObject[object]; } // Area::animators index, -1 if none
+    int animatorDrivenBy(int controllerObject) const; // the Animator an NPCAnimatorController object drives, -1 if none
+    std::vector<int> animatorByObject; // per object (derived at load)
 };
 
 // Loads e.g. "village/village.json" through plat::readFile, then checks every index in it

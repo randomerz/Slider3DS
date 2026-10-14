@@ -8,9 +8,11 @@
 // UnityEvent calls. The message ping (an object: SetActive) shows while the current chain hasn't
 // been read to its end. Emotes (NPCEmotes) beside the head: set by a conditional's emoteOnEnter, a
 // line's emoteOnStart, and its emoteOnLeave when the box closes; they sit on the side the NPC faces
-// (as of when they were set). Hiding an NPC stops its clocks (Unity stops a disabled object's coroutines).
+// (as of when they were set). Animations (NPCAnimatorController.Play on its Animator: game/anim) are
+// played by the same three moments: animationOnEnter, animationOnStart, animationOnLeave.
+// Hiding an NPC stops its clocks (Unity stops a disabled object's coroutines).
 // Conditionals are re-checked only when the game state or the grid changed.
-// Not yet: animations, walks, cutscene state.
+// Not yet: walks, cutscene state.
 #pragma once
 
 #include <cstdint>
@@ -63,6 +65,7 @@ private:
         bool polled = false;              // conditionals checked against the versions below
         uint32_t stateVersion = 0, gridVersion = 0;
         uint32_t textVersion = 0;
+        std::string animation;   // NPCAnimatorController.currentState ("" = the default ones)
         int emote = 0;           // NPCEmotes.currentEmote
         bool emoteLeft = false;  // its side, decided when it was last set
         float emoteTime = 0;     // since it started (its Animator state's time)
@@ -81,6 +84,7 @@ private:
     void tryDeactivate(World& world, int npc);
     void deactivate(World& world, int npc);       // DeactivateDialogueBox
     void setEmote(const World& world, int npc, int emote); // NPCEmotes.SetEmote
+    void playAnimation(World& world, int npc, const std::string& state); // NPCAnimatorController.Play
     void setPing(World& world, int npc, bool shown); // DialogueDisplay.SetMessagePing
 
     std::vector<State> s_;

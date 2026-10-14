@@ -15,6 +15,11 @@ void setTileObjects(World& world, const STileDef& s, bool active) {
 
 } // namespace
 
+void World::runStarts() {
+    animators.enable(*this); // OnEnable comes before Start
+    starts.update(*this);
+}
+
 World::World(const Area& a) : area(a) {
     state.newProfile("Cat"); // (until a new-game screen names the profile)
     grid.init(area);
@@ -31,14 +36,15 @@ void World::reloadObjects() {
     triggers.reset(area);
     interactables.clear();
     npcs.reset(area);
+    animators.reset(area);
     starts.reset(area);
-    starts.update(*this);
+    runStarts();
 }
 
 void World::setTileActive(int islandId, bool active) {
     grid.setTileActive(islandId, active);
     if (const STileDef* s = area.stile(islandId)) setTileObjects(*this, *s, active);
-    starts.update(*this); // Start runs before the newly active objects' first update
+    runStarts(); // Start runs before the newly active objects' first update
 }
 
 void World::placeAt(const Spawn& spawn) {
@@ -86,11 +92,12 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
 
     // Start runs before an object's first update (here: before triggers can touch it), and again
     // for what calls activated. Each skips when nothing became active.
-    starts.update(*this);
+    runStarts();
     triggers.update(*this);
-    starts.update(*this);
+    runStarts();
     npcs.update(*this, dt);
-    starts.update(*this);
+    runStarts();
+    animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
     if (effects.fade > 0)
         effects.fade = area.fadeDuration > 0 ? std::max(0.0f, effects.fade - dt / area.fadeDuration) : 0;
 }

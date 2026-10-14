@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "game/anim/animators.h"
 #include "game/data/area.h"
 #include "game/grid/artifact.h"
 #include "game/world/game_state.h"
@@ -68,7 +69,7 @@ public:
     // One frame: queued slides advance and the player rides the tile under it; the player walks
     // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless noclip
     // (and is pushed out of anything it overlaps); triggers react to what it touches; NPCs update;
-    // Starts run for components that became active.
+    // Starts run for components that became active; Animators advance.
     void update(float dt, float moveX, float moveY, bool noclip);
 
     // PlayerAction: offer / withdraw an interactable, and the action button: runs the offered
@@ -93,8 +94,13 @@ public:
     Starts starts;
     TriggerTracker triggers;
     Npcs npcs;
+    Animators animators;
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
+
+private:
+    // Objects may have become active: their Animators enable (rebind), then their components Start.
+    void runStarts();
 };

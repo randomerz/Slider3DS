@@ -7269,6 +7269,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 147,
+        "controller": 0,
+        "keepState": false,
+        "controllerObject": 147
+      },
       "conds": [
         {
           "conditions": [
@@ -7276,6 +7282,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -7295,6 +7302,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7313,6 +7322,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.StartValidWalk",
@@ -7331,6 +7341,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 5,
               "emoteOnLeave": 5,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7348,6 +7360,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -7367,6 +7380,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 5,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7381,6 +7396,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 5,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7399,6 +7416,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -7423,6 +7441,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 5,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7441,6 +7461,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -7455,6 +7476,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7469,6 +7492,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7487,6 +7512,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -7506,6 +7532,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.ActivateSliderCollectible",
@@ -7514,7 +7542,8 @@
                 },
                 {
                   "method": "Animator.set_runtimeAnimatorController",
-                  "target": 147
+                  "target": 147,
+                  "controller": 1
                 }
               ],
               "onEnd": [
@@ -7533,6 +7562,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -7552,6 +7582,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7570,6 +7602,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -7589,6 +7622,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7626,6 +7661,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 170,
+        "controller": 2,
+        "keepState": false,
+        "controllerObject": 170
+      },
       "conds": [
         {
           "conditions": [
@@ -7633,6 +7674,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -7647,6 +7689,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7661,6 +7705,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7679,6 +7725,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -7698,6 +7745,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7715,6 +7764,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -7738,6 +7788,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7752,6 +7804,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "NPC.StartWalkAtIndex",
@@ -7771,6 +7825,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Crying",
               "onStart": [
               ],
               "onEnd": [
@@ -7790,6 +7846,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Crying",
               "onStart": [
               ],
               "onEnd": [
@@ -7809,6 +7867,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Crying",
               "onStart": [
               ],
               "onEnd": [
@@ -7831,6 +7891,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "Idle",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -7855,6 +7916,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7869,6 +7932,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -7887,6 +7952,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -7911,6 +7977,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7925,6 +7993,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7939,6 +8009,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7953,6 +8025,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7967,6 +8041,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7981,6 +8057,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -7995,6 +8073,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8009,6 +8089,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8026,6 +8108,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8045,6 +8128,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8059,6 +8144,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8073,6 +8160,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8090,6 +8179,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8109,6 +8199,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8123,6 +8215,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8137,6 +8231,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8151,6 +8247,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8173,6 +8271,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8192,6 +8291,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8206,6 +8307,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8220,6 +8323,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8238,6 +8343,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8257,6 +8363,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8271,6 +8379,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Crying",
               "onStart": [
               ],
               "onEnd": [
@@ -8289,6 +8399,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8308,6 +8419,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8322,6 +8435,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8336,6 +8451,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8350,6 +8467,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Idle",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8368,6 +8487,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "GameObject.SetActive",
@@ -8387,6 +8507,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8424,6 +8546,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 178,
+        "controller": 3,
+        "keepState": false,
+        "controllerObject": 178
+      },
       "conds": [
         {
           "conditions": [
@@ -8431,6 +8559,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8450,6 +8579,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 2,
+              "animationOnStart": "Skeptical",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "PlayerActionHints.TriggerHint",
@@ -8469,6 +8600,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 2,
+              "animationOnStart": "Shocked",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "PlayerActionHints.DisableHint",
@@ -8493,6 +8626,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "Idle",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8507,6 +8642,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Idle",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8530,6 +8667,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -8544,6 +8682,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "Shocked",
+              "animationOnLeave": "Shocked",
               "onStart": [
               ],
               "onEnd": [
@@ -8558,6 +8698,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Smug",
+              "animationOnLeave": "Smug",
               "onStart": [
               ],
               "onEnd": [
@@ -8572,6 +8714,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Expressionless",
+              "animationOnLeave": "Expressionless",
               "onStart": [
               ],
               "onEnd": [
@@ -8590,6 +8734,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "Skeptical",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -8609,6 +8754,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "Skeptical",
+              "animationOnLeave": "Skeptical",
               "onStart": [
               ],
               "onEnd": [
@@ -8630,6 +8777,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "Skeptical",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -8649,6 +8797,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "Skeptical",
+              "animationOnLeave": "Skeptical",
               "onStart": [
               ],
               "onEnd": [
@@ -8667,6 +8817,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -8681,6 +8832,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "Interested",
+              "animationOnLeave": "Interested",
               "onStart": [
               ],
               "onEnd": [
@@ -8695,6 +8848,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "NPC.StartWalkAtIndex",
@@ -8714,6 +8869,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8728,6 +8885,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "NPC.StartWalkAtIndex",
@@ -8747,6 +8906,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Crying",
+              "animationOnLeave": "Crying",
               "onStart": [
               ],
               "onEnd": [
@@ -8766,6 +8927,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "Skeptical",
+              "animationOnLeave": "Skeptical",
               "onStart": [
               ],
               "onEnd": [
@@ -8784,6 +8947,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -8808,6 +8972,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -8822,6 +8988,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Expressionless",
+              "animationOnLeave": "Expressionless",
               "onStart": [
               ],
               "onEnd": [
@@ -8839,6 +9007,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -8863,6 +9032,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Interested",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -8880,6 +9051,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -8904,6 +9076,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Skeptical",
+              "animationOnLeave": "Skeptical",
               "onStart": [
                 {
                   "method": "VillageGrid.FillInHole",
@@ -8926,6 +9100,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "Shocked",
+              "animationOnLeave": "Shocked",
               "onStart": [
               ],
               "onEnd": [
@@ -8943,6 +9119,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "Interested",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -8967,6 +9144,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "Interested",
+              "animationOnLeave": "Interested",
               "onStart": [
               ],
               "onEnd": [
@@ -8981,6 +9160,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "Skeptical",
+              "animationOnLeave": "Skeptical",
               "onStart": [
               ],
               "onEnd": [
@@ -8995,6 +9176,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Interested",
+              "animationOnLeave": "Interested",
               "onStart": [
               ],
               "onEnd": [
@@ -9013,6 +9196,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -9032,6 +9216,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "Shocked",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9046,6 +9232,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9060,6 +9248,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Interested",
+              "animationOnLeave": "Interested",
               "onStart": [
               ],
               "onEnd": [
@@ -9074,6 +9264,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9093,6 +9285,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9116,6 +9310,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 2,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -9140,6 +9335,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "Interested",
+              "animationOnLeave": "Interested",
               "onStart": [
               ],
               "onEnd": [
@@ -9154,6 +9351,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "Smug",
+              "animationOnLeave": "Smug",
               "onStart": [
                 {
                   "method": "VillageGrid.Explode",
@@ -9172,6 +9371,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "Idle",
+              "animationOnLeave": "Idle",
               "onStart": [
               ],
               "onEnd": [
@@ -9194,6 +9395,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -9218,6 +9420,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "Smug",
+              "animationOnLeave": "Smug",
               "onStart": [
               ],
               "onEnd": [
@@ -9232,6 +9436,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9250,6 +9456,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -9269,6 +9476,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9306,6 +9515,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 200,
+        "controller": 4,
+        "keepState": false,
+        "controllerObject": 200
+      },
       "conds": [
         {
           "conditions": [
@@ -9313,6 +9528,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9327,6 +9543,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "GameObject.SetActive",
@@ -9356,6 +9574,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "NPCAnimatorController.SetBoolToFalse",
@@ -9379,6 +9599,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9393,6 +9614,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.ActivateSliderCollectible",
@@ -9422,6 +9645,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "NPCAnimatorController.SetBoolToFalse",
@@ -9441,6 +9666,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.ActivateSliderCollectible",
@@ -9478,6 +9705,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9492,6 +9720,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.ActivateSliderCollectible",
@@ -9521,6 +9751,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9539,6 +9771,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -9558,6 +9791,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9595,6 +9830,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 238,
+        "controller": 5,
+        "keepState": false,
+        "controllerObject": 238
+      },
       "conds": [
         {
           "conditions": [
@@ -9602,6 +9843,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9616,6 +9858,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "PlayerActionHints.TriggerHint",
@@ -9637,6 +9881,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9651,6 +9896,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9674,6 +9921,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9688,6 +9936,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9706,6 +9956,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -9725,6 +9976,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9743,6 +9996,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -9762,6 +10016,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9780,6 +10036,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "GameObject.SetActive",
@@ -9799,6 +10056,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9836,6 +10095,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 247,
+        "controller": 6,
+        "keepState": false,
+        "controllerObject": 247
+      },
       "conds": [
         {
           "conditions": [
@@ -9843,6 +10108,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9857,6 +10123,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 5,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9875,6 +10143,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9889,6 +10158,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9907,6 +10178,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9921,6 +10193,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.ActivateSliderCollectible",
@@ -9929,7 +10203,8 @@
                 },
                 {
                   "method": "Animator.set_runtimeAnimatorController",
-                  "target": 247
+                  "target": 247,
+                  "controller": 7
                 }
               ],
               "onEnd": [
@@ -9948,6 +10223,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -9962,6 +10238,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -9980,6 +10258,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "GameObject.SetActive",
@@ -9999,6 +10278,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10043,6 +10324,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10057,6 +10339,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10071,6 +10355,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10085,6 +10371,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10099,6 +10387,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10113,6 +10403,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10150,6 +10442,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 284,
+        "controller": 8,
+        "keepState": false,
+        "controllerObject": 284
+      },
       "conds": [
         {
           "conditions": [
@@ -10157,6 +10455,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10171,6 +10470,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10190,6 +10491,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10212,6 +10515,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10226,6 +10530,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10240,6 +10546,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10258,6 +10566,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10272,6 +10581,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10286,6 +10597,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10302,6 +10615,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10316,6 +10630,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.ActivateSliderCollectible",
@@ -10339,6 +10655,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -10358,6 +10675,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10381,6 +10700,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -10400,6 +10720,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10414,6 +10736,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10437,6 +10761,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "GameObject.SetActive",
@@ -10456,6 +10781,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10493,6 +10820,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 305,
+        "controller": 9,
+        "keepState": false,
+        "controllerObject": 305
+      },
       "conds": [
         {
           "conditions": [
@@ -10500,6 +10833,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10514,6 +10848,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10528,6 +10864,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10542,6 +10880,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10556,6 +10896,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10573,6 +10915,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10587,6 +10930,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10610,6 +10955,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10624,6 +10970,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10638,6 +10986,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10652,6 +11002,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10670,6 +11022,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10684,6 +11037,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 3,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10703,6 +11058,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10717,6 +11074,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10753,6 +11112,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 325,
+        "controller": 10,
+        "keepState": false,
+        "controllerObject": 325
+      },
       "conds": [
         {
           "conditions": [
@@ -10760,6 +11125,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10774,6 +11140,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 4,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10788,6 +11156,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10811,6 +11181,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10825,6 +11197,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10839,6 +11213,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10855,6 +11231,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 5,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10869,6 +11246,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 3,
               "emoteOnLeave": 5,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10885,6 +11264,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10899,6 +11279,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10913,6 +11295,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 4,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10930,6 +11314,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -10944,6 +11329,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -10962,6 +11349,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.StartWalkAtIndex",
@@ -10991,6 +11379,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11013,6 +11403,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -11042,6 +11433,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11060,6 +11453,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -11079,6 +11473,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11116,6 +11512,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 366,
+        "controller": 11,
+        "keepState": false,
+        "controllerObject": 366
+      },
       "conds": [
         {
           "conditions": [
@@ -11123,6 +11525,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11137,6 +11540,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11155,6 +11560,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 2,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11169,6 +11575,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11187,6 +11595,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11201,6 +11610,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11219,6 +11630,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11233,6 +11645,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11270,6 +11684,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 398,
+        "controller": 12,
+        "keepState": false,
+        "controllerObject": 398
+      },
       "conds": [
         {
           "conditions": [
@@ -11277,6 +11697,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11291,6 +11712,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11305,6 +11728,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11319,6 +11744,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11333,6 +11760,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11347,6 +11776,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11361,6 +11792,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 5,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11375,6 +11808,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11389,6 +11824,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11403,6 +11840,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11419,6 +11858,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11433,6 +11873,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11449,6 +11891,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11463,6 +11906,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11479,6 +11924,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11493,6 +11939,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11512,6 +11960,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11526,6 +11975,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11545,6 +11996,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11559,6 +12011,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11578,6 +12032,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11592,6 +12047,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11609,6 +12066,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11623,6 +12081,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11640,6 +12100,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11654,6 +12115,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11671,6 +12134,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11685,6 +12149,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11707,6 +12173,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11721,6 +12188,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.ActivateCollectible",
@@ -11744,6 +12213,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11758,6 +12228,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11795,6 +12267,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 435,
+        "controller": 13,
+        "keepState": false,
+        "controllerObject": 435
+      },
       "conds": [
         {
           "conditions": [
@@ -11802,6 +12280,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11816,6 +12295,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11830,6 +12311,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11844,6 +12327,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11862,6 +12347,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11876,6 +12362,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11890,6 +12378,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11904,6 +12394,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11962,6 +12454,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -11976,6 +12469,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 2,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -11990,6 +12485,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 1,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12034,6 +12531,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -12048,6 +12546,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12062,6 +12562,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12099,6 +12601,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 45,
+        "controller": 14,
+        "keepState": false,
+        "controllerObject": 45
+      },
       "conds": [
         {
           "conditions": [
@@ -12106,6 +12614,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -12120,6 +12629,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12138,6 +12649,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -12152,6 +12664,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12166,6 +12680,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12184,6 +12700,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12203,6 +12720,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12217,6 +12736,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12235,6 +12756,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 2,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -12249,6 +12771,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.TurnFishOn",
@@ -12267,6 +12791,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "NPC.Teleport",
@@ -12298,6 +12824,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12317,6 +12844,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12361,6 +12890,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -12375,6 +12905,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12412,6 +12944,12 @@
         "intro": [-1,2,34,36,38,40],
         "loop": [-1,-1,35,37,39,-1]
       },
+      "animator": {
+        "object": 129,
+        "controller": 15,
+        "keepState": false,
+        "controllerObject": 129
+      },
       "conds": [
         {
           "conditions": [
@@ -12419,6 +12957,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12438,6 +12977,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12456,6 +12997,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": true,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12475,6 +13017,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12489,6 +13033,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12510,6 +13056,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12529,6 +13076,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12552,6 +13101,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12571,6 +13121,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12594,6 +13146,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12618,6 +13171,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12640,6 +13195,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12664,6 +13220,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "AudioManager.Play",
@@ -12691,6 +13249,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12705,6 +13265,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12727,6 +13289,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12751,6 +13314,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12774,6 +13339,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12793,6 +13359,8 @@
               "dontInterrupt": true,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12807,6 +13375,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
                 {
                   "method": "VillageGrid.Explode",
@@ -12838,6 +13408,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12857,6 +13428,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12879,6 +13452,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
             {
               "method": "NPC.Teleport",
@@ -12898,6 +13472,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -12942,6 +13518,7 @@
           "anyOf": false,
           "alwaysStartFromBeginning": false,
           "emote": 0,
+          "animationOnEnter": "",
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
@@ -12956,6 +13533,8 @@
               "dontInterrupt": false,
               "emoteOnStart": 0,
               "emoteOnLeave": 0,
+              "animationOnStart": "",
+              "animationOnLeave": "",
               "onStart": [
               ],
               "onEnd": [
@@ -16583,12 +17162,12 @@
   ],
   "player": {
     "body": {
-      "sprite": 226,
+      "sprite": 359,
       "pos": [0,0],
       "sortY": 0,
       "sortingLayerValue": 7,
       "order": 0,
-      "anim": 41
+      "anim": 75
     },
     "boat": {
       "sprite": 82,
@@ -16596,7 +17175,7 @@
       "sortY": 0.0001,
       "sortingLayerValue": 7,
       "order": 0,
-      "anim": 42
+      "anim": 76
     },
     "actionIndicator": {
       "sprite": 2,
@@ -16617,34 +17196,34 @@
   "artifact": {
     "buttonSpacing": 37,
     "frame": {
-      "sprite": 228,
+      "sprite": 361,
       "rect": [-90,-75,180,150]
     },
     "background": {
-      "sprite": 229,
+      "sprite": 362,
       "rect": [-90,-75,180,150]
     },
     "underlays": [
       {
         "name": "Outside Map",
-        "sprite": 230,
+        "sprite": 363,
         "rect": [-90,-75,180,150]
       }
     ],
-    "empty": 231,
-    "blank": 232,
-    "hoverIcon": 232,
+    "empty": 364,
+    "blank": 365,
+    "hoverIcon": 365,
     "parts": {
       "pressed": {
-        "sprite": 233,
+        "sprite": 366,
         "rect": [-16,-17,32,33]
       },
       "highlight": {
-        "sprite": 234,
+        "sprite": 367,
         "rect": [-16,-17,32,32]
       },
       "hover": {
-        "sprite": 235,
+        "sprite": 368,
         "rect": [-16,-16,32,32]
       }
     },
@@ -16656,80 +17235,80 @@
     "buttons": [
       {
         "islandId": 1,
-        "island": 236,
-        "completed": 237,
+        "island": 369,
+        "completed": 370,
         "icons": [
           {
-            "sprite": 238,
+            "sprite": 371,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 2,
-        "island": 239,
-        "completed": 240,
+        "island": 372,
+        "completed": 373,
         "icons": [
           {
-            "sprite": 241,
+            "sprite": 374,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 3,
-        "island": 242,
-        "completed": 243,
+        "island": 375,
+        "completed": 376,
         "icons": [
           {
-            "sprite": 244,
+            "sprite": 377,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 4,
-        "island": 245,
-        "completed": 246,
+        "island": 378,
+        "completed": 379,
         "icons": [
         ]
       },
       {
         "islandId": 5,
-        "island": 247,
-        "completed": 248,
+        "island": 380,
+        "completed": 381,
         "icons": [
         ]
       },
       {
         "islandId": 6,
-        "island": 249,
-        "completed": 250,
+        "island": 382,
+        "completed": 383,
         "icons": [
           {
-            "sprite": 251,
+            "sprite": 384,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 7,
-        "island": 252,
-        "completed": 253,
+        "island": 385,
+        "completed": 386,
         "icons": [
         ]
       },
       {
         "islandId": 8,
-        "island": 254,
-        "completed": 255,
+        "island": 387,
+        "completed": 388,
         "icons": [
         ]
       },
       {
         "islandId": 9,
-        "island": 256,
-        "completed": 257,
+        "island": 389,
+        "completed": 390,
         "icons": [
         ]
       }
@@ -19450,618 +20029,618 @@
   "tiles": [
     {
       "name": "Grass2 (Flower)",
-      "frames": [258,259,260],
+      "frames": [391,392,393],
       "fps": 4
     },
     {
       "name": "Grass1",
-      "frames": [261,262],
+      "frames": [394,395],
       "fps": 4
     },
     {
       "name": "Grass4",
-      "frames": [263,264],
+      "frames": [396,397],
       "fps": 4
     },
     {
       "name": "Grass6",
-      "frames": [265,266],
+      "frames": [398,399],
       "fps": 4
     },
     {
       "name": "Grass5",
-      "frames": [267,268],
+      "frames": [400,401],
       "fps": 4
     },
     {
       "name": "rock_wall_12",
-      "frames": [269]
+      "frames": [402]
     },
     {
       "name": "rock_wall_15",
-      "frames": [270]
+      "frames": [403]
     },
     {
       "name": "rock_wall_13",
-      "frames": [271]
+      "frames": [404]
     },
     {
       "name": "rock_wall_2",
-      "frames": [272]
+      "frames": [405]
     },
     {
       "name": "rock_wall_24",
-      "frames": [273]
+      "frames": [406]
     },
     {
       "name": "Grass3",
-      "frames": [274,275],
+      "frames": [407,408],
       "fps": 4
     },
     {
       "name": "rock_wall_23",
-      "frames": [276]
+      "frames": [409]
     },
     {
       "name": "WallRockCut",
-      "frames": [277]
+      "frames": [410]
     },
     {
       "name": "WallRockCut",
-      "frames": [278]
+      "frames": [411]
     },
     {
       "name": "WallRockCut",
-      "frames": [279]
+      "frames": [412]
     },
     {
       "name": "rock_wall_21",
-      "frames": [280]
+      "frames": [413]
     },
     {
       "name": "rock_wall_17",
-      "frames": [281]
+      "frames": [414]
     },
     {
       "name": "village_ruins_deco_10",
-      "frames": [282]
+      "frames": [415]
     },
     {
       "name": "village_ruins_deco_8",
-      "frames": [283]
+      "frames": [416]
     },
     {
       "name": "rock_wall_4",
-      "frames": [284]
+      "frames": [417]
     },
     {
       "name": "rock_wall_11",
-      "frames": [285]
+      "frames": [418]
     },
     {
       "name": "rock_wall_5",
-      "frames": [286]
+      "frames": [419]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [287]
+      "frames": [420]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [288]
+      "frames": [421]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [289]
+      "frames": [422]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [290]
+      "frames": [423]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [291]
+      "frames": [424]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [292]
+      "frames": [425]
     },
     {
       "name": "village_ruins_deco_9",
-      "frames": [293]
+      "frames": [426]
     },
     {
       "name": "village_ruins_deco_1",
-      "frames": [294]
+      "frames": [427]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [295]
+      "frames": [428]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [296]
+      "frames": [429]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [297]
+      "frames": [430]
     },
     {
       "name": "village_ruins_deco_3",
-      "frames": [298]
+      "frames": [431]
     },
     {
       "name": "village_ruins_deco_2",
-      "frames": [299]
+      "frames": [432]
     },
     {
       "name": "rock_wall_0",
-      "frames": [300]
+      "frames": [433]
     },
     {
       "name": "rock_wall_1",
-      "frames": [301]
+      "frames": [434]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [302]
+      "frames": [435]
     },
     {
       "name": "Jungle Leaves",
-      "frames": [303]
+      "frames": [436]
     },
     {
       "name": "village_ruins_deco_0",
-      "frames": [304]
+      "frames": [437]
     },
     {
       "name": "leaf_tiles_5",
-      "frames": [305]
+      "frames": [438]
     },
     {
       "name": "Ground_4",
-      "frames": [306]
+      "frames": [439]
     },
     {
       "name": "sand-grass_transition_6",
-      "frames": [307]
+      "frames": [440]
     },
     {
       "name": "DesertSand",
-      "frames": [308]
+      "frames": [441]
     },
     {
       "name": "WaterSandTransition5",
-      "frames": [309,310,311,312,312,311,310,309],
+      "frames": [442,443,444,445,445,444,443,442],
       "fps": 4
     },
     {
       "name": "Tileset_1",
-      "frames": [313]
+      "frames": [446]
     },
     {
       "name": "DesertSand",
-      "frames": [314]
+      "frames": [447]
     },
     {
       "name": "DesertSand",
-      "frames": [315]
+      "frames": [448]
     },
     {
       "name": "DesertSand",
-      "frames": [316]
+      "frames": [449]
     },
     {
       "name": "sand-grass_transition_8",
-      "frames": [317]
+      "frames": [450]
     },
     {
       "name": "sand-grass_transition_11",
-      "frames": [318]
+      "frames": [451]
     },
     {
       "name": "WaterSandTransition6",
-      "frames": [319,320,321,322,322,321,320,319],
+      "frames": [452,453,454,455,455,454,453,452],
       "fps": 4
     },
     {
       "name": "WaterSandTransition7",
-      "frames": [323,324,325,326,326,325,324,323],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition8",
-      "frames": [327,328,329,330,330,329,328,327],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition11",
-      "frames": [331,332,333,334,334,333,332,331],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition12",
-      "frames": [335,336,337,338,338,337,336,335],
-      "fps": 4
-    },
-    {
-      "name": "DesertSand",
-      "frames": [339]
-    },
-    {
-      "name": "WaterSandTransition4",
-      "frames": [340,341,342,343,343,342,341,340],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition10",
-      "frames": [344,345,346,347,347,346,345,344],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition3",
-      "frames": [348,349,350,351,351,350,349,348],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition1",
-      "frames": [352,353,354,355,355,354,353,352],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition9",
-      "frames": [356,357,358,359,359,358,357,356],
-      "fps": 4
-    },
-    {
-      "name": "sand-grass_transition_10",
-      "frames": [360]
-    },
-    {
-      "name": "WaterSandTransition2",
-      "frames": [361,362,363,364,364,363,362,361],
-      "fps": 4
-    },
-    {
-      "name": "Tileset_0",
-      "frames": [365]
-    },
-    {
-      "name": "sand-grass_transition_4",
-      "frames": [366]
-    },
-    {
-      "name": "sand-grass_transition_2",
-      "frames": [367]
-    },
-    {
-      "name": "RiverEndTile2",
-      "frames": [368,369,370,371],
-      "fps": 4
-    },
-    {
-      "name": "Water9",
-      "frames": [372,373,374,375,375,374,373,372],
-      "fps": 4
-    },
-    {
-      "name": "Water2",
-      "frames": [376,377,378,379,379,378,377,376],
-      "fps": 4
-    },
-    {
-      "name": "RiverEndTile1",
-      "frames": [380,381,382,383],
-      "fps": 4
-    },
-    {
-      "name": "GroundDefault",
-      "frames": [384]
-    },
-    {
-      "name": "GroundDefault",
-      "frames": [385]
-    },
-    {
-      "name": "snow_tiles_0",
-      "frames": [386]
-    },
-    {
-      "name": "WallRock",
-      "frames": [387]
-    },
-    {
-      "name": "WallRock",
-      "frames": [388]
-    },
-    {
-      "name": "WallRock",
-      "frames": [389]
-    },
-    {
-      "name": "WallRock",
-      "frames": [390]
-    },
-    {
-      "name": "border_3",
-      "frames": [391]
-    },
-    {
-      "name": "WallRock",
-      "frames": [392]
-    },
-    {
-      "name": "WallRock",
-      "frames": [393]
-    },
-    {
-      "name": "Water6",
-      "frames": [394,395,396,397,397,396,395,394],
-      "fps": 4
-    },
-    {
-      "name": "Water7",
-      "frames": [398,399,400,401,401,400,399,398],
-      "fps": 4
-    },
-    {
-      "name": "WallRock",
-      "frames": [402]
-    },
-    {
-      "name": "Fall3",
-      "frames": [403,404,405,406],
-      "fps": 4
-    },
-    {
-      "name": "Fall2",
-      "frames": [407,408,409,410],
-      "fps": 4
-    },
-    {
-      "name": "Fall1",
-      "frames": [411,412,413,414],
-      "fps": 4
-    },
-    {
-      "name": "snow_tiles_6",
-      "frames": [415]
-    },
-    {
-      "name": "Tileset_74",
-      "frames": [416]
-    },
-    {
-      "name": "Tileset_65",
-      "frames": [417]
-    },
-    {
-      "name": "snow_tiles_7",
-      "frames": [418]
-    },
-    {
-      "name": "Tileset_73",
-      "frames": [419]
-    },
-    {
-      "name": "Tileset_66",
-      "frames": [420]
-    },
-    {
-      "name": "snow_tiles_2",
-      "frames": [421]
-    },
-    {
-      "name": "snow_tiles_4",
-      "frames": [422]
-    },
-    {
-      "name": "snow_tiles_3",
-      "frames": [423]
-    },
-    {
-      "name": "snow_tiles_1",
-      "frames": [424]
-    },
-    {
-      "name": "snow_tiles_5",
-      "frames": [425]
-    },
-    {
-      "name": "Ceiling",
-      "frames": [426]
-    },
-    {
-      "name": "Ceiling",
-      "frames": [427]
-    },
-    {
-      "name": "interiors_0",
-      "frames": [428]
-    },
-    {
-      "name": "Tileset_26",
-      "frames": [429]
-    },
-    {
-      "name": "interiors_2",
-      "frames": [430]
-    },
-    {
-      "name": "interiors_4",
-      "frames": [431]
-    },
-    {
-      "name": "interiors_5",
-      "frames": [432]
-    },
-    {
-      "name": "interiors_1",
-      "frames": [433]
-    },
-    {
-      "name": "interiors_3",
-      "frames": [434]
-    },
-    {
-      "name": "interiors_6",
-      "frames": [435]
-    },
-    {
-      "name": "interiors_7",
-      "frames": [436]
-    },
-    {
-      "name": "leaf_tiles_7",
-      "frames": [437]
-    },
-    {
-      "name": "rock_wall_34",
-      "frames": [438]
-    },
-    {
-      "name": "rock_wall_33",
-      "frames": [439]
-    },
-    {
-      "name": "border_6",
-      "frames": [440]
-    },
-    {
-      "name": "border_7",
-      "frames": [441]
-    },
-    {
-      "name": "border_5",
-      "frames": [442]
-    },
-    {
-      "name": "rock_wall_border_10",
-      "frames": [443]
-    },
-    {
-      "name": "rock_wall_border_8",
-      "frames": [444]
-    },
-    {
-      "name": "border_4",
-      "frames": [445]
-    },
-    {
-      "name": "border_0",
-      "frames": [446]
-    },
-    {
-      "name": "rock_wall_border_7",
-      "frames": [447]
-    },
-    {
-      "name": "rock_wall_border_4",
-      "frames": [448]
-    },
-    {
-      "name": "border_1",
-      "frames": [449]
-    },
-    {
-      "name": "border_2",
-      "frames": [450]
-    },
-    {
-      "name": "village_ruins_deco_11",
-      "frames": [451]
-    },
-    {
-      "name": "cave_rocks_17",
-      "frames": [452]
-    },
-    {
-      "name": "cave_rocks_18",
-      "frames": [453]
-    },
-    {
-      "name": "rock_wall_border_15",
-      "frames": [454]
-    },
-    {
-      "name": "rock_wall_26",
-      "frames": [455]
-    },
-    {
-      "name": "Water11",
       "frames": [456,457,458,459,459,458,457,456],
       "fps": 4
     },
     {
-      "name": "Water12",
+      "name": "WaterSandTransition8",
       "frames": [460,461,462,463,463,462,461,460],
       "fps": 4
     },
     {
-      "name": "Tileset_51",
-      "frames": [464]
-    },
-    {
-      "name": "Water4",
-      "frames": [465,466,467,468,468,467,466,465],
+      "name": "WaterSandTransition11",
+      "frames": [464,465,466,467,467,466,465,464],
       "fps": 4
     },
     {
-      "name": "RiverReeds",
-      "frames": [469,470,471,472],
+      "name": "WaterSandTransition12",
+      "frames": [468,469,470,471,471,470,469,468],
       "fps": 4
     },
     {
-      "name": "Water5",
+      "name": "DesertSand",
+      "frames": [472]
+    },
+    {
+      "name": "WaterSandTransition4",
       "frames": [473,474,475,476,476,475,474,473],
       "fps": 4
     },
     {
+      "name": "WaterSandTransition10",
+      "frames": [477,478,479,480,480,479,478,477],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition3",
+      "frames": [481,482,483,484,484,483,482,481],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition1",
+      "frames": [485,486,487,488,488,487,486,485],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition9",
+      "frames": [489,490,491,492,492,491,490,489],
+      "fps": 4
+    },
+    {
+      "name": "sand-grass_transition_10",
+      "frames": [493]
+    },
+    {
+      "name": "WaterSandTransition2",
+      "frames": [494,495,496,497,497,496,495,494],
+      "fps": 4
+    },
+    {
+      "name": "Tileset_0",
+      "frames": [498]
+    },
+    {
+      "name": "sand-grass_transition_4",
+      "frames": [499]
+    },
+    {
+      "name": "sand-grass_transition_2",
+      "frames": [500]
+    },
+    {
+      "name": "RiverEndTile2",
+      "frames": [501,502,503,504],
+      "fps": 4
+    },
+    {
+      "name": "Water9",
+      "frames": [505,506,507,508,508,507,506,505],
+      "fps": 4
+    },
+    {
+      "name": "Water2",
+      "frames": [509,510,511,512,512,511,510,509],
+      "fps": 4
+    },
+    {
+      "name": "RiverEndTile1",
+      "frames": [513,514,515,516],
+      "fps": 4
+    },
+    {
+      "name": "GroundDefault",
+      "frames": [517]
+    },
+    {
+      "name": "GroundDefault",
+      "frames": [518]
+    },
+    {
+      "name": "snow_tiles_0",
+      "frames": [519]
+    },
+    {
+      "name": "WallRock",
+      "frames": [520]
+    },
+    {
+      "name": "WallRock",
+      "frames": [521]
+    },
+    {
+      "name": "WallRock",
+      "frames": [522]
+    },
+    {
+      "name": "WallRock",
+      "frames": [523]
+    },
+    {
+      "name": "border_3",
+      "frames": [524]
+    },
+    {
+      "name": "WallRock",
+      "frames": [525]
+    },
+    {
+      "name": "WallRock",
+      "frames": [526]
+    },
+    {
+      "name": "Water6",
+      "frames": [527,528,529,530,530,529,528,527],
+      "fps": 4
+    },
+    {
+      "name": "Water7",
+      "frames": [531,532,533,534,534,533,532,531],
+      "fps": 4
+    },
+    {
+      "name": "WallRock",
+      "frames": [535]
+    },
+    {
+      "name": "Fall3",
+      "frames": [536,537,538,539],
+      "fps": 4
+    },
+    {
+      "name": "Fall2",
+      "frames": [540,541,542,543],
+      "fps": 4
+    },
+    {
+      "name": "Fall1",
+      "frames": [544,545,546,547],
+      "fps": 4
+    },
+    {
+      "name": "snow_tiles_6",
+      "frames": [548]
+    },
+    {
+      "name": "Tileset_74",
+      "frames": [549]
+    },
+    {
+      "name": "Tileset_65",
+      "frames": [550]
+    },
+    {
+      "name": "snow_tiles_7",
+      "frames": [551]
+    },
+    {
+      "name": "Tileset_73",
+      "frames": [552]
+    },
+    {
+      "name": "Tileset_66",
+      "frames": [553]
+    },
+    {
+      "name": "snow_tiles_2",
+      "frames": [554]
+    },
+    {
+      "name": "snow_tiles_4",
+      "frames": [555]
+    },
+    {
+      "name": "snow_tiles_3",
+      "frames": [556]
+    },
+    {
+      "name": "snow_tiles_1",
+      "frames": [557]
+    },
+    {
+      "name": "snow_tiles_5",
+      "frames": [558]
+    },
+    {
+      "name": "Ceiling",
+      "frames": [559]
+    },
+    {
+      "name": "Ceiling",
+      "frames": [560]
+    },
+    {
+      "name": "interiors_0",
+      "frames": [561]
+    },
+    {
+      "name": "Tileset_26",
+      "frames": [562]
+    },
+    {
+      "name": "interiors_2",
+      "frames": [563]
+    },
+    {
+      "name": "interiors_4",
+      "frames": [564]
+    },
+    {
+      "name": "interiors_5",
+      "frames": [565]
+    },
+    {
+      "name": "interiors_1",
+      "frames": [566]
+    },
+    {
+      "name": "interiors_3",
+      "frames": [567]
+    },
+    {
+      "name": "interiors_6",
+      "frames": [568]
+    },
+    {
+      "name": "interiors_7",
+      "frames": [569]
+    },
+    {
+      "name": "leaf_tiles_7",
+      "frames": [570]
+    },
+    {
+      "name": "rock_wall_34",
+      "frames": [571]
+    },
+    {
+      "name": "rock_wall_33",
+      "frames": [572]
+    },
+    {
+      "name": "border_6",
+      "frames": [573]
+    },
+    {
+      "name": "border_7",
+      "frames": [574]
+    },
+    {
+      "name": "border_5",
+      "frames": [575]
+    },
+    {
+      "name": "rock_wall_border_10",
+      "frames": [576]
+    },
+    {
+      "name": "rock_wall_border_8",
+      "frames": [577]
+    },
+    {
+      "name": "border_4",
+      "frames": [578]
+    },
+    {
+      "name": "border_0",
+      "frames": [579]
+    },
+    {
+      "name": "rock_wall_border_7",
+      "frames": [580]
+    },
+    {
+      "name": "rock_wall_border_4",
+      "frames": [581]
+    },
+    {
+      "name": "border_1",
+      "frames": [582]
+    },
+    {
+      "name": "border_2",
+      "frames": [583]
+    },
+    {
+      "name": "village_ruins_deco_11",
+      "frames": [584]
+    },
+    {
+      "name": "cave_rocks_17",
+      "frames": [585]
+    },
+    {
+      "name": "cave_rocks_18",
+      "frames": [586]
+    },
+    {
+      "name": "rock_wall_border_15",
+      "frames": [587]
+    },
+    {
+      "name": "rock_wall_26",
+      "frames": [588]
+    },
+    {
+      "name": "Water11",
+      "frames": [589,590,591,592,592,591,590,589],
+      "fps": 4
+    },
+    {
+      "name": "Water12",
+      "frames": [593,594,595,596,596,595,594,593],
+      "fps": 4
+    },
+    {
+      "name": "Tileset_51",
+      "frames": [597]
+    },
+    {
+      "name": "Water4",
+      "frames": [598,599,600,601,601,600,599,598],
+      "fps": 4
+    },
+    {
+      "name": "RiverReeds",
+      "frames": [602,603,604,605],
+      "fps": 4
+    },
+    {
+      "name": "Water5",
+      "frames": [606,607,608,609,609,608,607,606],
+      "fps": 4
+    },
+    {
       "name": "rock_wall_border_5",
-      "frames": [477]
+      "frames": [610]
     },
     {
       "name": "rock_wall_border_3",
-      "frames": [478]
+      "frames": [611]
     },
     {
       "name": "rock_wall_border_11",
-      "frames": [479]
+      "frames": [612]
     },
     {
       "name": "rock_wall_border_9",
-      "frames": [480]
+      "frames": [613]
     },
     {
       "name": "Tileset_42",
-      "frames": [481]
+      "frames": [614]
     },
     {
       "name": "Water13",
-      "frames": [482,483,484,485,485,484,483,482],
+      "frames": [615,616,617,618,618,617,616,615],
       "fps": 4
     },
     {
       "name": "Water3",
-      "frames": [486,487,488,489,489,488,487,486],
+      "frames": [619,620,621,622,622,621,620,619],
       "fps": 4
     },
     {
       "name": "Water1",
-      "frames": [490,491,492,493,493,492,491,490],
+      "frames": [623,624,625,626,626,625,624,623],
       "fps": 4
     },
     {
       "name": "cave_rocks_9",
-      "frames": [494]
+      "frames": [627]
     },
     {
       "name": "cave_rocks_8",
-      "frames": [495]
+      "frames": [628]
     },
     {
       "name": "cave_rocks_16",
-      "frames": [496]
+      "frames": [629]
     },
     {
       "name": "cave_rocks_6",
@@ -20069,95 +20648,95 @@
     },
     {
       "name": "rock_wall_border_6",
-      "frames": [497]
+      "frames": [630]
     },
     {
       "name": "rock_wall_28",
-      "frames": [498]
+      "frames": [631]
     },
     {
       "name": "rock_wall_31",
-      "frames": [499]
+      "frames": [632]
     },
     {
       "name": "rock_wall_border_0",
-      "frames": [500]
+      "frames": [633]
     },
     {
       "name": "rock_wall_border_14",
-      "frames": [501]
+      "frames": [634]
     },
     {
       "name": "border_light_1",
-      "frames": [502]
+      "frames": [635]
     },
     {
       "name": "Water8",
-      "frames": [503,504,505,506,506,505,504,503],
+      "frames": [636,637,638,639,639,638,637,636],
       "fps": 4
     },
     {
       "name": "rock_wall_27",
-      "frames": [507]
+      "frames": [640]
     },
     {
       "name": "rock_wall_30",
-      "frames": [508]
+      "frames": [641]
     },
     {
       "name": "Snow1",
-      "frames": [509,510],
+      "frames": [642,643],
       "fps": 4
     },
     {
       "name": "Tileset_27",
-      "frames": [511]
+      "frames": [644]
     },
     {
       "name": "Tileset_40",
-      "frames": [512]
+      "frames": [645]
     },
     {
       "name": "rock_wall_border_1",
-      "frames": [513]
+      "frames": [646]
     },
     {
       "name": "interiors_19",
-      "frames": [514]
+      "frames": [647]
     },
     {
       "name": "Water10",
-      "frames": [515,516,517,518,518,517,516,515],
+      "frames": [648,649,650,651,651,650,649,648],
       "fps": 4
     },
     {
       "name": "Water14",
-      "frames": [519,520,521,522,522,521,520,519],
+      "frames": [652,653,654,655,655,654,653,652],
       "fps": 4
     },
     {
       "name": "Ceiling",
-      "frames": [523]
+      "frames": [656]
     },
     {
       "name": "rock_wall_border_2",
-      "frames": [524]
+      "frames": [657]
     },
     {
       "name": "Tileset_32",
-      "frames": [525]
+      "frames": [658]
     },
     {
       "name": "Tileset_45",
-      "frames": [526]
+      "frames": [659]
     },
     {
       "name": "Tileset_31",
-      "frames": [527]
+      "frames": [660]
     },
     {
       "name": "Tileset_30",
-      "frames": [528]
+      "frames": [661]
     }
   ],
   "sprites": [
@@ -20626,14 +21205,14 @@
     {
       "name": "Fezziwig_Idle_0",
       "sheet": 1,
-      "rect": [0,0,16,16],
+      "rect": [0,416,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fezziwig_Idle_1",
       "sheet": 1,
-      "rect": [16,0,16,16],
+      "rect": [16,416,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
@@ -21347,14 +21926,14 @@
     {
       "name": "chad_1",
       "sheet": 0,
-      "rect": [0,16,16,16],
+      "rect": [192,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "chad_2",
       "sheet": 0,
-      "rect": [16,16,16,16],
+      "rect": [208,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
@@ -21741,6 +22320,937 @@
       "sheet": 3,
       "rect": [48,48,16,16],
       "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "SadRomeo_Walk_0",
+      "sheet": 6,
+      "rect": [224,0,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "SadRomeo_Walk_1",
+      "sheet": 6,
+      "rect": [192,16,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "SadRomeo_Walk_2",
+      "sheet": 6,
+      "rect": [208,16,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "SadRomeo_Walk_3",
+      "sheet": 6,
+      "rect": [192,0,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "npcsprites 1_13",
+      "sheet": 6,
+      "rect": [16,80,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "npcsprites 1_15",
+      "sheet": 6,
+      "rect": [48,80,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_exploresse_walk0",
+      "sheet": 6,
+      "rect": [64,112,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_exploresse_walk1",
+      "sheet": 6,
+      "rect": [80,112,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_exploresse_walk2",
+      "sheet": 6,
+      "rect": [96,112,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_exploresse_walk3",
+      "sheet": 6,
+      "rect": [112,112,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_4",
+      "sheet": 6,
+      "rect": [64,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_5",
+      "sheet": 6,
+      "rect": [80,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_6",
+      "sheet": 6,
+      "rect": [96,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_7",
+      "sheet": 6,
+      "rect": [112,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_8",
+      "sheet": 6,
+      "rect": [128,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_9",
+      "sheet": 6,
+      "rect": [144,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_10",
+      "sheet": 6,
+      "rect": [160,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "village_npc2_11",
+      "sheet": 6,
+      "rect": [176,96,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Walk_0",
+      "sheet": 6,
+      "rect": [96,144,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Walk_1",
+      "sheet": 6,
+      "rect": [112,144,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Walk_2",
+      "sheet": 6,
+      "rect": [128,144,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Walk_3",
+      "sheet": 6,
+      "rect": [64,160,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Shocked_0",
+      "sheet": 6,
+      "rect": [80,160,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Shocked_1",
+      "sheet": 6,
+      "rect": [96,160,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Skeptical_0",
+      "sheet": 6,
+      "rect": [112,160,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Skeptical_1",
+      "sheet": 6,
+      "rect": [128,160,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Crying_0",
+      "sheet": 6,
+      "rect": [64,176,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Crying_1",
+      "sheet": 6,
+      "rect": [80,176,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Smug_0",
+      "sheet": 6,
+      "rect": [96,176,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Smug_1",
+      "sheet": 6,
+      "rect": [112,176,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Expressionless_0",
+      "sheet": 6,
+      "rect": [128,176,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Expressionless_1",
+      "sheet": 6,
+      "rect": [64,192,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Interested_0",
+      "sheet": 6,
+      "rect": [80,192,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_Interested_1",
+      "sheet": 6,
+      "rect": [96,192,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_TakingNotes_0",
+      "sheet": 6,
+      "rect": [112,192,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Archeologist_v2_TakingNotes_1",
+      "sheet": 6,
+      "rect": [128,192,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "npcsprites 1_6.5",
+      "sheet": 6,
+      "rect": [16,48,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "npcsprites 1_7.5",
+      "sheet": 6,
+      "rect": [48,48,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "npcsprites 1_9",
+      "sheet": 6,
+      "rect": [16,64,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "npcsprites 1_11",
+      "sheet": 6,
+      "rect": [48,64,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_fall_1",
+      "sheet": 0,
+      "rect": [32,224,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_fall_2",
+      "sheet": 0,
+      "rect": [64,224,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_fall_3",
+      "sheet": 0,
+      "rect": [96,224,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_fall_4",
+      "sheet": 0,
+      "rect": [128,224,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_fall_5",
+      "sheet": 0,
+      "rect": [160,224,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_fall_6",
+      "sheet": 0,
+      "rect": [192,224,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_0",
+      "sheet": 0,
+      "rect": [0,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_1",
+      "sheet": 0,
+      "rect": [16,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_2",
+      "sheet": 0,
+      "rect": [32,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_3",
+      "sheet": 0,
+      "rect": [48,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_4",
+      "sheet": 0,
+      "rect": [64,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_5",
+      "sheet": 0,
+      "rect": [80,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_6",
+      "sheet": 0,
+      "rect": [96,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_7",
+      "sheet": 0,
+      "rect": [112,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_8",
+      "sheet": 0,
+      "rect": [128,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_9",
+      "sheet": 0,
+      "rect": [144,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_10",
+      "sheet": 0,
+      "rect": [160,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_11",
+      "sheet": 0,
+      "rect": [176,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_jump_12",
+      "sheet": 0,
+      "rect": [192,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_0",
+      "sheet": 0,
+      "rect": [192,0,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_fall_0",
+      "sheet": 0,
+      "rect": [0,224,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_3",
+      "sheet": 0,
+      "rect": [192,32,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_4",
+      "sheet": 0,
+      "rect": [208,32,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_5",
+      "sheet": 0,
+      "rect": [224,32,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_6",
+      "sheet": 0,
+      "rect": [240,32,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_sad_0",
+      "sheet": 0,
+      "rect": [224,64,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_crutch_0",
+      "sheet": 0,
+      "rect": [224,48,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "chad_crutch_1",
+      "sheet": 0,
+      "rect": [240,48,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalIdle_0",
+      "sheet": 0,
+      "rect": [0,0,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalIdle_1",
+      "sheet": 0,
+      "rect": [48,0,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_0",
+      "sheet": 0,
+      "rect": [0,0,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_1",
+      "sheet": 0,
+      "rect": [0,48,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_2",
+      "sheet": 0,
+      "rect": [48,48,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_3",
+      "sheet": 0,
+      "rect": [96,48,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_4",
+      "sheet": 0,
+      "rect": [144,48,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_5",
+      "sheet": 0,
+      "rect": [0,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_6",
+      "sheet": 0,
+      "rect": [48,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_7",
+      "sheet": 0,
+      "rect": [0,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_8",
+      "sheet": 0,
+      "rect": [48,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_9",
+      "sheet": 0,
+      "rect": [0,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_10",
+      "sheet": 0,
+      "rect": [48,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_11",
+      "sheet": 0,
+      "rect": [0,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_12",
+      "sheet": 0,
+      "rect": [96,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_13",
+      "sheet": 0,
+      "rect": [144,96,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_14",
+      "sheet": 0,
+      "rect": [0,144,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_15",
+      "sheet": 0,
+      "rect": [48,144,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_16",
+      "sheet": 0,
+      "rect": [96,144,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalShoot_17",
+      "sheet": 0,
+      "rect": [144,144,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalSad_0",
+      "sheet": 0,
+      "rect": [96,0,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "ChadPortalGun_PortalSad_1",
+      "sheet": 0,
+      "rect": [144,0,48,48],
+      "pivot": [24,24],
+      "ppu": 16
+    },
+    {
+      "name": "chad_surprised_0",
+      "sheet": 0,
+      "rect": [240,64,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Forward_0",
+      "sheet": 1,
+      "rect": [16,432,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Forward_1",
+      "sheet": 1,
+      "rect": [32,432,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Sad_0",
+      "sheet": 1,
+      "rect": [48,432,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Sad_1",
+      "sheet": 1,
+      "rect": [48,432,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Sad_2",
+      "sheet": 1,
+      "rect": [0,448,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Sad_3",
+      "sheet": 1,
+      "rect": [0,448,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Depressed_0",
+      "sheet": 1,
+      "rect": [16,448,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Surprised_0",
+      "sheet": 1,
+      "rect": [16,416,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Surprised_1",
+      "sheet": 1,
+      "rect": [32,448,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Surprised_2",
+      "sheet": 1,
+      "rect": [48,448,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Surprised_3",
+      "sheet": 1,
+      "rect": [0,464,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Surprised_4",
+      "sheet": 1,
+      "rect": [16,464,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Surprised_5",
+      "sheet": 1,
+      "rect": [32,464,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Surprised_6",
+      "sheet": 1,
+      "rect": [16,416,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Walk_0",
+      "sheet": 1,
+      "rect": [32,416,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Walk_1",
+      "sheet": 1,
+      "rect": [0,416,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Walk_2",
+      "sheet": 1,
+      "rect": [48,416,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "Fezziwig_Walk_3",
+      "sheet": 1,
+      "rect": [0,432,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_fall_0",
+      "sheet": 1,
+      "rect": [32,0,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_fall_1",
+      "sheet": 1,
+      "rect": [32,16,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_fall_2",
+      "sheet": 1,
+      "rect": [32,32,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_fall_3",
+      "sheet": 1,
+      "rect": [32,48,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_fall_4",
+      "sheet": 1,
+      "rect": [32,64,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_fall_5",
+      "sheet": 1,
+      "rect": [32,80,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_fall_6",
+      "sheet": 1,
+      "rect": [32,96,32,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_0",
+      "sheet": 1,
+      "rect": [0,0,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_1",
+      "sheet": 1,
+      "rect": [0,32,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_2",
+      "sheet": 1,
+      "rect": [0,64,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_3",
+      "sheet": 1,
+      "rect": [0,96,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_4",
+      "sheet": 1,
+      "rect": [0,128,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_5",
+      "sheet": 1,
+      "rect": [0,160,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_6",
+      "sheet": 1,
+      "rect": [0,192,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_7",
+      "sheet": 1,
+      "rect": [0,224,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_8",
+      "sheet": 1,
+      "rect": [0,256,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_9",
+      "sheet": 1,
+      "rect": [0,288,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_10",
+      "sheet": 1,
+      "rect": [0,320,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_11",
+      "sheet": 1,
+      "rect": [0,352,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_jump_12",
+      "sheet": 1,
+      "rect": [0,384,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_float_0",
+      "sheet": 1,
+      "rect": [16,0,16,32],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_float_1",
+      "sheet": 1,
+      "rect": [16,32,16,32],
+      "pivot": [8,16],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_float_2",
+      "sheet": 1,
+      "rect": [16,64,16,32],
+      "pivot": [8,16],
+      "ppu": 16
+    },
+    {
+      "name": "fezziwig_float_3",
+      "sheet": 1,
+      "rect": [16,96,16,32],
+      "pivot": [8,16],
       "ppu": 16
     },
     {
@@ -24154,8 +25664,246 @@
   "loop": true
 },
     {
+  "name": "SadRomeo_Walk",
+  "frames": [226,227,228,229,229],
+  "times": [0,0.25,0.5,0.75,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "RomeoIdle",
+  "frames": [230,231],
+  "times": [0,0.5],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "ExploresseWalk",
+  "frames": [232,233,234,235],
+  "times": [0,0.25,0.5,0.75],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "ExploresseCrying",
+  "frames": [236,237,238,239,240,241,242,243],
+  "times": [0,0.5,1,1.5,2,2.5,3,3.5],
+  "length": 4,
+  "loop": true
+},
+    {
+  "name": "Archeologist_v2_Walk",
+  "frames": [244,245,246,247,247],
+  "times": [0,0.25,0.5,0.75,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "Archeologist_v2_Shocked",
+  "frames": [248,249,249],
+  "times": [0,0.125,1.1083],
+  "length": 1.125,
+  "loop": false
+},
+    {
+  "name": "Archeologist_v2_Skeptical",
+  "frames": [250,251,251],
+  "times": [0,0.5,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "Archeologist_v2_Crying",
+  "frames": [252,253,253],
+  "times": [0,1,1.9833],
+  "length": 2,
+  "loop": true
+},
+    {
+  "name": "Archeologist_v2_Smug",
+  "frames": [254,255,255],
+  "times": [0,0.5,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "Archeologist_v2_Expressionless",
+  "frames": [256,257,257],
+  "times": [0,1,1.9833],
+  "length": 2,
+  "loop": true
+},
+    {
+  "name": "Archeologist_v2_Interested",
+  "frames": [258,259,259],
+  "times": [0,0.5,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "Archeologist_v2_TakingNotes",
+  "frames": [260,261,260],
+  "times": [0,0.5,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "ArchibaldIdleSus",
+  "frames": [262,263],
+  "times": [0,0.5],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "JulietIdle",
+  "frames": [264,265],
+  "times": [0,0.5],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "ChadFall",
+  "frames": [266,267,268,269,270,271],
+  "times": [0,0.125,0.25,0.375,0.5,0.625],
+  "length": 0.75,
+  "loop": false
+},
+    {
+  "name": "ChadJump",
+  "frames": [272,273,274,275,276,277,278,279,280,281,282,283,284],
+  "times": [0,0.0833,0.1667,0.25,0.3333,0.4167,0.5,0.5833,0.6667,0.75,0.8333,0.9167,1],
+  "length": 1.0167,
+  "loop": false
+},
+    {
+  "name": "ChadSad",
+  "frames": [285],
+  "times": [0],
+  "length": 0.5,
+  "loop": true
+},
+    {
+  "name": "ChadTipping",
+  "frames": [286,266],
+  "times": [0,0.25],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "ChadWalk",
+  "frames": [287,288,289,290],
+  "times": [0,0.25,0.5,0.75],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "ChadDepressed",
+  "frames": [291],
+  "times": [0],
+  "length": 0.5,
+  "loop": true
+},
+    {
+  "name": "ChadCrutch",
+  "frames": [292,293],
+  "times": [0,1],
+  "length": 2,
+  "loop": true
+},
+    {
+  "name": "ChadPortalGun_PortalIdle",
+  "frames": [294,295,295],
+  "times": [0,0.5,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "ChadPortalGun_PortalShoot",
+  "frames": [296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,313],
+  "times": [0,0.125,0.25,0.375,0.5,0.625,0.75,0.875,1,1.125,1.25,1.375,1.5,1.625,1.75,1.875,2,2.125,2.2333],
+  "length": 2.25,
+  "loop": true
+},
+    {
+  "name": "ChadPortalGun_PortalSad",
+  "frames": [314,315,314],
+  "times": [0,1,1.9833],
+  "length": 2,
+  "loop": true
+},
+    {
+  "name": "ChadSurprised",
+  "frames": [316],
+  "times": [0],
+  "length": 1,
+  "loop": false
+},
+    {
+  "name": "Fezziwig_Forward",
+  "frames": [317,318,318],
+  "times": [0,0.5,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "Fezziwig_Sad",
+  "frames": [319,320,321,322,322],
+  "times": [0,0.5,1,1.5,1.9833],
+  "length": 2,
+  "loop": true
+},
+    {
+  "name": "Fezziwig_Depressed",
+  "frames": [323,323],
+  "times": [0,0.4833],
+  "length": 0.5,
+  "loop": true
+},
+    {
+  "name": "Fezziwig_Surprised",
+  "frames": [324,325,326,327,328,329,330,330],
+  "times": [0,0.25,0.5,0.75,1,1.25,1.5,1.7333],
+  "length": 1.75,
+  "loop": false
+},
+    {
+  "name": "Fezziwig_Walk",
+  "frames": [331,332,333,334,331],
+  "times": [0,0.25,0.5,0.75,0.9833],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "FezziwigTipping",
+  "frames": [335,336],
+  "times": [0,0.25],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "FezziwigFall",
+  "frames": [337,338,339,340,341],
+  "times": [0,0.125,0.25,0.375,0.5],
+  "length": 0.625,
+  "loop": false
+},
+    {
+  "name": "FezziwigJumping",
+  "frames": [342,343,344,345,346,347,348,349,350,351,352,353,354],
+  "times": [0,0.0667,0.1333,0.2167,0.2833,0.35,0.4167,0.4833,0.55,0.6333,0.7,0.7667,0.8333],
+  "length": 0.85,
+  "loop": false
+},
+    {
+  "name": "FezziwigFloat",
+  "frames": [355,356,357,358],
+  "times": [0,0.25,0.5,0.75],
+  "length": 1,
+  "loop": true
+},
+    {
   "name": "PlayerIdle",
-  "frames": [226,227],
+  "frames": [359,360],
   "times": [0,0.5],
   "length": 1,
   "loop": true
@@ -24168,16 +25916,1398 @@
   "loop": true
 }
   ],
+  "animatorControllers": [
+    {
+  "name": "SadRomeo",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 15,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": 41,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Romeo",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 42,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Exploresse",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "Idle",
+      "anim": 16,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Walk",
+      "anim": 43,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Crying",
+      "anim": 44,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Archeologist_v2",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "Idle",
+      "anim": 18,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Walk",
+      "anim": 45,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Shocked",
+      "anim": 46,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Skeptical",
+      "anim": 47,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Crying",
+      "anim": 48,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Smug",
+      "anim": 49,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Expressionless",
+      "anim": 50,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Interested",
+      "anim": 51,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TakingNotes",
+      "anim": 52,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "ArchibaldMan",
+  "params": [
+    {
+      "name": "sus",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "ArchibaldIdle",
+      "anim": 20,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ArchibaldIdleSus",
+      "anim": 53,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Fisher2",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 22,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "SadJuliet",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 23,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Juliet",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 54,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Fisher1",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 25,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Intern4",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 26,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "NeoChad",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    },
+    {
+      "name": "isSad",
+      "default": false
+    },
+    {
+      "name": "isDepressed",
+      "default": false
+    },
+    {
+      "name": "isJumping",
+      "default": false
+    },
+    {
+      "name": "isTipping",
+      "default": false
+    },
+    {
+      "name": "isFallen",
+      "default": false
+    },
+    {
+      "name": "isCrutch",
+      "default": false
+    },
+    {
+      "name": "isSurprised",
+      "default": false
+    },
+    {
+      "name": "hasPortalGun",
+      "default": false
+    },
+    {
+      "name": "isShootingGun",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "ChadChillin",
+      "anim": 27,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 2,
+          "exitTime": -1,
+          "conds": [
+            [3, true]
+          ]
+        },
+        {
+          "to": 4,
+          "exitTime": -1,
+          "conds": [
+            [4, true]
+          ]
+        },
+        {
+          "to": 3,
+          "exitTime": -1,
+          "conds": [
+            [1, true]
+          ]
+        },
+        {
+          "to": 5,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        },
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [5, true]
+          ]
+        },
+        {
+          "to": 6,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        },
+        {
+          "to": 7,
+          "exitTime": 0,
+          "conds": [
+            [6, true]
+          ]
+        },
+        {
+          "to": 8,
+          "exitTime": -1,
+          "conds": [
+            [8, true]
+          ]
+        },
+        {
+          "to": 11,
+          "exitTime": -1,
+          "conds": [
+            [7, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadFall",
+      "anim": 55,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 5,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [5, false]
+          ]
+        },
+        {
+          "to": 7,
+          "exitTime": 0,
+          "conds": [
+            [6, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadJump",
+      "anim": 56,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+            [3, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadSad",
+      "anim": 57,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [1, false],
+            [5, false]
+          ]
+        },
+        {
+          "to": 5,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        },
+        {
+          "to": 6,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        },
+        {
+          "to": 4,
+          "exitTime": -1,
+          "conds": [
+            [4, true]
+          ]
+        },
+        {
+          "to": 7,
+          "exitTime": -1,
+          "conds": [
+            [6, true]
+          ]
+        },
+        {
+          "to": 10,
+          "exitTime": -1,
+          "conds": [
+            [8, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadTipping",
+      "anim": 58,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [4, false]
+          ]
+        },
+        {
+          "to": 1,
+          "exitTime": 1,
+          "conds": [
+            [5, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadWalk",
+      "anim": 59,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false],
+            [1, false],
+            [5, false]
+          ]
+        },
+        {
+          "to": 3,
+          "exitTime": -1,
+          "conds": [
+            [0, false],
+            [5, true]
+          ]
+        },
+        {
+          "to": 3,
+          "exitTime": -1,
+          "conds": [
+            [0, false],
+            [1, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadDepressed",
+      "anim": 60,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadCrutch",
+      "anim": 61,
+      "speed": 1,
+      "transitions": [
+      ]
+    },
+    {
+      "name": "ChadPortalIdle",
+      "anim": 62,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 9,
+          "exitTime": -1,
+          "conds": [
+            [9, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [8, false]
+          ]
+        },
+        {
+          "to": 10,
+          "exitTime": -1,
+          "conds": [
+            [1, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadPortalShoot",
+      "anim": 63,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 8,
+          "exitTime": 1,
+          "conds": [
+            [9, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadPortalSad",
+      "anim": 64,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 8,
+          "exitTime": -1,
+          "conds": [
+            [1, false]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [8, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChadSurprised",
+      "anim": 65,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [7, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Mayor",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 28,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "OldCatLady",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 31,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Chef",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 33,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Salmon",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "NPCIdle",
+      "anim": 0,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NPCWalk",
+      "anim": -1,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "Fezziwig",
+  "params": [
+    {
+      "name": "isWalking",
+      "default": false
+    },
+    {
+      "name": "isTipping",
+      "default": false
+    },
+    {
+      "name": "isFallen",
+      "default": false
+    },
+    {
+      "name": "isJumping",
+      "default": false
+    },
+    {
+      "name": "isCasting",
+      "default": false
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "Idle",
+      "anim": 11,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 6,
+          "exitTime": -1,
+          "conds": [
+            [1, true]
+          ]
+        },
+        {
+          "to": 8,
+          "exitTime": -1,
+          "conds": [
+            [3, true]
+          ]
+        },
+        {
+          "to": 9,
+          "exitTime": -1,
+          "conds": [
+            [4, true]
+          ]
+        },
+        {
+          "to": 5,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        },
+        {
+          "to": 7,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Forward",
+      "anim": 66,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [1, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [3, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [4, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sad",
+      "anim": 67,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [4, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [3, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [1, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Depressed",
+      "anim": 68,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [1, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [3, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [4, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Surprised",
+      "anim": 69,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [1, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [3, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [4, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Walk",
+      "anim": 70,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [0, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FezziwigTipping",
+      "anim": 71,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 7,
+          "exitTime": 0.5,
+          "conds": [
+            [2, true]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [1, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FezziwigFall",
+      "anim": 72,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FezziwigJumping",
+      "anim": 73,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [3, false]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FezziwigFloat",
+      "anim": 74,
+      "speed": 1,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [4, false]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+}
+  ],
   "sheets": [
     {
       "name": "characters_chad",
       "file": "../sheets/characters_chad.png",
-      "size": [64,64]
+      "size": [256,256]
     },
     {
       "name": "characters_fezziwig",
       "file": "../sheets/characters_fezziwig.png",
-      "size": [64,64]
+      "size": [64,512]
     },
     {
       "name": "characters_jungle",

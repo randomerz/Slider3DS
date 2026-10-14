@@ -1,12 +1,12 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
-World sprites: 329  Anims: 43  Object colliders: 218
+World sprites: 329  Anims: 77  Object colliders: 218
 Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18
-Tiles: 168 (39 animated)  Sprites: 529
+Tiles: 168 (39 animated)  Sprites: 662
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
-Sheets (26, 2685K px):
-  characters_chad: 64x64  [chad]
-  characters_fezziwig: 64x64  [Fezziwig]
+Sheets (26, 2773K px):
+  characters_chad: 256x256  [ChadPortalGun, chad, chad_jump, chad_fall, chad_crutch, chad_sad, chad_surprised]
+  characters_fezziwig: 64x512  [fezziwig_jump, fezziwig_float, fezziwig_fall, Fezziwig]
   characters_jungle: 32x128  [jungle_npcsprites]
   characters_misc: 64x128  [Emotes_v2, sign, sign_dark]
   characters_mountain: 32x64  [Dogs]
@@ -35,7 +35,7 @@ Tile types:
   Tile: 37599
   RuleTile: 5751
   AnimatedTile: 702
-Warnings (48):
+Warnings (43):
   World sprite Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomToilet: draw mode/scale/rotation not exported
   Calls to KnotBox.SetToCorrectPositions are not run by the port yet
   Calls to VillageGrid.OnWaterfallEntry are not run by the port yet
@@ -58,18 +58,13 @@ Warnings (48):
   NPC Map/Village 8Puzzle/STile (1)/Objects/Romeo: walks not exported
   Calls to NPC.StartValidWalk are not run by the port yet
   Calls to VillageGrid.ActivateSliderCollectible are not run by the port yet
-  Calls to Animator.set_runtimeAnimatorController are not run by the port yet
   NPC Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse: walks not exported
   Calls to NPC.StartWalkAtIndex are not run by the port yet
-  NPC Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse: dialogue animations not exported
   Conditionals on Map/Village 8Puzzle/STile (2)/Objects/Archeologist: condition spec not exported (evaluates false)
   NPC Map/Village 8Puzzle/STile (2)/Objects/Archeologist: walks not exported
   Calls to VillageGrid.FillInHole are not run by the port yet
   Calls to VillageGrid.ShufflePuzzle are not run by the port yet
   Calls to VillageGrid.Explode are not run by the port yet
-  NPC Map/Village 8Puzzle/STile (2)/Objects/Archeologist: dialogue animations not exported
-  Calls to NPCAnimatorController.SetBoolToTrue are not run by the port yet
-  Calls to NPCAnimatorController.SetBoolToFalse are not run by the port yet
   Calls to PlayerActionHints.EnableDisabling are not run by the port yet
   Calls to BoxCollider2D.set_enabled are not run by the port yet
   Conditionals on Map/Village 8Puzzle/STile (4)/Objects/Kevin: condition spec not exported (evaluates false)

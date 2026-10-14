@@ -293,11 +293,10 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
             }
         }
     const std::set<std::string> expected = {
-        "Animator.set_runtimeAnimatorController", "ArtifactScreenHider.AddScreensAndShow",
+        "ArtifactScreenHider.AddScreensAndShow",
         "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "BoxCollider2D.set_enabled", "Breadge.Pickup",
         "ChadJump.JumpStarter", "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
-        "KnotBox.SetToCorrectPositions", "NPC.StartValidWalk", "NPC.StartWalkAtIndex",
-        "NPCAnimatorController.SetBoolToFalse", "NPCAnimatorController.SetBoolToTrue", "ParticleSystem.Play",
+        "KnotBox.SetToCorrectPositions", "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
         "PlaySound.PlayString", "PlayerAction.SetItemSortingOrderDec", "PlayerAction.SetItemSortingOrderInc",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
         "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.ActivateCollectible",

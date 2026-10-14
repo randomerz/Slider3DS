@@ -78,6 +78,22 @@ void Npcs::setEmote(const World& world, int npc, int emote) {
     st.emoteTime = 0; // Animator.Play(name) starts that state
 }
 
+void Npcs::playAnimation(World& world, int npc, const std::string& state) {
+    const int animator = world.area.npcs[npc].animator;
+    if (animator < 0 || !world.objects.activeInHierarchy(world.area.animators[animator].object)) return;
+    std::string& current = s_[npc].animation;
+    if (state.empty()) {
+        // "" = back to the default animation (if a named one played).
+        if (current.empty()) return;
+        current.clear();
+        world.animators.play(world.area, animator, "Idle");
+        return;
+    }
+    if (state == current) return;
+    current = state;
+    world.animators.play(world.area, animator, state);
+}
+
 bool Npcs::emoteSprite(const Area& area, int npc, SpritePlacement& out) const {
     const State& st = s_[npc];
     const NpcEmoteDef& e = area.npcs[npc].emote;
@@ -126,7 +142,7 @@ void Npcs::changeCond(World& world, int npc, int cond) {
     const NpcCondDef& c = world.area.npcs[npc].conds[cond];
     s_[npc].cond = cond;
     runCalls(world, c.onEnter);
-    // (Not yet, TASKS phase 4: npcAnimatorController.Play(animationOnEnter).)
+    playAnimation(world, npc, c.animationOnEnter);
     setEmote(world, npc, c.emote);
     // NPCDialogueContext.OnConditionalsChanged: the new chain starts if the player is listening.
     State& st = s_[npc];
@@ -149,8 +165,9 @@ void Npcs::typeCurrent(World& world, int npc) {
     setPing(world, npc, false); // DialogueDisplay.DisplaySentence
     st.typing = true;
     st.boxActive = true;
-    // OnDialogueStart: (not yet, TASKS phase 4: animationOnStart) the line's emote, then its onStart
-    // (doNotRepeatEvents: only the first time).
+    // OnDialogueStart: the line's animation and emote, then its onStart (doNotRepeatEvents: only the
+    // first time).
+    playAnimation(world, npc, l.animationOnStart);
     setEmote(world, npc, l.emoteOnStart);
     uint8_t& ran = st.eventsRun[st.cond][st.chainIndex[st.cond]];
     if (l.noRepeatEvents) {
@@ -201,8 +218,10 @@ void Npcs::finishLine(World& world, int npc) {
 }
 
 void Npcs::deactivate(World& world, int npc) {
-    // (Not yet, TASKS phase 4: the line's animationOnLeave.)
-    if (const DialogueDef* l = line(world.area, npc)) setEmote(world, npc, l->emoteOnLeave);
+    if (const DialogueDef* l = line(world.area, npc)) {
+        playAnimation(world, npc, l->animationOnLeave);
+        setEmote(world, npc, l->emoteOnLeave);
+    }
     State& st = s_[npc];
     st.waitingForAction = false;
     st.delayPending = false;

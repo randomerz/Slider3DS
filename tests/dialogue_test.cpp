@@ -62,6 +62,9 @@ int typeOut(Typer& t, int limit = 1000) {
 //   3 (flag "shout"): entering types at once (NPC.TypeCurrentDialogue). "Hey!" (dontInterrupt).
 //   4 (grid "21": tiles 1 and 2 swapped): "Swapped".
 //   5 (flag "stay"): entering teleports the NPC to "Here" (5), where it already is.
+//   6 (flag "happy"): entering swaps its Animator's controller to "C2".
+// Its Animator (on the NPC object) runs controller "C": Idle <-> Sus on the "sus" bool; Cry (played
+// by "Hello there"'s animationOnStart) goes back to Idle when its 0.25 s clip ends.
 // A second tile (2) sits right of tile 1.
 // The nudges (UPPRelativePlayer by 1/128) count how often a call ran; flags can't. "Hello there", "Bye"
 // and "Moved" show the Exclamation emote ("Npc/Emotes" (4), left of the face: intro sprite 0, then loop 1).
@@ -80,11 +83,18 @@ const char* NPC_AREA = R"json({
               {"name": "exLoop", "sheet": 0, "rect": [16, 0, 16, 16], "pivot": [8, 8], "ppu": 16}],
   "anims": [{"name": "Exclamation", "frames": [0], "times": [0], "length": 0.25, "loop": false},
             {"name": "ExclamationLoop", "frames": [1], "times": [0], "length": 1, "loop": true}],
+  "animatorControllers": [
+    {"name": "C", "params": [{"name": "sus", "default": false}], "default": 0, "any": [], "states": [
+      {"name": "Idle", "anim": 1, "speed": 1, "transitions": [{"to": 1, "exitTime": -1, "conds": [[0, true]]}]},
+      {"name": "Sus", "anim": 0, "speed": 1, "transitions": [{"to": 0, "exitTime": -1, "conds": [[0, false]]}]},
+      {"name": "Cry", "anim": 0, "speed": 1, "transitions": [{"to": 0, "exitTime": 1, "conds": []}]}]},
+    {"name": "C2", "params": [], "default": 0, "any": [], "states": [{"name": "Happy", "anim": 1, "speed": 1, "transitions": []}]}],
   "triggerColliders": [{"object": 1, "owner": 1, "kind": "circle", "center": [0, 0], "radius": 2}],
   "triggerEvents": [{"object": 1, "onPlayerEnter": true,
                      "onEnter": [{"method": "NPC.OnDialogueTriggerEnter", "target": 0}],
                      "onExit": [{"method": "NPC.OnDialogueTriggerExit", "target": 0}]}],
   "npcs": [{"object": 0, "name": "N", "facingLeft": false, "pingObject": 3,
+    "animator": {"object": 0, "controller": 0, "keepState": false, "controllerObject": 0},
     "emote": {"object": 4, "pos": [-0.5, 0.5], "sortY": 0.5, "sortingLayerValue": 9, "order": 0, "localX": -0.5,
               "facesRight": false, "npcSprite": 0, "npcSpriteFlipped": false,
               "intro": [-1, -1, 0, -1, -1, -1], "loop": [-1, -1, 1, -1, -1, -1]},
@@ -94,7 +104,7 @@ const char* NPC_AREA = R"json({
       {"conditions": [], "anyOf": false, "alwaysStartFromBeginning": false, "onConditionalEnter": [],
        "onDialogueChainExhausted": [{"method": "VarManager.SetBoolOn", "string": "exhausted"}, {"method": "PlayerPositionChanger.UPPRelativePlayer", "owner": 0, "pos": [0, 0], "dPos": [0, 0.0078125]}],
        "dialogue": [
-         {"text": "Hello there", "delay": 0.5, "emoteOnStart": 2, "waitForAction": true, "manual": false, "noRepeatEvents": false,
+         {"text": "Hello there", "delay": 0.5, "emoteOnStart": 2, "animationOnStart": "Cry", "waitForAction": true, "manual": false, "noRepeatEvents": false,
           "dontInterrupt": false, "onStart": [{"method": "VarManager.SetBoolOn", "string": "start0"}],
           "onEnd": [{"method": "VarManager.SetBoolOn", "string": "end0"}]},
          {"text": "Bye", "delay": 0, "emoteOnStart": 2, "waitForAction": false, "manual": false, "noRepeatEvents": false,
@@ -124,7 +134,10 @@ const char* NPC_AREA = R"json({
        "dialogue": [{"text": "Swapped", "delay": 0}]},
       {"conditions": [{"type": "flag", "flag": "stay"}], "anyOf": false, "alwaysStartFromBeginning": false,
        "onConditionalEnter": [{"method": "NPC.Teleport", "target": 0, "objectArg": 5}], "onDialogueChainExhausted": [],
-       "dialogue": []}]}],
+       "dialogue": []},
+      {"conditions": [{"type": "flag", "flag": "happy"}], "anyOf": false, "alwaysStartFromBeginning": false,
+       "onConditionalEnter": [{"method": "Animator.set_runtimeAnimatorController", "target": 0, "controller": 1}],
+       "onDialogueChainExhausted": [], "dialogue": []}]}],
   "player": {"footBox": {"offset": [0, 0], "size": [0.5, 0.5]}, "boatBox": {"offset": [0, 0], "size": [1, 0.5]}}
 })json";
 
@@ -374,6 +387,11 @@ TEST(npcs_validation_rejects_bad_references) {
         {R"(, "objectArg": 2})", "}", "teleport without a target"},
         {R"("npcs": [{"object": 0)", R"("npcs": [{"object": 7)", "npc -> missing object"},
         {R"("pingObject": 3)", R"("pingObject": 8)", "npc -> missing ping object"},
+        {R"("to": 1, "exitTime": -1, "conds": [[0, true]])", R"("to": 7, "exitTime": -1, "conds": [[0, true]])",
+         "animator transition -> missing state"},
+        {R"("conds": [[0, true]])", R"("conds": [[3, true]])", "animator condition -> missing parameter"},
+        {R"("controller": 0, "keepState")", R"("controller": 5, "keepState")", "animator -> missing controller"},
+        {R"("target": 0, "controller": 1)", R"("target": 1, "controller": 1)", "controller swap on an object without an Animator"},
         {R"("intro": [-1, -1, 0,)", R"("intro": [-1, -1, 9,)", "emote -> missing anim"},
         {R"("text": "Bye", "delay": 0, "emoteOnStart": 2)", R"("text": "Bye", "delay": 0, "emoteOnStart": 7)",
          "emote value out of range"},
@@ -521,4 +539,62 @@ TEST(npcs_emote_hidden_with_its_npc) {
     check(emoteDraws() == 1, "talking: the emote is drawn");
     world.objects.setActive(world.area, 0, false);
     check(emoteDraws() == 0, "the NPC hidden: so is its emote");
+}
+
+TEST(animators_follow_bools_exit_times_and_npc_lines) {
+    World world(npcArea());
+    standAt(world, 30, 0);
+    const Area& a = world.area;
+    auto state = [&]() { return world.animators.stateName(a, 0); };
+    check(state() == "Idle" && world.animators.sprite(0) == 1, "default state Idle, showing its clip");
+    world.animators.setBool(a, 0, "sus", true);
+    world.update(DT, 0, 0, true);
+    check(state() == "Sus" && world.animators.sprite(0) == 0, "sus: Idle -> Sus");
+    world.animators.setBool(a, 0, "sus", false);
+    world.update(DT, 0, 0, true);
+    check(state() == "Idle", "and back");
+    standAt(world, 0, 0); // "Hello there": animationOnStart Cry
+    check(state() == "Cry", "a line's animationOnStart plays its state");
+    for (int i = 0; i < 20; i++) world.update(DT, 0, 0, true); // 0.33 s: past Cry's 0.25 s clip
+    check(state() == "Idle", "the exit-time transition takes it back to Idle");
+    // Re-enabling the object rebinds the Animator: default state and parameters.
+    world.animators.setBool(a, 0, "sus", true);
+    world.update(DT, 0, 0, true);
+    world.objects.setActive(a, 0, false);
+    world.update(DT, 0, 0, true);
+    world.objects.setActive(a, 0, true);
+    world.update(DT, 0, 0, true);
+    check(state() == "Idle" && !world.animators.param(a, 0, "sus"), "re-enabled: rebound to the defaults");
+    world.state.setFlag("happy", true);
+    world.update(DT, 0, 0, true);
+    check(state() == "Happy", "Animator.set_runtimeAnimatorController: the new controller's default state");
+}
+
+TEST(animators_village_archibald_turns_sus) {
+    // Archibald's first line sets his Animator's "sus" bool (NPCAnimatorController.SetBoolToTrue).
+    const Area& area = village();
+    World world(area);
+    world.setTileActive(3, true);
+    const int npc = area.npcOn(area.findObject("Map/Village 8Puzzle/STile (3)/Objects/Archibald"));
+    check(npc >= 0 && area.npcs[npc].animator >= 0, "Archibald has an Animator");
+    if (npc < 0 || area.npcs[npc].animator < 0) return;
+    const int animator = area.npcs[npc].animator;
+    check(world.animators.stateName(area, animator) == "ArchibaldIdle", "idle at first");
+    // Into his dialogue trigger: the trigger event whose onEnter talks to him.
+    for (const TriggerEventDef& te : area.triggerEvents)
+        for (const CallDef& c : te.onEnter)
+            if (c.method == CallDef::Method::NpcTriggerEnter && c.target == area.npcs[npc].object)
+                for (const ObjectCollider& tc : area.triggerColliders)
+                    if (tc.object == te.object) {
+                        float bx, by;
+                        world.objectBase(tc.object, bx, by);
+                        world.player.x = bx + (tc.minX + tc.maxX) * 0.5f;
+                        world.player.y = by + (tc.minY + tc.maxY) * 0.5f;
+                    }
+    world.update(DT, 0, 0, true);
+    world.update(DT, 0, 0, true);
+    check(world.npcs.textShown(npc) && world.animators.stateName(area, animator) == "ArchibaldIdleSus",
+          "talking: he turns sus (" + world.animators.stateName(area, animator) + ", text " +
+              std::to_string(world.npcs.textShown(npc)) + ", sus " + std::to_string(world.animators.param(area, animator, "sus")) +
+              ", player " + std::to_string(world.player.x) + "," + std::to_string(world.player.y) + ")");
 }

@@ -7,7 +7,7 @@
 namespace {
 
 constexpr size_t VILLAGE_LAYERS = 76, VILLAGE_COLLISION = 35, VILLAGE_SHAPES = 9, VILLAGE_TILES = 168,
-                 VILLAGE_SPRITES = 529, VILLAGE_FILLED_CELLS = 27554;
+                 VILLAGE_SPRITES = 662, VILLAGE_FILLED_CELLS = 27554;
 
 // A minimal valid area: 1x1 grid, one sheet/sprite/tile, one visual and one collision tilemap,
 // scene objects, a world sprite with a one-frame anim, two object colliders, a start check and the
@@ -180,7 +180,7 @@ TEST(area_village_export_stats) {
     check(a.sprites.size() == VILLAGE_SPRITES, "sprites " + std::to_string(a.sprites.size()));
     check(a.sheetNames.size() == 26, "sheets " + std::to_string(a.sheetNames.size()));
     check(a.worldSprites.size() == 329, "world sprites " + std::to_string(a.worldSprites.size()));
-    check(a.anims.size() == 43, "anims " + std::to_string(a.anims.size()));
+    check(a.anims.size() == 77, "anims " + std::to_string(a.anims.size()));
     check(a.objectColliders.size() == 218, "object colliders " + std::to_string(a.objectColliders.size()));
     check(a.player.footBox.w > 0 && a.player.boatBox.w > 0, "player hitboxes");
     check(a.triggerColliders.size() == 56 && a.conditionCheckers.size() == 7 && a.interactions.size() == 18 &&
@@ -189,6 +189,9 @@ TEST(area_village_export_stats) {
               std::to_string(a.conditionCheckers.size()) + "/" + std::to_string(a.interactions.size()) + "/" +
               std::to_string(a.triggerEvents.size()) + "/" + std::to_string(a.collectibles.size()));
     check(a.npcs.size() == 18, "npcs " + std::to_string(a.npcs.size()));
+    check(a.animatorControllers.size() == 16 && a.animators.size() == 14,
+          "animator controllers / animators " + std::to_string(a.animatorControllers.size()) + "/" +
+              std::to_string(a.animators.size()));
     check(a.player.actionIndicator.sprite >= 0, "player action indicator");
     check(a.player.body.sprite >= 0 && a.player.boat.sprite >= 0, "player body + boat sprites");
     size_t cells = 0;
