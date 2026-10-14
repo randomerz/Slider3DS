@@ -319,4 +319,26 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
     std::string rep;
     for (const std::string& n : reported) rep += n + ", ";
     check(reported == unsupported, "exporter report agrees with the port (report: " + rep + ")");
+
+    // The same for spec conditions: SLIDER_SPEC_CHECKS vs the exporter's PortSpecs.
+    std::set<std::string> specs, reportedSpecs;
+    auto collectSpecs = [&](const std::vector<ConditionDef>& conditions) {
+        for (const ConditionDef& d : conditions)
+            if (d.type == ConditionDef::Type::Unsupported && !d.name.empty()) specs.insert(d.name);
+    };
+    for (const ConditionCheckerDef& c : area.conditionCheckers) collectSpecs(c.conditionals.conditions);
+    for (const NpcDef& n : area.npcs)
+        for (const NpcCondDef& c : n.conds) collectSpecs(c.conditions);
+    const std::string sp = "Spec condition ", ss = " is not checked by the port yet";
+    for (size_t at = report.find(sp); at != std::string::npos; at = report.find(sp, at + 1)) {
+        const size_t end = report.find(ss, at);
+        if (end != std::string::npos) reportedSpecs.insert(report.substr(at + sp.size(), end - at - sp.size()));
+    }
+    const std::set<std::string> expectedSpecs = {"CatTrick.CheckAutumn", "CatTrick.CheckMittens", "CatTrick.CheckTofu",
+                                                 "ChadJump.ChadFell", "KnotBox.CheckPuzzle", "Player.GetIsOnWater",
+                                                 "RuinsArrow.CheckActiveRods", "VillageChadJump.DidSlideAfterJumping"};
+    std::string got2;
+    for (const std::string& n : specs) got2 += n + ", ";
+    check(specs == expectedSpecs, "unsupported spec conditions: " + got2);
+    check(reportedSpecs == specs, "exporter report agrees on specs");
 }

@@ -6,8 +6,10 @@
 #include "game/village/village_grid.h"
 #include "game/world/world.h"
 
-bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& grid) {
+bool checkCondition(const ConditionDef& c, const World& world) {
     using T = ConditionDef::Type;
+    const GameState& state = world.state;
+    const Grid& grid = world.grid;
     switch (c.type) {
     case T::Item: return state.hasCollectible(c.name, c.itemArea);
     case T::Grid: return CheckGrid::contains(grid.gridString(), c.pattern);
@@ -19,11 +21,7 @@ bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& g
         return true;
     case T::Flag: return state.flag(c.name);
     case T::NoFlag: return !state.flag(c.name);
-    case T::Spec:
-        switch (c.spec) {
-        case ConditionDef::Spec::VillageFishOn: return state.flag(village::FISH_ON_FLAG);
-        }
-        return false;
+    case T::Spec: return village::checkSpec(world, c.spec);
     case T::PlayerCarryingItem:
     case T::Unsupported: return false;
     }
@@ -32,7 +30,23 @@ bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& g
 
 bool runConditionals(World& world, const ConditionalsDef& c) {
     const bool ok = std::all_of(c.conditions.begin(), c.conditions.end(),
-                                [&](const ConditionDef& d) { return checkCondition(d, world.state, world.grid); });
+                                [&](const ConditionDef& d) { return checkCondition(d, world); });
     runCalls(world, ok ? c.onSuccess : c.onFail);
     return ok;
+}
+
+bool conditionReadsOnlyStateAndGrid(const ConditionDef& c) {
+    using T = ConditionDef::Type;
+    switch (c.type) {
+    case T::Item:
+    case T::Grid:
+    case T::GridStationary:
+    case T::NoGrid:
+    case T::Flag:
+    case T::NoFlag: return true;
+    case T::Spec: return village::specReadsOnlyStateAndGrid(c.spec);
+    case T::PlayerCarryingItem:
+    case T::Unsupported: return false;
+    }
+    return false;
 }

@@ -25,15 +25,17 @@ void Animators::refreshSprite(const Area& area, State& st) {
     if (anim >= 0) st.sprite = area.anims[anim].frameAt(st.time);
 }
 
-void Animators::enable(const World& world) {
+void Animators::syncEnabled(const World& world, int animator) {
     const Area& area = world.area;
-    for (size_t i = 0; i < s_.size(); i++) {
-        State& st = s_[i];
-        const int object = area.animators[i].object;
-        const bool active = object < 0 || world.objects.activeInHierarchy(object); // (-1: the player's)
-        if (active && !st.enabled && !area.animators[i].keepState) rebind(area, st);
-        st.enabled = active;
-    }
+    State& st = s_[animator];
+    const int object = area.animators[animator].object;
+    const bool active = object < 0 || world.objects.activeInHierarchy(object); // (-1: the player's)
+    if (active && !st.enabled && !area.animators[animator].keepState) rebind(area, st);
+    st.enabled = active;
+}
+
+void Animators::enable(const World& world) {
+    for (int i = 0; i < (int)s_.size(); i++) syncEnabled(world, i);
 }
 
 void Animators::update(const World& world, float dt) {
@@ -69,25 +71,30 @@ void Animators::update(const World& world, float dt) {
     }
 }
 
-void Animators::play(const Area& area, int animator, const std::string& state) {
+void Animators::play(const World& world, int animator, const std::string& state, bool restart) {
+    syncEnabled(world, animator);
+    const Area& area = world.area;
     State& st = s_[animator];
     const int to = area.animatorControllers[st.controller].stateIndex(state);
-    if (to < 0 || to == st.state) return;
+    if (to < 0 || (to == st.state && !restart)) return;
     st.state = to;
     st.time = 0;
     refreshSprite(area, st);
 }
 
-void Animators::setBool(const Area& area, int animator, const std::string& param, bool value) {
+void Animators::setBool(const World& world, int animator, const std::string& param, bool value) {
+    syncEnabled(world, animator);
+    const Area& area = world.area;
     State& st = s_[animator];
     const int p = area.animatorControllers[st.controller].paramIndex(param);
     if (p >= 0) st.params[p] = value ? 1 : 0;
 }
 
-void Animators::setController(const Area& area, int animator, int controller) {
+void Animators::setController(const World& world, int animator, int controller) {
+    syncEnabled(world, animator);
     State& st = s_[animator];
     st.controller = controller;
-    rebind(area, st);
+    rebind(world.area, st);
 }
 
 const std::string& Animators::stateName(const Area& area, int animator) const {

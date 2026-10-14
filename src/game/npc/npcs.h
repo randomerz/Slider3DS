@@ -40,6 +40,7 @@ public:
 
     // For drawing and tests.
     int currentCond(int npc) const { return s_[npc].cond; }
+    bool pollsEveryFrame(int npc) const { return s_[npc].pollsEveryFrame; }
     int lineIndex(int npc) const; // in the current conditional's chain
     bool textShown(int npc) const { return s_[npc].boxActive; }
     const DialogueText& text(int npc) const { return s_[npc].text; }
@@ -49,7 +50,7 @@ public:
     bool pingShown(const World& world, int npc) const;
     int emote(int npc) const { return s_[npc].emote; } // NpcEmoteDef value shown, 0 = none
     // The emote sprite as it's drawn now (placement relative to the emote object's base), if one shows.
-    bool emoteSprite(const Area& area, int npc, SpritePlacement& out) const;
+    bool emoteSprite(const World& world, int npc, SpritePlacement& out) const;
 
 private:
     struct State {
@@ -63,12 +64,12 @@ private:
         float delayLeft = 0;
         bool wasActive = false;           // object active at the last update
         bool polled = false;              // conditionals checked against the versions below
+        bool pollsEveryFrame = false;     // a condition reads more than GameState + Grid
         uint32_t stateVersion = 0, gridVersion = 0;
         uint32_t textVersion = 0;
         std::string animation;   // NPCAnimatorController.currentState ("" = the default ones)
         int emote = 0;           // NPCEmotes.currentEmote
         bool emoteLeft = false;  // its side, decided when it was last set
-        float emoteTime = 0;     // since it started (its Animator state's time)
         DialogueText text;
         Typer typer;
     };
@@ -83,7 +84,7 @@ private:
     void finishLine(World& world, int npc);        // HandleDialogueFinished
     void tryDeactivate(World& world, int npc);
     void deactivate(World& world, int npc);       // DeactivateDialogueBox
-    void setEmote(const World& world, int npc, int emote); // NPCEmotes.SetEmote
+    void setEmote(World& world, int npc, int emote); // NPCEmotes.SetEmote
     void playAnimation(World& world, int npc, const std::string& state); // NPCAnimatorController.Play
     void setPing(World& world, int npc, bool shown); // DialogueDisplay.SetMessagePing
 

@@ -118,7 +118,7 @@ struct ObjectCollider {
 // The spec conditions (Condition.checkBool methods) the port evaluates, as X(enum name, exported
 // "<TargetType>.<Method>"):
 //   VillageFishOn   VillageGrid.CheckFishOn: VillageGrid.TurnFishOn ran (GameState flag "villageFishOn")
-// To add one: a line here, its case in checkCondition (conditions.cpp) and conditionReadsOnlyStateAndGrid,
+// To add one: a line here, its cases in village::checkSpec / specReadsOnlyStateAndGrid (game/village),
 // and its name in the exporter's PortSpecs.
 #define SLIDER_SPEC_CHECKS(X) X(VillageFishOn, "VillageGrid.CheckFishOn")
 
@@ -137,10 +137,6 @@ struct ConditionDef {
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
     Spec spec = Spec(0);              // Spec: which check (name: its exported method)
 };
-
-// Whether a condition depends only on GameState and Grid (whose version() counters then tell when
-// it may have changed); a new condition kind must say which it is.
-bool conditionReadsOnlyStateAndGrid(const ConditionDef& c);
 
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
 //   SetActive               GameObject.SetActive(boolArg) on target
@@ -336,8 +332,8 @@ struct NpcTextDef {
 };
 
 // NPCEmotes: a small animated sprite beside an NPC's head showing one of NPCEmotes.Emotes (index:
-// 0 None, 1 Sparkle, 2 Exclamation, 3 Question, 4 Annoyed, 5 Sweat): its Animator state's clip, then
-// (once that ends) the clip of the state it moves on to. It sits on the side the NPC faces.
+// 0 None, 1 Sparkle, 2 Exclamation, 3 Question, 4 Annoyed, 5 Sweat) by playing the state of that
+// name on its own Animator. It sits on the side the NPC faces.
 struct NpcEmoteDef {
     enum : uint8_t { None, Sparkle, Exclamation, Question, Annoyed, Sweat, Count };
     int object = -1;       // the NPCEmotes object, -1 = the NPC has none
@@ -346,8 +342,8 @@ struct NpcEmoteDef {
     bool facesRight = false; // npcDefaultFacesRight
     int npcSprite = -1;      // object of the NPC's SpriteRenderer, whose flipX decides the side
     bool npcSpriteFlipped = false; // that sprite's exported flipX
-    int intro[Count] = {-1, -1, -1, -1, -1, -1}; // per emote: Area::anims index, -1 = none
-    int loop[Count] = {-1, -1, -1, -1, -1, -1};  // what plays once intro's clip has ended, -1 = none
+    int animator = -1;       // Area::animators index of its Animator (on `object`)
+    static const char* name(int emote); // the Animator state an emote plays ("" for None)
 };
 
 // An NPC (NPC.cs): conditionals with dialogue chains, typed above it while the player is in its
@@ -361,9 +357,6 @@ struct NpcDef {
     int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
     NpcEmoteDef emote;
     int animator = -1; // Area::animators index of its NPCAnimatorController's Animator, -1 = none
-    // Some conditional reads more than the game state and the grid (PlayerCarryingItem, spec / not yet
-    // supported kinds), so its pick must be re-checked every frame (derived at load).
-    bool pollsEveryFrame = false;
     std::vector<NpcCondDef> conds;
 };
 

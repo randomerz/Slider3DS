@@ -189,7 +189,7 @@ TEST(area_village_export_stats) {
               std::to_string(a.conditionCheckers.size()) + "/" + std::to_string(a.interactions.size()) + "/" +
               std::to_string(a.triggerEvents.size()) + "/" + std::to_string(a.collectibles.size()));
     check(a.npcs.size() == 18, "npcs " + std::to_string(a.npcs.size()));
-    check(a.animatorControllers.size() == 17 && a.animators.size() == 15,
+    check(a.animatorControllers.size() == 18 && a.animators.size() == 33,
           "animator controllers / animators " + std::to_string(a.animatorControllers.size()) + "/" +
               std::to_string(a.animators.size()));
     check(a.player.actionIndicator.sprite >= 0, "player action indicator");

@@ -9,7 +9,7 @@ namespace {
 // NPCConditionals.CheckConditions: all conditions hold (or, with anyOf, at least one).
 bool holds(const World& world, const NpcCondDef& c) {
     int passed = 0;
-    for (const ConditionDef& d : c.conditions) passed += checkCondition(d, world.state, world.grid) ? 1 : 0;
+    for (const ConditionDef& d : c.conditions) passed += checkCondition(d, world) ? 1 : 0;
     return c.anyOf ? passed > 0 : passed == (int)c.conditions.size();
 }
 
@@ -21,6 +21,9 @@ void Npcs::reset(const Area& area) {
     s_.assign(area.npcs.size(), State());
     for (size_t i = 0; i < s_.size(); i++) {
         const NpcDef& def = area.npcs[i];
+        for (const NpcCondDef& c : def.conds)
+            for (const ConditionDef& d : c.conditions)
+                if (!conditionReadsOnlyStateAndGrid(d)) s_[i].pollsEveryFrame = true;
         s_[i].chainIndex.assign(def.conds.size(), 0);
         s_[i].exhausted.assign(def.conds.size(), 0);
         for (const NpcCondDef& c : def.conds) s_[i].eventsRun.emplace_back(c.dialogue.size(), (uint8_t)0);
@@ -65,7 +68,7 @@ void Npcs::setPing(World& world, int npc, bool shown) {
     if (ping >= 0) world.objects.setActive(world.area, ping, shown);
 }
 
-void Npcs::setEmote(const World& world, int npc, int emote) {
+void Npcs::setEmote(World& world, int npc, int emote) {
     const NpcEmoteDef& e = world.area.npcs[npc].emote;
     State& st = s_[npc];
     if (e.object < 0) return;
@@ -75,7 +78,8 @@ void Npcs::setEmote(const World& world, int npc, int emote) {
     st.emoteLeft = e.facesRight == flipped;
     if (st.emote == emote) return;
     st.emote = emote;
-    st.emoteTime = 0; // Animator.Play(name) starts that state
+    // Animator.Play(name); shown again after None it starts over.
+    if (emote != 0) world.animators.play(world, e.animator, NpcEmoteDef::name(emote), true);
 }
 
 void Npcs::playAnimation(World& world, int npc, const std::string& state) {
@@ -86,25 +90,21 @@ void Npcs::playAnimation(World& world, int npc, const std::string& state) {
         // "" = back to the default animation (if a named one played).
         if (current.empty()) return;
         current.clear();
-        world.animators.play(world.area, animator, "Idle");
+        world.animators.play(world, animator, "Idle");
         return;
     }
     if (state == current) return;
     current = state;
-    world.animators.play(world.area, animator, state);
+    world.animators.play(world, animator, state);
 }
 
-bool Npcs::emoteSprite(const Area& area, int npc, SpritePlacement& out) const {
+bool Npcs::emoteSprite(const World& world, int npc, SpritePlacement& out) const {
     const State& st = s_[npc];
-    const NpcEmoteDef& e = area.npcs[npc].emote;
-    if (st.emote == 0 || e.object < 0 || e.intro[st.emote] < 0) return false;
-    const Anim& intro = area.anims[e.intro[st.emote]];
-    const int loop = e.loop[st.emote];
-    // The intro state's clip, then (exit time 1, no blend) the state it moves on to.
+    const NpcEmoteDef& e = world.area.npcs[npc].emote;
+    if (st.emote == 0 || e.animator < 0 || world.animators.sprite(e.animator) < 0) return false;
     out = e.place;
     out.anim = -1;
-    out.sprite = loop >= 0 && st.emoteTime >= intro.length ? area.anims[loop].frameAt(st.emoteTime - intro.length)
-                                                          : intro.frameAt(st.emoteTime);
+    out.sprite = world.animators.sprite(e.animator); // its Animator's frame (intro, then the loop state)
     const float side = e.localX < 0 ? -e.localX : e.localX;
     out.x = e.place.x - e.localX + (st.emoteLeft ? -side : side);
     return true;
@@ -282,7 +282,7 @@ void Npcs::update(World& world, float dt) {
         // game state and grid are unchanged, if that's all its conditions read).
         if (st.typing && st.typer.finished()) finishLine(world, i);
         tryDeactivate(world, i);
-        const bool changed = !st.polled || area.npcs[i].pollsEveryFrame || st.stateVersion != world.state.version() ||
+        const bool changed = !st.polled || st.pollsEveryFrame || st.stateVersion != world.state.version() ||
                              st.gridVersion != world.grid.version();
         if (!dontInterruptShown(area, i) && changed) poll(world, i);
     }
@@ -298,6 +298,5 @@ void Npcs::update(World& world, float dt) {
             }
         }
         st.typer.tick(dt); // after the delay, so a line it starts waits from the next frame
-        if (st.emote != 0) st.emoteTime += dt;
     }
 }

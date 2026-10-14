@@ -26,12 +26,15 @@ public:
     // each now shows.
     void update(const World& world, float dt);
 
-    // Animator.Play(stateName): to that state from its start (no-op if unknown or already in it).
-    void play(const Area& area, int animator, const std::string& state);
+    // These first catch up with the Animator's object activity (Unity's OnEnable runs inside
+    // SetActive, before anything else can play on it).
+    // Animator.Play(stateName): to that state from its start (no-op if unknown, or already in it
+    // unless `restart`).
+    void play(const World& world, int animator, const std::string& state, bool restart = false);
     // Animator.SetBool (no-op if the controller has no such parameter).
-    void setBool(const Area& area, int animator, const std::string& param, bool value);
+    void setBool(const World& world, int animator, const std::string& param, bool value);
     // Animator.runtimeAnimatorController = Area::animatorControllers[controller].
-    void setController(const Area& area, int animator, int controller);
+    void setController(const World& world, int animator, int controller);
 
     // The sprite (Area::sprites index) the Animator's object shows, -1 = none yet (use the exported one).
     int sprite(int animator) const { return s_[animator].sprite; }
@@ -48,6 +51,7 @@ private:
         bool enabled = false;     // its object was active at the last update
     };
     void rebind(const Area& area, State& st); // default state, default parameters
+    void syncEnabled(const World& world, int animator); // enable() for one Animator
     void refreshSprite(const Area& area, State& st);
 
     std::vector<State> s_;

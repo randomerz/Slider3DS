@@ -90,11 +90,11 @@ void runCall(World& world, const CallDef& c) {
         break;
     case M::AnimSetBoolTrue:
     case M::AnimSetBoolFalse:
-        world.animators.setBool(world.area, world.area.animatorDrivenBy(c.target), c.stringArg,
+        world.animators.setBool(world, world.area.animatorDrivenBy(c.target), c.stringArg,
                                 c.method == M::AnimSetBoolTrue);
         break;
     case M::SetAnimatorController:
-        world.animators.setController(world.area, world.area.animatorOn(c.target), c.data);
+        world.animators.setController(world, world.area.animatorOn(c.target), c.data);
         break;
     case M::VillageActivateSlider:
         village::activateCollectible(world, "Slider " + std::to_string(c.intArg), false);

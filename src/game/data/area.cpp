@@ -48,6 +48,11 @@ int Area::npcOn(int object) const {
     return -1;
 }
 
+const char* NpcEmoteDef::name(int emote) {
+    static const char* names[Count] = {"", "Sparkle", "Exclamation", "Question", "Annoyed", "Sweat"};
+    return emote >= 0 && emote < Count ? names[emote] : "";
+}
+
 int Area::collectible(const std::string& n) const {
     for (size_t i = 0; i < collectibles.size(); i++)
         if (collectibles[i].name == n && collectibles[i].area == name) return (int)i;
@@ -55,6 +60,7 @@ int Area::collectible(const std::string& n) const {
 }
 
 int Area::animatorDrivenBy(int controllerObject) const {
+    if (controllerObject < 0) return -1; // (-1 marks the player's and emote Animators: nothing drives them by call)
     for (size_t i = 0; i < animators.size(); i++)
         if (animators[i].controllerObject == controllerObject) return (int)i;
     return -1;
@@ -128,8 +134,10 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         d.stringArg = c["string"].asString();
         if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
         if (d.method == CallDef::Method::SetAnimatorController) d.data = c["controller"].asInt(-1);
-        if (d.method == CallDef::Method::SetColliderEnabled && c.has("collider")) // (colliders load first)
-            d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
+        if (d.method == CallDef::Method::SetColliderEnabled) { // (colliders load first)
+            if (c.has("collider")) d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
+            else d.method = CallDef::Method::Unsupported; // a collider the export left out (it warns)
+        }
         d.objectArg = c["objectArg"].asInt(-1);
         if (isTeleport(d.method)) {
             TeleportDef t;
@@ -150,26 +158,6 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         calls.push_back(std::move(d));
     }
     return calls;
-}
-
-bool conditionReadsOnlyStateAndGrid(const ConditionDef& c) {
-    using T = ConditionDef::Type;
-    switch (c.type) {
-    case T::Spec:
-        switch (c.spec) {
-        case ConditionDef::Spec::VillageFishOn: return true; // a GameState flag
-        }
-        return false;
-    case T::Item:
-    case T::Grid:
-    case T::GridStationary:
-    case T::NoGrid:
-    case T::Flag:
-    case T::NoFlag: return true;
-    case T::PlayerCarryingItem:
-    case T::Unsupported: return false;
-    }
-    return false;
 }
 
 static ConditionDef readCondition(const Json& c) {
@@ -291,10 +279,8 @@ static NpcDef readNpc(const Json& j, Area& out) {
         n.emote.facesRight = e["facesRight"].asBool();
         n.emote.npcSprite = e["npcSprite"].asInt(-1);
         n.emote.npcSpriteFlipped = e["npcSpriteFlipped"].asBool();
-        for (int k = 0; k < NpcEmoteDef::Count; k++) {
-            n.emote.intro[k] = e["intro"].at(k).asInt(-1);
-            n.emote.loop[k] = e["loop"].at(k).asInt(-1);
-        }
+        n.emote.animator = (int)out.animators.size();
+        out.animators.push_back({n.emote.object, e["controller"].asInt(-1), e["keepState"].asBool(), -1});
     }
     for (const Json& c : j["conds"].items()) {
         NpcCondDef d;
@@ -311,8 +297,6 @@ static NpcDef readNpc(const Json& j, Area& out) {
                                   (uint8_t)l["emoteOnStart"].asInt(), (uint8_t)l["emoteOnLeave"].asInt(),
                                   l["animationOnStart"].asString(), l["animationOnLeave"].asString(),
                                   readCalls(l["onStart"], out), readCalls(l["onEnd"], out)});
-        for (const ConditionDef& cd : d.conditions)
-            if (!conditionReadsOnlyStateAndGrid(cd)) n.pollsEveryFrame = true;
         n.conds.push_back(std::move(d));
     }
     return n;
@@ -507,7 +491,6 @@ static bool validate(const Area& a, std::string* error) {
         if (e.object != -1) {
             ok = ok && objectOk(e.object) && (e.npcSprite == -1 || objectOk(e.npcSprite)) &&
                  (e.place.sprite == -1 || placementOk(e.place));
-            for (int k = 0; k < NpcEmoteDef::Count; k++) ok = ok && animOk(e.intro[k]) && animOk(e.loop[k]);
         }
         auto emoteOk = [&](uint8_t v) { return v < NpcEmoteDef::Count; };
         for (const NpcCondDef& c : n.conds) {

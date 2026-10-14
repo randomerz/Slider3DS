@@ -86,7 +86,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     for (int i = 0; i < (int)area.npcs.size(); i++) {
         const NpcEmoteDef& e = area.npcs[i].emote;
         SpritePlacement emote;
-        if (e.object < 0 || !world.npcs.emoteSprite(area, i, emote) || !inRange(emote.sortLayer) ||
+        if (e.object < 0 || !world.npcs.emoteSprite(world, i, emote) || !inRange(emote.sortLayer) ||
             !objects.activeInHierarchy(e.object) || !ownerShown(objects.owner(e.object)))
             continue;
         float bx, by;

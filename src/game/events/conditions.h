@@ -3,15 +3,17 @@
 #pragma once
 
 #include "game/data/area.h"
-#include "game/world/game_state.h"
-#include "game/grid/grid.h"
 
 class World;
 
 // Condition.CheckCondition. PlayerCarryingItem and unsupported spec conditions are false until
-// items and those specs exist. A condition kind that reads anything but GameState and Grid must say so in
-// conditionReadsOnlyStateAndGrid (area.h): NPCs skip re-checking while those two are unchanged.
-bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& grid);
+// items and those specs exist; spec conditions are the area's (village::checkSpec).
+bool checkCondition(const ConditionDef& c, const World& world);
+
+// Whether a condition depends only on GameState and Grid (whose version() counters then tell when
+// it may have changed): NPCs skip re-checking while those two are unchanged. A new condition kind
+// must say which it is.
+bool conditionReadsOnlyStateAndGrid(const ConditionDef& c);
 
 // Conditionals.CheckConditions: all conditions true -> run onSuccess's calls, else onFail's.
 // Returns whether they all held.

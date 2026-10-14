@@ -31,4 +31,18 @@ void houseExit(World& world) {
     world.state.setFlag(INTRO_CUTSCENE_FLAG, true); // (the camera-dolly cutscene isn't ported yet)
 }
 
+bool checkSpec(const World& world, ConditionDef::Spec spec) {
+    switch (spec) {
+    case ConditionDef::Spec::VillageFishOn: return world.state.flag(FISH_ON_FLAG); // CheckFishOn
+    }
+    return false;
+}
+
+bool specReadsOnlyStateAndGrid(ConditionDef::Spec spec) {
+    switch (spec) {
+    case ConditionDef::Spec::VillageFishOn: return true; // a GameState flag
+    }
+    return false;
+}
+
 } // namespace village

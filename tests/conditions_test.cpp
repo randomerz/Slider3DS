@@ -84,34 +84,36 @@ TEST(starts_run_when_their_object_first_activates) {
 }
 
 TEST(conditions_check) {
-    const Area& area = village();
-    Grid grid;
-    grid.init(area);
-    GameState state;
+    World world(village());
+    GameState& state = world.state;
     using T = ConditionDef::Type;
     const ConditionDef flag{T::Flag, "caveDoorExploded", "", "", {}};
     const ConditionDef noFlag{T::NoFlag, "caveDoorExploded", "", "", {}};
-    CHECK(!checkCondition(flag, state, grid) && checkCondition(noFlag, state, grid));
+    CHECK(!checkCondition(flag, world) && checkCondition(noFlag, world));
     state.setFlag("caveDoorExploded", true);
-    CHECK(checkCondition(flag, state, grid) && !checkCondition(noFlag, state, grid));
+    CHECK(checkCondition(flag, world) && !checkCondition(noFlag, world));
     state.setFlag("caveDoorExploded", false);
-    CHECK(!checkCondition(flag, state, grid));
+    CHECK(!checkCondition(flag, world));
 
     const ConditionDef slider7{T::Item, "Slider 7", "Village", "", {}};
-    CHECK(!checkCondition(slider7, state, grid));
+    CHECK(!checkCondition(slider7, world));
     state.setCollectible("Slider 7", "Caves", true); // another area's doesn't count
-    CHECK(!checkCondition(slider7, state, grid));
+    CHECK(!checkCondition(slider7, world));
     state.setCollectible("Slider 7", "Village", true);
-    CHECK(checkCondition(slider7, state, grid));
+    CHECK(checkCondition(slider7, world));
 
     // The start grid is "###_###_1##" (only tile 1, bottom-left).
     const ConditionDef bottomLeft1{T::Grid, "", "", "..._..._1..", {}};
     const ConditionDef topLeft1{T::Grid, "", "", "1.._..._...", {}};
-    CHECK(checkCondition(bottomLeft1, state, grid) && !checkCondition(topLeft1, state, grid));
+    CHECK(checkCondition(bottomLeft1, world) && !checkCondition(topLeft1, world));
     const ConditionDef notTopLeft1{T::NoGrid, "", "", "1.._..._...", {}};
-    CHECK(checkCondition(notTopLeft1, state, grid));
-    CHECK(!checkCondition({T::Unsupported, "", "", "", {}}, state, grid));
-    CHECK(!checkCondition({T::PlayerCarryingItem, "anything", "", "", {}}, state, grid));
+    CHECK(checkCondition(notTopLeft1, world));
+    CHECK(!checkCondition({T::Unsupported, "", "", "", {}}, world));
+    CHECK(!checkCondition({T::PlayerCarryingItem, "anything", "", "", {}}, world));
+    const ConditionDef fishOn{T::Spec, "VillageGrid.CheckFishOn", "", "", {}, ConditionDef::Spec::VillageFishOn};
+    CHECK(!checkCondition(fishOn, world));
+    state.setFlag("villageFishOn", true);
+    CHECK(checkCondition(fishOn, world)); // VillageGrid.CheckFishOn reads TurnFishOn's flag
 }
 
 TEST(conditions_grid_stationary) {
@@ -124,9 +126,9 @@ TEST(conditions_grid_stationary) {
     const ConditionDef tile1Still{T::GridStationary, "", "", world.grid.gridString(), {1}};
     const ConditionDef tile2Still{T::GridStationary, "", "", world.grid.gridString(), {2}};
     check(world.grid.tileMoving(1) && !world.grid.tileMoving(2), "tile 1 is sliding, tile 2 isn't");
-    CHECK(!checkCondition(tile1Still, world.state, world.grid) && checkCondition(tile2Still, world.state, world.grid));
+    CHECK(!checkCondition(tile1Still, world) && checkCondition(tile2Still, world));
     for (int i = 0; i < 600 && !world.artifact.queueEmpty(); i++) world.artifact.update(world.grid, 1.0f / 60.0f, 0);
-    CHECK(!world.grid.tileMoving(1) && checkCondition(tile1Still, world.state, world.grid));
+    CHECK(!world.grid.tileMoving(1) && checkCondition(tile1Still, world));
 }
 
 TEST(start_checks_cave_door) {

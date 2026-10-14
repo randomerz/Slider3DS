@@ -68,7 +68,9 @@ int typeOut(Typer& t, int limit = 1000) {
 // by "Hello there"'s animationOnStart) goes back to Idle when its 0.25 s clip ends.
 // A second tile (2) sits right of tile 1.
 // The nudges (UPPRelativePlayer by 1/128) count how often a call ran; flags can't. "Hello there", "Bye"
-// and "Moved" show the Exclamation emote ("Npc/Emotes" (4), left of the face: intro sprite 0, then loop 1).
+// and "Moved" show the Exclamation emote ("Npc/Emotes" (4), left of the face; its Animator "E": the intro
+// state's sprite 0, then ExclamationLoop's sprite 1). "C2" (swapped in by "happy") has an Any State
+// transition to Jump on its "jump" bool.
 const char* NPC_AREA = R"json({
   "ppu": 16,
   "grid": {"width": 2, "height": 1, "targetGrid": "12", "housingOffset": -150},
@@ -89,7 +91,13 @@ const char* NPC_AREA = R"json({
       {"name": "Idle", "anim": 1, "speed": 1, "transitions": [{"to": 1, "exitTime": -1, "conds": [[0, true]]}]},
       {"name": "Sus", "anim": 0, "speed": 1, "transitions": [{"to": 0, "exitTime": -1, "conds": [[0, false]]}]},
       {"name": "Cry", "anim": 0, "speed": 1, "transitions": [{"to": 0, "exitTime": 1, "conds": []}]}]},
-    {"name": "C2", "params": [], "default": 0, "any": [], "states": [{"name": "Happy", "anim": 1, "speed": 1, "transitions": []}]}],
+    {"name": "C2", "params": [{"name": "jump", "default": false}], "default": 0,
+     "any": [{"to": 1, "exitTime": -1, "conds": [[0, true]]}], "states": [
+      {"name": "Happy", "anim": 1, "speed": 1, "transitions": []},
+      {"name": "Jump", "anim": 0, "speed": 1, "transitions": []}]},
+    {"name": "E", "params": [], "default": 1, "any": [], "states": [
+      {"name": "Exclamation", "anim": 0, "speed": 1, "transitions": [{"to": 1, "exitTime": 1, "conds": []}]},
+      {"name": "ExclamationLoop", "anim": 1, "speed": 1, "transitions": []}]}],
   "triggerColliders": [{"object": 1, "owner": 1, "kind": "circle", "center": [0, 0], "radius": 2}],
   "triggerEvents": [{"object": 1, "onPlayerEnter": true,
                      "onEnter": [{"method": "NPC.OnDialogueTriggerEnter", "target": 0}],
@@ -97,8 +105,7 @@ const char* NPC_AREA = R"json({
   "npcs": [{"object": 0, "name": "N", "facingLeft": false, "pingObject": 3,
     "animator": {"object": 0, "controller": 0, "keepState": false, "controllerObject": 0},
     "emote": {"object": 4, "pos": [-0.5, 0.5], "sortY": 0.5, "sortingLayerValue": 9, "order": 0, "localX": -0.5,
-              "facesRight": false, "npcSprite": 0, "npcSpriteFlipped": false,
-              "intro": [-1, -1, 0, -1, -1, -1], "loop": [-1, -1, 1, -1, -1, -1]},
+              "facesRight": false, "npcSprite": 0, "npcSpriteFlipped": false, "controller": 2, "keepState": false},
     "text": {"box": [-3.42, 0.55, 3.42, 2.7], "fontSize": 1, "lineAdvance": 0.4309, "wordSpacing": -0.1,
              "charSpacing": 0, "sortingLayerValue": 9, "order": 99},
     "conds": [
@@ -420,7 +427,7 @@ TEST(npcs_validation_rejects_bad_references) {
         {R"("conds": [[0, true]])", R"("conds": [[3, true]])", "animator condition -> missing parameter"},
         {R"("controller": 0, "keepState")", R"("controller": 5, "keepState")", "animator -> missing controller"},
         {R"("target": 0, "controller": 1)", R"("target": 1, "controller": 1)", "controller swap on an object without an Animator"},
-        {R"("intro": [-1, -1, 0,)", R"("intro": [-1, -1, 9,)", "emote -> missing anim"},
+        {R"("controller": 2, "keepState")", R"("controller": 9, "keepState")", "emote -> missing controller"},
         {R"("text": "Bye", "delay": 0, "emoteOnStart": 2)", R"("text": "Bye", "delay": 0, "emoteOnStart": 7)",
          "emote value out of range"},
         {R"("box": [-3.42, 0.55, 3.42, 2.7])", R"("box": [3.42, 0.55, -3.42, 2.7])", "npc text box inside out"},
@@ -483,19 +490,19 @@ TEST(npcs_emotes_show_beside_the_face) {
     World world(npcArea());
     SpritePlacement e;
     standAt(world, 10, 0);
-    check(world.npcs.emote(0) == 0 && !world.npcs.emoteSprite(world.area, 0, e), "no emote at first");
+    check(world.npcs.emote(0) == 0 && !world.npcs.emoteSprite(world, 0, e), "no emote at first");
     standAt(world, 0, 0);
-    check(world.npcs.emote(0) == NpcEmoteDef::Exclamation && world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 0 &&
+    check(world.npcs.emote(0) == NpcEmoteDef::Exclamation && world.npcs.emoteSprite(world, 0, e) && e.sprite == 0 &&
               e.x == -0.5f,
           "its line starts: Exclamation's intro, on the left (the side it faces)");
     for (int i = 0; i < 20; i++) world.update(DT, 0, 0, true); // 0.33 s: past the 0.25 s intro
-    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 1, "then the loop clip");
+    check(world.npcs.emoteSprite(world, 0, e) && e.sprite == 1, "then the loop clip");
     standAt(world, 10, 0);
     check(world.npcs.emote(0) == 0, "the box closes: the line's emoteOnLeave (none)");
     world.state.setFlag("next", true); // teleports and flips the NPC's sprite
     world.update(DT, 0, 0, true);
     standAt(world, 5, 1);
-    check(world.npcs.emoteSprite(world.area, 0, e) && e.x == 0.5f, "flipped: the emote moves to the other side");
+    check(world.npcs.emoteSprite(world, 0, e) && e.x == 0.5f, "flipped: the emote moves to the other side");
 }
 
 TEST(npcs_recheck_when_the_grid_alone_changes) {
@@ -514,8 +521,13 @@ TEST(npcs_recheck_when_the_grid_alone_changes) {
             if (n.name == name) return &n;
         return (const NpcDef*)nullptr;
     };
-    check(byName("Cathy") && byName("Cathy")->pollsEveryFrame, "Cathy (carried cats, specs) re-checks every frame");
-    check(byName("Mike") && !byName("Mike")->pollsEveryFrame, "Mike (items only) re-checks on changes");
+    World vw(v);
+    auto polls = [&](const char* name) {
+        const NpcDef* n = byName(name);
+        return n && vw.npcs.pollsEveryFrame((int)(n - v.npcs.data()));
+    };
+    check(polls("Cathy"), "Cathy (carried cats, specs) re-checks every frame");
+    check(byName("Mike") && !polls("Mike"), "Mike (items only) re-checks on changes");
 }
 
 TEST(npcs_teleport_onto_their_own_spot_does_nothing) {
@@ -542,12 +554,12 @@ TEST(npcs_emote_keeps_playing_across_lines_and_restarts_when_shown_again) {
     SpritePlacement e;
     standAt(world, 0, 0);
     waitTyped(world); // "Hello there" (Exclamation) typed: well past the 0.25 s intro
-    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 1, "looping");
+    check(world.npcs.emoteSprite(world, 0, e) && e.sprite == 1, "looping");
     world.interact(); // "Bye": Exclamation again
-    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 1, "the same emote on the next line keeps playing");
+    check(world.npcs.emoteSprite(world, 0, e) && e.sprite == 1, "the same emote on the next line keeps playing");
     standAt(world, 30, 0); // the box closes: emoteOnLeave none
     standAt(world, 0, 0);  // "Bye" again: Exclamation from the start
-    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 0, "turned off and on again: it restarts");
+    check(world.npcs.emoteSprite(world, 0, e) && e.sprite == 0, "turned off and on again: it restarts");
 }
 
 TEST(npcs_emote_hidden_with_its_npc) {
@@ -575,18 +587,24 @@ TEST(animators_follow_bools_exit_times_and_npc_lines) {
     const Area& a = world.area;
     auto state = [&]() { return world.animators.stateName(a, 0); };
     check(state() == "Idle" && world.animators.sprite(0) == 1, "default state Idle, showing its clip");
-    world.animators.setBool(a, 0, "sus", true);
+    world.animators.setBool(world, 0, "sus", true);
     world.update(DT, 0, 0, true);
     check(state() == "Sus" && world.animators.sprite(0) == 0, "sus: Idle -> Sus");
-    world.animators.setBool(a, 0, "sus", false);
+    world.animators.setBool(world, 0, "sus", false);
     world.update(DT, 0, 0, true);
     check(state() == "Idle", "and back");
     standAt(world, 0, 0); // "Hello there": animationOnStart Cry
     check(state() == "Cry", "a line's animationOnStart plays its state");
     for (int i = 0; i < 20; i++) world.update(DT, 0, 0, true); // 0.33 s: past Cry's 0.25 s clip
     check(state() == "Idle", "the exit-time transition takes it back to Idle");
+    // Play on the state it's already in doesn't restart it.
+    world.animators.play(world, 0, "Cry");
+    for (int i = 0; i < 10; i++) world.update(DT, 0, 0, true);
+    world.animators.play(world, 0, "Cry");
+    for (int i = 0; i < 6; i++) world.update(DT, 0, 0, true); // 0.27 s since the first Play
+    check(state() == "Idle", "a second Play of the current state didn't restart it");
     // Re-enabling the object rebinds the Animator: default state and parameters.
-    world.animators.setBool(a, 0, "sus", true);
+    world.animators.setBool(world, 0, "sus", true);
     world.update(DT, 0, 0, true);
     world.objects.setActive(a, 0, false);
     world.update(DT, 0, 0, true);
@@ -596,6 +614,31 @@ TEST(animators_follow_bools_exit_times_and_npc_lines) {
     world.state.setFlag("happy", true);
     world.update(DT, 0, 0, true);
     check(state() == "Happy", "Animator.set_runtimeAnimatorController: the new controller's default state");
+    world.animators.setBool(world, 0, "jump", true);
+    world.update(DT, 0, 0, true);
+    check(state() == "Jump", "an Any State transition");
+}
+
+TEST(animators_rebind_before_a_play_on_a_newly_shown_object) {
+    // Unity rebinds an Animator inside SetActive(true): a Play right after (same call chain) survives.
+    World world(npcArea());
+    standAt(world, 30, 0);
+    world.objects.setActive(world.area, 0, false);
+    world.update(DT, 0, 0, true);
+    world.objects.setActive(world.area, 0, true);
+    world.animators.play(world, 0, "Cry"); // before any update notices the object came back
+    world.update(DT, 0, 0, true);
+    check(world.animators.stateName(world.area, 0) == "Cry", "the Play wasn't wiped by a later rebind");
+}
+
+TEST(npcs_empty_animation_goes_back_to_idle) {
+    // NPCAnimatorController.Play(""): after a named state, back to "Idle".
+    World world(npcArea());
+    standAt(world, 0, 0); // "Hello there": Cry (the NPC's current animation is now "Cry")
+    waitTyped(world);
+    world.animators.play(world, 0, "Sus"); // somewhere else meanwhile
+    world.interact(); // "Bye": animationOnStart ""
+    check(world.animators.stateName(world.area, 0) == "Idle", "Play(\"\") after Cry: Idle");
 }
 
 TEST(animators_village_archibald_turns_sus) {
@@ -733,4 +776,16 @@ TEST(animators_player_runs_while_moving) {
     world.player.onWater = true;
     world.update(DT, 0, 0, true);
     check(world.animators.stateName(area, animator) == "PlayerPirateIdle", "in the boat");
+}
+
+TEST(npcs_emote_shown_again_mid_intro_restarts_it) {
+    // Off and on again while its Animator is still in the intro state: the intro starts over.
+    World world(npcArea());
+    SpritePlacement e;
+    standAt(world, 0, 0); // "Hello there": Exclamation's 0.25 s intro
+    for (int i = 0; i < 8; i++) world.update(DT, 0, 0, true);
+    standAt(world, 30, 0); // the box closes: emote off (its Animator keeps going)
+    standAt(world, 0, 0);  // on again, 10 frames in
+    for (int i = 0; i < 8; i++) world.update(DT, 0, 0, true); // 18 frames since the first start: past 0.25 s
+    check(world.npcs.emoteSprite(world, 0, e) && e.sprite == 0, "still the intro: it restarted");
 }
