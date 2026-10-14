@@ -294,7 +294,7 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         }
     const std::set<std::string> expected = {
         "ArtifactScreenHider.AddScreensAndShow",
-        "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "BoxCollider2D.set_enabled", "Breadge.Pickup",
+        "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "Breadge.Pickup",
         "ChadJump.JumpStarter", "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
         "KnotBox.SetToCorrectPositions", "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
         "PlaySound.PlayString", "PlayerAction.SetItemSortingOrderDec", "PlayerAction.SetItemSortingOrderInc",

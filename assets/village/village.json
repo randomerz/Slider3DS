@@ -9684,7 +9684,9 @@
                 {
                   "method": "BoxCollider2D.set_enabled",
                   "target": 197,
-                  "bool": true
+                  "bool": true,
+                  "collider": 23,
+                  "trigger": true
                 }
               ],
               "onEnd": [
@@ -9738,7 +9740,9 @@
                 {
                   "method": "BoxCollider2D.set_enabled",
                   "target": 197,
-                  "bool": true
+                  "bool": true,
+                  "collider": 23,
+                  "trigger": true
                 }
               ],
               "onEnd": [

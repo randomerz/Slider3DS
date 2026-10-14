@@ -37,7 +37,11 @@ Area hierarchy() {
 
 TEST(object_states_follow_the_hierarchy) {
     // A/B is inactive itself; A/C is active. Hiding A hides both; showing A again shows only C.
-    const Area area = hierarchy();
+    Area area = hierarchy();
+    ObjectCollider c; // a disabled collider on A/C (slot 0)
+    c.object = 2;
+    c.enabled = false;
+    area.objectColliders.push_back(c);
     ObjectStates o;
     o.init(area);
     CHECK(o.activeInHierarchy(0) && !o.activeInHierarchy(1) && o.activeInHierarchy(2) && !o.activeInHierarchy(3));
@@ -50,11 +54,10 @@ TEST(object_states_follow_the_hierarchy) {
     o.setActive(area, 0, false);
     CHECK(!o.activeInHierarchy(1) && !o.activeInHierarchy(2));
 
-    ObjectCollider c;
-    c.object = 2;
-    c.enabled = false;
     o.setActive(area, 0, true);
     CHECK(o.activeInHierarchy(2) && !o.active(c)); // a disabled component stays off
+    o.setColliderEnabled(c.slot, true);            // Collider2D.enabled = true
+    CHECK(o.active(c));
 }
 
 TEST(starts_run_when_their_object_first_activates) {

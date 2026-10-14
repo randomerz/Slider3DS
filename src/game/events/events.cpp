@@ -114,6 +114,9 @@ void runCall(World& world, const CallDef& c) {
     case M::VillageHouseExit:
         village::houseExit(world);
         break;
+    case M::SetColliderEnabled:
+        world.objects.setColliderEnabled(c.data, c.boolArg);
+        break;
     case M::Unsupported:
         break;
     }

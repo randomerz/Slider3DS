@@ -35,7 +35,7 @@ Tile types:
   Tile: 37599
   RuleTile: 5751
   AnimatedTile: 702
-Warnings (38):
+Warnings (37):
   World sprite Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomToilet: draw mode/scale/rotation not exported
   Calls to KnotBox.SetToCorrectPositions are not run by the port yet
   Calls to ConditionChecker.PlayErrorSound are not run by the port yet
@@ -62,7 +62,6 @@ Warnings (38):
   Calls to VillageGrid.FillInHole are not run by the port yet
   Calls to VillageGrid.ShufflePuzzle are not run by the port yet
   Calls to PlayerActionHints.EnableDisabling are not run by the port yet
-  Calls to BoxCollider2D.set_enabled are not run by the port yet
   Spec condition KnotBox.CheckPuzzle is not checked by the port yet (evaluates false)
   Calls to UIArtifactWorldMap.SetAreaStatusSilhouette are not run by the port yet
   Calls to ChadJump.JumpStarter are not run by the port yet

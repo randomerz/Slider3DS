@@ -1,7 +1,7 @@
 // Runtime state of an Area's scene objects (Area::objects): the hierarchy (parents can change at
 // runtime: NPC.Teleport reparents), active state as changed by GameObject.SetActive, placement
 // (owner STile + offset) for objects that move at runtime (NPCs, carried items) and sprite flips set
-// by events. Starts as authored.
+// by events, and colliders' enabled flags (Collider2D.enabled). Starts as authored.
 //
 // Like Unity: an object is active in the hierarchy only if it and every ancestor are active
 // (activeSelf), so SetActive on a parent hides or shows everything under it, and showing a parent
@@ -32,7 +32,9 @@ public:
     int parent(int object) const { return parent_[object]; }
     bool activeInHierarchy(int object) const { return inHierarchy_[object] != 0; }
     bool active(const WorldSprite& ws) const { return activeInHierarchy(ws.object); }
-    bool active(const ObjectCollider& c) const { return c.enabled && activeInHierarchy(c.object); }
+    bool active(const ObjectCollider& c) const { return colliderEnabled_[c.slot] && activeInHierarchy(c.object); }
+    // Collider2D.enabled of the collider with that ObjectCollider::slot.
+    void setColliderEnabled(int slot, bool enabled) { colliderEnabled_[slot] = enabled ? 1 : 0; }
 
     // The STile (islandId, 0 = world) an object's components are placed relative to, and their
     // offset from their exported positions.
@@ -59,5 +61,6 @@ private:
     std::vector<int> selfOwner_, owner_;   // owner set on the object (-1 = none) / effective
     std::vector<float> selfDx_, selfDy_, offX_, offY_; // offset set on the object / effective (sum)
     std::vector<int8_t> flipX_;
+    std::vector<uint8_t> colliderEnabled_; // per ObjectCollider::slot
     uint32_t activeVersion_ = 0, placementVersion_ = 0;
 };

@@ -106,7 +106,9 @@ struct ObjectCollider {
     enum class Kind { Poly, Circle, Edge };
     int object = 0;      // Area::objects index
     int owner = 0;
-    bool enabled = true; // the component itself (active also needs its object active in hierarchy)
+    bool enabled = true; // the component itself at the start (ObjectStates tracks it at runtime; active
+                         // also needs its object active in hierarchy)
+    int slot = 0;        // runtime enabled flag: objectColliders index, or objectColliders.size() + triggerColliders index
     Kind kind = Kind::Poly;
     std::vector<Polygon> paths;       // Poly: closed polygons; Edge: one open polyline
     float cx = 0, cy = 0, radius = 0; // Circle
@@ -161,6 +163,7 @@ bool conditionReadsOnlyStateAndGrid(const ConditionDef& c);
 //   VillageActivateSlider   VillageGrid (SGrid).ActivateSliderCollectible(intArg): shows "Slider <n>" (game/village)
 //   VillageActivateCollectible  SGrid.ActivateCollectible(stringArg): shows it, cancelling its hide-at-start
 //   VillageTurnFishOn / VillageExplode / VillageWaterfallEntry / VillageHouseExit: VillageGrid's methods
+//   SetColliderEnabled      BoxCollider2D.set_enabled(boolArg) on the collider with slot data
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -188,7 +191,8 @@ bool conditionReadsOnlyStateAndGrid(const ConditionDef& c);
     X(VillageTurnFishOn, "VillageGrid.TurnFishOn")                     \
     X(VillageExplode, "VillageGrid.Explode")                           \
     X(VillageWaterfallEntry, "VillageGrid.OnWaterfallEntry")           \
-    X(VillageHouseExit, "VillageGrid.OnHouseExit")
+    X(VillageHouseExit, "VillageGrid.OnHouseExit")                     \
+    X(SetColliderEnabled, "BoxCollider2D.set_enabled")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -207,7 +211,7 @@ struct CallDef {
     int intArg = 0;
     std::string stringArg;
     // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index;
-    // SetAnimatorController: Area::animatorControllers index.
+    // SetAnimatorController: Area::animatorControllers index; SetColliderEnabled: ObjectCollider::slot.
     int data = -1;
 };
 

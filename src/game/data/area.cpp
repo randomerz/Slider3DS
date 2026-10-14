@@ -128,6 +128,8 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         d.stringArg = c["string"].asString();
         if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
         if (d.method == CallDef::Method::SetAnimatorController) d.data = c["controller"].asInt(-1);
+        if (d.method == CallDef::Method::SetColliderEnabled && c.has("collider")) // (colliders load first)
+            d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
         d.objectArg = c["objectArg"].asInt(-1);
         if (isTeleport(d.method)) {
             TeleportDef t;
@@ -462,6 +464,12 @@ static bool validate(const Area& a, std::string* error) {
                 return false;
             if (c.method == M::VillageExplode && (!objectOk(a.areaGrid.caveDoorEntrance) || !objectOk(a.areaGrid.caveDoorRocks)))
                 return false;
+            if (c.method == M::SetColliderEnabled) {
+                const int nSolid = (int)a.objectColliders.size();
+                if (c.data < 0 || c.data >= nSolid + (int)a.triggerColliders.size()) return false;
+                const ObjectCollider& col = c.data < nSolid ? a.objectColliders[c.data] : a.triggerColliders[c.data - nSolid];
+                if (col.object != c.target) return false;
+            }
             if (c.method == M::SetAnimatorController &&
                 (c.target == -1 || a.animatorByObject[c.target] < 0 || c.data < 0 || c.data >= (int)a.animatorControllers.size()))
                 return false;
@@ -607,6 +615,9 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         readObjectCollider(c, oc);
         out.triggerColliders.push_back(std::move(oc));
     }
+    for (size_t i = 0; i < out.objectColliders.size(); i++) out.objectColliders[i].slot = (int)i;
+    for (size_t i = 0; i < out.triggerColliders.size(); i++)
+        out.triggerColliders[i].slot = (int)(out.objectColliders.size() + i);
     for (const Json& c : doc["conditionCheckers"].items())
         out.conditionCheckers.push_back({c["object"].asInt(-1), c["enabled"].asBool(true), c["checkOnStart"].asBool(),
                                          readConditionals(c, out)});

@@ -687,3 +687,31 @@ TEST(village_explode_opens_the_cave_door) {
               !world.objects.activeInHierarchy(area.areaGrid.caveDoorRocks) && world.state.flag("caveDoorExploded"),
           "entrance on, rocks off, flag set");
 }
+
+TEST(village_archibald_slider_4_can_be_picked_up) {
+    // With the Coffee, Archibald's lines show Slider 4 and switch its (initially disabled) trigger
+    // on (BoxCollider2D.set_enabled): walking onto it picks it up and collects tile 4.
+    const Area& area = village();
+    World world(area);
+    world.setTileActive(3, true);
+    world.state.setCollectible("Coffee", "Village", true);
+    const int npc = villageNpc("Map/Village 8Puzzle/STile (3)/Objects/Archibald");
+    const int slider = area.collectible("Slider 4");
+    check(npc >= 0 && slider >= 0, "Archibald and Slider 4");
+    if (npc < 0 || slider < 0) return;
+    const int object = area.collectibles[slider].object;
+    const ObjectCollider* trigger = nullptr;
+    for (const ObjectCollider& c : area.triggerColliders)
+        if (c.object == object) trigger = &c;
+    check(trigger && !world.objects.active(*trigger), "its trigger starts disabled");
+    if (!trigger) return;
+    standInTalkRange(world, npc);
+    listen(world, npc, 1200);
+    check(world.objects.activeInHierarchy(object) && world.objects.active(*trigger), "shown, trigger on");
+    float bx, by;
+    world.objectBase(object, bx, by);
+    world.player.x = bx + (trigger->minX + trigger->maxX) * 0.5f;
+    world.player.y = by + (trigger->minY + trigger->maxY) * 0.5f - area.player.footBox.offY;
+    world.update(DT, 0, 0, true);
+    check(world.state.hasCollectible("Slider 4", "Village") && world.grid.tileActive(4), "picked up: tile 4 collected");
+}

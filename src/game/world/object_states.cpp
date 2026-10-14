@@ -12,6 +12,9 @@ void ObjectStates::init(const Area& area) {
     offX_.assign(n, 0);
     offY_.assign(n, 0);
     flipX_.assign(n, -1);
+    colliderEnabled_.clear();
+    for (const ObjectCollider& c : area.objectColliders) colliderEnabled_.push_back(c.enabled ? 1 : 0);
+    for (const ObjectCollider& c : area.triggerColliders) colliderEnabled_.push_back(c.enabled ? 1 : 0);
     for (size_t i = 0; i < n; i++) {
         parent_[i] = area.objects[i].parent;
         self_[i] = area.objects[i].activeSelf;
