@@ -715,3 +715,22 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
     world.update(DT, 0, 0, true);
     check(world.state.hasCollectible("Slider 4", "Village") && world.grid.tileActive(4), "picked up: tile 4 collected");
 }
+
+TEST(animators_player_runs_while_moving) {
+    // Player.Update sets isRunning from the input and isOnWater from the boat; the body shows the state.
+    const Area& area = village();
+    World world(area);
+    const int animator = area.player.animator;
+    check(animator >= 0, "the player has an Animator");
+    if (animator < 0) return;
+    world.placeNear(0, 0);
+    world.update(DT, 0, 0, false);
+    check(world.animators.stateName(area, animator) == "PlayerIdle", "standing: idle");
+    world.update(DT, 1, 0, false);
+    check(world.animators.stateName(area, animator) == "PlayerRun", "walking: run cycle");
+    world.update(DT, 0, 0, false);
+    check(world.animators.stateName(area, animator) == "PlayerIdle", "stopping: idle again");
+    world.player.onWater = true;
+    world.update(DT, 0, 0, true);
+    check(world.animators.stateName(area, animator) == "PlayerPirateIdle", "in the boat");
+}

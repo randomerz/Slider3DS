@@ -1,3 +1,3 @@
 # Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
-cave_door_new_game 954:f89c7457c5e8d033
-cave_door_exploded 955:498d458cb3609a88
+cave_door_new_game 954:a9b58b7bfd3710bf
+cave_door_exploded 955:c47b812e75b80c1e

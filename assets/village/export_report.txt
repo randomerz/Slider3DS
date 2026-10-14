@@ -1,8 +1,8 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
-World sprites: 329  Anims: 77  Object colliders: 218
+World sprites: 329  Anims: 79  Object colliders: 218
 Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18
-Tiles: 168 (39 animated)  Sprites: 662
+Tiles: 168 (39 animated)  Sprites: 668
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
 Sheets (26, 2773K px):
   characters_chad: 256x256  [ChadPortalGun, chad, chad_jump, chad_fall, chad_crutch, chad_sad, chad_surprised]
@@ -10,7 +10,7 @@ Sheets (26, 2773K px):
   characters_jungle: 32x128  [jungle_npcsprites]
   characters_misc: 64x128  [Emotes_v2, sign, sign_dark]
   characters_mountain: 32x64  [Dogs]
-  characters_player: 256x64  [raft, playersprite, player_action_available]
+  characters_player: 256x64  [raft, playersprite, player_pirate, player_action_available]
   characters_village: 256x256  [village_npcsprites, cats, village_npc2, Archeologist_v2, SadRomeo]
   items: 128x128  [Items, bobs_small, breadge, artifact_pickup, boating_license, map_collectible, village_ruins_piece]
   largeprops_ocean: 512x512  [pom_tree]

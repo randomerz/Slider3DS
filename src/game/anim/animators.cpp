@@ -29,7 +29,8 @@ void Animators::enable(const World& world) {
     const Area& area = world.area;
     for (size_t i = 0; i < s_.size(); i++) {
         State& st = s_[i];
-        const bool active = world.objects.activeInHierarchy(area.animators[i].object);
+        const int object = area.animators[i].object;
+        const bool active = object < 0 || world.objects.activeInHierarchy(object); // (-1: the player's)
         if (active && !st.enabled && !area.animators[i].keepState) rebind(area, st);
         st.enabled = active;
     }

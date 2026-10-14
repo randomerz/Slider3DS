@@ -444,7 +444,7 @@ static bool validate(const Area& a, std::string* error) {
         if (!ok || !transitionsOk(c.anyState)) return fail(error, "animator controller " + c.name + ": bad state, transition or anim");
     }
     for (const AnimatorDef& an : a.animators)
-        if (!objectOk(an.object) || an.controller < 0 || an.controller >= (int)a.animatorControllers.size() ||
+        if ((an.object != -1 && !objectOk(an.object)) || an.controller < 0 || an.controller >= (int)a.animatorControllers.size() ||
             (an.controllerObject != -1 && !objectOk(an.controllerObject)))
             return fail(error, "animator: bad object or controller");
     std::vector<bool> isNpc(a.objects.size(), false);
@@ -643,6 +643,10 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         if (doc["player"].has("boat")) out.player.boat = readPlacement(doc["player"]["boat"]);
         if (doc["player"].has("actionIndicator")) out.player.actionIndicator = readPlacement(doc["player"]["actionIndicator"]);
         out.player.footBox = readHitbox(doc["player"]["footBox"]);
+        if (doc["player"].has("animator")) {
+            out.player.animator = (int)out.animators.size();
+            out.animators.push_back({-1, doc["player"]["animator"].asInt(-1), false, -1});
+        }
         out.player.boatBox = readHitbox(doc["player"]["boatBox"]);
     }
 

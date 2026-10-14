@@ -238,7 +238,8 @@ struct AnimatorControllerDef {
     int stateIndex(const std::string& name) const; // -1 if none
     int paramIndex(const std::string& name) const; // -1 if none
 };
-// An Animator on a scene object, driving the world sprite on that object.
+// An Animator on a scene object, driving the world sprite on that object (or the player's: object -1,
+// always enabled).
 struct AnimatorDef {
     int object = -1;
     int controller = 0;      // Area::animatorControllers index at the start
@@ -398,6 +399,7 @@ struct Hitbox {
 struct PlayerDef {
     SpritePlacement body, boat, actionIndicator;
     Hitbox footBox, boatBox; // the player's collider on foot / on water
+    int animator = -1;       // Area::animators index of Player.playerAnimator (drives the body), -1 = none
 };
 
 // A sprite placed in UI pixels: rect min corner (x, y) and size, y up, relative to some origin.

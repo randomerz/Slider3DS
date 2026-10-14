@@ -75,6 +75,10 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     }
 
     if (moveX != 0) player.facingLeft = moveX < 0;
+    if (area.player.animator >= 0) { // Player.Update
+        animators.setBool(area, area.player.animator, "isRunning", moveX != 0 || moveY != 0);
+        animators.setBool(area, area.player.animator, "isOnWater", player.onWater);
+    }
     float dx = 0, dy = 0;
     if (moveX != 0 || moveY != 0) {
         const float len = std::sqrt(moveX * moveX + moveY * moveY);

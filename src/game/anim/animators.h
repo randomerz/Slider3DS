@@ -1,4 +1,4 @@
-// Runtime state of the Area's Animators (Area::animators: the NPCs' so far): Unity's Animator for
+// Runtime state of the Area's Animators (Area::animators: the NPCs' and the player's): Unity's Animator for
 // sprite clips, as far as the exported controllers use it. Each has a current state (playing its
 // clip at the state's speed), bool parameters and the controller's transitions: once a frame the
 // first transition whose conditions hold (and exit time has passed) switches state, instantly.

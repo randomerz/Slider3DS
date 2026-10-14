@@ -117,7 +117,11 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         if (!p || p->sprite < 0 || !inRange(p->sortLayer)) continue;
         // The body flips with facing (SpriteRenderer.flipX); its children (boat, indicator) don't.
         const uint32_t flip = p == &area.player.body ? facing : 0u;
-        items_.push_back({ItemKind::Player, (int)items_.size(), placeSprite(area, *p, pl.x, pl.y, time_, flip)});
+        SortedSprite sp = placeSprite(area, *p, pl.x, pl.y, time_, flip);
+        const int animator = area.player.animator;
+        if (p == &area.player.body && animator >= 0 && world.animators.sprite(animator) >= 0)
+            sp.sprite = world.animators.sprite(animator); // its Animator's state (idle, run, boat)
+        items_.push_back({ItemKind::Player, (int)items_.size(), sp});
     }
 
     std::sort(items_.begin(), items_.end(), [](const Item& a, const Item& b) {
