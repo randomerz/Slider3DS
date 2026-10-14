@@ -8,8 +8,8 @@
 
 class World;
 
-// Condition.CheckCondition. PlayerCarryingItem and unsupported (spec) conditions are false until
-// items and specs exist. A condition kind that reads anything but GameState and Grid must say so in
+// Condition.CheckCondition. PlayerCarryingItem and unsupported spec conditions are false until
+// items and those specs exist. A condition kind that reads anything but GameState and Grid must say so in
 // conditionReadsOnlyStateAndGrid (area.h): NPCs skip re-checking while those two are unchanged.
 bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& grid);
 

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 
+#include "game/events/events.h"
 #include "game/npc/dialogue_text.h"
 #include "game/npc/npcs.h"
 #include "game/render/area_view.h"
@@ -165,6 +166,33 @@ void waitTyped(World& world) {
     for (int i = 0; i < 600 && world.npcs.typer(0).typing(); i++) world.update(DT, 0, 0, true);
     world.update(DT, 0, 0, true);
 }
+
+// Puts the player on the center of `npc`'s dialogue trigger (the trigger whose OnTriggerEnter talks
+// to it) and runs a frame.
+void standInTalkRange(World& world, int npc) {
+    const Area& area = world.area;
+    for (const TriggerEventDef& te : area.triggerEvents)
+        for (const CallDef& c : te.onEnter)
+            if (c.method == CallDef::Method::NpcTriggerEnter && c.target == area.npcs[npc].object)
+                for (const ObjectCollider& tc : area.triggerColliders)
+                    if (tc.object == te.object) {
+                        float bx, by;
+                        world.objectBase(tc.object, bx, by);
+                        world.player.x = bx + (tc.minX + tc.maxX) * 0.5f;
+                        world.player.y = by + (tc.minY + tc.maxY) * 0.5f;
+                    }
+    world.update(DT, 0, 0, true);
+}
+
+// Listens to `npc` for up to `frames` frames, pressing A whenever a line waits for it.
+void listen(World& world, int npc, int frames) {
+    for (int i = 0; i < frames; i++) {
+        world.update(DT, 0, 0, true);
+        if (world.npcs.showsPrompt(world.area, npc)) world.interact();
+    }
+}
+
+int villageNpc(const char* path) { return village().npcOn(village().findObject(path)); }
 
 bool npcOffered(const World& world, int npc) {
     return std::find(world.interactables.begin(), world.interactables.end(), Interactable{Interactable::Kind::Npc, npc}) !=
@@ -580,21 +608,82 @@ TEST(animators_village_archibald_turns_sus) {
     if (npc < 0 || area.npcs[npc].animator < 0) return;
     const int animator = area.npcs[npc].animator;
     check(world.animators.stateName(area, animator) == "ArchibaldIdle", "idle at first");
-    // Into his dialogue trigger: the trigger event whose onEnter talks to him.
-    for (const TriggerEventDef& te : area.triggerEvents)
-        for (const CallDef& c : te.onEnter)
-            if (c.method == CallDef::Method::NpcTriggerEnter && c.target == area.npcs[npc].object)
-                for (const ObjectCollider& tc : area.triggerColliders)
-                    if (tc.object == te.object) {
-                        float bx, by;
-                        world.objectBase(tc.object, bx, by);
-                        world.player.x = bx + (tc.minX + tc.maxX) * 0.5f;
-                        world.player.y = by + (tc.minY + tc.maxY) * 0.5f;
-                    }
-    world.update(DT, 0, 0, true);
+    standInTalkRange(world, npc);
     world.update(DT, 0, 0, true);
     check(world.npcs.textShown(npc) && world.animators.stateName(area, animator) == "ArchibaldIdleSus",
-          "talking: he turns sus (" + world.animators.stateName(area, animator) + ", text " +
-              std::to_string(world.npcs.textShown(npc)) + ", sus " + std::to_string(world.animators.param(area, animator, "sus")) +
-              ", player " + std::to_string(world.player.x) + "," + std::to_string(world.player.y) + ")");
+          "talking: he turns sus (" + world.animators.stateName(area, animator) + ")");
+}
+
+TEST(village_archeologist_hands_out_slider_3) {
+    // The Archeologist's first chain ends with VillageGrid.ActivateSliderCollectible(3).
+    const Area& area = village();
+    World world(area);
+    world.setTileActive(2, true);
+    const int npc = villageNpc("Map/Village 8Puzzle/STile (2)/Objects/Archeologist");
+    const int slider = area.collectible("Slider 3");
+    check(npc >= 0 && slider >= 0, "the Archeologist and Slider 3");
+    if (npc < 0 || slider < 0) return;
+    const int object = area.collectibles[slider].object;
+    check(!world.objects.activeInHierarchy(object), "Slider 3 hidden at first");
+    standInTalkRange(world, npc);
+    listen(world, npc, 1200);
+    check(world.npcs.lineIndex(npc) == 3 && world.objects.activeInHierarchy(object), "after her last line, Slider 3 is out");
+}
+
+TEST(village_fish_back_pierre_hands_out_slider_8) {
+    // VillageGrid.TurnFishOn (Sam's line at the river) sets the fish flag; Pierre's CheckFishOn spec
+    // then picks the conditional whose line activates Slider 8 (on his tile).
+    const Area& area = village();
+    World world(area);
+    world.setTileActive(6, true);
+    const int npc = villageNpc("Map/Village 8Puzzle/STile (6)/Objects/Pierre");
+    const int slider = area.collectible("Slider 8");
+    check(npc >= 0 && slider >= 0, "Pierre and Slider 8");
+    if (npc < 0 || slider < 0) return;
+    const int object = area.collectibles[slider].object;
+    check(!world.objects.activeInHierarchy(object), "Slider 8 hidden at first (its Start)");
+    CallDef fish;
+    fish.method = CallDef::Method::VillageTurnFishOn;
+    runCall(world, fish);
+    standInTalkRange(world, npc);
+    world.update(DT, 0, 0, true);
+    check(world.npcs.text(npc).chars.rfind("The fish are coming back!", 0) == 0 && world.objects.activeInHierarchy(object),
+          "'The fish are coming back!' and Slider 8 is out: " + world.npcs.text(npc).chars);
+}
+
+TEST(village_activate_collectible_beats_its_start) {
+    // SGrid.ActivateCollectible clears shouldDisableAtStart, so the collectible's later Start (its tile
+    // collected) doesn't hide it; ActivateSliderCollectible doesn't, so Start hides it again.
+    const Area& area = village();
+    World world(area);
+    const int breadge = area.collectible("Breadge"), slider9 = area.collectible("Slider 9");
+    check(breadge >= 0 && slider9 >= 0 && area.collectibles[breadge].disableAtStart && area.collectibles[slider9].disableAtStart,
+          "Breadge (tile 9) and Slider 9 (tile 8) hide at start");
+    if (breadge < 0 || slider9 < 0) return;
+    CallDef a, b;
+    a.method = CallDef::Method::VillageActivateCollectible;
+    a.stringArg = "Breadge";
+    b.method = CallDef::Method::VillageActivateSlider;
+    b.intArg = 9;
+    runCall(world, a);
+    runCall(world, b);
+    world.setTileActive(8, true); // their Starts run now
+    world.setTileActive(9, true);
+    check(world.objects.activeInHierarchy(area.collectibles[breadge].object), "Breadge stays out");
+    check(!world.objects.activeInHierarchy(area.collectibles[slider9].object), "Slider 9's Start hid it");
+    world.state.setCollectible("Breadge", "Village", true);
+    world.objects.setActive(area, area.collectibles[breadge].object, false);
+    runCall(world, a);
+    check(!world.objects.activeInHierarchy(area.collectibles[breadge].object), "already collected: not again");
+}
+
+TEST(village_explode_opens_the_cave_door) {
+    const Area& area = village();
+    World world(area);
+    CallDef c;
+    c.method = CallDef::Method::VillageExplode;
+    runCall(world, c);
+    check(world.objects.activeInHierarchy(area.areaGrid.caveDoorEntrance) &&
+              !world.objects.activeInHierarchy(area.areaGrid.caveDoorRocks) && world.state.flag("caveDoorExploded"),
+          "entrance on, rocks off, flag set");
 }

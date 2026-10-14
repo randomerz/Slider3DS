@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "game/events/events.h"
+#include "game/village/village_grid.h"
 #include "game/world/world.h"
 
 bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& grid) {
@@ -18,6 +19,11 @@ bool checkCondition(const ConditionDef& c, const GameState& state, const Grid& g
         return true;
     case T::Flag: return state.flag(c.name);
     case T::NoFlag: return !state.flag(c.name);
+    case T::Spec:
+        switch (c.spec) {
+        case ConditionDef::Spec::VillageFishOn: return state.flag(village::FISH_ON_FLAG);
+        }
+        return false;
     case T::PlayerCarryingItem:
     case T::Unsupported: return false;
     }

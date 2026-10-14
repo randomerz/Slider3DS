@@ -14,6 +14,11 @@ bool Starts::started(const Area& area, ComponentRef::Kind kind, int index) const
     return false;
 }
 
+void Starts::markStarted(const Area& area, ComponentRef::Kind kind, int index) {
+    for (size_t i = 0; i < area.componentRefs.size(); i++)
+        if (area.componentRefs[i].kind == kind && area.componentRefs[i].index == index) started_[i] = 1;
+}
+
 void Starts::update(World& world) {
     if (!fresh_ && world.objects.activeVersion() == seenVersion_) return;
     fresh_ = false;

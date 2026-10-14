@@ -113,19 +113,32 @@ struct ObjectCollider {
     float minX = 0, minY = 0, maxX = 0, maxY = 0; // bounds, for culling
 };
 
-// One Condition (Condition.cs) as exported.
+// The spec conditions (Condition.checkBool methods) the port evaluates, as X(enum name, exported
+// "<TargetType>.<Method>"):
+//   VillageFishOn   VillageGrid.CheckFishOn: VillageGrid.TurnFishOn ran (GameState flag "villageFishOn")
+// To add one: a line here, its case in checkCondition (conditions.cpp) and conditionReadsOnlyStateAndGrid,
+// and its name in the exporter's PortSpecs.
+#define SLIDER_SPEC_CHECKS(X) X(VillageFishOn, "VillageGrid.CheckFishOn")
+
+// One Condition (Condition.cs) as exported. Spec conditions the port doesn't check load as Unsupported.
 struct ConditionDef {
-    enum class Type { Item, Grid, GridStationary, NoGrid, Flag, NoFlag, PlayerCarryingItem, Unsupported };
+    enum class Type { Item, Grid, GridStationary, NoGrid, Flag, NoFlag, PlayerCarryingItem, Spec, Unsupported };
+    enum class Spec {
+#define SLIDER_SPEC_ENUM(id, name) id,
+        SLIDER_SPEC_CHECKS(SLIDER_SPEC_ENUM)
+#undef SLIDER_SPEC_ENUM
+    };
     Type type = Type::Unsupported;
     std::string name;     // Item: collectible name; Flag/NoFlag: flag; PlayerCarryingItem: item name
     std::string itemArea; // Item: the collectible's area ("Village")
     std::string pattern;  // grid conditions: CheckGrid.contains pattern
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
+    Spec spec = Spec(0);              // Spec: which check (name: its exported method)
 };
 
 // Whether a condition depends only on GameState and Grid (whose version() counters then tell when
 // it may have changed); a new condition kind must say which it is.
-bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type);
+bool conditionReadsOnlyStateAndGrid(const ConditionDef& c);
 
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
 //   SetActive               GameObject.SetActive(boolArg) on target
@@ -145,6 +158,9 @@ bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type);
 //   SetFlipX                SpriteRenderer.set_flipX(boolArg) on the target's sprite
 //   AnimSetBoolTrue/False   NPCAnimatorController.SetBoolToTrue/False(stringArg): the target drives an Animator
 //   SetAnimatorController   Animator.set_runtimeAnimatorController(animatorControllers[data]) on the target
+//   VillageActivateSlider   VillageGrid (SGrid).ActivateSliderCollectible(intArg): shows "Slider <n>" (game/village)
+//   VillageActivateCollectible  SGrid.ActivateCollectible(stringArg): shows it, cancelling its hide-at-start
+//   VillageTurnFishOn / VillageExplode / VillageWaterfallEntry / VillageHouseExit: VillageGrid's methods
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -166,7 +182,13 @@ bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type);
     X(SetFlipX, "SpriteRenderer.set_flipX")                            \
     X(AnimSetBoolTrue, "NPCAnimatorController.SetBoolToTrue")          \
     X(AnimSetBoolFalse, "NPCAnimatorController.SetBoolToFalse")        \
-    X(SetAnimatorController, "Animator.set_runtimeAnimatorController")
+    X(SetAnimatorController, "Animator.set_runtimeAnimatorController")  \
+    X(VillageActivateSlider, "VillageGrid.ActivateSliderCollectible")  \
+    X(VillageActivateCollectible, "VillageGrid.ActivateCollectible")   \
+    X(VillageTurnFishOn, "VillageGrid.TurnFishOn")                     \
+    X(VillageExplode, "VillageGrid.Explode")                           \
+    X(VillageWaterfallEntry, "VillageGrid.OnWaterfallEntry")           \
+    X(VillageHouseExit, "VillageGrid.OnHouseExit")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -355,6 +377,13 @@ struct ComponentRange {
     const ComponentRef* end() const { return last; }
 };
 
+// The area's SGrid subclass and the objects its methods act on.
+struct AreaGridDef {
+    std::string type;          // e.g. "VillageGrid"
+    int caveDoorEntrance = -1;  // VillageGrid.Explode shows it
+    int caveDoorRocks = -1;     // and hides these
+};
+
 // A box collider relative to the player position: center offset and full size (edge radius included).
 struct Hitbox {
     float offX = 0, offY = 0, w = 0, h = 0;
@@ -413,6 +442,7 @@ struct STileDef {
 
 // Loaded, read-only area data. Runtime state (tile slots, slides, fences) is in Grid.
 struct Area {
+    std::string name;  // e.g. "Village" (Area enum name: collectibles' area)
     int ppu = 16;
     int gridW = 0, gridH = 0;
     std::string targetGrid;
@@ -437,6 +467,8 @@ struct Area {
     std::vector<AnimatorControllerDef> animatorControllers;
     std::vector<AnimatorDef> animators;
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
+    AreaGridDef areaGrid;
+    int collectible(const std::string& name) const; // index in collectibles of the area's own one named so, -1 if none
     // Each object's components (derived at load): componentRefs[componentStart[o] .. componentStart[o + 1]),
     // per object in the kind order TriggerEvent, Interaction, Collectible, ConditionChecker, Npc.
     std::vector<int> componentStart;
@@ -452,7 +484,7 @@ struct Area {
     std::vector<std::string> sheetNames;
 
     const STileDef* stile(int islandId) const;
-    const Spawn* spawn(const char* name) const;
+    const Spawn* spawn(const char* spawnName) const;
     const std::string& pathOf(int object) const { return objects[object].path; }
     int findObject(const std::string& path) const; // index in objects, -1 if none
     int npcOn(int object) const; // index in npcs of the NPC on `object`, -1 if none

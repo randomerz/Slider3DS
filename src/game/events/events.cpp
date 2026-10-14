@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "game/events/conditions.h"
+#include "game/village/village_grid.h"
 #include "game/world/world.h"
 
 namespace {
@@ -94,6 +95,24 @@ void runCall(World& world, const CallDef& c) {
         break;
     case M::SetAnimatorController:
         world.animators.setController(world.area, world.area.animatorOn(c.target), c.data);
+        break;
+    case M::VillageActivateSlider:
+        village::activateCollectible(world, "Slider " + std::to_string(c.intArg), false);
+        break;
+    case M::VillageActivateCollectible:
+        village::activateCollectible(world, c.stringArg, true);
+        break;
+    case M::VillageTurnFishOn:
+        village::turnFishOn(world);
+        break;
+    case M::VillageExplode:
+        village::explode(world);
+        break;
+    case M::VillageWaterfallEntry:
+        village::waterfallEntry(world);
+        break;
+    case M::VillageHouseExit:
+        village::houseExit(world);
         break;
     case M::Unsupported:
         break;

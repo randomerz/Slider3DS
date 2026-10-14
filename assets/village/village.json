@@ -6206,7 +6206,8 @@
       "checkOnStart": true,
       "conditions": [
         {
-          "type": "spec"
+          "type": "spec",
+          "spec": "Player.GetIsOnWater"
         }
       ],
       "onSuccess": [
@@ -8766,7 +8767,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "RuinsArrow.CheckActiveRods"
             },
             {
               "type": "item",
@@ -9875,7 +9877,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "KnotBox.CheckPuzzle"
             }
           ],
           "anyOf": false,
@@ -10609,7 +10612,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "VillageGrid.CheckFishOn"
             }
           ],
           "anyOf": false,
@@ -11225,7 +11229,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "VillageChadJump.DidSlideAfterJumping"
             }
           ],
           "anyOf": false,
@@ -11258,7 +11263,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "ChadJump.ChadFell"
             }
           ],
           "anyOf": false,
@@ -11852,7 +11858,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckMittens"
             }
           ],
           "anyOf": false,
@@ -11885,7 +11892,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckAutumn"
             }
           ],
           "anyOf": false,
@@ -11918,7 +11926,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckTofu"
             }
           ],
           "anyOf": false,
@@ -11951,10 +11960,12 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckMittens"
             },
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckAutumn"
             }
           ],
           "anyOf": false,
@@ -11987,10 +11998,12 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckMittens"
             },
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckTofu"
             }
           ],
           "anyOf": false,
@@ -12023,10 +12036,12 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckAutumn"
             },
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckTofu"
             }
           ],
           "anyOf": false,
@@ -12161,13 +12176,16 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckAutumn"
             },
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckMittens"
             },
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "CatTrick.CheckTofu"
             }
           ],
           "anyOf": false,
@@ -13045,7 +13063,8 @@
         {
           "conditions": [
             {
-              "type": "spec"
+              "type": "spec",
+              "spec": "RuinsArrow.CheckActiveRods"
             },
             {
               "type": "item",
@@ -13546,6 +13565,11 @@
     }
   ],
   "fadeDuration": 1,
+  "areaGrid": {
+    "type": "VillageGrid",
+    "caveDoorEntrance": 133,
+    "caveDoorRocks": 135
+  },
   "objects": [
     {
       "path": "Map",

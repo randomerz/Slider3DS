@@ -299,10 +299,8 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         "KnotBox.SetToCorrectPositions", "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
         "PlaySound.PlayString", "PlayerAction.SetItemSortingOrderDec", "PlayerAction.SetItemSortingOrderInc",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
-        "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.ActivateCollectible",
-        "VillageGrid.ActivateSliderCollectible", "VillageGrid.Explode", "VillageGrid.FillInHole",
-        "VillageGrid.OnHouseExit", "VillageGrid.OnWaterfallEntry", "VillageGrid.PlayDigSound",
-        "VillageGrid.RemoveSlider2Tracker", "VillageGrid.ShufflePuzzle", "VillageGrid.TurnFishOn",
+        "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.FillInHole",
+        "VillageGrid.PlayDigSound", "VillageGrid.RemoveSlider2Tracker", "VillageGrid.ShufflePuzzle",
     };
     std::string got;
     for (const std::string& n : unsupported) got += n + ", ";

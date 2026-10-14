@@ -12,9 +12,9 @@ const STileDef* Area::stile(int islandId) const {
     return nullptr;
 }
 
-const Spawn* Area::spawn(const char* name) const {
+const Spawn* Area::spawn(const char* spawnName) const {
     for (const Spawn& s : spawns)
-        if (s.name == name) return &s;
+        if (s.name == spawnName) return &s;
     return nullptr;
 }
 
@@ -45,6 +45,12 @@ int Area::findObject(const std::string& path) const {
 int Area::npcOn(int object) const {
     for (const ComponentRef& ref : components(object))
         if (ref.kind == ComponentRef::Kind::Npc) return ref.index;
+    return -1;
+}
+
+int Area::collectible(const std::string& n) const {
+    for (size_t i = 0; i < collectibles.size(); i++)
+        if (collectibles[i].name == n && collectibles[i].area == name) return (int)i;
     return -1;
 }
 
@@ -144,9 +150,14 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
     return calls;
 }
 
-bool conditionReadsOnlyStateAndGrid(ConditionDef::Type type) {
+bool conditionReadsOnlyStateAndGrid(const ConditionDef& c) {
     using T = ConditionDef::Type;
-    switch (type) {
+    switch (c.type) {
+    case T::Spec:
+        switch (c.spec) {
+        case ConditionDef::Spec::VillageFishOn: return true; // a GameState flag
+        }
+        return false;
     case T::Item:
     case T::Grid:
     case T::GridStationary:
@@ -177,6 +188,15 @@ static ConditionDef readCondition(const Json& c) {
     } else if (type == "playerCarryingItem") {
         d.type = T::PlayerCarryingItem;
         d.name = c["playerItem"].asString();
+    } else if (type == "spec") {
+        d.name = c["spec"].asString(); // unchecked specs stay Unsupported (false)
+#define SLIDER_SPEC_MATCH(id, exported)        \
+    if (d.name == exported) {                  \
+        d.type = T::Spec;                      \
+        d.spec = ConditionDef::Spec::id;       \
+    }
+        SLIDER_SPEC_CHECKS(SLIDER_SPEC_MATCH)
+#undef SLIDER_SPEC_MATCH
     }
     return d;
 }
@@ -290,7 +310,7 @@ static NpcDef readNpc(const Json& j, Area& out) {
                                   l["animationOnStart"].asString(), l["animationOnLeave"].asString(),
                                   readCalls(l["onStart"], out), readCalls(l["onEnd"], out)});
         for (const ConditionDef& cd : d.conditions)
-            if (!conditionReadsOnlyStateAndGrid(cd.type)) n.pollsEveryFrame = true;
+            if (!conditionReadsOnlyStateAndGrid(cd)) n.pollsEveryFrame = true;
         n.conds.push_back(std::move(d));
     }
     return n;
@@ -440,6 +460,8 @@ static bool validate(const Area& a, std::string* error) {
             if (c.method == M::NpcTeleport && c.objectArg == -1) return false;
             if ((c.method == M::AnimSetBoolTrue || c.method == M::AnimSetBoolFalse) && a.animatorDrivenBy(c.target) < 0)
                 return false;
+            if (c.method == M::VillageExplode && (!objectOk(a.areaGrid.caveDoorEntrance) || !objectOk(a.areaGrid.caveDoorRocks)))
+                return false;
             if (c.method == M::SetAnimatorController &&
                 (c.target == -1 || a.animatorByObject[c.target] < 0 || c.data < 0 || c.data >= (int)a.animatorControllers.size()))
                 return false;
@@ -536,6 +558,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     text.shrink_to_fit();
 
     out = Area();
+    out.name = doc["area"].asString();
     out.ppu = doc["ppu"].asInt(16);
     out.gridW = doc["grid"]["width"].asInt();
     out.gridH = doc["grid"]["height"].asInt();
@@ -600,6 +623,9 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& c : doc["animatorControllers"].items()) out.animatorControllers.push_back(readController(c));
     for (const Json& n : doc["npcs"].items()) out.npcs.push_back(readNpc(n, out));
     out.fadeDuration = doc["fadeDuration"].asFloat(1);
+    out.areaGrid.type = doc["areaGrid"]["type"].asString();
+    out.areaGrid.caveDoorEntrance = doc["areaGrid"]["caveDoorEntrance"].asInt(-1);
+    out.areaGrid.caveDoorRocks = doc["areaGrid"]["caveDoorRocks"].asInt(-1);
 
     if (doc.has("player")) {
         if (doc["player"].has("body")) out.player.body = readPlacement(doc["player"]["body"]);

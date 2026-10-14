@@ -22,6 +22,9 @@ public:
     void update(World& world);
 
     bool started(const Area& area, ComponentRef::Kind kind, int index) const;
+    // Counts the component as started without running its Start (e.g. SGrid.ActivateCollectible
+    // clears shouldDisableAtStart, so a later Start mustn't hide it).
+    void markStarted(const Area& area, ComponentRef::Kind kind, int index);
 
 private:
     std::vector<uint8_t> started_; // per Area::componentRefs entry
