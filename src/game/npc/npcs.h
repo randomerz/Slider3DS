@@ -6,9 +6,11 @@
 // button also skips typing. Leaving the trigger clears the text unless the line is dontInterrupt.
 // Lines' onStart / onEnd and the chain's onDialogueChainExhausted (after its last line) run
 // UnityEvent calls. The message ping (an object: SetActive) shows while the current chain hasn't
-// been read to its end. Hiding an NPC stops its clocks (Unity stops a disabled object's coroutines).
+// been read to its end. Emotes (NPCEmotes) beside the head: set by a conditional's emoteOnEnter, a
+// line's emoteOnStart, and its emoteOnLeave when the box closes; they sit on the side the NPC faces
+// (as of when they were set). Hiding an NPC stops its clocks (Unity stops a disabled object's coroutines).
 // Conditionals are re-checked only when the game state or the grid changed.
-// Not yet: emotes, animations, walks, cutscene state.
+// Not yet: animations, walks, cutscene state.
 #pragma once
 
 #include <cstdint>
@@ -42,6 +44,9 @@ public:
     const Typer& typer(int npc) const { return s_[npc].typer; }
     uint32_t textVersion(int npc) const { return s_[npc].textVersion; } // bumped per typed line
     bool pingShown(const World& world, int npc) const;
+    int emote(int npc) const { return s_[npc].emote; } // NpcEmoteDef value shown, 0 = none
+    // The emote sprite as it's drawn now (placement relative to the emote object's base), if one shows.
+    bool emoteSprite(const Area& area, int npc, SpritePlacement& out) const;
 
 private:
     struct State {
@@ -57,6 +62,9 @@ private:
         bool polled = false;              // conditionals checked against the versions below
         uint32_t stateVersion = 0, gridVersion = 0;
         uint32_t textVersion = 0;
+        int emote = 0;           // NPCEmotes.currentEmote
+        bool emoteLeft = false;  // its side, decided when it was last set
+        float emoteTime = 0;     // since it started (its Animator state's time)
         DialogueText text;
         Typer typer;
     };
@@ -69,8 +77,9 @@ private:
     void changeCond(World& world, int npc, int cond);
     void typeNext(World& world, int npc);          // TypeNextDialogueInChain
     void finishLine(World& world, int npc);        // HandleDialogueFinished
-    void tryDeactivate(int npc, const Area& area);
-    void deactivate(int npc);
+    void tryDeactivate(World& world, int npc);
+    void deactivate(World& world, int npc);       // DeactivateDialogueBox
+    void setEmote(const World& world, int npc, int emote); // NPCEmotes.SetEmote
     void setPing(World& world, int npc, bool shown); // DialogueDisplay.SetMessagePing
 
     std::vector<State> s_;

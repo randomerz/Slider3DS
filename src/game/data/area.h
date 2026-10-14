@@ -240,6 +240,7 @@ struct DialogueDef {
     bool manual = false;         // advanceDialogueManually: only an event advances it
     bool noRepeatEvents = false; // doNotRepeatEvents: onStart / onEnd run once
     bool dontInterrupt = false;  // leaving the trigger doesn't end it
+    uint8_t emoteOnStart = 0, emoteOnLeave = 0; // NPCEmotes.Emotes shown when it starts / the box closes
     std::vector<CallDef> onStart, onEnd;
 };
 
@@ -249,6 +250,7 @@ struct NpcCondDef {
     std::vector<ConditionDef> conditions;
     bool anyOf = false;
     bool alwaysStartFromBeginning = false;
+    uint8_t emote = 0;                          // emoteOnEnter (NPCEmotes.Emotes)
     std::vector<DialogueDef> dialogue;          // the dialogue chain
     std::vector<CallDef> onEnter, onExhausted;  // onConditionalEnter, onDialogueChainExhausted
 };
@@ -261,6 +263,21 @@ struct NpcTextDef {
     int sortLayer = 0, order = 0; // its canvas
 };
 
+// NPCEmotes: a small animated sprite beside an NPC's head showing one of NPCEmotes.Emotes (index:
+// 0 None, 1 Sparkle, 2 Exclamation, 3 Question, 4 Annoyed, 5 Sweat): its Animator state's clip, then
+// (once that ends) the clip of the state it moves on to. It sits on the side the NPC faces.
+struct NpcEmoteDef {
+    enum : uint8_t { None, Sparkle, Exclamation, Question, Annoyed, Sweat, Count };
+    int object = -1;       // the NPCEmotes object, -1 = the NPC has none
+    SpritePlacement place; // owner-relative, at its exported local x; sprite may be -1 (the clips key it)
+    float localX = 0;      // its exported local x; it's mirrored to +-|localX| by the facing
+    bool facesRight = false; // npcDefaultFacesRight
+    int npcSprite = -1;      // object of the NPC's SpriteRenderer, whose flipX decides the side
+    bool npcSpriteFlipped = false; // that sprite's exported flipX
+    int intro[Count] = {-1, -1, -1, -1, -1, -1}; // per emote: Area::anims index, -1 = none
+    int loop[Count] = {-1, -1, -1, -1, -1, -1};  // what plays once intro's clip has ended, -1 = none
+};
+
 // An NPC (NPC.cs): conditionals with dialogue chains, typed above it while the player is in its
 // dialogue trigger (whose OnTriggerEnter calls NpcTriggerEnter / Exit). Its position and owner are
 // its object's.
@@ -270,6 +287,7 @@ struct NpcDef {
     bool facingLeft = false; // spriteDefaultFacingLeft
     NpcTextDef text;
     int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
+    NpcEmoteDef emote;
     std::vector<NpcCondDef> conds;
 };
 

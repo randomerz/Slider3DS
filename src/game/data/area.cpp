@@ -221,16 +221,31 @@ static NpcDef readNpc(const Json& j, Area& out) {
     n.text.sortLayer = t["sortingLayerValue"].asInt();
     n.text.order = t["order"].asInt();
     n.pingObject = j["pingObject"].asInt(-1);
+    if (j.has("emote")) {
+        const Json& e = j["emote"];
+        n.emote.object = e["object"].asInt(-1);
+        n.emote.place = readPlacement(e);
+        n.emote.localX = e["localX"].asFloat();
+        n.emote.facesRight = e["facesRight"].asBool();
+        n.emote.npcSprite = e["npcSprite"].asInt(-1);
+        n.emote.npcSpriteFlipped = e["npcSpriteFlipped"].asBool();
+        for (int k = 0; k < NpcEmoteDef::Count; k++) {
+            n.emote.intro[k] = e["intro"].at(k).asInt(-1);
+            n.emote.loop[k] = e["loop"].at(k).asInt(-1);
+        }
+    }
     for (const Json& c : j["conds"].items()) {
         NpcCondDef d;
         d.conditions = readConditions(c["conditions"]);
         d.anyOf = c["anyOf"].asBool();
         d.alwaysStartFromBeginning = c["alwaysStartFromBeginning"].asBool();
+        d.emote = (uint8_t)c["emote"].asInt();
         d.onEnter = readCalls(c["onConditionalEnter"], out);
         d.onExhausted = readCalls(c["onDialogueChainExhausted"], out);
         for (const Json& l : c["dialogue"].items())
             d.dialogue.push_back({l["text"].asString(), l["delay"].asFloat(0.5f), l["waitForAction"].asBool(),
                                   l["manual"].asBool(), l["noRepeatEvents"].asBool(), l["dontInterrupt"].asBool(),
+                                  (uint8_t)l["emoteOnStart"].asInt(), (uint8_t)l["emoteOnLeave"].asInt(),
                                   readCalls(l["onStart"], out), readCalls(l["onEnd"], out)});
         n.conds.push_back(std::move(d));
     }
@@ -365,11 +380,19 @@ static bool validate(const Area& a, std::string* error) {
     for (const NpcDef& n : a.npcs) {
         bool ok = objectOk(n.object) && (n.pingObject == -1 || objectOk(n.pingObject)) &&
                   n.text.minX < n.text.maxX && n.text.minY < n.text.maxY;
-        for (const NpcCondDef& c : n.conds) {
-            ok = ok && callsOk(c.onEnter) && callsOk(c.onExhausted);
-            for (const DialogueDef& d : c.dialogue) ok = ok && callsOk(d.onStart) && callsOk(d.onEnd);
+        const NpcEmoteDef& e = n.emote;
+        if (e.object != -1) {
+            ok = ok && objectOk(e.object) && (e.npcSprite == -1 || objectOk(e.npcSprite)) &&
+                 (e.place.sprite == -1 || placementOk(e.place));
+            for (int k = 0; k < NpcEmoteDef::Count; k++) ok = ok && animOk(e.intro[k]) && animOk(e.loop[k]);
         }
-        if (!ok) return fail(error, "npc " + n.name + ": bad object, ping, text box or call");
+        auto emoteOk = [&](uint8_t v) { return v < NpcEmoteDef::Count; };
+        for (const NpcCondDef& c : n.conds) {
+            ok = ok && callsOk(c.onEnter) && callsOk(c.onExhausted) && emoteOk(c.emote);
+            for (const DialogueDef& d : c.dialogue)
+                ok = ok && callsOk(d.onStart) && callsOk(d.onEnd) && emoteOk(d.emoteOnStart) && emoteOk(d.emoteOnLeave);
+        }
+        if (!ok) return fail(error, "npc " + n.name + ": bad object, ping, emote, text box or call");
     }
     for (const SpritePlacement* p : {&a.player.body, &a.player.boat, &a.player.actionIndicator})
         if (p->sprite != -1 && !placementOk(*p)) return fail(error, "player: bad sprite, anim or ppu");

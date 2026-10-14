@@ -57,26 +57,36 @@ int typeOut(Typer& t, int limit = 1000) {
 //      then "Done".
 //   2 (flag "vanish"): entering hides the NPC itself. "Bye now".
 //   3 (flag "shout"): entering types at once (NPC.TypeCurrentDialogue). "Hey!" (dontInterrupt).
-// The nudges (UPPRelativePlayer by 1/128) count how often a call ran; flags can't.
+// The nudges (UPPRelativePlayer by 1/128) count how often a call ran; flags can't. "Hello there" and
+// "Moved" show the Exclamation emote ("Npc/Emotes" (4), left of the face: intro sprite 0, then loop 1).
 const char* NPC_AREA = R"json({
   "ppu": 16,
   "grid": {"width": 1, "height": 1, "targetGrid": "1", "housingOffset": -150},
   "stiles": [{"islandId": 1, "name": "STile (1)", "x": 0, "y": 0, "width": 17, "isTileActive": true}],
   "objects": [{"path": "Npc", "parent": -1, "active": true, "owner": 1}, {"path": "Npc/Talk", "parent": 0, "active": true, "owner": 1},
               {"path": "Spot", "parent": -1, "active": true, "owner": 1, "pos": [5, 1]},
-              {"path": "Npc/Ping", "parent": 0, "active": false, "owner": 1, "pos": [0, 1]}],
+              {"path": "Npc/Ping", "parent": 0, "active": false, "owner": 1, "pos": [0, 1]},
+              {"path": "Npc/Emotes", "parent": 0, "active": true, "owner": 1, "pos": [-0.5, 0.5]}],
+  "sheets": [{"name": "s", "file": "s.png", "size": [32, 16]}],
+  "sprites": [{"name": "ex0", "sheet": 0, "rect": [0, 0, 16, 16], "pivot": [8, 8], "ppu": 16},
+              {"name": "exLoop", "sheet": 0, "rect": [16, 0, 16, 16], "pivot": [8, 8], "ppu": 16}],
+  "anims": [{"name": "Exclamation", "frames": [0], "times": [0], "length": 0.25, "loop": false},
+            {"name": "ExclamationLoop", "frames": [1], "times": [0], "length": 1, "loop": true}],
   "triggerColliders": [{"object": 1, "owner": 1, "kind": "circle", "center": [0, 0], "radius": 2}],
   "triggerEvents": [{"object": 1, "onPlayerEnter": true,
                      "onEnter": [{"method": "NPC.OnDialogueTriggerEnter", "target": 0}],
                      "onExit": [{"method": "NPC.OnDialogueTriggerExit", "target": 0}]}],
   "npcs": [{"object": 0, "name": "N", "facingLeft": false, "pingObject": 3,
+    "emote": {"object": 4, "pos": [-0.5, 0.5], "sortY": 0.5, "sortingLayerValue": 9, "order": 0, "localX": -0.5,
+              "facesRight": false, "npcSprite": 0, "npcSpriteFlipped": false,
+              "intro": [-1, -1, 0, -1, -1, -1], "loop": [-1, -1, 1, -1, -1, -1]},
     "text": {"box": [-3.42, 0.55, 3.42, 2.7], "fontSize": 1, "lineAdvance": 0.4309, "wordSpacing": -0.1,
              "charSpacing": 0, "sortingLayerValue": 9, "order": 99},
     "conds": [
       {"conditions": [], "anyOf": false, "alwaysStartFromBeginning": false, "onConditionalEnter": [],
        "onDialogueChainExhausted": [{"method": "VarManager.SetBoolOn", "string": "exhausted"}, {"method": "PlayerPositionChanger.UPPRelativePlayer", "owner": 0, "pos": [0, 0], "dPos": [0, 0.0078125]}],
        "dialogue": [
-         {"text": "Hello there", "delay": 0.5, "waitForAction": true, "manual": false, "noRepeatEvents": false,
+         {"text": "Hello there", "delay": 0.5, "emoteOnStart": 2, "waitForAction": true, "manual": false, "noRepeatEvents": false,
           "dontInterrupt": false, "onStart": [{"method": "VarManager.SetBoolOn", "string": "start0"}],
           "onEnd": [{"method": "VarManager.SetBoolOn", "string": "end0"}]},
          {"text": "Bye", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
@@ -86,7 +96,7 @@ const char* NPC_AREA = R"json({
                               {"method": "SpriteRenderer.set_flipX", "target": 0, "bool": true}],
        "onDialogueChainExhausted": [],
        "dialogue": [
-         {"text": "Moved", "delay": 0.2, "waitForAction": false, "manual": false, "noRepeatEvents": true,
+         {"text": "Moved", "delay": 0.2, "emoteOnStart": 2, "waitForAction": false, "manual": false, "noRepeatEvents": true,
           "dontInterrupt": true, "onStart": [{"method": "VarManager.SetBoolOn", "string": "moved"}],
           "onEnd": [{"method": "PlayerPositionChanger.UPPRelativePlayer", "owner": 0, "pos": [0, 0], "dPos": [0.0078125, 0]}]},
          {"text": "Done", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
@@ -404,4 +414,23 @@ TEST(npcs_hidden_mid_line_stop_their_clocks) {
     world.objects.setActive(world.area, 0, true);
     for (int i = 0; i < 120; i++) world.update(DT, 0, 0, true);
     check(world.npcs.typer(0).typing() && !world.npcs.typer(0).finished(), "shown again: still mid-line, frozen");
+}
+
+TEST(npcs_emotes_show_beside_the_face) {
+    World world(npcArea());
+    SpritePlacement e;
+    standAt(world, 10, 0);
+    check(world.npcs.emote(0) == 0 && !world.npcs.emoteSprite(world.area, 0, e), "no emote at first");
+    standAt(world, 0, 0);
+    check(world.npcs.emote(0) == NpcEmoteDef::Exclamation && world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 0 &&
+              e.x == -0.5f,
+          "its line starts: Exclamation's intro, on the left (the side it faces)");
+    for (int i = 0; i < 20; i++) world.update(DT, 0, 0, true); // 0.33 s: past the 0.25 s intro
+    check(world.npcs.emoteSprite(world.area, 0, e) && e.sprite == 1, "then the loop clip");
+    standAt(world, 10, 0);
+    check(world.npcs.emote(0) == 0, "the box closes: the line's emoteOnLeave (none)");
+    world.state.setFlag("next", true); // teleports and flips the NPC's sprite
+    world.update(DT, 0, 0, true);
+    standAt(world, 5, 1);
+    check(world.npcs.emoteSprite(world.area, 0, e) && e.x == 0.5f, "flipped: the emote moves to the other side");
 }

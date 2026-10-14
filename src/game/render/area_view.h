@@ -39,7 +39,7 @@ public:
                bool showInactiveTiles);
     // The font NPC dialogue is drawn in (none: dialogue isn't drawn).
     void setFont(const Font* font) { font_ = font; }
-    // Draws the visible tile layers, active world sprites (NPCs' pings among them), the player and NPCs' dialogue
+    // Draws the visible tile layers, active world sprites (NPCs' pings among them), the player and NPCs' emotes and dialogue
     // with minSortLayer <= sorting layer value <= maxSortLayer, sorted together.
     void draw(const World& world, int minSortLayer = INT_MIN, int maxSortLayer = INT_MAX);
 
@@ -52,10 +52,10 @@ public:
     int lastSpriteCount() const { return spriteCount_; } // sprites drawn since begin()
 
 private:
-    enum class ItemKind : uint8_t { Layer, Sprite, Player, Dialogue }; // tie order at equal sort keys
+    enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue }; // tie order at equal sort keys
     struct Item {
         ItemKind kind;
-        int index; // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order; Dialogue: Area::npcs
+        int index; // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order; Emote, Dialogue: Area::npcs
         SortedSprite sprite; // sort keys (all kinds) and what to draw (sprites)
     };
 
