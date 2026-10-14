@@ -15,8 +15,9 @@ void enterInteraction(World& world, int index) {
         if (!in.isCarryingItem) runCalls(world, in.onSuccess);
         return;
     }
-    // Offered unless it needs an item (none carried yet) or excludes where the player is.
-    if (in.isCarryingItem) return;
+    // Offered unless it needs an item the player isn't carrying (checked on entering) or excludes
+    // where the player is.
+    if (in.isCarryingItem && !world.items.carrying(world.area, in.itemName)) return;
     if ((world.player.onWater && in.excludeBoat) || (!world.player.onWater && in.excludeLand)) return;
     world.offer({Interactable::Kind::Interaction, index});
 }
@@ -47,7 +48,8 @@ void dispatch(World& world, int object, bool enter) {
             if (enter) pickUp(world, area.collectibles[ref.index]);
             break;
         case K::ConditionChecker:
-        case K::Npc: // (its dialogue trigger is a child with an OnTriggerEnter calling it)
+        case K::Item: // (picked up with the action button, not by touch)
+        case K::Npc:  // (its dialogue trigger is a child with an OnTriggerEnter calling it)
             break;
         }
     }

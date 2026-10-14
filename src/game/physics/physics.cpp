@@ -102,7 +102,7 @@ bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
 
 } // namespace
 
-Blocker boxBlocker(const World& world, const Box& box, bool onWater) {
+Blocker boxBlocker(const World& world, const Box& box, bool onWater, int ignoreCollider) {
     const Area& area = world.area;
     const Grid& grid = world.grid;
     const Box in = inner(box);
@@ -149,7 +149,7 @@ Blocker boxBlocker(const World& world, const Box& box, bool onWater) {
     }
 
     for (size_t i = 0; i < area.objectColliders.size(); i++)
-        if (colliderOverlaps(world, area.objectColliders[i], box)) return {Blocker::Object, (int)i};
+        if ((int)i != ignoreCollider && colliderOverlaps(world, area.objectColliders[i], box)) return {Blocker::Object, (int)i};
     return {};
 }
 

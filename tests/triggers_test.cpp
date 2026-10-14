@@ -283,6 +283,10 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         collect(t.onExit);
     }
     for (const CollectibleDef& c : area.collectibles) collect(c.onCollect);
+    for (const ItemDef& it : area.items) {
+        collect(it.onPickUp);
+        collect(it.onDrop);
+    }
     for (const NpcDef& n : area.npcs)
         for (const NpcCondDef& c : n.conds) {
             collect(c.onEnter);
@@ -295,9 +299,10 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
     const std::set<std::string> expected = {
         "ArtifactScreenHider.AddScreensAndShow",
         "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "Breadge.Pickup",
+        "CatAbductionController.SetPickedUp", "KnotBox.CheckParticles",
         "ChadJump.JumpStarter", "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
         "KnotBox.SetToCorrectPositions", "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
-        "PlaySound.PlayString", "PlayerAction.SetItemSortingOrderDec", "PlayerAction.SetItemSortingOrderInc",
+        "PlaySound.PlayString",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
         "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.FillInHole",
         "VillageGrid.PlayDigSound", "VillageGrid.RemoveSlider2Tracker", "VillageGrid.ShufflePuzzle",

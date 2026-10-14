@@ -11,6 +11,7 @@
 #include "game/grid/artifact.h"
 #include "game/world/game_state.h"
 #include "game/grid/grid.h"
+#include "game/items/items.h"
 #include "game/npc/npcs.h"
 #include "game/world/object_states.h"
 #include "game/world/starts.h"
@@ -22,6 +23,7 @@ struct Player {
     float x = 0, y = 0;
     bool onWater = false;
     bool facingLeft = false; // Player.Update flips the sprite by the input's x
+    float lastMoveX = 0, lastMoveY = 0; // Player.lastMoveDir: the last non-zero input (item drops go that way)
     bool inHouse = false;    // Player.SetIsInHouse (house teleports set it)
     int stile = 0;           // islandId underneath, 0 = none
 
@@ -72,11 +74,14 @@ public:
     // Starts run for components that became active; Animators advance.
     void update(float dt, float moveX, float moveY, bool noclip);
 
-    // PlayerAction: offer / withdraw an interactable, and the action button: runs the offered
-    // interactables with the highest priority.
+    // PlayerAction.Action (the action button): pick up an item if one is in reach, use the offered
+    // interactables; if neither did anything, drop the carried item.
+    void action();
+    // PlayerAction: offer / withdraw an interactable, and run the offered ones with the highest
+    // priority; true if one did something (IInteractable.Interact).
     void offer(const Interactable& it);
     void withdraw(const Interactable& it);
-    void interact();
+    bool interact();
     int priority(const Interactable& it) const;     // IInteractable.InteractionPriority
     bool showsPrompt(const Interactable& it) const; // IInteractable.DisplayInteractionPrompt
     bool promptShown() const; // any offered interactable shows the prompt (the indicator)
@@ -86,6 +91,8 @@ public:
     void objectBase(int object, float& x, float& y) const;
     // Where `object` itself is now (its transform position).
     void objectPosition(int object, float& x, float& y) const;
+    // Moves `object` (and what's under it) so it sits at world (x, y), on STile `owner` (0 = the world).
+    void placeObject(int object, int owner, float x, float y);
 
     const Area& area;
     Grid grid;
@@ -94,6 +101,7 @@ public:
     Starts starts;
     TriggerTracker triggers;
     Npcs npcs;
+    Items items;
     Animators animators;
     GameState state;
     Player player;

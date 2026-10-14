@@ -13568,6 +13568,345 @@
       ]
     }
   ],
+  "items": [
+    {
+      "object": 143,
+      "type": "Item",
+      "name": "Cat",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 144,
+      "collider": 47,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "CatAbductionController.SetPickedUp",
+          "target": 516
+        }
+      ],
+      "onDrop": [
+      ]
+    },
+    {
+      "object": 223,
+      "type": "Item",
+      "name": "",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.4,
+      "spriteObject": 224,
+      "collider": 88,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "items"
+        }
+      ],
+      "onDrop": [
+        {
+          "method": "KnotBox.CheckParticles",
+          "target": 222
+        }
+      ]
+    },
+    {
+      "object": 225,
+      "type": "Item",
+      "name": "",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.4,
+      "spriteObject": 226,
+      "collider": 89,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "items"
+        }
+      ],
+      "onDrop": [
+        {
+          "method": "KnotBox.CheckParticles",
+          "target": 222
+        }
+      ]
+    },
+    {
+      "object": 227,
+      "type": "Item",
+      "name": "",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.4,
+      "spriteObject": 228,
+      "collider": 90,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "items"
+        }
+      ],
+      "onDrop": [
+        {
+          "method": "KnotBox.CheckParticles",
+          "target": 222
+        }
+      ]
+    },
+    {
+      "object": 229,
+      "type": "Item",
+      "name": "",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.4,
+      "spriteObject": 230,
+      "collider": 91,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "items"
+        }
+      ],
+      "onDrop": [
+        {
+          "method": "KnotBox.CheckParticles",
+          "target": 222
+        }
+      ]
+    },
+    {
+      "object": 231,
+      "type": "Item",
+      "name": "",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.4,
+      "spriteObject": 232,
+      "collider": 92,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "items"
+        }
+      ],
+      "onDrop": [
+        {
+          "method": "KnotBox.CheckParticles",
+          "target": 222
+        }
+      ]
+    },
+    {
+      "object": 233,
+      "type": "Item",
+      "name": "",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.4,
+      "spriteObject": 234,
+      "collider": 93,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "items"
+        }
+      ],
+      "onDrop": [
+        {
+          "method": "KnotBox.CheckParticles",
+          "target": 222
+        }
+      ]
+    },
+    {
+      "object": 235,
+      "type": "Item",
+      "name": "",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.4,
+      "spriteObject": 236,
+      "collider": 94,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+        {
+          "method": "PlayerActionHints.DisableHint",
+          "target": 471,
+          "string": "items"
+        }
+      ],
+      "onDrop": [
+        {
+          "method": "KnotBox.CheckParticles",
+          "target": 222
+        }
+      ]
+    },
+    {
+      "object": 278,
+      "type": "Item",
+      "name": "Autumn",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 279,
+      "collider": 113,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+      ],
+      "onDrop": [
+      ]
+    },
+    {
+      "object": 328,
+      "type": "Item",
+      "name": "Ruins Fragment",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 329,
+      "collider": 138,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+      ],
+      "onDrop": [
+      ]
+    },
+    {
+      "object": 368,
+      "type": "Item",
+      "name": "Mittens",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 369,
+      "collider": 165,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+      ],
+      "onDrop": [
+      ]
+    },
+    {
+      "object": 409,
+      "type": "Item",
+      "name": "Cat",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 410,
+      "collider": 188,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+      ],
+      "onDrop": [
+      ]
+    },
+    {
+      "object": 411,
+      "type": "Item",
+      "name": "Cat",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 412,
+      "collider": 189,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+      ],
+      "onDrop": [
+      ]
+    },
+    {
+      "object": 414,
+      "type": "Item",
+      "name": "Cat",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 415,
+      "collider": 191,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+      ],
+      "onDrop": [
+      ]
+    },
+    {
+      "object": 431,
+      "type": "Item",
+      "name": "Tofu",
+      "canKeep": false,
+      "disableAtStart": false,
+      "radius": 0.5,
+      "spriteObject": 432,
+      "collider": 203,
+      "pickUpDuration": 0.5,
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "enableOnDrop": [],
+      "onPickUp": [
+      ],
+      "onDrop": [
+      ]
+    }
+  ],
   "fadeDuration": 1,
   "areaGrid": {
     "type": "VillageGrid",
@@ -17186,6 +17525,13 @@
       "active": true,
       "owner": 0,
       "pos": [48.5,9.3125]
+    },
+    {
+      "path": "Map/World Grid/Objects/CatAbductionController",
+      "parent": 40,
+      "active": true,
+      "owner": 0,
+      "pos": [-0.5,-0.5]
     }
   ],
   "player": {
@@ -17222,37 +17568,62 @@
       "size": [1.5,0.75]
     }
   },
+  "playerAction": {
+    "carryPos": [0,0.8125],
+    "boatDropBase": [0,-0.4688],
+    "dropIndicator": {
+      "sprite": 367,
+      "pos": [0,0],
+      "sortY": 0,
+      "sortingLayerValue": 7,
+      "order": 0,
+      "anim": 79
+    },
+    "itemLayers": [
+      "Item",
+      "Minecart"
+    ],
+    "dropLayers": [
+      "Default",
+      "Water",
+      "Item",
+      "NPC",
+      "IgnoreAnchorRaycast",
+      "JungleSigns",
+      "NoDropItems"
+    ]
+  },
   "artifact": {
     "buttonSpacing": 37,
     "frame": {
-      "sprite": 367,
+      "sprite": 369,
       "rect": [-90,-75,180,150]
     },
     "background": {
-      "sprite": 368,
+      "sprite": 370,
       "rect": [-90,-75,180,150]
     },
     "underlays": [
       {
         "name": "Outside Map",
-        "sprite": 369,
+        "sprite": 371,
         "rect": [-90,-75,180,150]
       }
     ],
-    "empty": 370,
-    "blank": 371,
-    "hoverIcon": 371,
+    "empty": 372,
+    "blank": 373,
+    "hoverIcon": 373,
     "parts": {
       "pressed": {
-        "sprite": 372,
+        "sprite": 374,
         "rect": [-16,-17,32,33]
       },
       "highlight": {
-        "sprite": 373,
+        "sprite": 375,
         "rect": [-16,-17,32,32]
       },
       "hover": {
-        "sprite": 374,
+        "sprite": 376,
         "rect": [-16,-16,32,32]
       }
     },
@@ -17264,80 +17635,80 @@
     "buttons": [
       {
         "islandId": 1,
-        "island": 375,
-        "completed": 376,
+        "island": 377,
+        "completed": 378,
         "icons": [
           {
-            "sprite": 377,
+            "sprite": 379,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 2,
-        "island": 378,
-        "completed": 379,
+        "island": 380,
+        "completed": 381,
         "icons": [
           {
-            "sprite": 380,
+            "sprite": 382,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 3,
-        "island": 381,
-        "completed": 382,
+        "island": 383,
+        "completed": 384,
         "icons": [
           {
-            "sprite": 383,
+            "sprite": 385,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 4,
-        "island": 384,
-        "completed": 385,
-        "icons": [
-        ]
-      },
-      {
-        "islandId": 5,
         "island": 386,
         "completed": 387,
         "icons": [
         ]
       },
       {
-        "islandId": 6,
+        "islandId": 5,
         "island": 388,
         "completed": 389,
         "icons": [
+        ]
+      },
+      {
+        "islandId": 6,
+        "island": 390,
+        "completed": 391,
+        "icons": [
           {
-            "sprite": 390,
+            "sprite": 392,
             "rect": [-16,-16,32,32]
           }
         ]
       },
       {
         "islandId": 7,
-        "island": 391,
-        "completed": 392,
-        "icons": [
-        ]
-      },
-      {
-        "islandId": 8,
         "island": 393,
         "completed": 394,
         "icons": [
         ]
       },
       {
-        "islandId": 9,
+        "islandId": 8,
         "island": 395,
         "completed": 396,
+        "icons": [
+        ]
+      },
+      {
+        "islandId": 9,
+        "island": 397,
+        "completed": 398,
         "icons": [
         ]
       }
@@ -20058,64 +20429,56 @@
   "tiles": [
     {
       "name": "Grass2 (Flower)",
-      "frames": [397,398,399],
+      "frames": [399,400,401],
       "fps": 4
     },
     {
       "name": "Grass1",
-      "frames": [400,401],
-      "fps": 4
-    },
-    {
-      "name": "Grass4",
       "frames": [402,403],
       "fps": 4
     },
     {
-      "name": "Grass6",
+      "name": "Grass4",
       "frames": [404,405],
       "fps": 4
     },
     {
-      "name": "Grass5",
+      "name": "Grass6",
       "frames": [406,407],
       "fps": 4
     },
     {
+      "name": "Grass5",
+      "frames": [408,409],
+      "fps": 4
+    },
+    {
       "name": "rock_wall_12",
-      "frames": [408]
-    },
-    {
-      "name": "rock_wall_15",
-      "frames": [409]
-    },
-    {
-      "name": "rock_wall_13",
       "frames": [410]
     },
     {
-      "name": "rock_wall_2",
+      "name": "rock_wall_15",
       "frames": [411]
     },
     {
-      "name": "rock_wall_24",
+      "name": "rock_wall_13",
       "frames": [412]
     },
     {
+      "name": "rock_wall_2",
+      "frames": [413]
+    },
+    {
+      "name": "rock_wall_24",
+      "frames": [414]
+    },
+    {
       "name": "Grass3",
-      "frames": [413,414],
+      "frames": [415,416],
       "fps": 4
     },
     {
       "name": "rock_wall_23",
-      "frames": [415]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [416]
-    },
-    {
-      "name": "WallRockCut",
       "frames": [417]
     },
     {
@@ -20123,39 +20486,39 @@
       "frames": [418]
     },
     {
-      "name": "rock_wall_21",
+      "name": "WallRockCut",
       "frames": [419]
     },
     {
-      "name": "rock_wall_17",
+      "name": "WallRockCut",
       "frames": [420]
     },
     {
-      "name": "village_ruins_deco_10",
+      "name": "rock_wall_21",
       "frames": [421]
     },
     {
-      "name": "village_ruins_deco_8",
+      "name": "rock_wall_17",
       "frames": [422]
     },
     {
-      "name": "rock_wall_4",
+      "name": "village_ruins_deco_10",
       "frames": [423]
     },
     {
-      "name": "rock_wall_11",
+      "name": "village_ruins_deco_8",
       "frames": [424]
     },
     {
-      "name": "rock_wall_5",
+      "name": "rock_wall_4",
       "frames": [425]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_11",
       "frames": [426]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_5",
       "frames": [427]
     },
     {
@@ -20175,19 +20538,19 @@
       "frames": [431]
     },
     {
-      "name": "village_ruins_deco_9",
+      "name": "Jungle Leaves",
       "frames": [432]
     },
     {
-      "name": "village_ruins_deco_1",
+      "name": "Jungle Leaves",
       "frames": [433]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "village_ruins_deco_9",
       "frames": [434]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "village_ruins_deco_1",
       "frames": [435]
     },
     {
@@ -20195,64 +20558,64 @@
       "frames": [436]
     },
     {
-      "name": "village_ruins_deco_3",
+      "name": "Jungle Leaves",
       "frames": [437]
     },
     {
-      "name": "village_ruins_deco_2",
+      "name": "Jungle Leaves",
       "frames": [438]
     },
     {
-      "name": "rock_wall_0",
+      "name": "village_ruins_deco_3",
       "frames": [439]
     },
     {
-      "name": "rock_wall_1",
+      "name": "village_ruins_deco_2",
       "frames": [440]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_0",
       "frames": [441]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_1",
       "frames": [442]
     },
     {
-      "name": "village_ruins_deco_0",
+      "name": "Jungle Leaves",
       "frames": [443]
     },
     {
-      "name": "leaf_tiles_5",
+      "name": "Jungle Leaves",
       "frames": [444]
     },
     {
-      "name": "Ground_4",
+      "name": "village_ruins_deco_0",
       "frames": [445]
     },
     {
-      "name": "sand-grass_transition_6",
+      "name": "leaf_tiles_5",
       "frames": [446]
     },
     {
-      "name": "DesertSand",
+      "name": "Ground_4",
       "frames": [447]
     },
     {
+      "name": "sand-grass_transition_6",
+      "frames": [448]
+    },
+    {
+      "name": "DesertSand",
+      "frames": [449]
+    },
+    {
       "name": "WaterSandTransition5",
-      "frames": [448,449,450,451,451,450,449,448],
+      "frames": [450,451,452,453,453,452,451,450],
       "fps": 4
     },
     {
       "name": "Tileset_1",
-      "frames": [452]
-    },
-    {
-      "name": "DesertSand",
-      "frames": [453]
-    },
-    {
-      "name": "DesertSand",
       "frames": [454]
     },
     {
@@ -20260,126 +20623,126 @@
       "frames": [455]
     },
     {
-      "name": "sand-grass_transition_8",
+      "name": "DesertSand",
       "frames": [456]
     },
     {
-      "name": "sand-grass_transition_11",
+      "name": "DesertSand",
       "frames": [457]
     },
     {
+      "name": "sand-grass_transition_8",
+      "frames": [458]
+    },
+    {
+      "name": "sand-grass_transition_11",
+      "frames": [459]
+    },
+    {
       "name": "WaterSandTransition6",
-      "frames": [458,459,460,461,461,460,459,458],
+      "frames": [460,461,462,463,463,462,461,460],
       "fps": 4
     },
     {
       "name": "WaterSandTransition7",
-      "frames": [462,463,464,465,465,464,463,462],
+      "frames": [464,465,466,467,467,466,465,464],
       "fps": 4
     },
     {
       "name": "WaterSandTransition8",
-      "frames": [466,467,468,469,469,468,467,466],
+      "frames": [468,469,470,471,471,470,469,468],
       "fps": 4
     },
     {
       "name": "WaterSandTransition11",
-      "frames": [470,471,472,473,473,472,471,470],
+      "frames": [472,473,474,475,475,474,473,472],
       "fps": 4
     },
     {
       "name": "WaterSandTransition12",
-      "frames": [474,475,476,477,477,476,475,474],
+      "frames": [476,477,478,479,479,478,477,476],
       "fps": 4
     },
     {
       "name": "DesertSand",
-      "frames": [478]
+      "frames": [480]
     },
     {
       "name": "WaterSandTransition4",
-      "frames": [479,480,481,482,482,481,480,479],
+      "frames": [481,482,483,484,484,483,482,481],
       "fps": 4
     },
     {
       "name": "WaterSandTransition10",
-      "frames": [483,484,485,486,486,485,484,483],
+      "frames": [485,486,487,488,488,487,486,485],
       "fps": 4
     },
     {
       "name": "WaterSandTransition3",
-      "frames": [487,488,489,490,490,489,488,487],
+      "frames": [489,490,491,492,492,491,490,489],
       "fps": 4
     },
     {
       "name": "WaterSandTransition1",
-      "frames": [491,492,493,494,494,493,492,491],
+      "frames": [493,494,495,496,496,495,494,493],
       "fps": 4
     },
     {
       "name": "WaterSandTransition9",
-      "frames": [495,496,497,498,498,497,496,495],
+      "frames": [497,498,499,500,500,499,498,497],
       "fps": 4
     },
     {
       "name": "sand-grass_transition_10",
-      "frames": [499]
+      "frames": [501]
     },
     {
       "name": "WaterSandTransition2",
-      "frames": [500,501,502,503,503,502,501,500],
+      "frames": [502,503,504,505,505,504,503,502],
       "fps": 4
     },
     {
       "name": "Tileset_0",
-      "frames": [504]
-    },
-    {
-      "name": "sand-grass_transition_4",
-      "frames": [505]
-    },
-    {
-      "name": "sand-grass_transition_2",
       "frames": [506]
     },
     {
+      "name": "sand-grass_transition_4",
+      "frames": [507]
+    },
+    {
+      "name": "sand-grass_transition_2",
+      "frames": [508]
+    },
+    {
       "name": "RiverEndTile2",
-      "frames": [507,508,509,510],
+      "frames": [509,510,511,512],
       "fps": 4
     },
     {
       "name": "Water9",
-      "frames": [511,512,513,514,514,513,512,511],
+      "frames": [513,514,515,516,516,515,514,513],
       "fps": 4
     },
     {
       "name": "Water2",
-      "frames": [515,516,517,518,518,517,516,515],
+      "frames": [517,518,519,520,520,519,518,517],
       "fps": 4
     },
     {
       "name": "RiverEndTile1",
-      "frames": [519,520,521,522],
+      "frames": [521,522,523,524],
       "fps": 4
     },
     {
       "name": "GroundDefault",
-      "frames": [523]
-    },
-    {
-      "name": "GroundDefault",
-      "frames": [524]
-    },
-    {
-      "name": "snow_tiles_0",
       "frames": [525]
     },
     {
-      "name": "WallRock",
+      "name": "GroundDefault",
       "frames": [526]
     },
     {
-      "name": "WallRock",
+      "name": "snow_tiles_0",
       "frames": [527]
     },
     {
@@ -20391,7 +20754,7 @@
       "frames": [529]
     },
     {
-      "name": "border_3",
+      "name": "WallRock",
       "frames": [530]
     },
     {
@@ -20399,277 +20762,285 @@
       "frames": [531]
     },
     {
-      "name": "WallRock",
+      "name": "border_3",
       "frames": [532]
     },
     {
+      "name": "WallRock",
+      "frames": [533]
+    },
+    {
+      "name": "WallRock",
+      "frames": [534]
+    },
+    {
       "name": "Water6",
-      "frames": [533,534,535,536,536,535,534,533],
+      "frames": [535,536,537,538,538,537,536,535],
       "fps": 4
     },
     {
       "name": "Water7",
-      "frames": [537,538,539,540,540,539,538,537],
+      "frames": [539,540,541,542,542,541,540,539],
       "fps": 4
     },
     {
       "name": "WallRock",
-      "frames": [541]
+      "frames": [543]
     },
     {
       "name": "Fall3",
-      "frames": [542,543,544,545],
+      "frames": [544,545,546,547],
       "fps": 4
     },
     {
       "name": "Fall2",
-      "frames": [546,547,548,549],
+      "frames": [548,549,550,551],
       "fps": 4
     },
     {
       "name": "Fall1",
-      "frames": [550,551,552,553],
+      "frames": [552,553,554,555],
       "fps": 4
     },
     {
       "name": "snow_tiles_6",
-      "frames": [554]
-    },
-    {
-      "name": "Tileset_74",
-      "frames": [555]
-    },
-    {
-      "name": "Tileset_65",
       "frames": [556]
     },
     {
-      "name": "snow_tiles_7",
+      "name": "Tileset_74",
       "frames": [557]
     },
     {
-      "name": "Tileset_73",
+      "name": "Tileset_65",
       "frames": [558]
     },
     {
-      "name": "Tileset_66",
+      "name": "snow_tiles_7",
       "frames": [559]
     },
     {
-      "name": "snow_tiles_2",
+      "name": "Tileset_73",
       "frames": [560]
     },
     {
-      "name": "snow_tiles_4",
+      "name": "Tileset_66",
       "frames": [561]
     },
     {
-      "name": "snow_tiles_3",
+      "name": "snow_tiles_2",
       "frames": [562]
     },
     {
-      "name": "snow_tiles_1",
+      "name": "snow_tiles_4",
       "frames": [563]
     },
     {
-      "name": "snow_tiles_5",
+      "name": "snow_tiles_3",
       "frames": [564]
     },
     {
-      "name": "Ceiling",
+      "name": "snow_tiles_1",
       "frames": [565]
     },
     {
-      "name": "Ceiling",
+      "name": "snow_tiles_5",
       "frames": [566]
     },
     {
-      "name": "interiors_0",
+      "name": "Ceiling",
       "frames": [567]
     },
     {
-      "name": "Tileset_26",
+      "name": "Ceiling",
       "frames": [568]
     },
     {
-      "name": "interiors_2",
+      "name": "interiors_0",
       "frames": [569]
     },
     {
-      "name": "interiors_4",
+      "name": "Tileset_26",
       "frames": [570]
     },
     {
-      "name": "interiors_5",
+      "name": "interiors_2",
       "frames": [571]
     },
     {
-      "name": "interiors_1",
+      "name": "interiors_4",
       "frames": [572]
     },
     {
-      "name": "interiors_3",
+      "name": "interiors_5",
       "frames": [573]
     },
     {
-      "name": "interiors_6",
+      "name": "interiors_1",
       "frames": [574]
     },
     {
-      "name": "interiors_7",
+      "name": "interiors_3",
       "frames": [575]
     },
     {
-      "name": "leaf_tiles_7",
+      "name": "interiors_6",
       "frames": [576]
     },
     {
-      "name": "rock_wall_34",
+      "name": "interiors_7",
       "frames": [577]
     },
     {
-      "name": "rock_wall_33",
+      "name": "leaf_tiles_7",
       "frames": [578]
     },
     {
-      "name": "border_6",
+      "name": "rock_wall_34",
       "frames": [579]
     },
     {
-      "name": "border_7",
+      "name": "rock_wall_33",
       "frames": [580]
     },
     {
-      "name": "border_5",
+      "name": "border_6",
       "frames": [581]
     },
     {
-      "name": "rock_wall_border_10",
+      "name": "border_7",
       "frames": [582]
     },
     {
-      "name": "rock_wall_border_8",
+      "name": "border_5",
       "frames": [583]
     },
     {
-      "name": "border_4",
+      "name": "rock_wall_border_10",
       "frames": [584]
     },
     {
-      "name": "border_0",
+      "name": "rock_wall_border_8",
       "frames": [585]
     },
     {
-      "name": "rock_wall_border_7",
+      "name": "border_4",
       "frames": [586]
     },
     {
-      "name": "rock_wall_border_4",
+      "name": "border_0",
       "frames": [587]
     },
     {
-      "name": "border_1",
+      "name": "rock_wall_border_7",
       "frames": [588]
     },
     {
-      "name": "border_2",
+      "name": "rock_wall_border_4",
       "frames": [589]
     },
     {
-      "name": "village_ruins_deco_11",
+      "name": "border_1",
       "frames": [590]
     },
     {
-      "name": "cave_rocks_17",
+      "name": "border_2",
       "frames": [591]
     },
     {
-      "name": "cave_rocks_18",
+      "name": "village_ruins_deco_11",
       "frames": [592]
     },
     {
-      "name": "rock_wall_border_15",
+      "name": "cave_rocks_17",
       "frames": [593]
     },
     {
-      "name": "rock_wall_26",
+      "name": "cave_rocks_18",
       "frames": [594]
     },
     {
+      "name": "rock_wall_border_15",
+      "frames": [595]
+    },
+    {
+      "name": "rock_wall_26",
+      "frames": [596]
+    },
+    {
       "name": "Water11",
-      "frames": [595,596,597,598,598,597,596,595],
+      "frames": [597,598,599,600,600,599,598,597],
       "fps": 4
     },
     {
       "name": "Water12",
-      "frames": [599,600,601,602,602,601,600,599],
+      "frames": [601,602,603,604,604,603,602,601],
       "fps": 4
     },
     {
       "name": "Tileset_51",
-      "frames": [603]
+      "frames": [605]
     },
     {
       "name": "Water4",
-      "frames": [604,605,606,607,607,606,605,604],
+      "frames": [606,607,608,609,609,608,607,606],
       "fps": 4
     },
     {
       "name": "RiverReeds",
-      "frames": [608,609,610,611],
+      "frames": [610,611,612,613],
       "fps": 4
     },
     {
       "name": "Water5",
-      "frames": [612,613,614,615,615,614,613,612],
+      "frames": [614,615,616,617,617,616,615,614],
       "fps": 4
     },
     {
       "name": "rock_wall_border_5",
-      "frames": [616]
-    },
-    {
-      "name": "rock_wall_border_3",
-      "frames": [617]
-    },
-    {
-      "name": "rock_wall_border_11",
       "frames": [618]
     },
     {
-      "name": "rock_wall_border_9",
+      "name": "rock_wall_border_3",
       "frames": [619]
     },
     {
-      "name": "Tileset_42",
+      "name": "rock_wall_border_11",
       "frames": [620]
     },
     {
+      "name": "rock_wall_border_9",
+      "frames": [621]
+    },
+    {
+      "name": "Tileset_42",
+      "frames": [622]
+    },
+    {
       "name": "Water13",
-      "frames": [621,622,623,624,624,623,622,621],
+      "frames": [623,624,625,626,626,625,624,623],
       "fps": 4
     },
     {
       "name": "Water3",
-      "frames": [625,626,627,628,628,627,626,625],
+      "frames": [627,628,629,630,630,629,628,627],
       "fps": 4
     },
     {
       "name": "Water1",
-      "frames": [629,630,631,632,632,631,630,629],
+      "frames": [631,632,633,634,634,633,632,631],
       "fps": 4
     },
     {
       "name": "cave_rocks_9",
-      "frames": [633]
+      "frames": [635]
     },
     {
       "name": "cave_rocks_8",
-      "frames": [634]
+      "frames": [636]
     },
     {
       "name": "cave_rocks_16",
-      "frames": [635]
+      "frames": [637]
     },
     {
       "name": "cave_rocks_6",
@@ -20677,95 +21048,95 @@
     },
     {
       "name": "rock_wall_border_6",
-      "frames": [636]
-    },
-    {
-      "name": "rock_wall_28",
-      "frames": [637]
-    },
-    {
-      "name": "rock_wall_31",
       "frames": [638]
     },
     {
-      "name": "rock_wall_border_0",
+      "name": "rock_wall_28",
       "frames": [639]
     },
     {
-      "name": "rock_wall_border_14",
+      "name": "rock_wall_31",
       "frames": [640]
     },
     {
-      "name": "border_light_1",
+      "name": "rock_wall_border_0",
       "frames": [641]
     },
     {
+      "name": "rock_wall_border_14",
+      "frames": [642]
+    },
+    {
+      "name": "border_light_1",
+      "frames": [643]
+    },
+    {
       "name": "Water8",
-      "frames": [642,643,644,645,645,644,643,642],
+      "frames": [644,645,646,647,647,646,645,644],
       "fps": 4
     },
     {
       "name": "rock_wall_27",
-      "frames": [646]
+      "frames": [648]
     },
     {
       "name": "rock_wall_30",
-      "frames": [647]
+      "frames": [649]
     },
     {
       "name": "Snow1",
-      "frames": [648,649],
+      "frames": [650,651],
       "fps": 4
     },
     {
       "name": "Tileset_27",
-      "frames": [650]
-    },
-    {
-      "name": "Tileset_40",
-      "frames": [651]
-    },
-    {
-      "name": "rock_wall_border_1",
       "frames": [652]
     },
     {
-      "name": "interiors_19",
+      "name": "Tileset_40",
       "frames": [653]
     },
     {
+      "name": "rock_wall_border_1",
+      "frames": [654]
+    },
+    {
+      "name": "interiors_19",
+      "frames": [655]
+    },
+    {
       "name": "Water10",
-      "frames": [654,655,656,657,657,656,655,654],
+      "frames": [656,657,658,659,659,658,657,656],
       "fps": 4
     },
     {
       "name": "Water14",
-      "frames": [658,659,660,661,661,660,659,658],
+      "frames": [660,661,662,663,663,662,661,660],
       "fps": 4
     },
     {
       "name": "Ceiling",
-      "frames": [662]
-    },
-    {
-      "name": "rock_wall_border_2",
-      "frames": [663]
-    },
-    {
-      "name": "Tileset_32",
       "frames": [664]
     },
     {
-      "name": "Tileset_45",
+      "name": "rock_wall_border_2",
       "frames": [665]
     },
     {
-      "name": "Tileset_31",
+      "name": "Tileset_32",
       "frames": [666]
     },
     {
-      "name": "Tileset_30",
+      "name": "Tileset_45",
       "frames": [667]
+    },
+    {
+      "name": "Tileset_31",
+      "frames": [668]
+    },
+    {
+      "name": "Tileset_30",
+      "frames": [669]
     }
   ],
   "sprites": [
@@ -20787,7 +21158,7 @@
     {
       "name": "player_action_available",
       "sheet": 5,
-      "rect": [112,32,16,16],
+      "rect": [144,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
@@ -23328,12 +23699,26 @@
     {
       "name": "player_pirate_0",
       "sheet": 5,
-      "rect": [80,32,16,16],
+      "rect": [112,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "player_pirate_1",
+      "sheet": 5,
+      "rect": [128,32,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "player_drop_item_indicator_0",
+      "sheet": 5,
+      "rect": [80,32,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "player_drop_item_indicator_1",
       "sheet": 5,
       "rect": [96,32,16,16],
       "pivot": [8,8],
@@ -25997,6 +26382,13 @@
     {
   "name": "PlayerPirateIdle",
   "frames": [365,366],
+  "times": [0,0.5],
+  "length": 1,
+  "loop": true
+},
+    {
+  "name": "PlayerDropIndicatorIdle",
+  "frames": [367,368],
   "times": [0,0.5],
   "length": 1,
   "loop": true

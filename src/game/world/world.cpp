@@ -36,6 +36,7 @@ void World::reloadObjects() {
     triggers.reset(area);
     interactables.clear();
     npcs.reset(area);
+    items.reset(area);
     animators.reset(area);
     starts.reset(area);
     runStarts();
@@ -75,6 +76,10 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     }
 
     if (moveX != 0) player.facingLeft = moveX < 0;
+    if (moveX != 0 || moveY != 0) {
+        player.lastMoveX = moveX;
+        player.lastMoveY = moveY;
+    }
     if (area.player.animator >= 0) { // Player.Update
         animators.setBool(*this, area.player.animator, "isRunning", moveX != 0 || moveY != 0);
         animators.setBool(*this, area.player.animator, "isOnWater", player.onWater);
@@ -93,6 +98,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
         moveWithCollision(*this, player.hitbox(area), player.x, player.y, dx, dy, player.onWater);
     }
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
+    items.update(*this, dt); // (PlayerAction.Update: the carried item follows, the drop spot)
 
     // Start runs before an object's first update (here: before triggers can touch it), and again
     // for what calls activated. Each skips when nothing became active.
@@ -130,8 +136,15 @@ bool World::showsPrompt(const Interactable& it) const {
     return true;
 }
 
-void World::interact() {
-    if (interactables.empty()) return;
+void World::action() {
+    const bool picked = items.tryPickUp(*this);
+    const bool interacted = interact();
+    if (!interacted && !picked) items.tryDrop(*this);
+}
+
+bool World::interact() {
+    if (interactables.empty()) return false;
+    bool interacted = false;
     int highest = priority(interactables[0]);
     for (const Interactable& it : interactables) highest = std::max(highest, priority(it));
     // Calls may change what's on offer (a door teleports the player away), so run a snapshot.
@@ -140,15 +153,22 @@ void World::interact() {
         if (priority(it) != highest) continue;
         switch (it.kind) {
         case Interactable::Kind::Interaction: {
+            // PlayerConditionals.CheckCondition: with isCarryingItem, only while carrying the item;
+            // InvokeSuccess then withdraws it if the item is gone.
             const InteractionDef& in = area.interactions[it.index];
-            if (!in.isCarryingItem) runCalls(*this, in.onSuccess); // PlayerConditionals.CheckCondition
+            if (in.isCarryingItem && !items.carrying(area, in.itemName)) break;
+            runCalls(*this, in.onSuccess);
+            if (in.isCarryingItem && !items.carrying(area, in.itemName)) withdraw(it);
+            interacted = true;
             break;
         }
         case Interactable::Kind::Npc:
             npcs.interact(*this, it.index);
+            interacted = true; // (NPCDialogueContext.Interact returns true)
             break;
         }
     }
+    return interacted;
 }
 
 bool World::promptShown() const {
@@ -159,6 +179,15 @@ void World::objectPosition(int object, float& x, float& y) const {
     objectBase(object, x, y);
     x += area.objects[object].x;
     y += area.objects[object].y;
+}
+
+void World::placeObject(int object, int owner, float x, float y) {
+    float bx, by;
+    grid.ownerBase(owner, bx, by);
+    // Placement offsets add up the hierarchy: this object's own is relative to its parent's.
+    const int parent = objects.parent(object);
+    const float px = parent >= 0 ? objects.offsetX(parent) : 0, py = parent >= 0 ? objects.offsetY(parent) : 0;
+    objects.setPlacement(area, object, owner, x - bx - area.objects[object].x - px, y - by - area.objects[object].y - py);
 }
 
 void World::objectBase(int object, float& x, float& y) const {

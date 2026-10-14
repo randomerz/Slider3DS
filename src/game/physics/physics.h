@@ -38,10 +38,11 @@ inline Box hitboxAt(const Hitbox& hb, float x, float y) {
 // interior; the grid's slide fences and the active object colliders block too. Tiles
 // with colliders switched off (Grid: sliding in a move the player isn't riding) are skipped, with
 // their objects.
-Blocker boxBlocker(const World& world, const Box& box, bool onWater);
+// `ignoreCollider` (an Area::objectColliders index) is left out (e.g. an item checking its own way).
+Blocker boxBlocker(const World& world, const Box& box, bool onWater, int ignoreCollider = -1);
 
-inline bool boxBlocked(const World& world, const Box& box, bool onWater) {
-    return (bool)boxBlocker(world, box, onWater);
+inline bool boxBlocked(const World& world, const Box& box, bool onWater, int ignoreCollider = -1) {
+    return (bool)boxBlocker(world, box, onWater, ignoreCollider);
 }
 
 // Whether collider `c` (solid or trigger) is on (its object active, its tile collected and not

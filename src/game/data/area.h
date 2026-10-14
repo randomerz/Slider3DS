@@ -112,6 +112,7 @@ struct ObjectCollider {
     bool enabled = true; // the component itself at the start (ObjectStates tracks it at runtime; active
                          // also needs its object active in hierarchy)
     int slot = 0;        // runtime enabled flag: objectColliders index, or objectColliders.size() + triggerColliders index
+    std::string layer;   // Unity layer name (item pickups and drops filter by it)
     Kind kind = Kind::Poly;
     std::vector<Polygon> paths;       // Poly: closed polygons; Edge: one open polyline
     float cx = 0, cy = 0, radius = 0; // Circle
@@ -163,6 +164,7 @@ struct ConditionDef {
 //   VillageActivateCollectible  SGrid.ActivateCollectible(stringArg): shows it, cancelling its hide-at-start
 //   VillageTurnFishOn / VillageExplode / VillageWaterfallEntry / VillageHouseExit: VillageGrid's methods
 //   SetColliderEnabled      BoxCollider2D.set_enabled(boolArg) on the collider with slot data
+//   ItemSortingOrderInc/Dec PlayerAction.SetItemSortingOrderInc/Dec(intArg): the carried item's sorting order
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -191,7 +193,9 @@ struct ConditionDef {
     X(VillageExplode, "VillageGrid.Explode")                           \
     X(VillageWaterfallEntry, "VillageGrid.OnWaterfallEntry")           \
     X(VillageHouseExit, "VillageGrid.OnHouseExit")                     \
-    X(SetColliderEnabled, "BoxCollider2D.set_enabled")
+    X(SetColliderEnabled, "BoxCollider2D.set_enabled")                 \
+    X(ItemSortingOrderInc, "PlayerAction.SetItemSortingOrderInc")      \
+    X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -363,13 +367,40 @@ struct NpcDef {
     std::vector<NpcCondDef> conds;
 };
 
+// An Item the player can pick up, carry above its head and drop (action button; PlayerAction).
+struct ItemDef {
+    static constexpr int CURVE_SAMPLES = 21; // pick-up motion curves, sampled evenly over 0..1
+    int object = 0;
+    std::string type, name;   // class ("Item"), itemName
+    bool canKeep = false, disableAtStart = false;
+    float radius = 0.5f;      // itemRadius: the pick-up line-of-sight rays' spread
+    int spriteObject = -1;    // its SpriteRenderer's object (the pick-up / drop animation moves it)
+    int colliderSlot = -1;    // its collider (ObjectCollider::slot), -1 = none
+    float pickUpDuration = 0.5f;
+    float xCurve[CURVE_SAMPLES] = {}, yCurve[CURVE_SAMPLES] = {}; // xPickUpMotion / yPickUpMotion
+    std::vector<int> enableOnDrop;
+    std::vector<CallDef> onPickUp, onDrop;
+    float curveX(float t) const; // xPickUpMotion.Evaluate(t), t in 0..1 (interpolated samples)
+    float curveY(float t) const;
+};
+
+// PlayerAction: where the player carries an item and how drops are placed.
+struct PlayerActionDef {
+    bool present = false;
+    float carryX = 0, carryY = 0.8125f;  // pickedItemLocation, player-relative
+    float boatDropX = 0, boatDropY = 0;  // boatDropItemBaseTransform, player-relative (drops from the boat)
+    SpritePlacement dropIndicator;       // relative to the drop position; sprite -1 = none
+    std::vector<std::string> itemLayers; // itemMask: colliders that can be picked up
+    std::vector<std::string> dropLayers; // dropCollidingMask | noDropItemsLayerMask
+};
+
 // A behaviour component on a scene object (an entry in one of the Area's per-kind vectors), for
 // handling things by object: what reacts when the player touches an object's trigger, which
 // components have a Start. Built at load.
 struct ComponentRef {
-    enum class Kind : uint8_t { TriggerEvent, Interaction, Collectible, ConditionChecker, Npc };
+    enum class Kind : uint8_t { TriggerEvent, Interaction, Collectible, ConditionChecker, Npc, Item };
     Kind kind;
-    int index; // into triggerEvents / interactions / collectibles / conditionCheckers / npcs
+    int index; // into triggerEvents / interactions / collectibles / conditionCheckers / npcs / items
 };
 
 struct ComponentRange {
@@ -466,13 +497,15 @@ struct Area {
     std::vector<TriggerEventDef> triggerEvents;
     std::vector<CollectibleDef> collectibles;
     std::vector<NpcDef> npcs;
+    std::vector<ItemDef> items;
+    PlayerActionDef playerAction;
     std::vector<AnimatorControllerDef> animatorControllers;
     std::vector<AnimatorDef> animators;
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
     AreaGridDef areaGrid;
     int collectible(const std::string& name) const; // index in collectibles of the area's own one named so, -1 if none
     // Each object's components (derived at load): componentRefs[componentStart[o] .. componentStart[o + 1]),
-    // per object in the kind order TriggerEvent, Interaction, Collectible, ConditionChecker, Npc.
+    // per object in the kind order TriggerEvent, Interaction, Collectible, ConditionChecker, Npc, Item.
     std::vector<int> componentStart;
     std::vector<ComponentRef> componentRefs;
     ComponentRange components(int object) const {

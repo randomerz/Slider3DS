@@ -117,6 +117,12 @@ void runCall(World& world, const CallDef& c) {
     case M::SetColliderEnabled:
         world.objects.setColliderEnabled(c.data, c.boolArg);
         break;
+    case M::ItemSortingOrderInc:
+        world.items.sortingOrderInc(c.intArg);
+        break;
+    case M::ItemSortingOrderDec:
+        world.items.sortingOrderDec(c.intArg);
+        break;
     case M::Unsupported:
         break;
     }

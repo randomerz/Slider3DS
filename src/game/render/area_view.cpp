@@ -77,6 +77,8 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
         const int animator = area.animatorOn(ws.object);
         if (animator >= 0 && world.animators.sprite(animator) >= 0) sp.sprite = world.animators.sprite(animator);
+        int carriedOrder;
+        if (world.items.carriedSortingOrder(area, ws.object, carriedOrder)) sp.order = carriedOrder;
         if (objects.flipX(ws.object) >= 0) // set by an event (SpriteRenderer.set_flipX)
             sp.flags = (sp.flags & ~(uint32_t)plat::FLIP_X) | (objects.flipX(ws.object) ? (uint32_t)plat::FLIP_X : 0u);
         float px, py;
@@ -109,6 +111,10 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         it.sprite.sortY = y;
         items_.push_back(it);
     }
+    float dropX, dropY; // PlayerAction's item drop indicator
+    if (world.items.dropIndicator(dropX, dropY) && area.playerAction.dropIndicator.sprite >= 0 &&
+        inRange(area.playerAction.dropIndicator.sortLayer))
+        items_.push_back({ItemKind::Player, (int)items_.size(), placeSprite(area, area.playerAction.dropIndicator, dropX, dropY, time_)});
     const Player& pl = world.player;
     const uint32_t facing = pl.facingLeft ? (uint32_t)plat::FLIP_X : 0u;
     const SpritePlacement* playerParts[] = {&area.player.body, pl.onWater ? &area.player.boat : nullptr,

@@ -6,8 +6,8 @@
 
 class World;
 
-// Condition.CheckCondition. PlayerCarryingItem and unsupported spec conditions are false until
-// items and those specs exist; spec conditions are the area's (village::checkSpec).
+// Condition.CheckCondition. Unsupported spec conditions are false; spec conditions are the area's
+// (village::checkSpec).
 bool checkCondition(const ConditionDef& c, const World& world);
 
 // Whether a condition depends only on GameState and Grid (whose version() counters then tell when

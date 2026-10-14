@@ -28,6 +28,7 @@ static void buildComponentIndex(Area& a) {
     for (size_t i = 0; i < a.conditionCheckers.size(); i++)
         byObject[a.conditionCheckers[i].object].push_back({K::ConditionChecker, (int)i});
     for (size_t i = 0; i < a.npcs.size(); i++) byObject[a.npcs[i].object].push_back({K::Npc, (int)i});
+    for (size_t i = 0; i < a.items.size(); i++) byObject[a.items[i].object].push_back({K::Item, (int)i});
     a.componentStart.assign(1, 0);
     a.componentRefs.clear();
     for (const auto& refs : byObject) {
@@ -77,6 +78,14 @@ int AnimatorControllerDef::paramIndex(const std::string& n) const {
         if (params[i] == n) return (int)i;
     return -1;
 }
+
+static float sampleCurve(const float* samples, float t) {
+    const float x = std::min(std::max(t, 0.0f), 1.0f) * (ItemDef::CURVE_SAMPLES - 1);
+    const int i = std::min((int)x, ItemDef::CURVE_SAMPLES - 2);
+    return samples[i] + (samples[i + 1] - samples[i]) * (x - (float)i);
+}
+float ItemDef::curveX(float t) const { return sampleCurve(xCurve, t); }
+float ItemDef::curveY(float t) const { return sampleCurve(yCurve, t); }
 
 int Anim::frameAt(float t) const {
     if (frames.empty()) return -1;
@@ -213,6 +222,7 @@ static void readObjectCollider(const Json& j, ObjectCollider& c) {
     c.object = j["object"].asInt(-1);
     c.owner = j["owner"].asInt();
     c.enabled = j["enabled"].asBool(true);
+    c.layer = j["layer"].asString();
     const std::string& kind = j["kind"].asString();
     auto readPoints = [](const Json& pts) {
         Polygon p;
@@ -500,6 +510,16 @@ static bool validate(const Area& a, std::string* error) {
         }
         if (!ok) return fail(error, "npc " + n.name + ": bad object, ping, emote, text box or call");
     }
+    const int colliderSlots = (int)(a.objectColliders.size() + a.triggerColliders.size());
+    for (const ItemDef& it : a.items) {
+        bool ok = objectOk(it.object) && (it.spriteObject == -1 || objectOk(it.spriteObject)) &&
+                  it.colliderSlot >= -1 && it.colliderSlot < colliderSlots && it.pickUpDuration > 0 &&
+                  callsOk(it.onPickUp) && callsOk(it.onDrop);
+        for (int o : it.enableOnDrop) ok = ok && objectOk(o);
+        if (!ok) return fail(error, "item " + it.name + ": bad object, collider or call");
+    }
+    if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
+        return fail(error, "player action: bad drop indicator sprite");
     for (const SpritePlacement* p : {&a.player.body, &a.player.boat, &a.player.actionIndicator})
         if (p->sprite != -1 && !placementOk(*p)) return fail(error, "player: bad sprite, anim or ppu");
     for (const TileDef& t : a.tiles)
@@ -617,6 +637,39 @@ bool loadArea(const char* path, Area& out, std::string* error) {
                                     c["disableAtStart"].asBool(), c["sprite"].asInt(-1), readCalls(c["onCollect"], out)});
     for (const Json& c : doc["animatorControllers"].items()) out.animatorControllers.push_back(readController(c));
     for (const Json& n : doc["npcs"].items()) out.npcs.push_back(readNpc(n, out));
+    for (const Json& j : doc["items"].items()) {
+        ItemDef d;
+        d.object = j["object"].asInt(-1);
+        d.type = j["type"].asString();
+        d.name = j["name"].asString();
+        d.canKeep = j["canKeep"].asBool();
+        d.disableAtStart = j["disableAtStart"].asBool();
+        d.radius = j["radius"].asFloat(0.5f);
+        d.spriteObject = j["spriteObject"].asInt(-1);
+        const int collider = j["collider"].asInt(-1);
+        d.colliderSlot = collider < 0 ? -1 : collider + (j["colliderTrigger"].asBool() ? (int)out.objectColliders.size() : 0);
+        d.pickUpDuration = j["pickUpDuration"].asFloat(0.5f);
+        for (int k = 0; k < ItemDef::CURVE_SAMPLES; k++) {
+            d.xCurve[k] = j["xCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
+            d.yCurve[k] = j["yCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
+        }
+        for (const Json& o : j["enableOnDrop"].items()) d.enableOnDrop.push_back(o.asInt(-1));
+        d.onPickUp = readCalls(j["onPickUp"], out);
+        d.onDrop = readCalls(j["onDrop"], out);
+        out.items.push_back(std::move(d));
+    }
+    if (doc.has("playerAction")) {
+        const Json& pa = doc["playerAction"];
+        PlayerActionDef& d = out.playerAction;
+        d.present = true;
+        d.carryX = pa["carryPos"].at(0).asFloat();
+        d.carryY = pa["carryPos"].at(1).asFloat();
+        d.boatDropX = pa["boatDropBase"].at(0).asFloat();
+        d.boatDropY = pa["boatDropBase"].at(1).asFloat();
+        if (pa.has("dropIndicator")) d.dropIndicator = readPlacement(pa["dropIndicator"]);
+        for (const Json& n : pa["itemLayers"].items()) d.itemLayers.push_back(n.asString());
+        for (const Json& n : pa["dropLayers"].items()) d.dropLayers.push_back(n.asString());
+    }
     out.fadeDuration = doc["fadeDuration"].asFloat(1);
     out.areaGrid.type = doc["areaGrid"]["type"].asString();
     out.areaGrid.caveDoorEntrance = doc["areaGrid"]["caveDoorEntrance"].asInt(-1);

@@ -30,8 +30,7 @@ void Starts::update(World& world) {
             if (!world.objects.activeInHierarchy(o)) continue;
             for (int r = area.componentStart[o]; r < area.componentStart[o + 1]; r++) {
                 const ComponentRef& ref = area.componentRefs[r];
-                if (started_[r] || (ref.kind != K::ConditionChecker && ref.kind != K::Collectible && ref.kind != K::Npc))
-                    continue;
+                if (started_[r] || ref.kind == K::TriggerEvent || ref.kind == K::Interaction) continue;
                 if (ref.kind == K::Npc) {
                     started_[r] = 1;
                     world.npcs.start(world, ref.index);
@@ -41,8 +40,11 @@ void Starts::update(World& world) {
                     started_[r] = 1;
                     if (cc.checkOnStart) runConditionals(world, cc.conditionals);
                 } else {
+                    // Collectible / Item.Start: shouldDisableAtStart hides it.
                     started_[r] = 1;
-                    if (area.collectibles[ref.index].disableAtStart) world.objects.setActive(area, o, false);
+                    const bool hide = ref.kind == K::Collectible ? area.collectibles[ref.index].disableAtStart
+                                                                 : area.items[ref.index].disableAtStart;
+                    if (hide) world.objects.setActive(area, o, false);
                 }
                 ranAny = true;
                 if (!world.objects.activeInHierarchy(o)) break; // hid itself (or was hidden)

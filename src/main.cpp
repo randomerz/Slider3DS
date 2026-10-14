@@ -1,6 +1,6 @@
 // Village walkabout: the player walks the exported Village with the original's collision; the
 // camera follows. The new-game start is the Default spawn inside tile 1's house.
-//   D-pad / circle pad: walk          A: interact (doors, raft, NPC dialogue)  START: quit
+//   D-pad / circle pad: walk          A: action (pick up / drop items, doors, NPC dialogue)  START: quit
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) start outdoors on tile 1 and add:
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
@@ -94,7 +94,7 @@ int main(int, char**) {
             if (in.held & plat::BTN_UP) moveY += 1;
             if (in.held & plat::BTN_DOWN) moveY -= 1;
         }
-        if (in.pressed & plat::BTN_A) world.interact();
+        if (in.pressed & plat::BTN_A) world.action();
         world.update(FRAME_DT, moveX, moveY, DEV && dev.noclip);
         const float updateMs = (float)(plat::nowMs() - updateStart);
 

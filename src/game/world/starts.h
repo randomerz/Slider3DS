@@ -2,7 +2,8 @@
 // (and the component enabled). The components with a Start the port mirrors:
 //   - ConditionChecker with checkOnStart: checks its conditionals;
 //   - Collectible with shouldDisableAtStart: hides its object (an event shows it later);
-//   - NPC: picks its first conditional (Npcs::start).
+//   - NPC: picks its first conditional (Npcs::start);
+//   - Item with shouldDisableAtStart: hides its object.
 // (SGrid.Start, which hides collectibles already collected, is World::reloadObjects.)
 #pragma once
 
