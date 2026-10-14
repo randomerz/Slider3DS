@@ -20771,10 +20771,11 @@
   "sprites": [
     {
       "name": "BGFrame",
-      "sheet": 11,
+      "sheet": -1,
       "rect": [0,0,272,272],
       "pivot": [136,136],
-      "ppu": 16
+      "ppu": 16,
+      "outline": [26,26,26,255,1]
     },
     {
       "name": "sign_dark",
@@ -20862,224 +20863,224 @@
     },
     {
       "name": "buoy_2",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [96,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_0",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_1",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [48,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_3",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [144,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_4",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [192,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_5",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [240,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_6",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [288,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_7",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [336,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_2",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [96,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_0",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_1",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [48,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_3",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [144,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_4",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [192,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_5",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [240,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_6",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [288,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_7",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [336,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_0",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,0,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_1",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,32,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_2",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,64,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_3",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,96,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_4",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,128,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_5",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,160,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_6",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,192,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_7",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [0,224,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_0",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [192,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_1",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [208,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_2",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [224,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_3",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [240,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_4",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [256,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_5",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [272,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_6",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [288,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_7",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [304,0,16,192],
       "pivot": [8,96],
       "ppu": 16
@@ -21093,56 +21094,56 @@
     },
     {
       "name": "Tileset_Tree1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [240,528,48,48],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "tree_bounce_C1",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [0,160,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce_C2",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [80,160,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce_C3",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [160,160,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "Tileset_Tree2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,528,48,48],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "tree_bounce2_C1",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [0,400,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce2_C2",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [80,400,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce2_C3",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [160,400,80,80],
       "pivot": [40,24],
       "ppu": 16
@@ -21170,63 +21171,63 @@
     },
     {
       "name": "cave_rocks_14",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [128,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_11",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [80,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_15",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [144,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_10",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [64,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_0",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [320,64,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_0",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [320,0,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_1",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [368,0,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_2",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [416,0,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_3",
-      "sheet": 20,
+      "sheet": 19,
       "rect": [464,0,48,32],
       "pivot": [24,24],
       "ppu": 16
@@ -21275,70 +21276,70 @@
     },
     {
       "name": "floating_wood_0",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [0,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_1",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [32,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_2",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [64,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_3",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [96,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_4",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [128,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_5",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [160,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_6",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [192,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_7",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [224,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_8",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [256,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_9",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [288,712,32,32],
       "pivot": [16,16],
       "ppu": 16
@@ -21478,42 +21479,42 @@
     },
     {
       "name": "house_inside_4",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [0,16,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "house_inside_2",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [48,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_10",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [64,32,16,32],
       "pivot": [8,16],
       "ppu": 16
     },
     {
       "name": "house_inside_11",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [0,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_5",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [32,64,48,16],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "house_inside_6",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [4,64,24,16],
       "pivot": [12,8],
       "ppu": 16
@@ -21541,28 +21542,28 @@
     },
     {
       "name": "computer_tables_0",
-      "sheet": 15,
+      "sheet": 14,
       "rect": [160,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "computers_3",
-      "sheet": 15,
+      "sheet": 14,
       "rect": [64,0,16,16],
       "pivot": [8,0],
       "ppu": 16
     },
     {
       "name": "computers_0",
-      "sheet": 15,
+      "sheet": 14,
       "rect": [0,0,16,16],
       "pivot": [8,0],
       "ppu": 16
     },
     {
       "name": "computer_tables_1",
-      "sheet": 15,
+      "sheet": 14,
       "rect": [176,0,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -21590,35 +21591,35 @@
     },
     {
       "name": "village_ruins_scrawls",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [448,80,48,16],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "village_ruins_scrawls_color_0",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [452,99,8,10],
       "pivot": [4,5],
       "ppu": 16
     },
     {
       "name": "village_ruins_scrawls_color_1",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [461,99,12,10],
       "pivot": [6,5],
       "ppu": 16
     },
     {
       "name": "village_ruins_scrawls_color_2",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [473,99,10,10],
       "pivot": [5,5],
       "ppu": 16
     },
     {
       "name": "village_ruins_missing_piece_0",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [480,64,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -21653,14 +21654,14 @@
     },
     {
       "name": "junglebush_Idle_0",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [0,0,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "junglebush_Moving_0",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [32,0,32,32],
       "pivot": [16,16],
       "ppu": 16
@@ -21695,70 +21696,70 @@
     },
     {
       "name": "Tileset_log",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [144,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_rock",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [176,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_props_2",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [112,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_0",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_1",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_2",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_3",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_4",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [96,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_5",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [112,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_6",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [80,64,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -21807,14 +21808,14 @@
     },
     {
       "name": "cave_rocks_6",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [160,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "hole",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [496,32,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -21828,42 +21829,42 @@
     },
     {
       "name": "cave_construction_props_0",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [0,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_construction_props_1",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [16,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_pot",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [160,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_9",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [48,32,16,32],
       "pivot": [8,16],
       "ppu": 16
     },
     {
       "name": "house_inside_1",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [32,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_construction_props_2",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [32,0,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -21919,14 +21920,14 @@
     },
     {
       "name": "cave_rocks_4",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [128,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_13",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [112,0,16,32],
       "pivot": [8,8],
       "ppu": 16
@@ -21947,7 +21948,7 @@
     },
     {
       "name": "jungle_props_3",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [80,32,32,16],
       "pivot": [16,8],
       "ppu": 16
@@ -21982,77 +21983,77 @@
     },
     {
       "name": "rock_column",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [448,32,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "cave_rocks_5",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [144,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_0",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [0,0,32,16],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "house_inside_3",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [64,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_2",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [64,80,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "shelves_and_lockers_2",
-      "sheet": 16,
+      "sheet": 15,
       "rect": [0,32,32,32],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "workshop_benches_4",
-      "sheet": 16,
+      "sheet": 15,
       "rect": [128,64,32,32],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "bathroom_5",
-      "sheet": 19,
+      "sheet": 18,
       "rect": [32,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "bathroom_4",
-      "sheet": 19,
+      "sheet": 18,
       "rect": [16,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_10",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [48,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_7",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [48,112,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -22122,7 +22123,7 @@
     },
     {
       "name": "villagebell",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [480,32,16,32],
       "pivot": [8,4],
       "ppu": 16
@@ -22171,7 +22172,7 @@
     },
     {
       "name": "jungle_inside_8",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [0,112,16,32],
       "pivot": [8,8],
       "ppu": 16
@@ -22185,14 +22186,14 @@
     },
     {
       "name": "jungle_inside_9",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [32,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_5",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [32,112,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -22213,35 +22214,35 @@
     },
     {
       "name": "bakery_0",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [80,512,128,52],
       "pivot": [64,26],
       "ppu": 16
     },
     {
       "name": "bakery_1",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [96,564,112,32],
       "pivot": [56,16],
       "ppu": 16
     },
     {
       "name": "bakery_2",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [90,617,28,20],
       "pivot": [14,10],
       "ppu": 16
     },
     {
       "name": "jungle_inside_1",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [32,80,32,16],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_4",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [16,112,16,32],
       "pivot": [8,8],
       "ppu": 16
@@ -23340,378 +23341,378 @@
     },
     {
       "name": "artifact_frame",
-      "sheet": 25,
+      "sheet": 24,
       "rect": [0,150,180,150],
       "pivot": [90,75],
       "ppu": 16
     },
     {
       "name": "ArtifactBG",
-      "sheet": 25,
-      "rect": [0,0,180,150],
-      "pivot": [90,75],
-      "ppu": 16
-    },
-    {
-      "name": "village_outside_map",
       "sheet": 24,
       "rect": [0,0,180,150],
       "pivot": [90,75],
       "ppu": 16
     },
     {
-      "name": "ArtifactIcons_empty",
+      "name": "village_outside_map",
       "sheet": 23,
+      "rect": [0,0,180,150],
+      "pivot": [90,75],
+      "ppu": 16
+    },
+    {
+      "name": "ArtifactIcons_empty",
+      "sheet": 22,
       "rect": [1,103,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_blank",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [69,69,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_pressed_frame",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [35,69,32,33],
       "pivot": [16,17],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_highlight",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [69,103,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ControllerHoverHighlight",
-      "sheet": 25,
+      "sheet": 24,
       "rect": [180,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_0",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [1,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_0",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [1,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_2",
-      "sheet": 22,
+      "sheet": 21,
       "rect": [0,32,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_1",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [35,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_1",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [35,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_0",
-      "sheet": 22,
+      "sheet": 21,
       "rect": [0,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_2",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [69,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_2",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [69,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_3",
-      "sheet": 22,
+      "sheet": 21,
       "rect": [32,32,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_3",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [103,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_3",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [103,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_4",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [1,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_4",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [1,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_5",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [35,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_5",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [35,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_1",
-      "sheet": 22,
+      "sheet": 21,
       "rect": [32,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_6",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [69,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_6",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [69,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_7",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [103,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_7",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [103,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_8",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [1,69,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_8",
-      "sheet": 23,
+      "sheet": 22,
       "rect": [1,205,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "Grass2Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass2Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,192,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass2Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass1Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass1Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,176,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass4Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass4Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass6Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass6Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass5Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass5Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_12",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [352,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_15",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [400,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_13",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_24",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass3Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass3Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_23",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [352,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_18",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [448,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_19",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [464,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_20",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [480,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_21",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [496,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_17",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [432,608,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -23732,63 +23733,63 @@
     },
     {
       "name": "rock_wall_4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [400,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_11",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_5",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [416,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_10",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [0,96,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_12",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [32,96,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_11",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [16,96,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_4",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [64,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_3",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [48,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_6",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [16,80,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -23809,21 +23810,21 @@
     },
     {
       "name": "leaf_tiles_8",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [48,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_1",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [16,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_9",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [64,80,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -23844,28 +23845,28 @@
     },
     {
       "name": "rock_wall_0",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [352,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_0",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [0,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_2",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [32,64,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -23879,1022 +23880,1022 @@
     },
     {
       "name": "leaf_tiles_5",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [0,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_6",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [112,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [112,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_44",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [208,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_53",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [208,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_54",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [224,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_8",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [144,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_11",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [112,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_60",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [208,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [64,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [32,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [0,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_10",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [16,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_0",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [80,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [144,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [112,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_4",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [320,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_5",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [352,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_6",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [384,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_7",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [416,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_0",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [320,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_1",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [352,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_2",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [384,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_3",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [416,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_0",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [80,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_0",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [448,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_22",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_16",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [416,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_25",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [384,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_32",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [416,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [224,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_14",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [384,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_29",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [352,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,224,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,224,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [384,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [160,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [176,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [192,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [208,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [160,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [176,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [192,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [208,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [160,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [176,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [192,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [208,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_6",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [480,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_74",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [128,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_65",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [112,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_7",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [496,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_73",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [112,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_66",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [128,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_2",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [480,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_4",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [448,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_3",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [496,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_1",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [464,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_5",
-      "sheet": 21,
+      "sheet": 20,
       "rect": [464,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_8",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [80,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_9",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [96,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_0",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [0,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_26",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [128,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_2",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [32,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_4",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [16,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_5",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [32,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_1",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [16,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_3",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [0,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_6",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [48,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_7",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [64,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_7",
-      "sheet": 18,
+      "sheet": 17,
       "rect": [32,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_34",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [496,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_33",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [432,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_6",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [240,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_7",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [256,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_5",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [224,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_10",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_8",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [256,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_0",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [224,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_7",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [384,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [240,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [256,640,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -24908,539 +24909,539 @@
     },
     {
       "name": "cave_rocks_17",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [176,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_18",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [192,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_15",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [384,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_26",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [400,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_51",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [176,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [320,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,288,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [96,416,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_5",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [352,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [384,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_11",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [384,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_9",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [352,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_42",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [176,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [304,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_9",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [208,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_8",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [192,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_16",
-      "sheet": 14,
+      "sheet": 13,
       "rect": [160,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_6",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_28",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_31",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [400,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_0",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_14",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_light_1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [288,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [272,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_27",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [416,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_30",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Snow1Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Snow1Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [48,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_27",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [144,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_40",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [144,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [352,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_19",
-      "sheet": 17,
+      "sheet": 16,
       "rect": [48,176,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame1",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame3",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame4",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [336,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "temp_interior_0",
-      "sheet": 12,
+      "sheet": 11,
       "rect": [16,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_2",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [368,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_32",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [224,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_45",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [224,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_31",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [208,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_30",
-      "sheet": 13,
+      "sheet": 12,
       "rect": [192,544,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -27596,11 +27597,6 @@
       "name": "largeprops_village_ruins",
       "file": "../sheets/largeprops_village_ruins.png",
       "size": [128,512]
-    },
-    {
-      "name": "misc",
-      "file": "../sheets/misc.png",
-      "size": [512,512]
     },
     {
       "name": "tempsprites",

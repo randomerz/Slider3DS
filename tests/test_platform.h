@@ -12,7 +12,7 @@ void testClearFiles();
 // Every drawSprite/drawRect since the last reset, in call order.
 struct DrawCall {
     std::string sheet; // empty for rects
-    int sx, sy, sw, sh;
+    int sx, sy, sw, sh; // rects: 0, 0, then their size
     float x, y, w, h;
     uint32_t flags; // sprites: DrawFlags; rects: color
 };

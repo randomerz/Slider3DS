@@ -178,7 +178,7 @@ TEST(area_village_export_stats) {
     check(a.shapes.size() == VILLAGE_SHAPES, "collision shapes " + std::to_string(a.shapes.size()));
     check(a.tiles.size() == VILLAGE_TILES, "tiles " + std::to_string(a.tiles.size()));
     check(a.sprites.size() == VILLAGE_SPRITES, "sprites " + std::to_string(a.sprites.size()));
-    check(a.sheetNames.size() == 26, "sheets " + std::to_string(a.sheetNames.size()));
+    check(a.sheetNames.size() == 25, "sheets " + std::to_string(a.sheetNames.size()));
     check(a.worldSprites.size() == 329, "world sprites " + std::to_string(a.worldSprites.size()));
     check(a.anims.size() == 79, "anims " + std::to_string(a.anims.size()));
     check(a.objectColliders.size() == 218, "object colliders " + std::to_string(a.objectColliders.size()));

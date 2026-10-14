@@ -5,7 +5,7 @@ backing behind each letter), both pixel fonts at 1 em = 1 world unit = 16 px (NP
 and "Dialogue BG Font"). Rendered at 16 px per em without antialiasing they come out exactly as
 in the game, so this renders each glyph of both once, in the prefab's colors:
 
-  assets/sheets/font_dialogue.png   the atlas (converted for the 3DS like the exported sheets)
+  assets/sheets/font_dialogue.png   the atlas (converted for the 3DS like the exported sheets; .fmt: la8)
   assets/fonts/dialogue.json        {"sheet", "ppem", "descent" (px below the baseline: TMP puts the
                                      last line's descender on the box bottom), "glyphs": [{"c": code
                                      point, "adv": advance px,
@@ -83,6 +83,8 @@ def main():
         glyphs[gi][key] = [px, py, img.width, img.height, ox, oy]
 
     atlas.save(os.path.join(REPO, "assets", "sheets", "font_dialogue.png"))
+    with open(os.path.join(REPO, "assets", "sheets", "font_dialogue.fmt"), "w", newline="\n") as f:
+        f.write("la8\n")  # gray glyphs: lossless as luminance + alpha (see the Makefile)
     os.makedirs(os.path.join(REPO, "assets", "fonts"), exist_ok=True)
     with open(os.path.join(REPO, "assets", "fonts", "dialogue.json"), "w", newline="\n") as f:
         f.write('{\n  "sheet": "font_dialogue",\n  "ppem": %d,\n  "descent": %d,\n  "glyphs": [\n'

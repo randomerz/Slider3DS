@@ -8,10 +8,13 @@
 #include <vector>
 
 struct SpriteDef {
-    int sheet;
+    int sheet;            // -1 for an outline sprite
     int x, y, w, h;       // pixel rect in the sheet, top-left origin
     float pivotX, pivotY; // pixels from the sprite's bottom-left
     float ppu;
+    // A sprite that is only a solid border (BGFrame): drawn as rectangles, no texture. 0 = a normal sprite.
+    int outlineWidth = 0;
+    uint32_t outlineColor = 0; // 0xRRGGBBAA
 };
 
 struct TileDef {

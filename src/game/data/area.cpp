@@ -520,7 +520,8 @@ static bool validate(const Area& a, std::string* error) {
         if (!ok) return fail(error, "artifact: bad sprite index or button set");
     }
     for (const SpriteDef& sp : a.sprites)
-        if (sp.sheet < 0 || sp.sheet >= (int)a.sheetNames.size()) return fail(error, "sprite: bad sheet index");
+        if (sp.outlineWidth > 0 ? sp.sheet != -1 : (sp.sheet < 0 || sp.sheet >= (int)a.sheetNames.size()))
+            return fail(error, "sprite: bad sheet index");
     for (const TileDef& t : a.tiles)
         for (int f : t.frames)
             if (f < 0 || f >= (int)a.sprites.size()) return fail(error, "tile: bad sprite index");
@@ -654,8 +655,15 @@ bool loadArea(const char* path, Area& out, std::string* error) {
 
     for (const Json& s : doc["sprites"].items()) {
         const Json& r = s["rect"];
-        out.sprites.push_back({s["sheet"].asInt(), r.at(0).asInt(), r.at(1).asInt(), r.at(2).asInt(), r.at(3).asInt(),
-                               s["pivot"].at(0).asFloat(), s["pivot"].at(1).asFloat(), s["ppu"].asFloat(16)});
+        SpriteDef d{s["sheet"].asInt(), r.at(0).asInt(), r.at(1).asInt(), r.at(2).asInt(), r.at(3).asInt(),
+                    s["pivot"].at(0).asFloat(), s["pivot"].at(1).asFloat(), s["ppu"].asFloat(16)};
+        if (s.has("outline")) {
+            const Json& o = s["outline"];
+            d.outlineWidth = o.at(4).asInt();
+            d.outlineColor = (uint32_t)o.at(0).asInt() << 24 | (uint32_t)o.at(1).asInt() << 16 | (uint32_t)o.at(2).asInt() << 8 |
+                             (uint32_t)o.at(3).asInt();
+        }
+        out.sprites.push_back(d);
     }
 
     for (const Json& t : doc["tiles"].items()) {

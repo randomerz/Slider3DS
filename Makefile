@@ -188,7 +188,9 @@ endif
 
 #---------------------------------------------------------------------------------
 # Exported game data (assets/, from the Unity exporter) -> RomFS:
-#   assets/sheets/<name>.png -> romfs/gfx/<name>.t3x   (tex3ds; incl. the font atlas, tools/make_font.py)
+#   assets/sheets/<name>.png -> romfs/gfx/<name>.t3x   (tex3ds, in the lossless format named by
+#                               assets/sheets/<name>.fmt: la8 for gray sheets, else rgba8; incl. the
+#                               font atlas, tools/make_font.py)
 #   assets/<dir>/*.json      -> romfs/<dir>/*.json    (copied: areas, fonts)
 # The .3dsx embeds RomFS, so it is rebuilt when any of these change.
 #---------------------------------------------------------------------------------
@@ -223,11 +225,11 @@ clean:
 	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS)/gfx $(ROMFS)/*/*.json
 
 #---------------------------------------------------------------------------------
-$(ROMFS)/gfx/%.t3x	:	assets/sheets/%.png
+$(ROMFS)/gfx/%.t3x	:	assets/sheets/%.png assets/sheets/%.fmt
 #---------------------------------------------------------------------------------
 	@mkdir -p $(dir $@)
-	@echo $(notdir $<)
-	@tex3ds -f rgba8 -z auto -o $@ $<
+	@echo $(notdir $<) $$(cat assets/sheets/$*.fmt)
+	@tex3ds -f $$(cat assets/sheets/$*.fmt) -z auto -o $@ $<
 
 #---------------------------------------------------------------------------------
 $(ROMFS)/%.json	:	assets/%.json

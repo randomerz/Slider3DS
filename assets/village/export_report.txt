@@ -4,7 +4,7 @@ World sprites: 329  Anims: 79  Object colliders: 218
 Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18
 Tiles: 168 (39 animated)  Sprites: 668
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
-Sheets (26, 2773K px):
+Sheets (25, 2517K px):
   characters_chad: 256x256  [ChadPortalGun, chad, chad_jump, chad_fall, chad_crutch, chad_sad, chad_surprised]
   characters_fezziwig: 64x512  [fezziwig_jump, fezziwig_float, fezziwig_fall, Fezziwig]
   characters_jungle: 32x128  [jungle_npcsprites]
@@ -16,7 +16,6 @@ Sheets (26, 2773K px):
   largeprops_ocean: 512x512  [pom_tree]
   largeprops_village: 512x512  [more_village_props, Pine Tree, houses2, houses3, houses4, face_rocks, Cow]
   largeprops_village_ruins: 128x512  [village_ruins_bot, village_ruins_bot_deets, village_ruins_runes, village_ruins_top, village_ruins_deco]
-  misc: 512x512  [BGFrame]
   tempsprites: 32x32  [temp_interior]
   tiles: 512x1024  [TilesetAnims, WaterTiles, sand-water_animated, VillageTileset, rock_wall_border, rock_wall, sand-grass_transition, waterfall, border, border_light]
   tiles_caves: 256x64  [cave_construction_props, cave_rocks]
