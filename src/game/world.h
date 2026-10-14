@@ -80,9 +80,11 @@ public:
     bool showsPrompt(const Interactable& it) const; // IInteractable.DisplayInteractionPrompt
     bool promptShown() const; // any offered interactable shows the prompt (the indicator)
 
-    // World position a component of `object` is placed relative to: its owner STile's center (the
-    // object's runtime owner, else `exportedOwner`) plus the object's runtime offset.
-    void objectBase(int object, int exportedOwner, float& x, float& y) const;
+    // World position a component of `object` is placed relative to (its exported position is added):
+    // its owner STile's center (as of now: ObjectStates) plus the object's runtime offset.
+    void objectBase(int object, float& x, float& y) const;
+    // Where `object` itself is now (its transform position).
+    void objectPosition(int object, float& x, float& y) const;
 
     const Area& area;
     Grid grid;

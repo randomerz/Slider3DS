@@ -25,10 +25,11 @@ int colliderOf(const Area& area, const std::string& path) {
     return -1;
 }
 
-// Objects: 0 "A", 1 "A/B" (inactive itself), 2 "A/C", 3 "D" (inactive).
+// Objects: 0 "A", 1 "A/B" (inactive itself), 2 "A/C" at (1, 0), 3 "D" (inactive) at (5, 2), all
+// on the world.
 Area hierarchy() {
     Area area;
-    area.objects = {{"A", -1, true}, {"A/B", 0, false}, {"A/C", 0, true}, {"D", -1, false}};
+    area.objects = {{"A", -1, true}, {"A/B", 0, false}, {"A/C", 0, true, 0, 1, 0}, {"D", -1, false, 0, 5, 2}};
     return area;
 }
 
@@ -182,4 +183,24 @@ TEST(start_checks_skip_the_inactive_raft) {
             found++;
         }
     check(found == 1, "the raft has a checker");
+}
+
+TEST(object_states_move_onto_reparents) {
+    // NPC.Teleport: transform.position = target.position; transform.parent = target. The target comes
+    // later in the object table than the object (as RomeoStart does for Romeo).
+    const Area area = hierarchy();
+    ObjectStates o;
+    o.init(area);
+    o.moveOnto(area, 2, 3);
+    CHECK(o.parent(2) == 3);
+    CHECK(!o.activeInHierarchy(2)); // D is inactive: so is C now
+    CHECK(o.offsetX(2) == 4 && o.offsetY(2) == 2); // exported (1, 0) + (4, 2) = D's (5, 2)
+    o.setActive(area, 3, true);
+    CHECK(o.activeInHierarchy(2));
+    o.setActive(area, 0, false);
+    CHECK(o.activeInHierarchy(2)); // its old parent no longer matters
+    o.setPlacement(area, 3, -1, 1, 1);
+    CHECK(o.offsetX(2) == 5 && o.offsetY(2) == 3); // follows D
+    o.moveOnto(area, 3, 2); // D onto its own child: ignored
+    CHECK(o.parent(3) == -1);
 }

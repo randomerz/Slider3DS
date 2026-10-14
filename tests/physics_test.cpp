@@ -139,7 +139,7 @@ TEST(physics_object_colliders_block) {
     for (const ObjectCollider& c : area.objectColliders) {
         if (!world.objects.active(c) || c.kind != ObjectCollider::Kind::Poly || c.paths.size() != 1 || c.paths[0].size() != 8) continue;
         float bx, by;
-        world.objectBase(c.object, c.owner, bx, by);
+        world.objectBase(c.object, bx, by);
         Blocker b = boxBlocker(world, probe(bx + (c.minX + c.maxX) * 0.5f, by + (c.minY + c.maxY) * 0.5f), false);
         check((bool)b, area.pathOf(c.object) + ": its center is blocked");
         tested++;
@@ -174,7 +174,7 @@ TEST(physics_npcs_and_items_block_collectibles_dont) {
         check(c != nullptr, std::string("has ") + name);
         if (!c) continue;
         float bx, by;
-        world.objectBase(c->object, c->owner, bx, by);
+        world.objectBase(c->object, bx, by);
         float x = bx + (c->minX + c->maxX) * 0.5f, y = by + c->minY - 1.5f;
         check(!ahead(world, x, y, 0, 0, false), std::string("below ") + name + " is free");
         walk(world, x, y, 0, STEP, false);

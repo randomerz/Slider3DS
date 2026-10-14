@@ -48,43 +48,59 @@ int typeOut(Typer& t, int limit = 1000) {
     return frames;
 }
 
-// One STile; "Npc" (0) with its dialogue trigger "Npc/Talk" (1, radius 2 around the NPC) and a
-// teleport target "Spot" (2). Conditionals:
+// One STile; "Npc" (0) with its dialogue trigger "Npc/Talk" (1, radius 2 around the NPC) and message
+// ping "Npc/Ping" (3), and a teleport target "Spot" (2) at (5, 1). Conditionals:
 //   0 (always): "Hello there" (waits for the player; onStart flag "start0", onEnd "end0"), then
-//      "Bye" (onEnd "end1"); exhausting it sets "exhausted".
+//      "Bye" (onEnd "end1" and nudges the player +x); exhausting it sets "exhausted", nudges +y.
 //   1 (flag "next"; always from the beginning): entering teleports the NPC to Spot (5, 1) and flips
-//      its sprite. "Moved" (dontInterrupt, 0.2 s delay; onStart "moved" once only), then "Done".
+//      its sprite. "Moved" (dontInterrupt, 0.2 s delay; once only: onStart "moved", onEnd nudges +x),
+//      then "Done".
+//   2 (flag "vanish"): entering hides the NPC itself. "Bye now".
+//   3 (flag "shout"): entering types at once (NPC.TypeCurrentDialogue). "Hey!" (dontInterrupt).
+// The nudges (UPPRelativePlayer by 1/128) count how often a call ran; flags can't.
 const char* NPC_AREA = R"json({
   "ppu": 16,
   "grid": {"width": 1, "height": 1, "targetGrid": "1", "housingOffset": -150},
   "stiles": [{"islandId": 1, "name": "STile (1)", "x": 0, "y": 0, "width": 17, "isTileActive": true}],
-  "objects": [{"path": "Npc", "parent": -1, "active": true}, {"path": "Npc/Talk", "parent": 0, "active": true},
-              {"path": "Spot", "parent": -1, "active": true}],
+  "objects": [{"path": "Npc", "parent": -1, "active": true, "owner": 1}, {"path": "Npc/Talk", "parent": 0, "active": true, "owner": 1},
+              {"path": "Spot", "parent": -1, "active": true, "owner": 1, "pos": [5, 1]},
+              {"path": "Npc/Ping", "parent": 0, "active": false, "owner": 1, "pos": [0, 1]}],
   "triggerColliders": [{"object": 1, "owner": 1, "kind": "circle", "center": [0, 0], "radius": 2}],
   "triggerEvents": [{"object": 1, "onPlayerEnter": true,
                      "onEnter": [{"method": "NPC.OnDialogueTriggerEnter", "target": 0}],
                      "onExit": [{"method": "NPC.OnDialogueTriggerExit", "target": 0}]}],
-  "npcs": [{"object": 0, "name": "N", "owner": 1, "pos": [0, 0], "facingLeft": false,
+  "npcs": [{"object": 0, "name": "N", "facingLeft": false, "pingObject": 3,
     "text": {"box": [-3.42, 0.55, 3.42, 2.7], "fontSize": 1, "lineAdvance": 0.4309, "wordSpacing": -0.1,
              "charSpacing": 0, "sortingLayerValue": 9, "order": 99},
     "conds": [
       {"conditions": [], "anyOf": false, "alwaysStartFromBeginning": false, "onConditionalEnter": [],
-       "onDialogueChainExhausted": [{"method": "VarManager.SetBoolOn", "string": "exhausted"}],
+       "onDialogueChainExhausted": [{"method": "VarManager.SetBoolOn", "string": "exhausted"}, {"method": "PlayerPositionChanger.UPPRelativePlayer", "owner": 0, "pos": [0, 0], "dPos": [0, 0.0078125]}],
        "dialogue": [
          {"text": "Hello there", "delay": 0.5, "waitForAction": true, "manual": false, "noRepeatEvents": false,
           "dontInterrupt": false, "onStart": [{"method": "VarManager.SetBoolOn", "string": "start0"}],
           "onEnd": [{"method": "VarManager.SetBoolOn", "string": "end0"}]},
          {"text": "Bye", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
-          "dontInterrupt": false, "onStart": [], "onEnd": [{"method": "VarManager.SetBoolOn", "string": "end1"}]}]},
+          "dontInterrupt": false, "onStart": [], "onEnd": [{"method": "VarManager.SetBoolOn", "string": "end1"}, {"method": "PlayerPositionChanger.UPPRelativePlayer", "owner": 0, "pos": [0, 0], "dPos": [0.0078125, 0]}]}]},
       {"conditions": [{"type": "flag", "flag": "next"}], "anyOf": false, "alwaysStartFromBeginning": true,
-       "onConditionalEnter": [{"method": "NPC.Teleport", "target": 0, "objectArg": 2, "argOwner": 1, "argPos": [5, 1]},
+       "onConditionalEnter": [{"method": "NPC.Teleport", "target": 0, "objectArg": 2},
                               {"method": "SpriteRenderer.set_flipX", "target": 0, "bool": true}],
        "onDialogueChainExhausted": [],
        "dialogue": [
          {"text": "Moved", "delay": 0.2, "waitForAction": false, "manual": false, "noRepeatEvents": true,
-          "dontInterrupt": true, "onStart": [{"method": "VarManager.SetBoolOn", "string": "moved"}], "onEnd": []},
+          "dontInterrupt": true, "onStart": [{"method": "VarManager.SetBoolOn", "string": "moved"}],
+          "onEnd": [{"method": "PlayerPositionChanger.UPPRelativePlayer", "owner": 0, "pos": [0, 0], "dPos": [0.0078125, 0]}]},
          {"text": "Done", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
-          "dontInterrupt": false, "onStart": [], "onEnd": []}]}]}],
+          "dontInterrupt": false, "onStart": [], "onEnd": []}]},
+      {"conditions": [{"type": "flag", "flag": "vanish"}], "anyOf": false, "alwaysStartFromBeginning": false,
+       "onConditionalEnter": [{"method": "GameObject.SetActive", "target": 0, "bool": false}],
+       "onDialogueChainExhausted": [],
+       "dialogue": [{"text": "Bye now", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
+                     "dontInterrupt": false, "onStart": [], "onEnd": []}]},
+      {"conditions": [{"type": "flag", "flag": "shout"}], "anyOf": false, "alwaysStartFromBeginning": false,
+       "onConditionalEnter": [{"method": "NPC.TypeCurrentDialogue", "target": 0}],
+       "onDialogueChainExhausted": [],
+       "dialogue": [{"text": "Hey!", "delay": 0, "waitForAction": false, "manual": false, "noRepeatEvents": false,
+                     "dontInterrupt": true, "onStart": [], "onEnd": []}]}]}],
   "player": {"footBox": {"offset": [0, 0], "size": [0.5, 0.5]}, "boatBox": {"offset": [0, 0], "size": [1, 0.5]}}
 })json";
 
@@ -131,6 +147,9 @@ TEST(dialogue_parse_replaces_vars_and_marks_effects) {
     check(t.chars == "Boomo! ..." && t.typeFirst == 6 && t.typeLast == 9, "profile string replaced; <type> range " +
                                                                                std::to_string(t.typeFirst) + ".." +
                                                                                std::to_string(t.typeLast));
+    World world(village());
+    check(parseDialogue("<var>CatUpper</var> NOOO", world.state).chars == "CAT NOOO",
+          "a new profile sets Cat and CatUpper (SaveProfile's constructor)");
     t = parseDialogue("a <b>c</b> <var>x", state);
     check(t.chars == "a <b>c</b> <var>x", "unknown or unclosed tags stay as text");
 }
@@ -166,6 +185,13 @@ TEST(dialogue_layout_wraps_centers_and_bottom_aligns) {
     // Words aren't broken: every character of a word shares its baseline.
     for (size_t i = 1; i < t.chars.size(); i++)
         if (glyphVisible(t.chars[i]) && glyphVisible(t.chars[i - 1])) check(at[i].y == at[i - 1].y, "words stay whole");
+    // Explicit line breaks start lines; a trailing one adds no empty bottom line.
+    std::vector<GlyphPlace> broken;
+    const DialogueText vow = parseDialogue("Juliet, will you\nbe mine?\n", state);
+    layoutDialogue(font, vow, box, ppu, broken);
+    check(broken[vow.chars.find("be")].y == (float)font.descent &&
+              std::fabs(broken[0].y - font.descent - box.lineAdvance * ppu) < 1e-3f,
+          "two lines, 'be mine?' at the bottom");
     // A single word wider than the box breaks where it overflows.
     std::vector<GlyphPlace> wide;
     layoutDialogue(font, parseDialogue(std::string(60, 'W'), state), box, ppu, wide);
@@ -217,10 +243,10 @@ TEST(dialogue_type_loop_retypes_the_ellipsis) {
 TEST(npcs_dialogue_chain_waits_for_the_player) {
     World world(npcArea());
     standAt(world, 10, 0);
-    check(world.npcs.currentCond(0) == 0 && world.npcs.pingShown(0) && !world.npcs.textShown(0),
+    check(world.npcs.currentCond(0) == 0 && world.npcs.pingShown(world, 0) && !world.npcs.textShown(0),
           "started: first conditional, ping up, nothing said");
     standAt(world, 0, 0);
-    check(world.npcs.textShown(0) && world.npcs.typer(0).typing() && !world.npcs.pingShown(0), "entering: typing, ping down");
+    check(world.npcs.textShown(0) && world.npcs.typer(0).typing() && !world.npcs.pingShown(world, 0), "entering: typing, ping down");
     check(world.state.flag("start0") && npcOffered(world, 0) && !world.promptShown(), "onStart ran; offered; no prompt while typing");
     waitTyped(world);
     check(world.state.flag("end0") && world.promptShown(), "typed: onEnd ran and the prompt asks for the player");
@@ -233,11 +259,15 @@ TEST(npcs_dialogue_chain_waits_for_the_player) {
     check(world.npcs.typer(0).finished(), "A while typing skips to the end");
     check(world.state.flag("end1") && world.state.flag("exhausted") && !npcOffered(world, 0),
           "the last line ends: the chain is exhausted and the NPC withdraws");
+    const float nudge = 1.0f / 128;
+    check(world.player.x == nudge && world.player.y == nudge, "its onEnd and onDialogueChainExhausted ran once each");
     check(world.npcs.textShown(0), "the last line stays up while the player listens");
     standAt(world, 10, 0);
-    check(!world.npcs.textShown(0) && !world.npcs.pingShown(0), "leaving clears it; no ping once exhausted");
+    check(!world.npcs.textShown(0) && !world.npcs.pingShown(world, 0), "leaving clears it; no ping once exhausted");
     standAt(world, 0, 0);
     check(world.npcs.lineIndex(0) == 1 && world.npcs.textShown(0), "coming back resumes at the last line");
+    waitTyped(world);
+    check(world.player.x == nudge && world.player.y == 0, "retyped: onEnd runs again, the chain isn't exhausted again");
 }
 
 TEST(npcs_conditional_change_teleports_and_dont_interrupt_finishes) {
@@ -246,7 +276,7 @@ TEST(npcs_conditional_change_teleports_and_dont_interrupt_finishes) {
     world.state.setFlag("next", true);
     world.update(DT, 0, 0, true);
     float x, y, bx, by;
-    world.objectBase(0, 1, x, y);
+    world.objectBase(0, x, y);
     world.grid.ownerBase(1, bx, by);
     check(world.npcs.currentCond(0) == 1 && std::fabs(x - bx - 5) < 1e-4f && std::fabs(y - by - 1) < 1e-4f,
           "the new conditional teleported the NPC (and its trigger) to Spot");
@@ -257,12 +287,15 @@ TEST(npcs_conditional_change_teleports_and_dont_interrupt_finishes) {
     check(world.npcs.textShown(0), "leaving doesn't interrupt a dontInterrupt line");
     for (int i = 0; i < 120 && world.npcs.lineIndex(0) == 0; i++) world.update(DT, 0, 0, true);
     check(world.npcs.lineIndex(0) == 1, "after its delay the chain moved on by itself");
+    check(world.player.x == 10 + 1.0f / 128, "'Moved' ended: its onEnd ran");
     world.update(DT, 0, 0, true);
     check(!world.npcs.textShown(0), "the next line isn't dontInterrupt: with nobody there it clears");
     world.state.setFlag("moved", false);
     standAt(world, 5, 1);
     check(world.npcs.lineIndex(0) == 0 && !world.state.flag("moved"),
           "back again: from the beginning (alwaysStartFromBeginning), onStart not repeated (noRepeatEvents)");
+    waitTyped(world);
+    check(world.player.x == 5, "nor its onEnd");
     // A conditional change while the player listens types the new chain at once (this one again
     // from its beginning).
     for (int i = 0; i < 120 && world.npcs.lineIndex(0) == 0; i++) world.update(DT, 0, 0, true);
@@ -288,42 +321,38 @@ TEST(npcs_village_new_game) {
     const int kevin = npc("Map/Village 8Puzzle/STile (4)/Objects/Kevin");
     check(exploresse >= 0 && romeo >= 0 && kevin >= 0, "found Exploresse, Romeo, Kevin");
     if (exploresse < 0 || romeo < 0 || kevin < 0) return;
-    check(!world.npcs.textShown(exploresse) && world.npcs.pingShown(exploresse), "by the bed: Exploresse's ping is up");
-    const NpcDef& ex = area.npcs[exploresse];
-    float ex0, ey0;
-    world.grid.ownerBase(ex.owner, ex0, ey0);
-    world.player.x = ex0 + ex.x - 0.5f; // inside her talk trigger (a 2 x 2 box around her)
-    world.player.y = ey0 + ex.y;
+    check(!world.npcs.textShown(exploresse) && world.npcs.pingShown(world, exploresse), "by the bed: Exploresse's ping is up");
+    float ex, ey;
+    world.objectPosition(area.npcs[exploresse].object, ex, ey);
+    world.player.x = ex - 0.5f; // inside her talk trigger (a 2 x 2 box around her)
+    world.player.y = ey;
     world.update(DT, 0, 0, false);
     check(world.npcs.textShown(exploresse) && world.npcs.text(exploresse).chars.rfind("You're awake! Cat", 0) == 0,
           "walking up to her: she greets the player: " + world.npcs.text(exploresse).chars);
     // Romeo's first conditional sends him to RomeoStart, off his tile, until tile 1 moves.
     float x, y, sx, sy;
-    world.objectBase(area.npcs[romeo].object, area.npcs[romeo].owner, x, y);
     const int start = area.findObject("Map/World Grid/Objects/RomeoStart/RomeoStart (1)");
-    const TransformArgDef* target = nullptr;
-    for (const TransformArgDef& t : area.transformArgs)
-        if (t.object == start) target = &t;
-    check(target != nullptr, "RomeoStart is a teleport target");
-    if (!target) return;
-    world.grid.ownerBase(target->owner, sx, sy);
-    check(std::fabs(x + area.npcs[romeo].x - sx - target->x) < 1e-3f && std::fabs(y + area.npcs[romeo].y - sy - target->y) < 1e-3f,
-          "Romeo stands at RomeoStart");
+    world.objectPosition(area.npcs[romeo].object, x, y);
+    world.objectPosition(start, sx, sy);
+    check(std::fabs(x - sx) < 1e-3f && std::fabs(y - sy) < 1e-3f && world.objects.parent(area.npcs[romeo].object) == start,
+          "Romeo stands at RomeoStart, parented to it");
     // NPCs on uncollected tiles wait for their tile (their objects are off).
-    check(!world.objects.activeInHierarchy(area.npcs[kevin].object) && !world.npcs.pingShown(kevin), "Kevin's tile 4: not yet");
+    check(!world.objects.activeInHierarchy(area.npcs[kevin].object) && !world.npcs.pingShown(world, kevin), "Kevin's tile 4: not yet");
     world.setTileActive(4, true);
-    check(world.npcs.pingShown(kevin), "collected: Kevin starts, ping up");
+    check(world.npcs.pingShown(world, kevin), "collected: Kevin starts, ping up");
 }
 
 TEST(npcs_validation_rejects_bad_references) {
     const char* cases[][3] = {
         {R"("method": "NPC.OnDialogueTriggerEnter", "target": 0)", R"("method": "NPC.OnDialogueTriggerEnter", "target": 1)",
          "dialogue trigger call on an object without an NPC"},
-        {R"("objectArg": 2,)", R"("objectArg": 9,)", "teleport -> missing object"},
-        {R"("objectArg": 2, "argOwner": 1, "argPos": [5, 1])", R"("argOwner": 1)", "teleport without a target"},
-        {R"("argOwner": 1)", R"("argOwner": 4)", "teleport target owner is not an STile"},
+        {R"("objectArg": 2})", R"("objectArg": 9})", "teleport -> missing object"},
+        {R"(, "objectArg": 2})", "}", "teleport without a target"},
         {R"("npcs": [{"object": 0)", R"("npcs": [{"object": 7)", "npc -> missing object"},
-        {R"("name": "N", "owner": 1)", R"("name": "N", "owner": 3)", "npc owner is not an STile"},
+        {R"("pingObject": 3)", R"("pingObject": 8)", "npc -> missing ping object"},
+        {R"("box": [-3.42, 0.55, 3.42, 2.7])", R"("box": [3.42, 0.55, -3.42, 2.7])", "npc text box inside out"},
+        {R"("owner": 1, "pos": [5, 1])", R"("owner": 4, "pos": [5, 1])", "object owner is not an STile"},
+        {R"("object": 1, "owner": 1, "kind")", R"("object": 1, "owner": 0, "kind")", "component owner isn't its object's"},
     };
     for (const auto& c : cases) {
         std::string json = NPC_AREA;
@@ -337,4 +366,42 @@ TEST(npcs_validation_rejects_bad_references) {
         check(!loadArea("synthetic/bad_npcs.json", a, &error), std::string("rejects ") + c[2]);
         testClearFiles();
     }
+}
+
+TEST(npcs_hiding_itself_ends_the_conversation) {
+    // Exploresse / Kevin style: a conditional's onEnter hides the NPC; its trigger goes with it.
+    World world(npcArea());
+    standAt(world, 0, 0);
+    check(world.npcs.textShown(0) && npcOffered(world, 0), "talking");
+    world.state.setFlag("vanish", true);
+    world.update(DT, 0, 0, true);
+    world.update(DT, 0, 0, true);
+    check(!world.objects.activeInHierarchy(0) && !world.npcs.textShown(0) && !npcOffered(world, 0),
+          "it hid itself: the trigger exit cleared the text and withdrew it");
+}
+
+TEST(npcs_type_current_dialogue_without_the_player) {
+    // NPC.TypeCurrentDialogue from onConditionalEnter types even with nobody in the trigger; a
+    // dontInterrupt line then stays up.
+    World world(npcArea());
+    standAt(world, 10, 0);
+    world.state.setFlag("shout", true);
+    world.update(DT, 0, 0, true);
+    world.update(DT, 0, 0, true);
+    check(world.npcs.textShown(0) && world.npcs.text(0).chars == "Hey!", "it shouts with the player away");
+}
+
+TEST(npcs_hidden_mid_line_stop_their_clocks) {
+    // Unity stops a deactivated object's coroutines: the typing never finishes on its own (A still
+    // skips it), even once the NPC is shown again.
+    World world(npcArea());
+    standAt(world, 10, 0);
+    world.state.setFlag("shout", true);
+    world.update(DT, 0, 0, true);
+    check(world.npcs.typer(0).typing(), "typing 'Hey!'");
+    world.objects.setActive(world.area, 0, false);
+    for (int i = 0; i < 30; i++) world.update(DT, 0, 0, true);
+    world.objects.setActive(world.area, 0, true);
+    for (int i = 0; i < 120; i++) world.update(DT, 0, 0, true);
+    check(world.npcs.typer(0).typing() && !world.npcs.typer(0).finished(), "shown again: still mid-line, frozen");
 }

@@ -93,8 +93,10 @@ public:
     void ownerBase(int owner, float& x, float& y) const;
     const std::vector<Wall>& walls() const { return walls_; }
 
-    // Grid string of the slots; inactive tiles as '#' unless numsOnly.
-    std::string gridString(bool numsOnly = false) const;
+    // Grid string of the slots; inactive tiles as '#' unless numsOnly. (Cached until the grid changes.)
+    const std::string& gridString(bool numsOnly = false) const;
+    // Bumped whenever slots, collected tiles or which tiles are moving change (not while they glide).
+    uint32_t version() const { return version_; }
     // Rearranges every tile at once (SGrid.SetGrid): `ids` in grid-string order (top row first),
     // '_' ignored, '0' = the highest-numbered tile; each id exactly once. Cancels motion (use
     // Artifact::setGrid to keep the Artifact in step). False, and no change, if malformed.
@@ -143,5 +145,8 @@ private:
     std::vector<ActiveMove> active_;
     std::vector<int> bgBorderCount_;   // per slot * 4 sides (SGridBackground counters)
     std::vector<int> tileBorderCount_; // per tiles_ index (STile.SetBorderColliders counter)
+    uint32_t version_ = 1;
+    mutable std::string cached_[2];    // gridString(numsOnly) as of cachedVersion_[numsOnly]
+    mutable uint32_t cachedVersion_[2] = {0, 0};
     std::vector<Wall> walls_;
 };

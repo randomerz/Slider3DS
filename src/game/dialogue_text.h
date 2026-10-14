@@ -31,7 +31,8 @@ struct GlyphPlace {
 
 // Places every character of `text` in `box` (sizes in world units, `ppu` px each), like TMP:
 // words wrap at the box width (a word wider than it gets its own line), lines are centered, and
-// the last line's descender sits on the box bottom (text grows upward).
+// the last line's descender sits on the box bottom (text grows upward). A trailing line break adds
+// no empty line (TMP aligns by the characters' descenders).
 void layoutDialogue(const FontDef& font, const DialogueText& text, const NpcTextDef& box, float ppu,
                     std::vector<GlyphPlace>& out);
 
@@ -44,6 +45,7 @@ class Typer {
 public:
     static constexpr float TEXT_SPEED = 0.03f;     // GameSettings.textSpeed
     static constexpr float TYPE_LOOP_SPEED = 0.2f; // NPC prefab TMPSpecialText.typeLoopSpeed
+    static constexpr float TYPE_LOOP_PAUSE = 0.2f; // LoopType's wait once its range is typed (hard-coded)
     static constexpr float WAVE_STEP = 0.05f;
     static constexpr float WAVE_AMPLITUDE = 0.05f; // waveAmplitude 0.01 * 5
     static constexpr float WAVE_PERIOD = 0.5f;     // wavePeriod 1 * 0.5
@@ -55,6 +57,9 @@ public:
     void tick(float dt);
     // TMPTextTyper.TrySkipText: shows everything and finishes, if still typing.
     void skip();
+    // Its object was deactivated: the coroutines stop for good (typing never finishes by itself,
+    // effects freeze) until the next start(). skip() still works.
+    void halt() { halted_ = true; }
 
     bool typing() const { return running_; }
     bool finished() const { return finished_; }
@@ -69,7 +74,7 @@ private:
     std::vector<uint8_t> alpha_, visible_, wavy_;
     int typeFirst_ = -1, typeLast_ = -1;
     int start_ = 0, index_ = 0; // startingCharacterIndex, charIndex
-    bool rangeMax_ = false, running_ = false, finished_ = false, fresh_ = false;
+    bool rangeMax_ = false, running_ = false, finished_ = false, fresh_ = false, halted_ = false;
     float wait_ = 0;        // since the last step
     float time_ = 0;        // since start (effects)
     float loopFrom_ = -1;   // time the <type> range was all typed, -1 = not yet

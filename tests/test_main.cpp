@@ -1,8 +1,13 @@
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <vector>
 
 #include "test.h"
+
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#endif
 
 namespace {
 
@@ -43,6 +48,14 @@ const Area& village() {
 }
 
 int main(int argc, char** argv) {
+#ifdef _MSC_VER
+    // A failed debug assertion (e.g. vector subscript) prints and aborts instead of opening a dialog.
+    for (int type : {_CRT_WARN, _CRT_ERROR, _CRT_ASSERT}) {
+        _CrtSetReportMode(type, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(type, _CRTDBG_FILE_STDERR);
+    }
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
     const char* filter = argc > 1 ? argv[1] : nullptr;
     int run = 0, failedTests = 0;
     for (const TestCase& t : registry()) {

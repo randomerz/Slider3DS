@@ -230,12 +230,17 @@ void Grid::ownerBase(int owner, float& x, float& y) const {
     y = t ? t->posY * tileWidth_ : 0.0f;
 }
 
-std::string Grid::gridString(bool numsOnly) const {
-    return buildGridString(
-        w_, h_, [&](int x, int y) { return idAt(x, y); }, [&](int id) { return tileActive(id); }, numsOnly);
+const std::string& Grid::gridString(bool numsOnly) const {
+    if (cachedVersion_[numsOnly] != version_) {
+        cached_[numsOnly] = buildGridString(
+            w_, h_, [&](int x, int y) { return idAt(x, y); }, [&](int id) { return tileActive(id); }, numsOnly);
+        cachedVersion_[numsOnly] = version_;
+    }
+    return cached_[numsOnly];
 }
 
 void Grid::clearMotion() {
+    version_++;
     anims_.clear();
     active_.clear();
     bgBorderCount_.assign(w_ * h_ * 4, 0);
@@ -283,7 +288,11 @@ bool Grid::checkTarget() const {
 }
 
 void Grid::setTileActive(int islandId, bool active) {
-    if (TileState* t = tileMut(islandId)) t->active = active;
+    TileState* t = tileMut(islandId);
+    if (t && t->active != active) {
+        t->active = active;
+        version_++;
+    }
 }
 
 void Grid::startMove(const SMove& move, int playerStile, int id) {
@@ -322,6 +331,7 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
     }
     slots_ = next;
     active_.push_back(std::move(am));
+    version_++;
     rebuildWalls();
 }
 
@@ -340,8 +350,10 @@ std::vector<int> Grid::update(float dt) {
             if (a.playerOn) tileBorderCount_[tileIndex_[a.islandId]]--;
         }
     }
+    const size_t animCount = anims_.size();
     anims_.erase(std::remove_if(anims_.begin(), anims_.end(), [](const Anim& a) { return a.t >= a.duration; }),
                  anims_.end());
+    if (anims_.size() != animCount) version_++; // tiles stopped moving
 
     // A move ends once all its tiles have arrived (at once if it moved none): drop its fences,
     // restore colliders.

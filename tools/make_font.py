@@ -90,6 +90,14 @@ def main():
         f.write(",\n".join("    " + json.dumps(g, separators=(",", ":")) for g in glyphs))
         f.write("\n  ]\n}\n")
     print(f"{len(glyphs)} glyphs, atlas {ATLAS_W}x{height}")
+    # The original lays the backing out as its own TMP text (its own advances, wordSpacing +5.6
+    # vs the letters' -10); the port draws each backing glyph at its letter's pen instead, which is
+    # what that spacing approximates. Report where the two fonts' advances differ.
+    diff = [(ch, int(text_font.getlength(ch)), int(fill_font.getlength(ch))) for ch in CHARS
+            if text_font.getlength(ch) != fill_font.getlength(ch)]
+    if diff:
+        print("advances differ (text vs fill; backings follow the text's): " +
+              ", ".join(f"{ch!r} {a} vs {b}" for ch, a, b in diff))
 
 
 if __name__ == "__main__":

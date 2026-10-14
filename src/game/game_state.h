@@ -3,12 +3,16 @@
 // profile exists (phase 4), which will add items, the grid and the player's position.
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
 
 class GameState {
 public:
+    // SaveProfile's constructor: the profile name is the cat's ("Cat" / "CatUpper" in dialogue).
+    void newProfile(const std::string& profileName);
+
     bool flag(const std::string& name) const;
     void setFlag(const std::string& name, bool value);
 
@@ -20,6 +24,9 @@ public:
     bool hasCollectible(const std::string& name, const std::string& area) const;
     void setCollectible(const std::string& name, const std::string& area, bool collected);
 
+    // Bumped by every change, so per-frame checks (NPC conditionals) can skip unchanged frames.
+    uint32_t version() const { return version_; }
+
 private:
     struct Collectible {
         std::string name, area;
@@ -27,4 +34,5 @@ private:
     std::vector<std::string> flags_; // set to true
     std::vector<std::pair<std::string, std::string>> strings_;
     std::vector<Collectible> collectibles_;
+    uint32_t version_ = 0;
 };

@@ -125,7 +125,7 @@ void layoutDialogue(const FontDef& font, const DialogueText& text, const NpcText
         pen[c] = x;
         x += advance(s[c]);
     }
-    endLine(s.size());
+    if (lineStart < s.size() || lines.empty()) endLine(s.size());
 
     // Bottom-aligned: the last line's baseline is `descent` above the box bottom.
     const float lineAdvance = box.lineAdvance * ppu;
@@ -149,6 +149,7 @@ void Typer::start(const DialogueText& text) {
     running_ = true;
     finished_ = false;
     fresh_ = true;
+    halted_ = false;
     wait_ = time_ = 0;
     loopFrom_ = -1;
     step(); // the coroutine's first iteration runs before its first wait
@@ -173,6 +174,7 @@ void Typer::step() {
 }
 
 void Typer::tick(float dt) {
+    if (halted_) return;
     if (fresh_) { // the frame start() ran in
         fresh_ = false;
         return;
@@ -209,9 +211,9 @@ void Typer::skip() {
 bool Typer::shown(int i) const {
     if (i < 0 || i >= (int)alpha_.size() || alpha_[i] == 0) return false;
     if (i < typeFirst_ || i > typeLast_ || loopFrom_ < 0) return true;
-    // LoopType: 0.2 s after the range is typed, hide it all, then show one visible character
-    // more every TYPE_LOOP_SPEED, then start over.
-    const float t = time_ - loopFrom_ - TYPE_LOOP_SPEED;
+    // LoopType: TYPE_LOOP_PAUSE after the range is typed, hide it all, then show one visible
+    // character more every TYPE_LOOP_SPEED, then start over.
+    const float t = time_ - loopFrom_ - TYPE_LOOP_PAUSE;
     if (t < 0) return true;
     int count = 0, rank = 0;
     for (int c = typeFirst_; c <= typeLast_ && c < (int)visible_.size(); c++) {

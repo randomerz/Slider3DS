@@ -27,9 +27,9 @@ const char* TRIGGER_AREA = R"json({
   "ppu": 16,
   "grid": {"width": 1, "height": 1, "targetGrid": "1", "housingOffset": -150},
   "stiles": [{"islandId": 1, "name": "STile (1)", "x": 0, "y": 0, "width": 17, "isTileActive": true}],
-  "objects": [{"path": "Event", "parent": -1, "active": true}, {"path": "Contact", "parent": -1, "active": true},
-              {"path": "NoBoat", "parent": -1, "active": true}, {"path": "NoLand", "parent": -1, "active": true},
-              {"path": "Carry", "parent": -1, "active": true}, {"path": "Other", "parent": -1, "active": true}],
+  "objects": [{"path": "Event", "parent": -1, "active": true, "owner": 1}, {"path": "Contact", "parent": -1, "active": true, "owner": 1},
+              {"path": "NoBoat", "parent": -1, "active": true, "owner": 1}, {"path": "NoLand", "parent": -1, "active": true, "owner": 1},
+              {"path": "Carry", "parent": -1, "active": true, "owner": 1}, {"path": "Other", "parent": -1, "active": true, "owner": 1}],
   "triggerColliders": [
     {"object": 0, "owner": 1, "kind": "circle", "center": [-6, 0], "radius": 1},
     {"object": 1, "owner": 1, "kind": "circle", "center": [-3, 0], "radius": 1},
@@ -172,7 +172,7 @@ TEST(triggers_tiles_sliding_without_the_player_turn_their_triggers_off) {
     if (!trigger) return;
     auto overlapsCenter = [&]() {
         float bx, by;
-        world.objectBase(trigger->object, trigger->owner, bx, by);
+        world.objectBase(trigger->object, bx, by);
         const float x = bx + (trigger->minX + trigger->maxX) * 0.5f, y = by + (trigger->minY + trigger->maxY) * 0.5f;
         return colliderOverlaps(world, *trigger, {x - 0.01f, y - 0.01f, x + 0.01f, y + 0.01f});
     };

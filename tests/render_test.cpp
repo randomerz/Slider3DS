@@ -346,7 +346,7 @@ TEST(render_action_indicator_while_an_interaction_is_offered) {
         for (const ObjectCollider& c : area.triggerColliders)
             if (c.object == object) {
                 float bx, by;
-                world.objectBase(c.object, c.owner, bx, by);
+                world.objectBase(c.object, bx, by);
                 world.player.x = bx + (c.minX + c.maxX) * 0.5f;
                 world.player.y = by + (c.minY + c.maxY) * 0.5f - area.player.footBox.offY;
             }
@@ -385,13 +385,13 @@ TEST(render_npc_dialogue_goldens) {
     if (npc < 0) return;
     const NpcDef& n = area.npcs[npc];
     World world = sceneWorld();
-    float bx, by;
-    world.grid.ownerBase(n.owner, bx, by);
-    world.player.x = bx + n.x - 0.5f;
-    world.player.y = by + n.y;
+    float nx, ny;
+    world.objectPosition(n.object, nx, ny);
+    world.player.x = nx - 0.5f;
+    world.player.y = ny;
     auto shoot = [&](const char* name) {
         testResetDrawCalls();
-        view.begin(area, sheets, bx + n.x, by + n.y + 1, plat::TOP_W, plat::TOP_H, 0, false);
+        view.begin(area, sheets, nx, ny + 1, plat::TOP_W, plat::TOP_H, 0, false);
         view.draw(world);
         goldens.compare(name, 50);
     };

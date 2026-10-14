@@ -70,11 +70,13 @@ struct Anim {
 };
 
 // A scene object (GameObject): what components belong to and GameObject.SetActive acts on. Area
-// lists them parents before children; runtime active state is in ObjectStates.
+// lists them parents before children; runtime state (active, placement, parent) is in ObjectStates.
 struct SceneObject {
     std::string path;      // hierarchy path, e.g. "Map/World Grid/Alcove/Cave Door"
     int parent = -1;       // index in Area::objects, -1 = root
     bool activeSelf = true; // authored
+    int owner = 0;         // the STile it's under (islandId; an STile's own object: itself), 0 = world
+    float x = 0, y = 0;    // position, relative to its owner's center (its components' "owner" is the same)
 };
 
 // A sprite as placed in the world: its pivot lands on (x, y) (relative to some base), and it sorts
@@ -134,7 +136,7 @@ struct ConditionDef {
 //   ChangeScenes            SceneChanger.ChangeScenes (leaves the Village)
 //   NpcTriggerEnter/Exit    NPC.OnDialogueTriggerEnter / Exit on the target's NPC
 //   NpcTypeCurrent          NPC.TypeCurrentDialogue: (re)types its current line
-//   NpcTeleport             NPC.Teleport(transformArgs[data]): the NPC moves there (and follows it)
+//   NpcTeleport             NPC.Teleport(objectArg): the NPC moves onto that object (and is parented to it)
 //   SetFlipX                SpriteRenderer.set_flipX(boolArg) on the target's sprite
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
@@ -151,7 +153,8 @@ struct ConditionDef {
     X(CheckConditions, "ConditionChecker.CheckConditions")             \
     X(ChangeScenes, "SceneChanger.ChangeScenes")                       \
     X(NpcTriggerEnter, "NPC.OnDialogueTriggerEnter")                   \
-    X(NpcTriggerExit, "NPC.OnDialogueTriggerExit")                         X(NpcTypeCurrent, "NPC.TypeCurrentDialogue")                       \
+    X(NpcTriggerExit, "NPC.OnDialogueTriggerExit")                     \
+    X(NpcTypeCurrent, "NPC.TypeCurrentDialogue")                       \
     X(NpcTeleport, "NPC.Teleport")                                     \
     X(SetFlipX, "SpriteRenderer.set_flipX")
 
@@ -167,19 +170,11 @@ struct CallDef {
     Method method = Method::Unsupported;
     std::string name; // "<TargetType>.<Method>", for logs and tests
     int target = -1;  // Area::objects index of the target, -1 = none
+    int objectArg = -1; // a scene-object argument (Transform / GameObject), Area::objects index
     bool boolArg = false;
     int intArg = 0;
     std::string stringArg;
-    // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index; NpcTeleport:
-    // Area::transformArgs index.
-    int data = -1;
-};
-
-// A call's Transform argument: the object and its position (relative to its owner STile).
-struct TransformArgDef {
-    int object = -1;
-    int owner = 0;
-    float x = 0, y = 0;
+    int data = -1; // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index
 };
 
 // What a PlayerPositionChanger call needs of its component.
@@ -267,16 +262,14 @@ struct NpcTextDef {
 };
 
 // An NPC (NPC.cs): conditionals with dialogue chains, typed above it while the player is in its
-// dialogue trigger (whose OnTriggerEnter calls NpcTriggerEnter / Exit).
+// dialogue trigger (whose OnTriggerEnter calls NpcTriggerEnter / Exit). Its position and owner are
+// its object's.
 struct NpcDef {
     int object = 0;
     std::string name;   // characterName
-    int owner = 0;
-    float x = 0, y = 0; // position, owner-relative
     bool facingLeft = false; // spriteDefaultFacingLeft
     NpcTextDef text;
-    int pingObject = -1;   // the message ping (shown while there's dialogue not yet exhausted)
-    SpritePlacement ping;  // owner-relative; sprite -1 = none
+    int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
     std::vector<NpcCondDef> conds;
 };
 
@@ -370,7 +363,6 @@ struct Area {
     std::vector<ObjectCollider> triggerColliders; // of objects with interactions, trigger events, collectibles
     std::vector<ConditionCheckerDef> conditionCheckers;
     std::vector<TeleportDef> teleports; // payloads of teleport calls (CallDef::data)
-    std::vector<TransformArgDef> transformArgs; // Transform arguments of calls (CallDef::data)
     std::vector<InteractionDef> interactions;
     std::vector<TriggerEventDef> triggerEvents;
     std::vector<CollectibleDef> collectibles;

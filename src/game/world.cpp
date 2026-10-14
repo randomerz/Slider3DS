@@ -16,6 +16,7 @@ void setTileObjects(World& world, const STileDef& s, bool active) {
 } // namespace
 
 World::World(const Area& a) : area(a) {
+    state.newProfile("Cat"); // (until a new-game screen names the profile)
     grid.init(area);
     artifact.init(grid);
     reloadObjects();
@@ -143,8 +144,14 @@ bool World::promptShown() const {
     return std::any_of(interactables.begin(), interactables.end(), [&](const Interactable& it) { return showsPrompt(it); });
 }
 
-void World::objectBase(int object, int exportedOwner, float& x, float& y) const {
-    grid.ownerBase(objects.owner(object, exportedOwner), x, y);
+void World::objectPosition(int object, float& x, float& y) const {
+    objectBase(object, x, y);
+    x += area.objects[object].x;
+    y += area.objects[object].y;
+}
+
+void World::objectBase(int object, float& x, float& y) const {
+    grid.ownerBase(objects.owner(object), x, y);
     x += objects.offsetX(object);
     y += objects.offsetY(object);
 }

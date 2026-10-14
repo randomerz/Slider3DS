@@ -103,11 +103,7 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         d.intArg = c["int"].asInt();
         d.stringArg = c["string"].asString();
         if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
-        if (d.method == CallDef::Method::NpcTeleport && c.has("objectArg")) {
-            d.data = (int)out.transformArgs.size();
-            out.transformArgs.push_back({c["objectArg"].asInt(-1), c["argOwner"].asInt(), c["argPos"].at(0).asFloat(),
-                                         c["argPos"].at(1).asFloat()});
-        }
+        d.objectArg = c["objectArg"].asInt(-1);
         if (isTeleport(d.method)) {
             TeleportDef t;
             t.owner = c["owner"].asInt();
@@ -213,9 +209,6 @@ static NpcDef readNpc(const Json& j, Area& out) {
     NpcDef n;
     n.object = j["object"].asInt(-1);
     n.name = j["name"].asString();
-    n.owner = j["owner"].asInt();
-    n.x = j["pos"].at(0).asFloat();
-    n.y = j["pos"].at(1).asFloat();
     n.facingLeft = j["facingLeft"].asBool();
     const Json& t = j["text"];
     n.text.minX = t["box"].at(0).asFloat();
@@ -227,10 +220,7 @@ static NpcDef readNpc(const Json& j, Area& out) {
     n.text.charSpacing = t["charSpacing"].asFloat();
     n.text.sortLayer = t["sortingLayerValue"].asInt();
     n.text.order = t["order"].asInt();
-    if (j.has("ping")) {
-        n.pingObject = j["ping"]["object"].asInt(-1);
-        n.ping = readPlacement(j["ping"]);
-    }
+    n.pingObject = j["pingObject"].asInt(-1);
     for (const Json& c : j["conds"].items()) {
         NpcCondDef d;
         d.conditions = readConditions(c["conditions"]);
@@ -307,9 +297,13 @@ static bool validate(const Area& a, std::string* error) {
     auto placementOk = [&](const SpritePlacement& p) {
         return spriteIndexOk(p.sprite) && animOk(p.anim) && a.sprites[p.sprite].ppu == (float)a.ppu;
     };
-    for (size_t i = 0; i < a.objects.size(); i++)
+    for (size_t i = 0; i < a.objects.size(); i++) {
         if (a.objects[i].parent < -1 || a.objects[i].parent >= (int)i)
             return fail(error, "object " + a.objects[i].path + ": parent must come before it");
+        if (!ownerOk(a.objects[i].owner)) return fail(error, "object " + a.objects[i].path + ": unknown owner STile");
+    }
+    // Components are placed relative to their object's owner (ObjectStates tracks it at runtime).
+    auto sameOwner = [&](int object, int owner) { return objectOk(object) && a.objects[object].owner == owner; };
     for (const Anim& an : a.anims) {
         if (an.frames.empty() || an.frames.size() != an.times.size())
             return fail(error, "anim " + an.name + ": frames/times mismatch");
@@ -318,13 +312,13 @@ static bool validate(const Area& a, std::string* error) {
     }
     for (const WorldSprite& ws : a.worldSprites) {
         if (!objectOk(ws.object)) return fail(error, "world sprite: bad object index");
-        if (!ownerOk(ws.owner)) return fail(error, "world sprite " + a.pathOf(ws.object) + ": unknown owner STile");
+        if (!sameOwner(ws.object, ws.owner)) return fail(error, "world sprite " + a.pathOf(ws.object) + ": owner isn't its object's");
         if (!placementOk(ws.place))
             return fail(error, "world sprite " + a.pathOf(ws.object) + ": bad sprite, anim or ppu");
     }
     for (const ObjectCollider& c : a.objectColliders) {
         if (!objectOk(c.object)) return fail(error, "collider: bad object index");
-        if (!ownerOk(c.owner)) return fail(error, "collider " + a.pathOf(c.object) + ": unknown owner STile");
+        if (!sameOwner(c.object, c.owner)) return fail(error, "collider " + a.pathOf(c.object) + ": owner isn't its object's");
         for (const Polygon& p : c.paths)
             if (p.size() % 2 != 0) return fail(error, "collider " + a.pathOf(c.object) + ": odd point list");
     }
@@ -334,17 +328,13 @@ static bool validate(const Area& a, std::string* error) {
     auto callsOk = [&](const std::vector<CallDef>& calls) {
         using M = CallDef::Method;
         for (const CallDef& c : calls) {
-            if (c.target != -1 && !objectOk(c.target)) return false;
+            if ((c.target != -1 && !objectOk(c.target)) || (c.objectArg != -1 && !objectOk(c.objectArg))) return false;
             if ((c.method == M::SetActive || c.method == M::SetFlipX) && c.target == -1) return false;
             if ((c.method == M::NpcTriggerEnter || c.method == M::NpcTriggerExit || c.method == M::NpcTypeCurrent ||
                  c.method == M::NpcTeleport) &&
                 (c.target == -1 || !isNpc[c.target]))
                 return false;
-            if (c.method == M::NpcTeleport) {
-                if (c.data < 0 || c.data >= (int)a.transformArgs.size()) return false;
-                const TransformArgDef& t = a.transformArgs[c.data];
-                if (!objectOk(t.object) || !ownerOk(t.owner)) return false;
-            }
+            if (c.method == M::NpcTeleport && c.objectArg == -1) return false;
             if (c.method == M::CheckConditions && (c.data < 0 || c.data >= (int)a.conditionCheckers.size())) return false;
             if (isTeleport(c.method)) {
                 if (c.data < 0 || c.data >= (int)a.teleports.size()) return false;
@@ -357,7 +347,7 @@ static bool validate(const Area& a, std::string* error) {
         return true;
     };
     for (const ObjectCollider& c : a.triggerColliders)
-        if (!objectOk(c.object) || !ownerOk(c.owner)) return fail(error, "trigger collider: bad object or owner");
+        if (!sameOwner(c.object, c.owner)) return fail(error, "trigger collider: bad object or owner");
     for (const STileDef& s : a.stiles)
         if ((s.objectsObject != -1 && !objectOk(s.objectsObject)) || (s.tileMapsObject != -1 && !objectOk(s.tileMapsObject)))
             return fail(error, "stile " + std::to_string(s.islandId) + ": bad objects / allTileMaps index");
@@ -373,12 +363,13 @@ static bool validate(const Area& a, std::string* error) {
         if (!objectOk(c.object) || (c.sprite != -1 && !spriteIndexOk(c.sprite)) || !callsOk(c.onCollect))
             return fail(error, "collectible " + c.name + ": bad object, sprite or call");
     for (const NpcDef& n : a.npcs) {
-        bool ok = objectOk(n.object) && ownerOk(n.owner) && (n.ping.sprite == -1 || (objectOk(n.pingObject) && placementOk(n.ping)));
+        bool ok = objectOk(n.object) && (n.pingObject == -1 || objectOk(n.pingObject)) &&
+                  n.text.minX < n.text.maxX && n.text.minY < n.text.maxY;
         for (const NpcCondDef& c : n.conds) {
             ok = ok && callsOk(c.onEnter) && callsOk(c.onExhausted);
             for (const DialogueDef& d : c.dialogue) ok = ok && callsOk(d.onStart) && callsOk(d.onEnd);
         }
-        if (!ok) return fail(error, "npc " + n.name + ": bad object, owner, ping or call");
+        if (!ok) return fail(error, "npc " + n.name + ": bad object, ping, text box or call");
     }
     for (const SpritePlacement* p : {&a.player.body, &a.player.boat, &a.player.actionIndicator})
         if (p->sprite != -1 && !placementOk(*p)) return fail(error, "player: bad sprite, anim or ppu");
@@ -443,7 +434,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (int i = 0; i < 3; i++) out.background[i] = (uint8_t)doc["background"].at(i).asInt();
 
     for (const Json& o : doc["objects"].items())
-        out.objects.push_back({o["path"].asString(), o["parent"].asInt(-1), o["active"].asBool(true)});
+        out.objects.push_back({o["path"].asString(), o["parent"].asInt(-1), o["active"].asBool(true), o["owner"].asInt(),
+                               o["pos"].at(0).asFloat(), o["pos"].at(1).asFloat()});
 
     for (const Json& s : doc["worldSprites"].items()) {
         WorldSprite ws;

@@ -154,9 +154,9 @@ Blocker boxBlocker(const World& world, const Box& box, bool onWater) {
 }
 
 bool colliderOverlaps(const World& world, const ObjectCollider& c, const Box& box) {
-    if (!world.objects.active(c) || !ownerCollides(world.grid, world.objects.owner(c.object, c.owner))) return false;
+    if (!world.objects.active(c) || !ownerCollides(world.grid, world.objects.owner(c.object))) return false;
     float bx, by;
-    world.objectBase(c.object, c.owner, bx, by);
+    world.objectBase(c.object, bx, by);
     return objectHit(c, bx, by, inner(box));
 }
 

@@ -232,8 +232,8 @@
       "object": 43,
       "owner": 0,
       "sprite": 2,
-      "pos": [55.5,2.5],
-      "sortY": 2.5,
+      "pos": [55.5,3.5],
+      "sortY": 3.5,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -253,8 +253,8 @@
       "object": 46,
       "owner": 0,
       "sprite": 2,
-      "pos": [46.5,17],
-      "sortY": 17,
+      "pos": [46.5,18],
+      "sortY": 18,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -293,8 +293,8 @@
       "object": 53,
       "owner": 0,
       "sprite": 2,
-      "pos": [38,48],
-      "sortY": 48,
+      "pos": [38,49],
+      "sortY": 49,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1092,8 +1092,8 @@
       "object": 130,
       "owner": 0,
       "sprite": 2,
-      "pos": [69.5,69.5],
-      "sortY": 69.5,
+      "pos": [69.5,70.5],
+      "sortY": 70.5,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1152,8 +1152,8 @@
       "object": 140,
       "owner": 0,
       "sprite": 2,
-      "pos": [49,8.8125],
-      "sortY": 8.8125,
+      "pos": [49,9.8125],
+      "sortY": 9.8125,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1216,8 +1216,8 @@
       "object": 148,
       "owner": 1,
       "sprite": 2,
-      "pos": [6.75,0],
-      "sortY": 0,
+      "pos": [6.75,1],
+      "sortY": 1,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1390,8 +1390,8 @@
       "object": 171,
       "owner": 1,
       "sprite": 2,
-      "pos": [-0.75,-145],
-      "sortY": -145,
+      "pos": [-0.75,-144],
+      "sortY": -144,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1452,8 +1452,8 @@
       "object": 179,
       "owner": 2,
       "sprite": 2,
-      "pos": [-5,3],
-      "sortY": 3,
+      "pos": [-5,4],
+      "sortY": 4,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1636,8 +1636,8 @@
       "object": 201,
       "owner": 3,
       "sprite": 2,
-      "pos": [1.5,6],
-      "sortY": 6,
+      "pos": [1.5,7],
+      "sortY": 7,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1906,8 +1906,8 @@
       "object": 239,
       "owner": 4,
       "sprite": 2,
-      "pos": [-6,4],
-      "sortY": 4,
+      "pos": [-6,5],
+      "sortY": 5,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -1961,8 +1961,8 @@
       "object": 248,
       "owner": 5,
       "sprite": 2,
-      "pos": [-6.75,0],
-      "sortY": 0,
+      "pos": [-6.75,1],
+      "sortY": 1,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -2217,8 +2217,8 @@
       "object": 282,
       "owner": 5,
       "sprite": 2,
-      "pos": [3,-145],
-      "sortY": -145,
+      "pos": [3,-144],
+      "sortY": -144,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -2238,8 +2238,8 @@
       "object": 285,
       "owner": 6,
       "sprite": 2,
-      "pos": [-2,-3],
-      "sortY": -3,
+      "pos": [-2,-2],
+      "sortY": -2,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -2417,8 +2417,8 @@
       "object": 306,
       "owner": 7,
       "sprite": 2,
-      "pos": [-6.5,1.5],
-      "sortY": 1.5,
+      "pos": [-6.5,2.5],
+      "sortY": 2.5,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -2601,8 +2601,8 @@
       "object": 326,
       "owner": 8,
       "sprite": 2,
-      "pos": [3.5,3],
-      "sortY": 3,
+      "pos": [3.5,4],
+      "sortY": 4,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -2932,8 +2932,8 @@
       "object": 367,
       "owner": 9,
       "sprite": 2,
-      "pos": [0,-4.5],
-      "sortY": -4.5,
+      "pos": [0,-3.5],
+      "sortY": -3.5,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -3190,8 +3190,8 @@
       "object": 399,
       "owner": 9,
       "sprite": 2,
-      "pos": [-3,-145],
-      "sortY": -145,
+      "pos": [-3,-144],
+      "sortY": -144,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -3466,8 +3466,8 @@
       "object": 436,
       "owner": 9,
       "sprite": 2,
-      "pos": [5.0625,-143.9375],
-      "sortY": -143.9375,
+      "pos": [5.0625,-142.9375],
+      "sortY": -142.9375,
       "sortingLayerValue": 9,
       "order": 0,
       "flip": 0
@@ -7256,14 +7256,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 148,
-        "sprite": 2,
-        "pos": [6.75,1],
-        "sortY": 1,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 148,
       "conds": [
         {
           "conditions": [
@@ -7274,9 +7267,7 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 476,
-              "argOwner": 0,
-              "argPos": [30.75,49.25]
+              "objectArg": 476
             }
           ],
           "onDialogueChainExhausted": [
@@ -7342,9 +7333,7 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 477,
-              "argOwner": 1,
-              "argPos": [6.75,0]
+              "objectArg": 477
             }
           ],
           "onDialogueChainExhausted": [
@@ -7390,9 +7379,7 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 477,
-              "argOwner": 1,
-              "argPos": [6.75,0]
+              "objectArg": 477
             },
             {
               "method": "VarManager.SetBoolOn",
@@ -7472,9 +7459,7 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 477,
-              "argOwner": 1,
-              "argPos": [6.75,0]
+              "objectArg": 477
             }
           ],
           "onDialogueChainExhausted": [
@@ -7517,9 +7502,7 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 477,
-              "argOwner": 1,
-              "argPos": [6.75,0]
+              "objectArg": 477
             }
           ],
           "onDialogueChainExhausted": [
@@ -7553,9 +7536,7 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 127,
-              "argOwner": 0,
-              "argPos": [69.5,69.5]
+              "objectArg": 127
             }
           ],
           "onDialogueChainExhausted": [
@@ -7592,14 +7573,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 171,
-        "sprite": 2,
-        "pos": [-0.75,-144],
-        "sortY": -144,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 171,
       "conds": [
         {
           "conditions": [
@@ -7684,9 +7658,7 @@
             {
               "method": "NPC.Teleport",
               "target": 169,
-              "objectArg": 479,
-              "argOwner": 1,
-              "argPos": [1.625,0.75]
+              "objectArg": 479
             },
             {
               "method": "NPC.TypeCurrentDialogue",
@@ -7796,9 +7768,7 @@
             {
               "method": "NPC.Teleport",
               "target": 169,
-              "objectArg": 480,
-              "argOwner": 1,
-              "argPos": [3,0.75]
+              "objectArg": 480
             }
           ],
           "onDialogueChainExhausted": [
@@ -7849,9 +7819,7 @@
             {
               "method": "NPC.Teleport",
               "target": 169,
-              "objectArg": 481,
-              "argOwner": 1,
-              "argPos": [-0.75,-145]
+              "objectArg": 481
             }
           ],
           "onDialogueChainExhausted": [
@@ -8310,14 +8278,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 179,
-        "sprite": 2,
-        "pos": [-5,4],
-        "sortY": 4,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 179,
       "conds": [
         {
           "conditions": [
@@ -8471,9 +8432,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 483,
-              "argOwner": 2,
-              "argPos": [-7,4]
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
@@ -8510,9 +8469,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 483,
-              "argOwner": 2,
-              "argPos": [-7,4]
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
@@ -8650,9 +8607,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8702,9 +8657,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8742,9 +8695,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8802,9 +8753,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8867,9 +8816,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             }
           ],
           "onDialogueChainExhausted": [
@@ -8961,9 +8908,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 485,
-              "argOwner": 0,
-              "argPos": [32,44]
+              "objectArg": 485
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9034,9 +8979,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 485,
-              "argOwner": 0,
-              "argPos": [32,44]
+              "objectArg": 485
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9087,9 +9030,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 127,
-              "argOwner": 0,
-              "argPos": [69.5,69.5]
+              "objectArg": 127
             }
           ],
           "onDialogueChainExhausted": [
@@ -9126,14 +9067,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 201,
-        "sprite": 2,
-        "pos": [1.5,7],
-        "sortY": 7,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 201,
       "conds": [
         {
           "conditions": [
@@ -9353,9 +9287,7 @@
             {
               "method": "NPC.Teleport",
               "target": 199,
-              "objectArg": 486,
-              "argOwner": 3,
-              "argPos": [4,1.75]
+              "objectArg": 486
             }
           ],
           "onDialogueChainExhausted": [
@@ -9392,14 +9324,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 239,
-        "sprite": 2,
-        "pos": [-6,5],
-        "sortY": 5,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 239,
       "conds": [
         {
           "conditions": [
@@ -9505,9 +9430,7 @@
             {
               "method": "NPC.Teleport",
               "target": 237,
-              "objectArg": 487,
-              "argOwner": 0,
-              "argPos": [44,8]
+              "objectArg": 487
             }
           ],
           "onDialogueChainExhausted": [
@@ -9541,9 +9464,7 @@
             {
               "method": "NPC.Teleport",
               "target": 237,
-              "objectArg": 487,
-              "argOwner": 0,
-              "argPos": [44,8]
+              "objectArg": 487
             }
           ],
           "onDialogueChainExhausted": [
@@ -9614,14 +9535,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 248,
-        "sprite": 2,
-        "pos": [-6.75,1],
-        "sortY": 1,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 248,
       "conds": [
         {
           "conditions": [
@@ -9794,14 +9708,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 282,
-        "sprite": 2,
-        "pos": [3,-144],
-        "sortY": -144,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 282,
       "conds": [
         {
           "conditions": [
@@ -9892,14 +9799,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 285,
-        "sprite": 2,
-        "pos": [-2,-2],
-        "sortY": -2,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 285,
       "conds": [
         {
           "conditions": [
@@ -10074,9 +9974,7 @@
             {
               "method": "NPC.Teleport",
               "target": 283,
-              "objectArg": 488,
-              "argOwner": 0,
-              "argPos": [44,6]
+              "objectArg": 488
             }
           ],
           "onDialogueChainExhausted": [
@@ -10115,9 +10013,7 @@
             {
               "method": "NPC.Teleport",
               "target": 283,
-              "objectArg": 488,
-              "argOwner": 0,
-              "argPos": [44,6]
+              "objectArg": 488
             }
           ],
           "onDialogueChainExhausted": [
@@ -10205,14 +10101,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 306,
-        "sprite": 2,
-        "pos": [-6.5,2.5],
-        "sortY": 2.5,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 306,
       "conds": [
         {
           "conditions": [
@@ -10435,14 +10324,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 326,
-        "sprite": 2,
-        "pos": [3.5,4],
-        "sortY": 4,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 326,
       "conds": [
         {
           "conditions": [
@@ -10681,9 +10563,7 @@
             {
               "method": "NPC.Teleport",
               "target": 324,
-              "objectArg": 492,
-              "argOwner": 0,
-              "argPos": [39,46]
+              "objectArg": 492
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -10727,9 +10607,7 @@
             {
               "method": "NPC.Teleport",
               "target": 324,
-              "objectArg": 127,
-              "argOwner": 0,
-              "argPos": [69.5,69.5]
+              "objectArg": 127
             }
           ],
           "onDialogueChainExhausted": [
@@ -10766,14 +10644,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 367,
-        "sprite": 2,
-        "pos": [0,-3.5],
-        "sortY": -3.5,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 367,
       "conds": [
         {
           "conditions": [
@@ -10903,14 +10774,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 399,
-        "sprite": 2,
-        "pos": [-3,-144],
-        "sortY": -144,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 399,
       "conds": [
         {
           "conditions": [
@@ -11371,14 +11235,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 436,
-        "sprite": 2,
-        "pos": [5.0625,-142.9375],
-        "sortY": -142.9375,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 436,
       "conds": [
         {
           "conditions": [
@@ -11579,14 +11436,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 43,
-        "sprite": 2,
-        "pos": [55.5,3.5],
-        "sortY": 3.5,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 43,
       "conds": [
         {
           "conditions": [
@@ -11641,14 +11491,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 46,
-        "sprite": 2,
-        "pos": [46.5,18],
-        "sortY": 18,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 46,
       "conds": [
         {
           "conditions": [
@@ -11729,9 +11572,7 @@
             {
               "method": "NPC.Teleport",
               "target": 44,
-              "objectArg": 493,
-              "argOwner": 0,
-              "argPos": [46.5,17]
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
@@ -11805,9 +11646,7 @@
                 {
                   "method": "NPC.Teleport",
                   "target": 44,
-                  "objectArg": 127,
-                  "argOwner": 0,
-                  "argPos": [69.5,69.5]
+                  "objectArg": 127
                 },
                 {
                   "method": "ParticleSystem.Play",
@@ -11837,9 +11676,7 @@
             {
               "method": "NPC.Teleport",
               "target": 44,
-              "objectArg": 493,
-              "argOwner": 0,
-              "argPos": [46.5,17]
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
@@ -11876,14 +11713,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 53,
-        "sprite": 2,
-        "pos": [38,49],
-        "sortY": 49,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 53,
       "conds": [
         {
           "conditions": [
@@ -11926,14 +11756,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 130,
-        "sprite": 2,
-        "pos": [69.5,70.5],
-        "sortY": 70.5,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 130,
       "conds": [
         {
           "conditions": [
@@ -11944,9 +11767,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 127,
-              "argOwner": 0,
-              "argPos": [69.5,69.5]
+              "objectArg": 127
             }
           ],
           "onDialogueChainExhausted": [
@@ -11980,9 +11801,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 483,
-              "argOwner": 2,
-              "argPos": [-7,4]
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
@@ -12031,9 +11850,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 483,
-              "argOwner": 2,
-              "argPos": [-7,4]
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
@@ -12072,9 +11889,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 483,
-              "argOwner": 2,
-              "argPos": [-7,4]
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
@@ -12113,9 +11928,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -12158,9 +11971,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -12240,9 +12051,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -12286,9 +12095,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 484,
-              "argOwner": 2,
-              "argPos": [-1,5]
+              "objectArg": 484
             }
           ],
           "onDialogueChainExhausted": [
@@ -12321,9 +12128,7 @@
                 {
                   "method": "NPC.Teleport",
                   "target": 128,
-                  "objectArg": 127,
-                  "argOwner": 0,
-                  "argPos": [69.5,69.5]
+                  "objectArg": 127
                 },
                 {
                   "method": "VarManager.SetBoolOn",
@@ -12349,9 +12154,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 127,
-              "argOwner": 0,
-              "argPos": [69.5,69.5]
+              "objectArg": 127
             }
           ],
           "onDialogueChainExhausted": [
@@ -12389,9 +12192,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 127,
-              "argOwner": 0,
-              "argPos": [69.5,69.5]
+              "objectArg": 127
             }
           ],
           "onDialogueChainExhausted": [
@@ -12428,14 +12229,7 @@
         "sortingLayerValue": 9,
         "order": 99
       },
-      "ping": {
-        "object": 140,
-        "sprite": 2,
-        "pos": [49,9.8125],
-        "sortY": 9.8125,
-        "sortingLayerValue": 9,
-        "order": 0
-      },
+      "pingObject": 140,
       "conds": [
         {
           "conditions": [
@@ -12469,2492 +12263,3488 @@
     {
       "path": "Map",
       "parent": -1,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle",
       "parent": 0,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects",
       "parent": 2,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps",
       "parent": 2,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects",
       "parent": 5,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps",
       "parent": 5,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/Objects",
       "parent": 8,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps",
       "parent": 8,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects",
       "parent": 11,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps",
       "parent": 11,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects",
       "parent": 14,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps",
       "parent": 14,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/Objects",
       "parent": 17,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps",
       "parent": 17,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/Objects",
       "parent": 20,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps",
       "parent": 20,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects",
       "parent": 23,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps",
       "parent": 23,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)",
       "parent": 1,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects",
       "parent": 26,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps",
       "parent": 26,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/BGFrame",
       "parent": 0,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,0]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (1)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,0]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (2)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [17,0]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (3)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [34,0]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (4)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,17]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (5)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [17,17]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (6)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [34,17]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (7)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,34]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (8)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [17,34]
     },
     {
       "path": "Map/BGFrame/Grid BGFrame (9)",
       "parent": 29,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [34,34]
     },
     {
       "path": "Map/World Grid",
       "parent": 0,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/World Grid/Objects",
       "parent": 39,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/World Grid/Objects/Alien Log Sign",
       "parent": 40,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [55.5,2.5]
     },
     {
       "path": "Map/World Grid/Objects/Alien Log Sign/NPC Sprite",
       "parent": 41,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [55.5,2.5]
     },
     {
       "path": "Map/World Grid/Objects/Alien Log Sign/NPC Sprite/Ping",
       "parent": 42,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [55.5,3.5]
     },
     {
       "path": "Map/World Grid/Objects/Sam",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [46.5,17]
     },
     {
       "path": "Map/World Grid/Objects/Sam/NPC Sprite",
       "parent": 44,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [46.5,17]
     },
     {
       "path": "Map/World Grid/Objects/Sam/NPC Sprite/Ping",
       "parent": 45,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [46.5,18]
     },
     {
       "path": "Map/World Grid/Objects/Coffee",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [46,3]
     },
     {
       "path": "Map/World Grid/Objects/Coffee/Coffee Sprite",
       "parent": 47,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [46,3]
     },
     {
       "path": "Map/World Grid/Objects/Slider 2 Collectible",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [35,46]
     },
     {
       "path": "Map/World Grid/Objects/Slider 2 Collectible/Slider Sprite",
       "parent": 49,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [35,46]
     },
     {
       "path": "Map/World Grid/Objects/Face Rocks Sign",
       "parent": 40,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [38,48]
     },
     {
       "path": "Map/World Grid/Objects/Face Rocks Sign/NPC Sprite",
       "parent": 51,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [38,48]
     },
     {
       "path": "Map/World Grid/Objects/Face Rocks Sign/NPC Sprite/Ping",
       "parent": 52,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [38,49]
     },
     {
       "path": "Map/World Grid/Objects/TEMP LICENSE",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [45,5]
     },
     {
       "path": "Map/World Grid/Objects/TEMP LICENSE/Rope Sprite",
       "parent": 54,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [45,5]
     },
     {
       "path": "Map/World Grid/Objects/Cow",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [39.5,44]
     },
     {
       "path": "Map/World Grid/Objects/Cow/Cow Sprite",
       "parent": 56,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [39.5,43.75]
     },
     {
       "path": "Map/World Grid/Objects/Cow/Cow Sprite/Emote",
       "parent": 57,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [38.5,44.75]
     },
     {
       "path": "Map/World Grid/BaseDecorations",
       "parent": 39,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (1)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,20]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (1)/BuoySplash",
       "parent": 61,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,20]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,20]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy/BuoySplash",
       "parent": 63,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,20]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy/BuoyLineHorz",
       "parent": 63,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [68.5,20]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (2)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,29]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (2)/BuoySplash",
       "parent": 66,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,29]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (2)/BuoyLineVert Variant",
       "parent": 66,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,24.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,38]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoySplash",
       "parent": 69,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,38]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoyLineVert Variant",
       "parent": 69,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,33.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (3)/BuoyLineHorz",
       "parent": 69,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [77.5,38]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,4]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoySplash",
       "parent": 73,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,4]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoyLineHorz",
       "parent": 73,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [68.5,4]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (6)/BuoyLineVert Variant",
       "parent": 73,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,-0.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,4]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)/BuoySplash",
       "parent": 77,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,4]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (7)/BuoyLineVert Variant",
       "parent": 77,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,-0.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,-5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)/BuoySplash",
       "parent": 80,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,-5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (8)/BuoyLineVert Variant",
       "parent": 80,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,-9.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,-14]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)/BuoySplash",
       "parent": 83,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [73,-14]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (9)/BuoyLineHorz",
       "parent": 83,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [77.5,-14]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,29]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)/BuoySplash",
       "parent": 86,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,29]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (18)/BuoyLineVert Variant",
       "parent": 86,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,24.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [55,29]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)/BuoySplash",
       "parent": 89,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [55,29]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (19)/BuoyLineHorz",
       "parent": 89,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [59.5,29]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [55,-5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)/BuoySplash",
       "parent": 92,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [55,-5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (20)/BuoyLineHorz",
       "parent": 92,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [59.5,-5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (21)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,-5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (21)/BuoySplash",
       "parent": 95,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [64,-5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (24)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [65,16.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (24)/BuoySplash",
       "parent": 97,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [65,16.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (25)",
       "parent": 60,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [65,7.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Buoys/Buoy (25)/BuoySplash",
       "parent": 99,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [65,7.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Pine1",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [27.5,53.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Pine1 (1)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [21.5,45.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Pine1 (2)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [46,55]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Pine1 (3)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [7,51]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Pine1 (4)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-12,44]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (4)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [31.5,47]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (2)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [33,-13]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (7)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [34.5,-23.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (8)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [37.5,-22.25]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (9)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [45,-20]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree2 (1)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [14,-13]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree2 (2)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-0.5,-20.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (1)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-13,-11]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (3)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-27.5,9.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (5)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-24.5,36.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree2",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-13,14]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-16,26]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tree1 (6)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-19.5,37.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Palm1 Variant",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [50,-18]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Stalagmite",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [39,49]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tall Stalagmite2",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [30,44]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Thin Stalagmite",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [41,44.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Tall Stalagmite1",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [33.5,50]
     },
     {
       "path": "Map/World Grid/BaseDecorations/Pine1 (5)",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [19.5,55.5]
     },
     {
       "path": "Map/World Grid/BaseDecorations/OceanRockSmall1",
       "parent": 59,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [62.5,19.75]
     },
     {
       "path": "Map/World Grid/BaseDecorations/OceanRockSmall1/OceanRockSmallSplash",
       "parent": 125,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [62.5,19.75]
     },
     {
       "path": "Map/World Grid/OffMap",
       "parent": 39,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [69.5,69.5]
     },
     {
       "path": "Map/World Grid/OffMap/Fezziwig",
       "parent": 127,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [69.5,69.5]
     },
     {
       "path": "Map/World Grid/OffMap/Fezziwig/NPC Sprite",
       "parent": 128,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [69.5,69.5]
     },
     {
       "path": "Map/World Grid/OffMap/Fezziwig/NPC Sprite/Ping",
       "parent": 129,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [69.5,70.5]
     },
     {
       "path": "Map/World Grid/Alcove",
       "parent": 39,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [34.5,48]
     },
     {
       "path": "Map/World Grid/Alcove/Cave Door",
       "parent": 131,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [36.5,51.5]
     },
     {
       "path": "Map/World Grid/Alcove/Cave Door/Scene Change Collider",
       "parent": 132,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [36.5,51.5]
     },
     {
       "path": "Map/World Grid/Alcove/Cave Door/Scene Change Collider/Dither",
       "parent": 133,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [36.5,51.5]
     },
     {
       "path": "Map/World Grid/Alcove/Cave Door/Rocks Blocking Door",
       "parent": 132,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [36.5,51.5]
     },
     {
       "path": "Map/World Grid/Alcove/Cave Door/CeilingRocks",
       "parent": 132,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [36.5,51.5]
     },
     {
       "path": "Map/World Grid/Beach",
       "parent": 39,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [54,17]
     },
     {
       "path": "Map/World Grid/Beach/Dock Sign",
       "parent": 137,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [49,8.8125]
     },
     {
       "path": "Map/World Grid/Beach/Dock Sign/NPC Sprite",
       "parent": 138,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [49,8.8125]
     },
     {
       "path": "Map/World Grid/Beach/Dock Sign/NPC Sprite/Ping",
       "parent": 139,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [49,9.8125]
     },
     {
       "path": "Map/World Grid/Beach/Floating Wood",
       "parent": 137,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [52.5,7.5]
     },
     {
       "path": "Map/World Grid/Beach/Raft",
       "parent": 137,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [52.875,7.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Boomo",
       "parent": 3,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [4.5,0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Boomo/Sprite",
       "parent": 143,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [4.5,0.0625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/House2",
       "parent": 3,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [1,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo",
       "parent": 3,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [6.75,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite",
       "parent": 146,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [6.75,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite/Ping",
       "parent": 147,
-      "active": false
+      "active": false,
+      "owner": 1,
+      "pos": [6.75,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps",
       "parent": 4,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations",
       "parent": 149,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Ruins",
       "parent": 150,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-7,-6.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
       "parent": 151,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-7,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree1",
       "parent": 150,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [5,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree2",
       "parent": 150,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-5,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree2 (1)",
       "parent": 150,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-3,4.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock1",
       "parent": 150,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [0,-4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
       "parent": 150,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-4,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
       "parent": 150,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-4,-4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps",
       "parent": 4,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations",
       "parent": 159,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/DoubleBed",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-4.5,-145.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/NightStand2",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-5,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk2",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [3,-146.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/PetBed",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-5,-147]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk3",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [0,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Desk3 (1)",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [2.375,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Artifact",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [2.375,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Artifact/Item Sprite",
       "parent": 167,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [2.375,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.75,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse/NPC Sprite",
       "parent": 169,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.75,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse/NPC Sprite/Ping",
       "parent": 170,
-      "active": false
+      "active": false,
+      "owner": 1,
+      "pos": [-0.75,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/ComputerBox1",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-2,-144.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/ComputerBox1/Computer2 Variant",
       "parent": 172,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-2,-144.2501]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/ComputerBox2 Variant",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-3.0625,-143.8125]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Slider 3 Collectible",
       "parent": 6,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-7,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Slider 3 Collectible/Slider Sprite",
       "parent": 175,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-7,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Archeologist",
       "parent": 6,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-5,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Archeologist/NPC Sprite",
       "parent": 177,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-5,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Archeologist/NPC Sprite/Ping",
       "parent": 178,
-      "active": false
+      "active": false,
+      "owner": 2,
+      "pos": [-5,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText",
       "parent": 6,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-2,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (1)",
       "parent": 180,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-3,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (2)",
       "parent": 180,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-2.3125,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/RuinsText (3)",
       "parent": 180,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-1.625,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/RuinsText/Missing Piece",
       "parent": 180,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-1,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps",
       "parent": 7,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations",
       "parent": 185,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-7,8]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins (1)",
       "parent": 187,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-7,6.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
       "parent": 187,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-7,8]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-5,6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [4,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-7,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-2,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Tree2 (4)",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [5,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Tree1",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-3.5,0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Bush",
       "parent": 186,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-3.5,-5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/Objects/Slider 4 Collectible",
       "parent": 9,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [0.5,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/Objects/Slider 4 Collectible/Slider Sprite",
       "parent": 197,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [0.5,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald",
       "parent": 9,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [1.5,6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald/NPC Sprite",
       "parent": 199,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [1.5,6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/Objects/Archibald/NPC Sprite/Ping",
       "parent": 200,
-      "active": false
+      "active": false,
+      "owner": 3,
+      "pos": [1.5,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps",
       "parent": 10,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations",
       "parent": 202,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Ruins",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [7,-6.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
       "parent": 204,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [7,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (8)",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-2,-3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree2 (6)",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-4,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (6)",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [3,-4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree2",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [1,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [6,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log (1)",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-4,-1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Log (2)",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [5,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Rock Variant",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [0,-5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [5,-4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2 Variant",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [5,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [1,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Cat1",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-7.5,4.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Cat1/Sprite",
       "parent": 217,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-7.5,4.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Bush",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-2.5,-4.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Bush (1)",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [4.5,4.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Sprout",
       "parent": 203,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [-5,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot",
       "parent": 12,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node",
       "parent": 222,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-6.5,-3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node/ItemSprite",
       "parent": 223,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-6.5,-3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)",
       "parent": 222,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)/ItemSprite",
       "parent": 225,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)",
       "parent": 222,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [3.5,-1.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)/ItemSprite",
       "parent": 227,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [3.5,-1.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)",
       "parent": 222,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-5,-5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)/ItemSprite",
       "parent": 229,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-5,-5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)",
       "parent": 222,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-3.5,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)/ItemSprite",
       "parent": 231,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-3.5,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)",
       "parent": 222,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [2,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)/ItemSprite",
       "parent": 233,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [2,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)",
       "parent": 222,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-1.5,-5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)/ItemSprite",
       "parent": 235,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-1.5,-5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin",
       "parent": 12,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-6,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin/Kevin Sprite",
       "parent": 237,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-6,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/Objects/Kevin/Kevin Sprite/Ping",
       "parent": 238,
-      "active": false
+      "active": false,
+      "owner": 4,
+      "pos": [-6,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps",
       "parent": 13,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations",
       "parent": 240,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Slider 5 Collectible",
       "parent": 241,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-3,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Slider 5 Collectible/Slider Sprite",
       "parent": 242,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-3,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Sprout",
       "parent": 241,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [4.75,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (4)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
       "parent": 241,
-      "active": true
+      "active": true,
+      "owner": 4,
+      "pos": [-7,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet",
       "parent": 15,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-6.75,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet/NPC Sprite",
       "parent": 246,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-6.75,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Juliet/NPC Sprite/Ping",
       "parent": 247,
-      "active": false
+      "active": false,
+      "owner": 5,
+      "pos": [-6.75,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/House7 (1)",
       "parent": 15,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [2.25,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider",
       "parent": 15,
-      "active": false
+      "active": false,
+      "owner": 5,
+      "pos": [0.5,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider/Slider 7 Collectible",
       "parent": 250,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [0.5,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Burried Slider/Slider 7 Collectible/Slider Sprite",
       "parent": 251,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [0.5,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Rock",
       "parent": 15,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [0.375,-2.375]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/Hole",
       "parent": 15,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [0.5,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps",
       "parent": 16,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations",
       "parent": 255,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Slider 6 Collectible",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-8.5,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Slider 6 Collectible/Slider Sprite",
       "parent": 257,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-8.5,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Tree2 (1)",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [3,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Bulliten Board",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-0.75,2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Crate1",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [5.5,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Crate2 Variant",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [4.25,1.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Pot Variant",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [5,4.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Sprout",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [4,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
       "parent": 256,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-6,8]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps",
       "parent": 16,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations",
       "parent": 266,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Desk1",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [0,-145.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/NightStand1",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [2,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/NightStand1 (1)",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [1,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [5,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1 (1)",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [6,-146]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [3.75,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant (1)",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [5,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate3 Variant",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [6,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate1 (2)",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [1,-147]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Crate2 Variant (2)",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [5,-147]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Autumn",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [1.25,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Autumn/Sprite",
       "parent": 278,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [1.25,-145.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Dear Player Sign",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [3,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Dear Player Sign/NPC Sprite",
       "parent": 280,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [3,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/Dear Player Sign/NPC Sprite/Ping",
       "parent": 281,
-      "active": false
+      "active": false,
+      "owner": 5,
+      "pos": [3,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/Objects/Pierre",
       "parent": 18,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-2,-3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/Objects/Pierre/Pierre Sprite",
       "parent": 283,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-2,-3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/Objects/Pierre/Pierre Sprite/Ping",
       "parent": 284,
-      "active": false
+      "active": false,
+      "owner": 6,
+      "pos": [-2,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps",
       "parent": 19,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations",
       "parent": 286,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [7,8]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins (1)",
       "parent": 288,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [7,6.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Ruins/Ruins Runes",
       "parent": 288,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [7,8]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree1 (2)",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [1,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Slider 8 Collectible",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-2,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Slider 8 Collectible/Slider Sprite",
       "parent": 292,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-2,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree1 (3)",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-3,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree2",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [5,2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/CaveRock1",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-1,6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Village RuinRod",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [5,6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock2 Variant",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [4,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Village RuinBlock3 Variant",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [6,-3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Bush",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-6.5,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Sprout",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-1,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-7,-4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tall Stalagmite4",
       "parent": 287,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [-5,5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/Objects/Nemsy",
       "parent": 21,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-6.5,1.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/Objects/Nemsy/NPC Sprite",
       "parent": 304,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-6.5,1.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/Objects/Nemsy/NPC Sprite/Ping",
       "parent": 305,
-      "active": false
+      "active": false,
+      "owner": 7,
+      "pos": [-6.5,2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps",
       "parent": 22,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations",
       "parent": 307,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Tree2 (5)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [3,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Tree1 (5)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-3,2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Rock Variant",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-5,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Rock Variant (1)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [7,-7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Rock Variant (2)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [6,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Log",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [6,-1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Log (1)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [0.5,-1.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Fallen Log",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [5,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Bush",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [5.5,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Bush (1)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-1,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Bush (2)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-5.5,5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-1,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-7,5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout (2)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-3,-6.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Sprout (3)",
       "parent": 308,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [-3.5,-7.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad",
       "parent": 24,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3.5,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite",
       "parent": 324,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3.5,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/Ping",
       "parent": 325,
-      "active": false
+      "active": false,
+      "owner": 8,
+      "pos": [3.5,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation",
       "parent": 325,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3.5,3.8125]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation/Ruins Fragment",
       "parent": 327,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3.5,3.8125]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/Chad/NPC Sprite/PickUpLocation/Ruins Fragment/ItemSprite",
       "parent": 328,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3.5,3.8125]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/House4 (1)",
       "parent": 24,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3.5,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps",
       "parent": 25,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations",
       "parent": 331,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Tree2 (2)",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Tree1 (1)",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-4,-3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Slider 9 Collectible",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [6,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Slider 9 Collectible/Slider Sprite",
       "parent": 335,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [6,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Cat2 Variant",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [5,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Cat2 Variant/Sprite",
       "parent": 337,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [5,-2.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Rock Column",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [5,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Bush",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-3.5,-6.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Sprout",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [2,1]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-1.5,-2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Sprout (2)",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-5,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/CaveRock1",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-4,5.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/CaveRock2 Variant",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [2,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Log",
       "parent": 332,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [7,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps",
       "parent": 25,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations",
       "parent": 347,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Bed",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [0.5,-150]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/NightStand1",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [5.5,-149]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Clock",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [4.5,-149]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/PetBed",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [1.5,-149]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Desk1",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [6,-151.375]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_chair1",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [5,-152.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/Shelf_H3 Variant",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3,-148.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/WorkshopBench5 Variant",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [5,-152.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomMop",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [6.125,-153.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomToilet",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [0,-153]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_paperstack1",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [0.25,-151]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_paperstack1 (1)",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [0,-151.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_paperstack1 (2)",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [5.75,-150]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_papers1",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [1,-152.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_papers1 (1)",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [4,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/jungle_papers1 (2)",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [0.25,-149]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mike",
       "parent": 27,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [0,-4.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mike/NPC Sprite",
       "parent": 365,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [0,-4.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mike/NPC Sprite/Ping",
       "parent": 366,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [0,-3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mittens",
       "parent": 27,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [6.5,5.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Mittens/Sprite",
       "parent": 368,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [6.5,5.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Dog Variant 1",
       "parent": 27,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2.5,3]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/Objects/Dog Variant 1/Emote",
       "parent": 370,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [3,3.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps",
       "parent": 28,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations",
       "parent": 372,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House3 (1)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-5,2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House6",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4.5,-2.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House5",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Log",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-7,-7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Log (1)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4,6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Pot Variant",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-3,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Pot Variant (1)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4,-5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/VillageBell",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2.25,-3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/VillageBell/Sprite",
       "parent": 381,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2.25,-4.125]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Well",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [0,0.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Tree1",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-1,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Bush",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-6.5,6.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Bush (1)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4.5,7.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Sprout",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-3,5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Sprout (1)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [7.25,6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Sprout (2)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-2,-7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Sprout (3)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4.5,-6]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Fallen Log",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4.25,-7.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Bush (2)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-7,-5.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Sprout (4)",
       "parent": 373,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [1.25,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps",
       "parent": 28,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations",
       "parent": 394,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House",
       "parent": 395,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cathy",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-3,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cathy/NPC Sprite",
       "parent": 397,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-3,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cathy/NPC Sprite/Ping",
       "parent": 398,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [-3,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Breadge",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4,-144.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Breadge/Item Sprite",
       "parent": 400,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4,-144.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/PetBed",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-3.25,-141]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Clock",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-3,-140]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/NightStand1",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-7,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/jungle_papers1",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4.75,-141]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/DoubleBed",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-6.5,-140.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cat2",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-7,-143.5625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cat2/Sprite",
       "parent": 407,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-7,-144.0625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cat3",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-6.25,-146.2188]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cat3/Sprite",
       "parent": 409,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-6.25,-146.7188]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cat4",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-6,-140.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/Cat4/Sprite",
       "parent": 411,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-6,-141]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/PetBed (1)",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4.25,-140.0625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/PetBed (1)/Cat1",
       "parent": 413,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4.25,-139.9375]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/PetBed (1)/Cat1/Sprite",
       "parent": 414,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4.25,-140.4375]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/PetBed (2)",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-7,-146.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/jungle_plant1",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-6,-144]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House",
       "parent": 395,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/Map",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2,-154]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/Map/Item Sprite",
       "parent": 419,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2,-154]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/DoubleBed",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-3.5,-154.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/NightStand2 Variant",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4,-153]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/NightStand2 Variant (1)",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-4,-156]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/Desk3",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2,-153]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/Desk1",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [7,-154.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/Clock",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4,-153]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/NightStand1",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [5,-153]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/jungle_penis1",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [7,-153]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/jungle_painting1",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2,-152]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/jungle_chair1",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-2,-153]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/Tofu",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-2,-153.9688]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/Tofu/Sprite",
       "parent": 431,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-2,-154.4688]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie",
       "parent": 395,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-0.5,-150.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Carlton",
       "parent": 433,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [5.0625,-143.9375]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Carlton/NPC Sprite",
       "parent": 434,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [5.0625,-143.9375]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Carlton/NPC Sprite/Ping",
       "parent": 435,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [5.0625,-142.9375]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Bakery Back",
       "parent": 433,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4.5,-142]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Bakery Front",
       "parent": 433,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [5,-144.625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Bakery Table",
       "parent": 433,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [2,-146.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Bakery Table (1)",
       "parent": 433,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [7,-146.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_desk1",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [3.4375,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_desk1 (1)",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [6.6875,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_desk1 (2)",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [5.0625,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_cooler1",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [7,-143.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_plant1",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [1,-142.625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_plant1 (1)",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [6,-142.625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_penis1",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [2,-142.625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/jungle_penis1 (1)",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [5,-142.625]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/NightStand1",
       "parent": 433,
-      "active": false
+      "active": false,
+      "owner": 9,
+      "pos": [3,-142.75]
     },
     {
       "path": "Map/World Grid/Beach/Scene Change",
       "parent": 137,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [66.5,12]
     },
     {
       "path": "Map/World Grid/Beach/Scene Change/Collider",
       "parent": 450,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [66.5,12]
     },
     {
       "path": "Map/World Grid/Beach/EnableRaftCollider",
       "parent": 137,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [52.5,7.5]
     },
     {
       "path": "Map/World Grid/Beach/EnableRaftCollider/Collider",
       "parent": 452,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [50.5,7.5]
     },
     {
       "path": "Map/World Grid/Beach/Raft/Collider",
       "parent": 142,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [50.5,7.5]
     },
     {
       "path": "Map/World Grid/Beach/Dock",
       "parent": 137,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [50.5,7.5]
     },
     {
       "path": "Map/World Grid/Beach/Dock/Collider",
       "parent": 455,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [50.5,7.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/House2/HouseTPDown",
       "parent": 145,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [1.5,1.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Artifact Prompt Trigger",
       "parent": 3,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [1.63,0.63]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [2,-151]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/Objects/House7 (1)/HouseTPDown",
       "parent": 249,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [1.125,2]
     },
     {
       "path": "Map/Village 8Puzzle/STile (5)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
       "parent": 267,
-      "active": true
+      "active": true,
+      "owner": 5,
+      "pos": [3,-149]
     },
     {
       "path": "Map/Village 8Puzzle/STile (6)/Objects/Waterfall Entrance",
       "parent": 18,
-      "active": true
+      "active": true,
+      "owner": 6,
+      "pos": [2,7]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/Objects/House4 (1)/HouseTPDown",
       "parent": 330,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3.5,-4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction",
       "parent": 348,
-      "active": true
+      "active": true,
+      "owner": 8,
+      "pos": [3,-155]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House3 (1)/HouseTPDown",
       "parent": 374,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-5,0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House6/HouseTPDown",
       "parent": 375,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4.5,-4.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House5/HouseTPDown",
       "parent": 376,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4.75,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/HouseTPAction",
       "parent": 396,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [-5,-148]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Wide House/HouseTPAction (1)",
       "parent": 418,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [5,-157]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/HouseTPAction",
       "parent": 433,
-      "active": true
+      "active": true,
+      "owner": 9,
+      "pos": [4,-149]
     },
     {
       "path": "Village Hints",
       "parent": -1,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,0]
     },
     {
       "path": "VarManager",
       "parent": -1,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,0]
     },
     {
       "path": "Player",
       "parent": -1,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [-3,-145.5]
     },
     {
       "path": "ArtifactCanvas",
       "parent": -1,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [320,240]
     },
     {
       "path": "Map/World Grid/Objects/RomeoStart",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [36,43]
     },
     {
       "path": "Map/World Grid/Objects/RomeoStart/RomeoStart (1)",
       "parent": 475,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [30.75,49.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/RomeoEnd",
       "parent": 3,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [6.75,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk",
       "parent": 3,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (1)",
       "parent": 478,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [1.625,0.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (4)",
       "parent": 478,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [3,0.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/Exploresse Inside",
       "parent": 160,
-      "active": true
+      "active": true,
+      "owner": 1,
+      "pos": [-0.75,-145]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms",
       "parent": 6,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [0,0]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/FezziwigStart",
       "parent": 482,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-7,4]
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/ArcheologistTexts",
       "parent": 482,
-      "active": true
+      "active": true,
+      "owner": 2,
+      "pos": [-1,5]
     },
     {
       "path": "Map/World Grid/Objects/ArcheologistRocks",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [32,44]
     },
     {
       "path": "Map/Village 8Puzzle/STile (3)/Objects/ArchibaldAway",
       "parent": 9,
-      "active": true
+      "active": true,
+      "owner": 3,
+      "pos": [4,1.75]
     },
     {
       "path": "Map/World Grid/Objects/KevinDock",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [44,8]
     },
     {
       "path": "Map/World Grid/Objects/PierreDock",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [44,6]
     },
     {
       "path": "ArtifactCanvas/ArtifactFrame",
       "parent": 474,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [320,240]
     },
     {
       "path": "ArtifactCanvas/ArtifactFrame/ScreenMask",
       "parent": 489,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [320,240]
     },
     {
       "path": "ArtifactCanvas/ArtifactFrame/ScreenMask/WorldMapPanel",
       "parent": 490,
-      "active": false
+      "active": false,
+      "owner": 0,
+      "pos": [320,240]
     },
     {
       "path": "Map/World Grid/Objects/ChadRocks",
       "parent": 40,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [39,46]
     },
     {
       "path": "Map/World Grid/Beach/SamBeach",
       "parent": 137,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [46.5,17]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles",
       "parent": 308,
-      "active": false
+      "active": false,
+      "owner": 7,
+      "pos": [-0.5,-0.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle",
       "parent": 494,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [8,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle (2)",
       "parent": 494,
-      "active": true
+      "active": true,
+      "owner": 7,
+      "pos": [5,3]
     },
     {
       "path": "AudioManager",
       "parent": -1,
-      "active": true
+      "active": true,
+      "owner": 0,
+      "pos": [0,0]
     }
   ],
   "player": {

@@ -35,14 +35,14 @@ void runCall(World& world, const CallDef& c) {
     case M::TeleportRelativeMe: {
         // The changer is the call's target object (it may have moved at runtime).
         const TeleportDef& t = world.area.teleports[c.data];
-        if (c.target >= 0) world.objectBase(c.target, t.owner, bx, by);
+        if (c.target >= 0) world.objectBase(c.target, bx, by);
         else world.grid.ownerBase(t.owner, bx, by);
         teleport(world, bx + t.x + t.dx, by + t.y + t.dy, t.tpToHouse);
         break;
     }
     case M::TeleportTransform: {
         const TeleportDef& t = world.area.teleports[c.data];
-        if (t.goTo >= 0) world.objectBase(t.goTo, t.goToOwner, bx, by);
+        if (t.goTo >= 0) world.objectBase(t.goTo, bx, by);
         else world.grid.ownerBase(t.goToOwner, bx, by);
         teleport(world, bx + t.goToX + t.dx, by + t.goToY + t.dy, t.tpToHouse);
         break;
@@ -72,10 +72,10 @@ void runCall(World& world, const CallDef& c) {
         world.npcs.triggerExit(world, world.area.npcOn(c.target));
         break;
     case M::NpcTypeCurrent:
-        world.npcs.typeCurrentLine(world, world.area.npcOn(c.target));
+        world.npcs.typeCurrent(world, world.area.npcOn(c.target));
         break;
     case M::NpcTeleport:
-        Npcs::teleport(world, world.area.npcOn(c.target), world.area.transformArgs[c.data]);
+        world.objects.moveOnto(world.area, c.target, c.objectArg);
         break;
     case M::SetFlipX:
         world.objects.setFlipX(c.target, c.boolArg);

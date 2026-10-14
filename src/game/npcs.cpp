@@ -55,6 +55,16 @@ bool Npcs::shouldShowPing(const Area& area, int npc) const {
     return !chainEmpty(area, npc) && !s_[npc].exhausted[s_[npc].cond];
 }
 
+bool Npcs::pingShown(const World& world, int npc) const {
+    const int ping = world.area.npcs[npc].pingObject;
+    return ping >= 0 && world.objects.activeInHierarchy(ping);
+}
+
+void Npcs::setPing(World& world, int npc, bool shown) {
+    const int ping = world.area.npcs[npc].pingObject;
+    if (ping >= 0) world.objects.setActive(world.area, ping, shown);
+}
+
 bool Npcs::showsPrompt(const Area& area, int npc) const {
     const DialogueDef* l = line(area, npc);
     return l && l->waitForAction && !s_[npc].typing;
@@ -62,11 +72,12 @@ bool Npcs::showsPrompt(const Area& area, int npc) const {
 
 void Npcs::start(World& world, int npc) {
     State& st = s_[npc];
-    st.ping = shouldShowPing(world.area, npc); // NPCDialogueContext.Start
+    setPing(world, npc, shouldShowPing(world.area, npc)); // NPCDialogueContext.Start
     // NPC.Start: pick a conditional; the first one is entered if nothing else is.
     if (!dontInterruptShown(world.area, npc)) poll(world, npc);
     if (st.cond == 0 && !world.area.npcs[npc].conds.empty()) changeCond(world, npc, 0);
     st.started = true;
+    st.wasActive = true;
 }
 
 void Npcs::poll(World& world, int npc) {
@@ -75,7 +86,11 @@ void Npcs::poll(World& world, int npc) {
     int best = -1;
     for (int i = 0; i < (int)def.conds.size(); i++)
         if (holds(world, def.conds[i])) best = i;
-    if (best != -1 && best != s_[npc].cond) changeCond(world, npc, best);
+    State& st = s_[npc];
+    st.polled = true;
+    st.stateVersion = world.state.version();
+    st.gridVersion = world.grid.version();
+    if (best != -1 && best != st.cond) changeCond(world, npc, best);
 }
 
 void Npcs::changeCond(World& world, int npc, int cond) {
@@ -84,7 +99,7 @@ void Npcs::changeCond(World& world, int npc, int cond) {
     runCalls(world, c.onEnter);
     // NPCDialogueContext.OnConditionalsChanged: the new chain starts if the player is listening.
     State& st = s_[npc];
-    st.ping = shouldShowPing(world.area, npc);
+    setPing(world, npc, shouldShowPing(world.area, npc));
     if (st.inTrigger) {
         if (c.alwaysStartFromBeginning) st.chainIndex[cond] = 0;
         typeCurrent(world, npc);
@@ -99,7 +114,8 @@ void Npcs::typeCurrent(World& world, int npc) {
     // NPCConditionals.GetDialogueString: a line waiting for the player ends in a looping " ...".
     st.text = parseDialogue(l.waitForAction ? l.text + "<type> ...</type>" : l.text, world.state);
     st.typer.start(st.text);
-    st.ping = false; // DialogueDisplay.DisplaySentence
+    st.textVersion++;
+    setPing(world, npc, false); // DialogueDisplay.DisplaySentence
     st.typing = true;
     st.boxActive = true;
     // OnDialogueStart (doNotRepeatEvents: only the first time).
@@ -177,7 +193,7 @@ void Npcs::triggerEnter(World& world, int npc) {
 
 void Npcs::triggerExit(World& world, int npc) {
     State& st = s_[npc];
-    st.ping = shouldShowPing(world.area, npc);
+    setPing(world, npc, shouldShowPing(world.area, npc));
     st.inTrigger = false;
     tryDeactivate(npc, world.area);
     world.withdraw(offered(npc));
@@ -194,26 +210,26 @@ void Npcs::interact(World& world, int npc) {
     }
 }
 
-void Npcs::teleport(World& world, int npc, const TransformArgDef& arg) {
-    const NpcDef& def = world.area.npcs[npc];
-    // Reparented onto the target: the target's owner (and offset), at its position. (Placement
-    // offsets add up the hierarchy, so the NPC's own is relative to its parent's.)
-    const int owner = world.objects.owner(arg.object, arg.owner);
-    const int parent = world.area.objects[def.object].parent;
-    const float px = parent >= 0 ? world.objects.offsetX(parent) : 0, py = parent >= 0 ? world.objects.offsetY(parent) : 0;
-    const float dx = arg.x + world.objects.offsetX(arg.object) - def.x - px;
-    const float dy = arg.y + world.objects.offsetY(arg.object) - def.y - py;
-    world.objects.setPlacement(world.area, def.object, owner, dx, dy);
-}
-
 void Npcs::update(World& world, float dt) {
     const Area& area = world.area;
     for (int i = 0; i < (int)s_.size(); i++) {
-        if (!s_[i].started || !world.objects.activeInHierarchy(area.npcs[i].object)) continue;
-        // NPCDialogueContext.Update, then NPC.Update.
-        if (s_[i].typing && s_[i].typer.finished()) finishLine(world, i);
+        State& st = s_[i];
+        if (!st.started) continue;
+        const bool active = world.objects.activeInHierarchy(area.npcs[i].object);
+        if (!active && st.wasActive) {
+            // Deactivation stops its coroutines: a pending delay is dropped, typing freezes (A can
+            // still skip it).
+            st.delayPending = false;
+            st.typer.halt();
+        }
+        st.wasActive = active;
+        if (!active) continue;
+        // NPCDialogueContext.Update, then NPC.Update. Conditions only read the game state and the
+        // grid, so the pick can't change while neither does.
+        if (st.typing && st.typer.finished()) finishLine(world, i);
         tryDeactivate(i, area);
-        if (!dontInterruptShown(area, i)) poll(world, i);
+        const bool changed = !st.polled || st.stateVersion != world.state.version() || st.gridVersion != world.grid.version();
+        if (!dontInterruptShown(area, i) && changed) poll(world, i);
     }
     for (int i = 0; i < (int)s_.size(); i++) {
         if (!s_[i].started || !world.objects.activeInHierarchy(area.npcs[i].object)) continue;
