@@ -495,6 +495,8 @@ struct Area {
     std::vector<Spawn> spawns;
     std::vector<CollisionLayer> collision;
     std::vector<std::vector<Polygon>> shapes; // collision shapes (each a list of polygons)
+    struct ShapeBounds { float minX, minY, maxX, maxY; };
+    std::vector<ShapeBounds> shapeBounds;     // per shape, relative to its cell (physics culls by them)
     std::vector<TileLayer> layers; // drawn layers only, in draw order
     std::vector<SceneObject> objects; // parents before children
     std::vector<WorldSprite> worldSprites;

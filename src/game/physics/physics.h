@@ -27,6 +27,21 @@ struct Box {
     float minX, minY, maxX, maxY;
 };
 
+struct Wall;
+
+// A piece of solid geometry near a query (CollisionNear): one slide fence, inactive-slot box,
+// collision-map polygon (at its cell) or object collider (at its base).
+// (No member initializers: CollisionNear's array of them stays uninitialized until filled.)
+struct NearShape {
+    Blocker blocker;                // what it is
+    Box bounds;                     // in world units
+    const Wall* wall;               // Wall
+    const float* pts;               // Layer: the polygon's n points, offset by (ox, oy)
+    int n;
+    const ObjectCollider* collider; // Object: offset by (ox, oy)
+    float ox, oy;
+};
+
 // `hb` placed at player position (x, y).
 inline Box hitboxAt(const Hitbox& hb, float x, float y) {
     const float cx = x + hb.offX, cy = y + hb.offY;
@@ -44,6 +59,26 @@ Blocker boxBlocker(const World& world, const Box& box, bool onWater, int ignoreC
 inline bool boxBlocked(const World& world, const Box& box, bool onWater, int ignoreCollider = -1) {
     return (bool)boxBlocker(world, box, onWater, ignoreCollider);
 }
+
+// The solid geometry near a region, gathered once for a run of queries inside it (a move's sweeps
+// and probes, an item's drop search): blocker() answers as boxBlocker does, from a short list.
+// Boxes not inside the region (or a region with too much in it) take the full query.
+class CollisionNear {
+public:
+    CollisionNear(const World& world, const Box& region, bool onWater, int ignoreCollider = -1);
+    Blocker blocker(const Box& box) const;
+    bool blocked(const Box& box) const { return (bool)blocker(box); }
+
+private:
+    static constexpr int CAPACITY = 64;
+    const World& world_;
+    Box region_;
+    bool onWater_;
+    int ignoreCollider_;
+    NearShape shapes_[CAPACITY];
+    int count_ = 0;
+    bool overflow_ = false;
+};
 
 // Whether collider `c` (solid or trigger) is on (its object active, its tile collected and not
 // sliding without the player) and overlaps the box's interior.

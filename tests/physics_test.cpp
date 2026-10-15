@@ -1,7 +1,10 @@
 // Collision against the real exported Village. Every "blocked" check has a matching "free"
 // control, so a world that turned fully solid (or fully open) fails.
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 #include <string>
+#include <vector>
 
 #include "game/data/area.h"
 #include "game/grid/grid.h"
@@ -318,4 +321,119 @@ TEST(physics_slides_around_round_colliders) {
         }
     }
     check(lanes >= 2, "found clear lanes past knot nodes (" + std::to_string(lanes) + ")");
+}
+
+TEST(physics_collision_near_answers_like_box_blocker) {
+    // CollisionNear (a move's gathered geometry) must give boxBlocker's answer for every box: inside
+    // its region from the short list, outside (or too crowded) from the full query. Mid-slide (fences,
+    // a tile with colliders off), with a moved item and an inactive slot, on foot and on water.
+    const Area& area = village();
+    World world(area);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
+    world.setTileActive(9, false);
+    world.setTileActive(5, false);
+    world.grid.startMove(SMove::swap(2, 1, 1, 1, 7, 9), 0, 1);
+    for (int i = 0; i < 20; i++) world.grid.update(1.0f / 60.0f);
+    check(!world.grid.walls().empty(), "mid-slide");
+    check(!area.items.empty(), "the village has items");
+    float ix, iy;
+    world.objectPosition(area.items[0].object, ix, iy);
+    world.placeObject(area.items[0].object, 0, ix + 0.7f, iy - 0.3f);
+    check(!world.objects.moved().empty(), "an item moved");
+
+    unsigned rng = 7;
+    auto rnd = [&](float lo, float hi) {
+        rng = rng * 1103515245u + 12345u;
+        return lo + (hi - lo) * ((rng >> 8) & 0xffff) / 65535.0f;
+    };
+    int regions = 0, inside = 0, blocked = 0, free = 0, mismatches = 0;
+    for (int r = 0; r < 400; r++) {
+        const bool onWater = r % 3 == 0;
+        // Around the moved item for some, anywhere over the grid for the rest; now and then a big one.
+        const float cx = r % 8 == 0 ? ix + 0.7f : rnd(-10, 60), cy = r % 8 == 0 ? iy - 0.3f : rnd(-10, 60);
+        const float half = r % 25 == 0 ? 12.0f : rnd(0.5f, 2.0f);
+        const Box region = {cx - half, cy - half, cx + half, cy + half};
+        const CollisionNear near(world, region, onWater);
+        regions++;
+        for (int k = 0; k < 40; k++) {
+            // Mostly inside the region; some straddle its edge (the fallback).
+            const float w = rnd(0.05f, 1.0f), h = rnd(0.05f, 1.0f);
+            const float x = k % 5 == 0 ? rnd(region.minX - 1, region.maxX) : rnd(region.minX, region.maxX - w);
+            const float y = k % 5 == 0 ? rnd(region.minY - 1, region.maxY) : rnd(region.minY, region.maxY - h);
+            const Box b = {x, y, x + w, y + h};
+            const Blocker want = boxBlocker(world, b, onWater), got = near.blocker(b);
+            if (b.minX >= region.minX && b.maxX <= region.maxX && b.minY >= region.minY && b.maxY <= region.maxY) inside++;
+            (want ? blocked : free)++;
+            if (want.kind != got.kind || want.index != got.index) {
+                if (mismatches++ < 5)
+                    check(false, "box " + std::to_string(x) + "," + std::to_string(y) + ": " + describe(area, want) +
+                                     " vs " + describe(area, got));
+            }
+        }
+    }
+    check(mismatches == 0, std::to_string(mismatches) + " mismatches");
+    check(inside > 8000 && blocked > 1000 && free > 1000,
+          "covers both answers (" + std::to_string(blocked) + " blocked, " + std::to_string(free) + " free, " +
+              std::to_string(inside) + " inside)");
+}
+
+TEST(physics_moved_objects_follow_placements) {
+    // ObjectStates::moved() (kept up to date as placements change) is exactly the objects not where
+    // they were exported: physics checks their colliders on their own.
+    const Area& area = village();
+    World world(area);
+    auto expected = [&] {
+        std::vector<int> v;
+        for (int i = 0; i < (int)area.objects.size(); i++)
+            if (world.objects.isMoved(area, i)) v.push_back(i);
+        return v;
+    };
+    check(world.objects.moved() == expected(), "at the start (" + std::to_string(expected().size()) + " moved by Starts)");
+    float x, y;
+    const int item = area.items[0].object;
+    world.objectPosition(item, x, y);
+    world.placeObject(item, 0, x + 1, y);
+    check(world.objects.moved() == expected() && !world.objects.moved().empty(), "an item placed elsewhere (and what's under it)");
+    int npc = -1, target = -1;
+    for (int i = 0; i < (int)area.objects.size() && (npc < 0 || target < 0); i++)
+        if (area.objects[i].parent < 0 && i != item) (npc < 0 ? npc : target) = i;
+    world.objects.moveOnto(area, npc, target);
+    check(world.objects.moved() == expected(), "an object moved onto another");
+    world.placeObject(item, area.objects[item].owner, x, y);
+    check(world.objects.moved() == expected(), "the item put back");
+    world.objects.setPlacement(area, item, -1, 0, 0);
+    check(world.objects.moved() == expected(), "its placement cleared");
+    world.objects.init(area);
+    check(world.objects.moved().empty() && expected().empty(), "init: everything where it was exported");
+}
+
+TEST(physics_scripted_walk_is_pinned) {
+    // A fixed walk from every spawn (tiles 2-9 collected; pseudo-random directions, the action button
+    // now and then: pick-ups, drops, the raft) hashed frame by frame. It pins the player's movement
+    // across physics refactors: the broadphase and CollisionNear must move the player exactly as a
+    // test of every shape does. (It caught a touch-only segment counting as a hit before the cull,
+    // which left the raft stuck on the east edge.) An intended movement change re-pins the hash.
+    const Area& area = village();
+    World world(area);
+    for (int t = 2; t <= 9; t++) world.setTileActive(t, true);
+    unsigned long long h = 1469598103934665603ull; // FNV-1a over the positions' bits
+    auto mix = [&](float f) { unsigned u; std::memcpy(&u, &f, 4); h = (h ^ u) * 1099511628211ull; };
+    unsigned rng = 12345;
+    for (size_t sp = 0; sp < area.spawns.size(); sp++) {
+        world.placeAt(area.spawns[sp]);
+        for (int seg = 0; seg < 40; seg++) {
+            rng = rng * 1103515245 + 12345;
+            const int dir = (rng >> 16) % 9;
+            const float mx = (float)(dir % 3) - 1, my = (float)(dir / 3) - 1;
+            for (int f = 0; f < 45; f++) {
+                world.update(1.0f / 60, mx, my, false);
+                mix(world.player.x);
+                mix(world.player.y);
+            }
+            if (seg % 7 == 3) world.action();
+        }
+    }
+    char hex[17];
+    std::snprintf(hex, sizeof hex, "%016llx", h);
+    check(std::string(hex) == "04e31336a4c74580", std::string("walk hash ") + hex);
 }

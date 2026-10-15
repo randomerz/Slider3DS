@@ -738,7 +738,14 @@ bool loadArea(const char* path, Area& out, std::string* error) {
             for (const Json& v : poly.items()) p.push_back(v.asFloat());
             polys.push_back(std::move(p));
         }
+        Area::ShapeBounds b = {1e30f, 1e30f, -1e30f, -1e30f};
+        for (const Polygon& p : polys)
+            for (size_t k = 0; k + 1 < p.size(); k += 2) {
+                b.minX = std::min(b.minX, p[k]), b.maxX = std::max(b.maxX, p[k]);
+                b.minY = std::min(b.minY, p[k + 1]), b.maxY = std::max(b.maxY, p[k + 1]);
+            }
         out.shapes.push_back(std::move(polys));
+        out.shapeBounds.push_back(b);
     }
 
     for (const Json& sh : doc["sheets"].items())

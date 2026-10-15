@@ -33,7 +33,7 @@ bool segmentHitsBox(float ax, float ay, float bx, float by, const Box& in) {
         if (ta > tb) std::swap(ta, tb);
         t0 = std::max(t0, ta);
         t1 = std::min(t1, tb);
-        if (t0 > t1) return false;
+        if (t0 >= t1) return false; // (only touching the box: not a hit)
     }
     return true;
 }
@@ -89,24 +89,6 @@ bool objectHit(const ObjectCollider& c, float ox, float oy, const Box& in) {
     return false;
 }
 
-// A collision tilemap (its owner's center at (bx, by)) has a shape overlapping `in`.
-bool layerHitsBox(const Area& area, const CollisionLayer& L, float bx, float by, const Box& in) {
-    // Cell (cx, cy)'s min corner sits at (ox + cx, oy + cy); a shape may poke into its neighbours.
-    const float ox = bx + L.originX + L.minX, oy = by + L.originY + L.minY;
-    const int x0 = std::max(0, (int)std::floor(in.minX - ox) - 1);
-    const int x1 = std::min(L.w - 1, (int)std::floor(in.maxX - ox) + 1);
-    const int y0 = std::max(0, (int)std::floor(in.minY - oy) - 1);
-    const int y1 = std::min(L.h - 1, (int)std::floor(in.maxY - oy) + 1);
-    for (int cy = y0; cy <= y1; cy++)
-        for (int cx = x0; cx <= x1; cx++) {
-            const int s = L.cell(cx, cy);
-            if (s < 0) continue;
-            for (const Polygon& poly : area.shapes[s])
-                if (polygonHitsBox(poly.data(), poly.size() / 2, ox + cx, oy + cy, in)) return true;
-        }
-    return false;
-}
-
 bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
     switch (L.mode) {
     case CollisionMode::OnFoot: if (onWater) return false; break;
@@ -118,18 +100,25 @@ bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
     return ownerCollides(grid, L.owner);
 }
 
-} // namespace
-
-Blocker boxBlocker(const World& world, const Box& box, bool onWater, int ignoreCollider) {
+// Calls fn(const NearShape&) for each piece of solid geometry whose bounds overlap `region`, in
+// boxBlocker's order (slide fences, inactive STiles, collision maps by owner, object colliders as
+// exported by owner, then those of moved objects), until fn returns true; returns whether it did.
+template <class Fn>
+bool forEachNear(const World& world, const Box& region, bool onWater, int ignoreCollider, Fn&& fn) {
     const Area& area = world.area;
     const Grid& grid = world.grid;
-    const Box in = inner(box);
+    NearShape s{}; // (each kind sets the fields nearHits reads for it)
 
     // Edge colliders fencing a slide in progress.
     const std::vector<Wall>& walls = grid.walls();
     for (size_t i = 0; i < walls.size(); i++) {
         const Wall& w = walls[i];
-        if (segmentHitsBox(w.x0, w.y0, w.x1, w.y1, in)) return {Blocker::Wall, (int)i};
+        s.blocker = {Blocker::Wall, (int)i};
+        s.wall = &w;
+        s.bounds = {std::min(w.x0, w.x1), std::min(w.y0, w.y1), std::max(w.x0, w.x1), std::max(w.y0, w.y1)};
+        const bool apart = s.bounds.minX > region.maxX || s.bounds.maxX < region.minX ||
+                           s.bounds.minY > region.maxY || s.bounds.maxY < region.minY;
+        if (!apart && fn(s)) return true;
     }
 
     // Inactive STiles: STile.SetTileActive makes their slider colliders solid, blocking the slot
@@ -139,46 +128,132 @@ Blocker boxBlocker(const World& world, const Box& box, bool onWater, int ignoreC
         if (t.active || t.collidersOff > 0) continue;
         const float cx = t.posX * grid.tileWidth(), cy = t.posY * grid.tileWidth();
         const float hy = cy + grid.housingOffset();
-        if (boxesOverlap(in, {cx - half, cy - half, cx + half, cy + half}) ||
-            boxesOverlap(in, {cx - half, hy - half, cx + half, hy + half}))
-            return {Blocker::InactiveTile, t.islandId};
+        s.blocker = {Blocker::InactiveTile, t.islandId};
+        for (const Box& b : {Box{cx - half, cy - half, cx + half, cy + half}, Box{cx - half, hy - half, cx + half, hy + half}}) {
+            s.bounds = b;
+            if (boxesOverlap(region, b) && fn(s)) return true;
+        }
     }
 
-    // Broadphase: only owners whose colliders' bounds (at the owner's current position) touch the box.
-    // (islandIds are < 64: validated at load.)
-    const size_t owners = area.colliderGroups.size();
+    // Broadphase: only owners whose colliders' bounds (at the owner's current position) touch the
+    // region. (islandIds are < 64: validated at load.)
+    const size_t owners = std::min<size_t>(area.colliderGroups.size(), 64);
     float baseX[64], baseY[64];
     bool near[64];
-    for (size_t o = 0; o < owners && o < 64; o++) {
+    for (size_t o = 0; o < owners; o++) {
         const ColliderGroup& g = area.colliderGroups[o];
         near[o] = false;
         if (g.empty()) continue;
         grid.ownerBase((int)o, baseX[o], baseY[o]);
-        near[o] = boxesOverlap(in, {g.minX + baseX[o], g.minY + baseY[o], g.maxX + baseX[o], g.maxY + baseY[o]});
+        near[o] = boxesOverlap(region, {g.minX + baseX[o], g.minY + baseY[o], g.maxX + baseX[o], g.maxY + baseY[o]});
     }
 
-    for (size_t o = 0; o < owners && o < 64; o++) {
+    for (size_t o = 0; o < owners; o++) {
         if (!near[o]) continue;
-        for (int li : area.colliderGroups[o].layers)
-            if (layerEnabled(grid, area.collision[li], onWater) && layerHitsBox(area, area.collision[li], baseX[o], baseY[o], in))
-                return {Blocker::Layer, li};
+        for (int li : area.colliderGroups[o].layers) {
+            const CollisionLayer& L = area.collision[li];
+            if (!layerEnabled(grid, L, onWater)) continue;
+            // Cell (cx, cy)'s min corner sits at (ox + cx, oy + cy); a shape may poke into its neighbours.
+            const float ox = baseX[o] + L.originX + L.minX, oy = baseY[o] + L.originY + L.minY;
+            const int x0 = std::max(0, (int)std::floor(region.minX - ox) - 1);
+            const int x1 = std::min(L.w - 1, (int)std::floor(region.maxX - ox) + 1);
+            const int y0 = std::max(0, (int)std::floor(region.minY - oy) - 1);
+            const int y1 = std::min(L.h - 1, (int)std::floor(region.maxY - oy) + 1);
+            for (int cy = y0; cy <= y1; cy++)
+                for (int cx = x0; cx <= x1; cx++) {
+                    const int shape = L.cell(cx, cy);
+                    if (shape < 0) continue;
+                    const Area::ShapeBounds& b = area.shapeBounds[shape];
+                    const Box bounds = {b.minX + ox + cx, b.minY + oy + cy, b.maxX + ox + cx, b.maxY + oy + cy};
+                    if (!boxesOverlap(region, bounds)) continue;
+                    for (const Polygon& poly : area.shapes[shape]) {
+                        if (poly.size() < 6) continue;
+                        s.blocker = {Blocker::Layer, li};
+                        s.bounds = bounds; // (the whole shape's)
+                        s.pts = poly.data();
+                        s.n = (int)(poly.size() / 2);
+                        s.ox = ox + cx;
+                        s.oy = oy + cy;
+                        if (fn(s)) return true;
+                    }
+                }
+        }
     }
 
     // Object colliders where they were exported, by owner; then those of objects moved since.
     const ObjectStates& objects = world.objects;
-    for (size_t o = 0; o < owners && o < 64; o++) {
+    auto collider = [&](int i, float bx, float by) {
+        const ObjectCollider& c = area.objectColliders[i];
+        const Box bounds = {c.minX + bx, c.minY + by, c.maxX + bx, c.maxY + by};
+        if (!boxesOverlap(region, bounds)) return false;
+        s.blocker = {Blocker::Object, i};
+        s.bounds = bounds;
+        s.collider = &c;
+        s.ox = bx;
+        s.oy = by;
+        return fn(s);
+    };
+    for (size_t o = 0; o < owners; o++) {
         if (!near[o] || (o != 0 && !ownerCollides(grid, (int)o))) continue;
         for (int i : area.colliderGroups[o].colliders) {
             const ObjectCollider& c = area.objectColliders[i];
             if (i == ignoreCollider || !objects.active(c) || objects.isMoved(area, c.object)) continue;
-            if (objectHit(c, baseX[o], baseY[o], in)) return {Blocker::Object, i};
+            if (collider(i, baseX[o], baseY[o])) return true;
         }
     }
-    for (int object : objects.moved(area))
-        for (int k = area.objectColliderStart[object]; k < area.objectColliderStart[object + 1]; k++) {
+    for (int moved : objects.moved())
+        for (int k = area.objectColliderStart[moved]; k < area.objectColliderStart[moved + 1]; k++) {
             const int i = area.objectCollidersOf[k];
-            if (i != ignoreCollider && colliderOverlaps(world, area.objectColliders[i], box)) return {Blocker::Object, i};
+            const ObjectCollider& c = area.objectColliders[i];
+            if (i == ignoreCollider || !objects.active(c) || !ownerCollides(grid, objects.owner(c.object))) continue;
+            float bx, by;
+            world.objectBase(c.object, bx, by);
+            if (collider(i, bx, by)) return true;
         }
+    return false;
+}
+
+// Whether a gathered piece overlaps the box interior `in`.
+bool nearHits(const NearShape& s, const Box& in) {
+    switch (s.blocker.kind) {
+    case Blocker::Wall: return segmentHitsBox(s.wall->x0, s.wall->y0, s.wall->x1, s.wall->y1, in);
+    case Blocker::InactiveTile: return boxesOverlap(in, s.bounds);
+    case Blocker::Layer: return boxesOverlap(in, s.bounds) && polygonHitsBox(s.pts, s.n, s.ox, s.oy, in);
+    case Blocker::Object: return objectHit(*s.collider, s.ox, s.oy, in);
+    case Blocker::None: return false;
+    }
+    return false;
+}
+
+} // namespace
+
+Blocker boxBlocker(const World& world, const Box& box, bool onWater, int ignoreCollider) {
+    const Box in = inner(box);
+    Blocker hit;
+    forEachNear(world, box, onWater, ignoreCollider, [&](const NearShape& s) {
+        if (!nearHits(s, in)) return false;
+        hit = s.blocker;
+        return true;
+    });
+    return hit;
+}
+
+CollisionNear::CollisionNear(const World& world, const Box& region, bool onWater, int ignoreCollider)
+    : world_(world), region_(region), onWater_(onWater), ignoreCollider_(ignoreCollider) {
+    overflow_ = forEachNear(world, region, onWater, ignoreCollider, [&](const NearShape& s) {
+        if (count_ == CAPACITY) return true;
+        shapes_[count_++] = s;
+        return false;
+    });
+}
+
+Blocker CollisionNear::blocker(const Box& box) const {
+    const bool inside = box.minX >= region_.minX && box.minY >= region_.minY && box.maxX <= region_.maxX &&
+                        box.maxY <= region_.maxY;
+    if (overflow_ || !inside) return boxBlocker(world_, box, onWater_, ignoreCollider_);
+    const Box in = inner(box);
+    for (int i = 0; i < count_; i++)
+        if (nearHits(shapes_[i], in)) return shapes_[i].blocker;
     return {};
 }
 
@@ -207,9 +282,8 @@ namespace {
 
 // Moves (x, y) by up to (dx, dy), stopping where the box would first overlap something (bisected
 // to 1/64 of the step, well under a pixel). Returns the fraction of the step taken.
-float sweep(const World& world, const Hitbox& hb, float& x, float& y,
-            float dx, float dy, bool onWater) {
-    auto freeAt = [&](float t) { return !boxBlocked(world, hitboxAt(hb, x + t * dx, y + t * dy), onWater); };
+float sweep(const CollisionNear& near, const Hitbox& hb, float& x, float& y, float dx, float dy) {
+    auto freeAt = [&](float t) { return !near.blocked(hitboxAt(hb, x + t * dx, y + t * dy)); };
     float t = 1;
     if (!freeAt(1)) {
         float lo = 0, hi = 1;
@@ -226,13 +300,13 @@ float sweep(const World& world, const Hitbox& hb, float& x, float& y,
 
 // Box2D's push-out for a box that overlaps something: the nearest free spot along 8 directions,
 // in 1/16 steps within a unit, then 1/4 steps out to 4 units. False if it is buried deeper.
-bool pushOut(const World& world, const Hitbox& hb, float& x, float& y, bool onWater) {
+bool pushOut(const CollisionNear& near, const Hitbox& hb, float& x, float& y) {
     static const float dirs[8][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {0.7071f, 0.7071f}, {-0.7071f, 0.7071f},
                                      {0.7071f, -0.7071f}, {-0.7071f, -0.7071f}};
     for (int k = 1; k <= 16 + 12; k++) {
         const float r = k <= 16 ? k / 16.0f : 1.0f + (k - 16) / 4.0f;
         for (const auto& d : dirs) {
-            if (!boxBlocked(world, hitboxAt(hb, x + d[0] * r, y + d[1] * r), onWater)) {
+            if (!near.blocked(hitboxAt(hb, x + d[0] * r, y + d[1] * r))) {
                 x += d[0] * r;
                 y += d[1] * r;
                 return true;
@@ -244,15 +318,14 @@ bool pushOut(const World& world, const Hitbox& hb, float& x, float& y, bool onWa
 
 // The contact normal at a box resting against something: the middle of the arc of directions it
 // can move in (probed 1/32 unit out in 16 directions). False if none or all are free.
-bool contactNormal(const World& world, const Hitbox& hb, float x, float y,
-                   bool onWater, float& nx, float& ny) {
+bool contactNormal(const CollisionNear& near, const Hitbox& hb, float x, float y, float& nx, float& ny) {
     constexpr int N = 16;
     constexpr float R = 1.0f / 32.0f;
     nx = ny = 0;
     int freeCount = 0;
     for (int k = 0; k < N; k++) {
         const float a = k * 6.2831853f / N, cx = std::cos(a), cy = std::sin(a);
-        if (!boxBlocked(world, hitboxAt(hb, x + cx * R, y + cy * R), onWater)) {
+        if (!near.blocked(hitboxAt(hb, x + cx * R, y + cy * R))) {
             nx += cx;
             ny += cy;
             freeCount++;
@@ -269,12 +342,18 @@ bool contactNormal(const World& world, const Hitbox& hb, float x, float y,
 
 bool moveWithCollision(const World& world, const Hitbox& hb, float& x,
                        float& y, float dx, float dy, bool onWater) {
+    // Everything below stays within the step's reach of the start (plus the contact probes); what
+    // strays further (a deep push-out) takes the full query.
+    const float reach = std::fabs(dx) + std::fabs(dy) + 1.0f / 16.0f;
+    const Box start = hitboxAt(hb, x, y);
+    if (dx == 0 && dy == 0 && !boxBlocked(world, start, onWater)) return false; // standing free: one query
+    const CollisionNear near(world, {start.minX - reach, start.minY - reach, start.maxX + reach, start.maxY + reach}, onWater);
     bool moved = false;
-    if (boxBlocked(world, hitboxAt(hb, x, y), onWater)) {
+    if (near.blocked(start)) {
         // Overlapping (a tile slid onto the player, a collider switched on around it): pushed out
         // first, like Box2D, even when not moving. Buried deeper than the push-out reaches (only
         // possible inside an uncollected slot), it walks free rather than being stuck for good.
-        if (!pushOut(world, hb, x, y, onWater)) {
+        if (!pushOut(near, hb, x, y)) {
             x += dx;
             y += dy;
             return dx != 0 || dy != 0;
@@ -285,20 +364,19 @@ bool moveWithCollision(const World& world, const Hitbox& hb, float& x,
     for (int axis = 0; axis < 2; axis++) {
         const float d = axis == 0 ? dx : dy;
         if (d == 0) continue;
-        const float t = axis == 0 ? sweep(world, hb, x, y, d, 0, onWater)
-                                  : sweep(world, hb, x, y, 0, d, onWater);
+        const float t = axis == 0 ? sweep(near, hb, x, y, d, 0) : sweep(near, hb, x, y, 0, d);
         moved = moved || t > 0;
         if (t >= 1 || (axis == 0 ? dy : dx) != 0) continue;
         // Blocked moving along one axis only: Box2D pushes the box out along the contact normal, so
         // it slides around round or slanted colliders. Slide the rest of the step along the tangent.
         float nx, ny;
-        if (!contactNormal(world, hb, x, y, onWater, nx, ny)) continue;
+        if (!contactNormal(near, hb, x, y, nx, ny)) continue;
         const float rx = axis == 0 ? (1 - t) * d : 0, ry = axis == 0 ? 0 : (1 - t) * d;
         const float into = rx * nx + ry * ny;
         if (into >= 0) continue;
         const float tx = rx - into * nx, ty = ry - into * ny;
         if (tx * tx + ty * ty < 1e-8f) continue; // head-on into a flat face: stop, as Box2D does
-        if (sweep(world, hb, x, y, tx, ty, onWater) > 0) moved = true;
+        if (sweep(near, hb, x, y, tx, ty) > 0) moved = true;
     }
     return moved;
 }

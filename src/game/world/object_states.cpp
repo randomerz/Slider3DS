@@ -1,5 +1,7 @@
 #include "game/world/object_states.h"
 
+#include <algorithm>
+
 void ObjectStates::init(const Area& area) {
     const size_t n = area.objects.size();
     parent_.resize(n);
@@ -12,6 +14,7 @@ void ObjectStates::init(const Area& area) {
     offX_.assign(n, 0);
     offY_.assign(n, 0);
     flipX_.assign(n, -1);
+    moved_.clear();
     colliderEnabled_.clear();
     for (const ObjectCollider& c : area.objectColliders) colliderEnabled_.push_back(c.enabled ? 1 : 0);
     for (const ObjectCollider& c : area.triggerColliders) colliderEnabled_.push_back(c.enabled ? 1 : 0);
@@ -83,16 +86,14 @@ void ObjectStates::propagate(const Area& area, int object) {
         offX_[i] = selfDx_[i] + offX_[p];
         offY_[i] = selfDy_[i] + offY_[p];
     }
-}
-
-const std::vector<int>& ObjectStates::moved(const Area& area) const {
-    if (movedVersion_ != placementVersion_) {
-        moved_.clear();
-        for (int i = 0; i < (int)owner_.size(); i++)
-            if (isMoved(area, i)) moved_.push_back(i);
-        movedVersion_ = placementVersion_;
+    // moved_: only this subtree's objects can have changed.
+    for (int k = at_[object]; k < end_[object]; k++) {
+        const int i = order_[k];
+        const auto it = std::lower_bound(moved_.begin(), moved_.end(), i);
+        const bool listed = it != moved_.end() && *it == i;
+        if (isMoved(area, i) && !listed) moved_.insert(it, i);
+        else if (!isMoved(area, i) && listed) moved_.erase(it);
     }
-    return moved_;
 }
 
 void ObjectStates::setActive(const Area& area, int object, bool active) {

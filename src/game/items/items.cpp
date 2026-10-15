@@ -34,9 +34,11 @@ bool rayClear(const World& world, float x0, float y0, float x1, float y1, int ig
     const float len = std::hypot(x1 - x0, y1 - y0);
     const int steps = std::max(1, (int)std::ceil(len * 16));
     const float h = 1.0f / 32;
+    const CollisionNear near(world, {std::min(x0, x1) - h, std::min(y0, y1) - h, std::max(x0, x1) + h, std::max(y0, y1) + h},
+                             world.player.onWater, ignoreCollider);
     for (int k = 0; k <= steps; k++) {
         const float x = x0 + (x1 - x0) * k / steps, y = y0 + (y1 - y0) * k / steps;
-        if (boxBlocked(world, {x - h, y - h, x + h, y + h}, world.player.onWater, ignoreCollider)) return false;
+        if (near.blocked({x - h, y - h, x + h, y + h})) return false;
     }
     return true;
 }
@@ -195,14 +197,17 @@ void Items::computeDrop(const World& world) {
     const float dx = p.lastMoveX / len, dy = p.lastMoveY / len;
     const float hx = 0.5f * (std::fabs(dx) * DROP_BOX_WIDTH + std::fabs(dy) * DROP_BOX_HEIGHT);
     const float hy = 0.5f * (std::fabs(dy) * DROP_BOX_WIDTH + std::fabs(dx) * DROP_BOX_HEIGHT);
+    // The geometry around the whole sweep, gathered once; if none of it touches the sweep (open
+    // ground, the usual case), the drop goes the full distance.
+    const float ex = bx + dx * MAX_DROP_DISTANCE, ey = by + dy * MAX_DROP_DISTANCE;
+    const Box sweep = {std::min(bx, ex) - hx, std::min(by, ey) - hy, std::max(bx, ex) + hx, std::max(by, ey) + hy};
+    const CollisionNear near(world, sweep, p.onWater);
     auto blockedAt = [&](float s) {
         const float cx = bx + dx * s, cy = by + dy * s;
-        return boxBlocked(world, {cx - hx, cy - hy, cx + hx, cy + hy}, p.onWater);
+        return near.blocked({cx - hx, cy - hy, cx + hx, cy + hy});
     };
     float reach = MAX_DROP_DISTANCE;
-    // The whole sweep's bounds clear (open ground, the usual case): one query.
-    const float ex = bx + dx * MAX_DROP_DISTANCE, ey = by + dy * MAX_DROP_DISTANCE;
-    if (boxBlocked(world, {std::min(bx, ex) - hx, std::min(by, ey) - hy, std::max(bx, ex) + hx, std::max(by, ey) + hy}, p.onWater)) {
+    if (near.blocked(sweep)) {
         // Otherwise the first blocked step (steps shorter than the box, so nothing slips between),
         // then bisection between it and the last clear one.
         const float step = 1.0f / 8;
