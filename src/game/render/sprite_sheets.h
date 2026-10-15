@@ -21,7 +21,7 @@ public:
 
     // Draws sprite `index` of `area` with its top-left at screen pixel (x, y), rounded, magnified
     // by a whole `scale` (an outline sprite as rectangles).
-    void draw(const Area& area, int index, float x, float y, uint32_t flags = 0, int scale = 1) const;
+    void draw(const Area& area, int index, float x, float y, uint32_t flags = 0, int scale = 1, uint32_t fill = 0) const;
 
 private:
     std::vector<plat::Texture*> sheets_;

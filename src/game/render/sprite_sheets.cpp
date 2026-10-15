@@ -24,7 +24,7 @@ void SpriteSheets::unload() {
     sheets_.clear();
 }
 
-void SpriteSheets::draw(const Area& area, int index, float x, float y, uint32_t flags, int scale) const {
+void SpriteSheets::draw(const Area& area, int index, float x, float y, uint32_t flags, int scale, uint32_t fill) const {
     const SpriteDef& S = area.sprites[index];
     if (S.outlineWidth > 0) { // a solid border: four rectangles (symmetric, so flips don't matter)
         const float l = std::round(x), t = std::round(y), w = (float)(S.w * scale), h = (float)(S.h * scale);
@@ -35,5 +35,5 @@ void SpriteSheets::draw(const Area& area, int index, float x, float y, uint32_t 
         plat::drawRect(l + w - b, t + b, b, h - 2 * b, S.outlineColor);
         return;
     }
-    plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(x), std::round(y), flags, scale);
+    plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(x), std::round(y), flags, scale, fill);
 }

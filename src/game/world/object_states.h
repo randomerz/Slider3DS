@@ -1,7 +1,8 @@
 // Runtime state of an Area's scene objects (Area::objects): the hierarchy (parents can change at
 // runtime: NPC.Teleport reparents), active state as changed by GameObject.SetActive, placement
-// (owner STile + offset) for objects that move at runtime (NPCs, carried items) and sprite flips set
-// by events, and colliders' enabled flags (Collider2D.enabled). Starts as authored.
+// (owner STile + offset) for objects that move at runtime (NPCs, carried items), their SpriteRenderers'
+// state as scripts change it (flipX, enabled, sprite, a flash fill), and colliders' enabled flags
+// (Collider2D.enabled). Starts as authored.
 //
 // Like Unity: an object is active in the hierarchy only if it and every ancestor are active
 // (activeSelf), so SetActive on a parent hides or shows everything under it, and showing a parent
@@ -45,6 +46,17 @@ public:
     // SpriteRenderer.flipX of the sprite on `object` (not inherited): 1 / 0, or -1 = as exported.
     void setFlipX(int object, bool flip) { flipX_[object] = flip ? 1 : 0; }
     int flipX(int object) const { return flipX_[object]; }
+    // SpriteRenderer.enabled of the sprite on `object` (not inherited; starts as exported).
+    void setRendererEnabled(int object, bool on) { rendererOn_[object] = on ? 1 : 0; }
+    bool rendererEnabled(int object) const { return rendererOn_[object] != 0; }
+    // SpriteRenderer.sprite set by a script: an Area::sprites index, NO_SPRITE (null: draws nothing),
+    // or -1 = as exported (or animated).
+    static constexpr int NO_SPRITE = -2;
+    void setSprite(int object, int sprite) { sprite_[object] = sprite; }
+    int sprite(int object) const { return sprite_[object]; }
+    // A solid color over the sprite's shape (FlashWhiteSprite's white material), RGBA; 0 = none.
+    void setFill(int object, uint32_t rgba) { fill_[object] = rgba; }
+    uint32_t fill(int object) const { return fill_[object]; }
 
     // Objects not where they were exported (another owner, or an offset): physics checks their
     // colliders on their own, as the per-owner broadphase groups place colliders as exported.
@@ -68,6 +80,9 @@ private:
     std::vector<int> selfOwner_, owner_;   // owner set on the object (-1 = none) / effective
     std::vector<float> selfDx_, selfDy_, offX_, offY_; // offset set on the object / effective (sum)
     std::vector<int8_t> flipX_;
+    std::vector<uint8_t> rendererOn_;      // per object (objects without a sprite: 1)
+    std::vector<int> sprite_;
+    std::vector<uint32_t> fill_;
     std::vector<uint8_t> colliderEnabled_; // per ObjectCollider::slot
     uint32_t activeVersion_ = 0, placementVersion_ = 0;
     std::vector<int> moved_;               // moved(), sorted

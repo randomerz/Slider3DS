@@ -194,7 +194,9 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
         const int image = hovered ? def.hoverIcon : active ? b.island : def.empty;
         drawPart(image, -IMAGE_HALF, -IMAGE_HALF, 2 * IMAGE_HALF, cx, cy + drop);
         if (active)
-            for (const UiPart& icon : b.icons) drawPart(icon.sprite, icon.x, icon.y, icon.h, cx, cy + drop);
+            for (int i = 0; i < (int)b.icons.size(); i++)
+                if (world.artifactIconShown(b.islandId, i))
+                    drawPart(b.icons[i].sprite, b.icons[i].x, b.icons[i].y, b.icons[i].h, cx, cy + drop);
         if (isOption(bx, by) && !hovered)
             drawPart(def.highlight.sprite, def.highlight.x, def.highlight.y, def.highlight.h, cx, cy + drop);
         if (pressed) drawPart(def.pressed.sprite, def.pressed.x, def.pressed.y, def.pressed.h, cx, cy);

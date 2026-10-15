@@ -8,12 +8,12 @@
 
 struct DevControls {
     bool noclip = false;       // X: walk through everything (shows the position point)
-    bool showInactive = false; // Y: draw uncollected STiles too
+    bool showInactive = false; // Y: draw uncollected STiles too (L + Y: the ruins, one slide from assembled)
     bool showPerf = true;      // SELECT: the perf overlay
     bool collected = false;    // B: tiles 2-8 collected (L + B: only 2-4, next to Kevin's knot)
     size_t spawnIndex = 0;     // R: the spawn last jumped to
 
     // Handles this frame's dev buttons. Returns true while L is held: the D-pad then slides the
-    // player's tile instead of walking (and B sets up Kevin's knot).
+    // player's tile instead of walking (and B sets up Kevin's knot, Y the ruins).
     bool update(const plat::Input& in, World& world);
 };

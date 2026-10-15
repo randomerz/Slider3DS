@@ -341,7 +341,7 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
     }
     const std::set<std::string> expectedSpecs = {"CatTrick.CheckAutumn", "CatTrick.CheckMittens", "CatTrick.CheckTofu",
                                                  "ChadJump.ChadFell", "Player.GetIsOnWater",
-                                                 "RuinsArrow.CheckActiveRods", "VillageChadJump.DidSlideAfterJumping"};
+                                                 "VillageChadJump.DidSlideAfterJumping"};
     std::string got2;
     for (const std::string& n : specs) got2 += n + ", ";
     check(specs == expectedSpecs, "unsupported spec conditions: " + got2);

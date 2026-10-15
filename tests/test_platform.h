@@ -15,6 +15,7 @@ struct DrawCall {
     int sx, sy, sw, sh; // rects: 0, 0, then their size
     float x, y, w, h;
     uint32_t flags; // sprites: DrawFlags; rects: color
+    uint32_t fill = 0; // sprites: drawSprite's fill (0 = none)
 };
 const std::vector<DrawCall>& testDrawCalls();
 void testResetDrawCalls();

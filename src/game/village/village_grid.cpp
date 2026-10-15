@@ -37,6 +37,7 @@ bool checkSpec(const World& world, const ConditionDef& c) {
     case ConditionDef::Spec::VillageFishOn: return world.state.flag(FISH_ON_FLAG); // CheckFishOn
     case ConditionDef::Spec::KnotSolved: return world.knots.badLines(c.data) == 0;      // KnotBox.CheckPuzzle
     case ConditionDef::Spec::KnotPartlySolved: return world.knots.badLines(c.data) <= 3; // CheckPuzzlePartial
+    case ConditionDef::Spec::RuinsRodsOn: return world.ruins.rodsOn(c.data);              // RuinsArrow.CheckActiveRods
     }
     return false;
 }
@@ -46,6 +47,7 @@ bool specReadsOnlyStateAndGrid(ConditionDef::Spec spec) {
     case ConditionDef::Spec::VillageFishOn: return true; // a GameState flag
     case ConditionDef::Spec::KnotSolved:
     case ConditionDef::Spec::KnotPartlySolved: return false; // where the knot's nodes are
+    case ConditionDef::Spec::RuinsRodsOn: return false;      // the rods as of the last tile arrival
     }
     return false;
 }

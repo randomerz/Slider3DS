@@ -100,6 +100,7 @@ struct WorldSprite {
     int owner = 0;         // STile islandId (placement relative to its center), 0 = world
     SpritePlacement place;
     float animStart = 0, animRandom = 0; // normalized start time, or a random one in [0, animRandom)
+    bool enabled = true;   // the SpriteRenderer itself at the start (ObjectStates tracks it at runtime)
 };
 
 // A non-tilemap collider: solid (Area::objectColliders, blocks the player) or a trigger
@@ -124,12 +125,14 @@ struct ObjectCollider {
 //   VillageFishOn     VillageGrid.CheckFishOn: VillageGrid.TurnFishOn ran (GameState flag "villageFishOn")
 //   KnotSolved        KnotBox.CheckPuzzle on knotBoxes[data]: no bad lines
 //   KnotPartlySolved  KnotBox.CheckPuzzlePartial on knotBoxes[data]: at most 3 bad lines
+//   RuinsRodsOn       RuinsArrow.CheckActiveRods on ruinsArrows[data]: some rod is lit
 // To add one: a line here, its cases in village::checkSpec / specReadsOnlyStateAndGrid (game/village),
 // and its name in the exporter's PortSpecs.
 #define SLIDER_SPEC_CHECKS(X)                   \
     X(VillageFishOn, "VillageGrid.CheckFishOn") \
     X(KnotSolved, "KnotBox.CheckPuzzle")        \
-    X(KnotPartlySolved, "KnotBox.CheckPuzzlePartial")
+    X(KnotPartlySolved, "KnotBox.CheckPuzzlePartial") \
+    X(RuinsRodsOn, "RuinsArrow.CheckActiveRods")
 
 // One Condition (Condition.cs) as exported. Spec conditions the port doesn't check load as Unsupported.
 struct ConditionDef {
@@ -146,7 +149,7 @@ struct ConditionDef {
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
     Spec spec = Spec(0);              // Spec: which check (name: its exported method)
     int specTarget = -1;              // Spec: the object its check runs on (e.g. the KnotBox)
-    int data = -1;                    // KnotSolved / KnotPartlySolved: Area::knotBoxes index
+    int data = -1;                    // KnotSolved / KnotPartlySolved: Area::knotBoxes index; RuinsRodsOn: Area::ruinsArrows
 };
 
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
@@ -421,8 +424,9 @@ struct ComponentRange {
     const ComponentRef* end() const { return last; }
 };
 
-// A ParticleSystem the port plays (ParticleSystem.Play): bursts of flat squares from a circle,
-// flying outward, slowed by limit-velocity, fading by color-over-lifetime alpha; world space.
+// A ParticleSystem the port plays (ParticleSystem.Play, or on activation with playOnAwake): bursts
+// and a steady rate of flat squares from a circle, flying outward, pushed by a constant force, slowed
+// by limit-velocity, fading by color-over-lifetime alpha; world space.
 struct ParticleBurstDef {
     float time = 0;               // s after Play
     float countMin = 0, countMax = 0;
@@ -431,11 +435,19 @@ struct ParticleBurstDef {
 };
 struct ParticlesDef {
     int object = -1;              // where it emits (Area::objects)
-    float duration = 0;           // s; bursts past it don't fire
+    bool playOnAwake = false;     // plays when its object becomes active
+    bool loop = false;            // starts over after `duration` (until stopped)
+    float duration = 0;           // s; emission past it stops (non-looping)
     float lifetimeMin = 0, lifetimeMax = 0, speedMin = 0, speedMax = 0;
     float size = 0;               // world units (square)
-    uint32_t color = 0xffffffff;  // RGBA
+    // Start color: colors[0], or (several) a random point on the gradient with these keys (RGBA),
+    // stepping to the next key instead of blending when colorsFixed.
+    std::vector<float> colorTimes;
+    std::vector<uint32_t> colors;
+    bool colorsFixed = false;
     float shapeRadius = 0;        // Circle shape: start inside it, moving away from its center
+    float rateMin = 0, rateMax = 0; // emission per second
+    float forceX = 0, forceY = 0; // force over lifetime (units/s^2)
     std::vector<ParticleBurstDef> bursts;
     bool limitVelocity = false;   // limit velocity over lifetime:
     float limit = 0, dampen = 0;  //   speed over `limit` loses the `dampen` fraction (per 1/30 s)
@@ -462,7 +474,40 @@ struct KnotBoxDef {
     std::vector<ObjectCollider> rayColliders; // what CheckLines' raycast hits (the nodes' trigger circles)
     struct Pos { int owner; float x, y; };
     std::vector<Pos> correct;     // SetToCorrectPositions: where each node's parent goes
-    std::vector<ParticlesDef> particles; // CheckParticles plays them when solved
+    std::vector<int> particles;   // Area::particles; CheckParticles plays them when solved
+};
+
+// RuinsArrow (the ruins puzzle, Slider 7): when tiles 3-1 and 6-2 sit side by side (grid "31..62")
+// its arrow shows on tile 2, pointing from tile 2 to tile 5 (where Slider 7 is buried), with a
+// trail of sparkles toward it. Rods on tiles 1, 2, 3 and 6 light up (with their runes, sparkles and
+// Artifact corner icons) for each assembled pair; CheckActiveRods is true while any is lit.
+struct RuinsRodDef {
+    int island = 0;               // its rodN: 1, 2, 3 or 6
+    int object = -1;              // its SpriteRenderer's object
+    int off = -1, on = -1;        // sprites
+    int particles = -1;           // Area::particles: sparkles while lit
+    int runes = -1;               // the runes' SpriteRenderer object (shown, with a white flash, while lit)
+    float flashTime = 0.25f;      // FlashWhiteSprite: white this long, then normal this long
+};
+struct RuinsArrowDef {
+    static constexpr int ARROWS = 6; // NNE, NE, ENE, ESE, SE, SSE
+    int object = -1;              // the RuinsArrow
+    int renderer = -1;            // its SpriteRenderer's object (a world sprite, authored off)
+    int arrows[ARROWS] = {};      // sprites
+    int complete = -1;            // sprite once Slider 7 is collected, -1 = none (shows nothing)
+    int buriedSlider = -1;        // object shown when the arrow first appears
+    std::vector<RuinsRodDef> rods;
+    uint32_t flashColor = 0xe6e6e6ff; // the white flash's color (RGBA)
+    int particles = -1;           // Area::particles: arrowParticles
+    struct Trail {                // ParticleTrail: sparkles every `distance` from start to target
+        int particles = -1;       // Area::particles (a prefab spawned at each point, under `object`)
+        int object = -1, start = -1, target = -1;
+        float distance = 2, delay = 0.1f, repeat = 8;
+    } trail;
+    struct MapIcon { int corner, button, icon; }; // RuinsMapIcons cornerN: ArtifactButtonDef (islandId) icons[icon]
+    std::vector<MapIcon> mapIcons;
+    bool bob = false;             // BobAnimation on the renderer's object (one pixel down / up)
+    float bobLength = 3, bobDown = 0.5f, bobMiddle = 1.5f, bobUp = 2, bobOffset = 0;
 };
 
 // The area's SGrid subclass and the objects its methods act on.
@@ -505,6 +550,7 @@ struct ArtifactButtonDef {
     int islandId = 0;
     int island = -1, completed = -1; // sprites
     std::vector<UiPart> icons;      // overlays, relative to the button center
+    std::vector<uint8_t> iconsEnabled; // per icon: its Image on at the start (RuinsMapIcons switches some)
 };
 
 // The Artifact's tile screen (UIArtifact / ArtifactTileButton). UI pixels, y up, origin at the
@@ -567,6 +613,8 @@ struct Area {
     std::vector<NpcDef> npcs;
     std::vector<ItemDef> items;
     std::vector<KnotBoxDef> knotBoxes;
+    std::vector<RuinsArrowDef> ruinsArrows;
+    std::vector<ParticlesDef> particles;
     PlayerActionDef playerAction;
     std::vector<AnimatorControllerDef> animatorControllers;
     std::vector<AnimatorDef> animators;

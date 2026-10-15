@@ -1,5 +1,5 @@
-// Draws a World's area (tile layers, active world sprites, the player, NPCs' dialogue and message
-// pings, knot lines, particles) through the platform layer.
+// Draws a World's area (tile layers, active world sprites as scripts left their SpriteRenderers, the
+// player, NPCs' dialogue and message pings, knot lines, particles) through the platform layer.
 //
 // Per frame: begin() sets the camera, then draw() draws everything visible in Unity's order:
 // sorting layer, then order in layer, then (GraphicsSettings custom sort axis (0,1,0)) higher sort
@@ -24,6 +24,7 @@ struct SortedSprite {
     float x = 0, y = 0, sortY = 0;
     int sortLayer = 0, order = 0;
     uint32_t flags = 0; // plat::DrawFlags
+    uint32_t fill = 0;  // a solid color over its shape (RGBA), 0 = none
 };
 
 // `p` placed relative to (baseX, baseY), showing its animation frame `animTime` seconds in, with

@@ -193,6 +193,7 @@ void Grid::init(const Area& area) {
     tileWidth_ = area.stiles.empty() ? 17 : area.stiles[0].width;
     housingOffset_ = area.housingOffset;
     targetGrid_ = area.targetGrid;
+    events_.clear();
     tiles_.clear();
     int maxId = 0;
     for (const STileDef& d : area.stiles) maxId = std::max(maxId, d.islandId);
@@ -292,6 +293,7 @@ void Grid::setTileActive(int islandId, bool active) {
     if (t && t->active != active) {
         t->active = active;
         version_++;
+        if (active) events_.push_back({GridEvent::Kind::TileEnabled, islandId, {}});
     }
 }
 
@@ -329,6 +331,7 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
             t->posY = (float)m.ey;
         }
     }
+    events_.push_back({GridEvent::Kind::Move, 0, slots_});
     slots_ = next;
     active_.push_back(std::move(am));
     version_++;
@@ -348,6 +351,7 @@ std::vector<int> Grid::update(float dt) {
             t->posX = a.ex;
             t->posY = a.ey;
             if (a.playerOn) tileBorderCount_[tileIndex_[a.islandId]]--;
+            events_.push_back({GridEvent::Kind::TileMoveEnd, a.islandId, {}});
         }
     }
     const size_t animCount = anims_.size();

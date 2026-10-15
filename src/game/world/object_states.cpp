@@ -14,6 +14,11 @@ void ObjectStates::init(const Area& area) {
     offX_.assign(n, 0);
     offY_.assign(n, 0);
     flipX_.assign(n, -1);
+    rendererOn_.assign(n, 1);
+    for (const WorldSprite& ws : area.worldSprites)
+        if (!ws.enabled) rendererOn_[ws.object] = 0;
+    sprite_.assign(n, -1);
+    fill_.assign(n, 0);
     moved_.clear();
     colliderEnabled_.clear();
     for (const ObjectCollider& c : area.objectColliders) colliderEnabled_.push_back(c.enabled ? 1 : 0);

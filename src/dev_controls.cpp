@@ -5,7 +5,6 @@
 
 bool DevControls::update(const plat::Input& in, World& world) {
     const Area& area = world.area;
-    if (in.pressed & plat::BTN_Y) showInactive = !showInactive;
     if (in.pressed & plat::BTN_SELECT) showPerf = !showPerf;
     if (in.pressed & plat::BTN_X) noclip = !noclip;
 
@@ -13,6 +12,26 @@ bool DevControls::update(const plat::Input& in, World& world) {
         spawnIndex = (spawnIndex + 1) % area.spawns.size();
         world.placeAt(area.spawns[spawnIndex]);
         printf("Spawn: %s\n", area.spawns[spawnIndex].name.c_str());
+    }
+
+    if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_Y)) {
+        // The ruins (Slider 7): Sliders 2-6 collected, 7-8 not; 3 1 / 6 _ 2, so sliding 2 left
+        // assembles them (and 3 1 and 3 above 6 already light their rods). Next to the arrow.
+        collected = false;
+        for (int id = 2; id <= 8; id++) {
+            world.setTileActive(id, id <= 6);
+            world.state.setCollectible("Slider " + std::to_string(id), "Village", id <= 6);
+        }
+        world.artifact.setGrid(world.grid, "314_692_578");
+        world.reloadObjects();
+        if (!area.ruinsArrows.empty()) {
+            float x, y;
+            world.objectPosition(area.ruinsArrows[0].object, x, y);
+            world.placeNear(x, y - 3);
+        }
+        printf("Ruins setup: tiles 2-6 collected, slide 2 left to assemble; grid %s\n", world.grid.gridString().c_str());
+    } else if (in.pressed & plat::BTN_Y) {
+        showInactive = !showInactive;
     }
 
     if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_B)) {

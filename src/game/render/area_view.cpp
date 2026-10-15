@@ -71,10 +71,14 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     }
     for (size_t i = 0; i < area.worldSprites.size(); i++) {
         const WorldSprite& ws = area.worldSprites[i];
-        if (!inRange(ws.place.sortLayer) || !objects.active(ws) || !ownerShown(objects.owner(ws.object))) continue;
+        if (!inRange(ws.place.sortLayer) || !objects.active(ws) || !objects.rendererEnabled(ws.object) ||
+            objects.sprite(ws.object) == ObjectStates::NO_SPRITE || !ownerShown(objects.owner(ws.object)))
+            continue;
         float bx, by;
         world.objectBase(ws.object, bx, by);
         SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
+        if (objects.sprite(ws.object) >= 0) sp.sprite = objects.sprite(ws.object); // set by a script
+        sp.fill = objects.fill(ws.object);
         const int animator = area.animatorOn(ws.object);
         if (animator >= 0 && world.animators.sprite(animator) >= 0) sp.sprite = world.animators.sprite(animator);
         int carriedOrder;
@@ -277,6 +281,6 @@ bool AreaView::spriteRect(const Area& area, const SortedSprite& sp, float& px, f
 void AreaView::drawSprite(const Area& area, const SortedSprite& sp) {
     float px, py;
     if (!spriteRect(area, sp, px, py)) return;
-    sheets_->draw(area, sp.sprite, px, py, sp.flags);
+    sheets_->draw(area, sp.sprite, px, py, sp.flags, 1, sp.fill);
     spriteCount_++;
 }

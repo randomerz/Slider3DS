@@ -22,6 +22,7 @@ namespace plat {
 
 struct Texture {
     SDL_Texture* tex;
+    SDL_Texture* white; // the same shapes in solid white (drawSprite's fill tints it)
 };
 
 namespace {
@@ -144,18 +145,40 @@ bool readFile(const char* path, std::string& out) {
 
 Texture* loadSheet(const char* name) {
     std::string path = std::string(ASSET_ROOT) + "/sheets/" + name + ".png";
-    SDL_Texture* tex = IMG_LoadTexture(g_renderer, path.c_str());
-    if (!tex) {
+    SDL_Surface* loaded = IMG_Load(path.c_str());
+    SDL_Surface* surface = loaded ? SDL_ConvertSurfaceFormat(loaded, SDL_PIXELFORMAT_RGBA32, 0) : nullptr;
+    SDL_FreeSurface(loaded);
+    if (!surface) {
         SDL_Log("loadSheet(%s) failed: %s", path.c_str(), IMG_GetError());
         return nullptr;
     }
-    SDL_SetTextureScaleMode(tex, SDL_ScaleModeNearest);
-    return new Texture{tex};
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(g_renderer, surface);
+    // White silhouette: every pixel's color white, its alpha kept.
+    SDL_LockSurface(surface);
+    for (int y = 0; y < surface->h; y++) {
+        Uint8* row = (Uint8*)surface->pixels + y * surface->pitch;
+        for (int x = 0; x < surface->w; x++) row[x * 4] = row[x * 4 + 1] = row[x * 4 + 2] = 255;
+    }
+    SDL_UnlockSurface(surface);
+    SDL_Texture* white = SDL_CreateTextureFromSurface(g_renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!tex || !white) {
+        SDL_Log("loadSheet(%s) failed: %s", path.c_str(), SDL_GetError());
+        SDL_DestroyTexture(tex);
+        SDL_DestroyTexture(white);
+        return nullptr;
+    }
+    for (SDL_Texture* t : {tex, white}) {
+        SDL_SetTextureScaleMode(t, SDL_ScaleModeNearest);
+        SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND);
+    }
+    return new Texture{tex, white};
 }
 
 void freeSheet(Texture* tex) {
     if (!tex) return;
     SDL_DestroyTexture(tex->tex);
+    SDL_DestroyTexture(tex->white);
     delete tex;
 }
 
@@ -194,7 +217,7 @@ void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t colo
     SDL_RenderGeometry(g_renderer, nullptr, v, 4, idx, 6);
 }
 
-void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale) {
+void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale, uint32_t fill) {
     // SDL flips in texture space before rotating, so a flip that follows ROT90 is a rotation the
     // other way: F*R(a) = R(-a)*F. SDL angles are clockwise on screen.
     int flip = ((flags & FLIP_X) ? SDL_FLIP_HORIZONTAL : 0) | ((flags & FLIP_Y) ? SDL_FLIP_VERTICAL : 0);
@@ -205,7 +228,13 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
     }
     SDL_Rect src{sx, sy, sw, sh};
     SDL_FRect dst{x, y, (float)(sw * scale), (float)(sh * scale)};
-    SDL_RenderCopyExF(g_renderer, tex->tex, &src, &dst, angle, nullptr, (SDL_RendererFlip)flip);
+    SDL_Texture* t = tex->tex;
+    if (fill) {
+        t = tex->white;
+        SDL_SetTextureColorMod(t, (Uint8)(fill >> 24), (Uint8)(fill >> 16), (Uint8)(fill >> 8));
+        SDL_SetTextureAlphaMod(t, (Uint8)fill);
+    }
+    SDL_RenderCopyExF(g_renderer, t, &src, &dst, angle, nullptr, (SDL_RendererFlip)flip);
 }
 
 FrameStats lastFrameStats() { return g_stats; }

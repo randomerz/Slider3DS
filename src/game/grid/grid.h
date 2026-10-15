@@ -75,6 +75,17 @@ struct TileState {
 // Temporary wall segment (world units): the edge colliders that fence a slide.
 struct Wall { float x0, y0, x1, y1; };
 
+// Something that happened to the grid, for scripts listening to SGrid / SGridAnimator events:
+// Move = SGrid.OnGridMove (a move started; the slots already changed), TileMoveEnd =
+// SGridAnimator.OnSTileMoveEnd (an active tile arrived), TileEnabled = SGrid.OnSTileEnabled (a tile
+// was collected).
+struct GridEvent {
+    enum class Kind : uint8_t { Move, TileMoveEnd, TileEnabled };
+    Kind kind;
+    int islandId = 0;          // TileMoveEnd / TileEnabled: the tile
+    std::vector<int> oldSlots; // Move: the slots before it (idAt order: y * width + x)
+};
+
 class Grid {
 public:
     // New-game state from the Area: tiles at their exported slots and active flags, nothing moving.
@@ -120,6 +131,10 @@ public:
 
     float durationMultiplier = 1.0f; // 0.5 once the final puzzle starts
 
+    // The events since the last clearEvents(), in order (World hands them to their listeners).
+    const std::vector<GridEvent>& events() const { return events_; }
+    void clearEvents() { events_.clear(); }
+
 private:
     struct Anim {
         int moveId, islandId;
@@ -149,4 +164,5 @@ private:
     mutable std::string cached_[2];    // gridString(numsOnly) as of cachedVersion_[numsOnly]
     mutable uint32_t cachedVersion_[2] = {0, 0};
     std::vector<Wall> walls_;
+    std::vector<GridEvent> events_;
 };

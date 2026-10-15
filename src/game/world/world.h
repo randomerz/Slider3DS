@@ -18,6 +18,7 @@
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
 #include "game/village/knot_box.h"
+#include "game/village/ruins_arrow.h"
 
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
 // the STile it stands on, which it rides while that tile slides.
@@ -87,6 +88,8 @@ public:
     int priority(const Interactable& it) const;     // IInteractable.InteractionPriority
     bool showsPrompt(const Interactable& it) const; // IInteractable.DisplayInteractionPrompt
     bool promptShown() const; // any offered interactable shows the prompt (the indicator)
+    // Whether icon `icon` of Artifact button `islandId` shows (its Image.enabled: RuinsMapIcons switches some).
+    bool artifactIconShown(int islandId, int icon) const { return ruins.iconShown(area, islandId, icon); }
 
     // World position a component of `object` is placed relative to (its exported position is added):
     // its owner STile's center (as of now: ObjectStates) plus the object's runtime offset.
@@ -107,12 +110,15 @@ public:
     Animators animators;
     Particles particles;
     village::KnotBoxes knots; // the knot puzzle's lines (Village)
+    village::RuinsArrows ruins; // the ruins arrow, its rods and trail (Village)
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
 
 private:
-    // Objects may have become active: their Animators enable (rebind), then their components Start.
+    // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.
     void runStarts();
+    // Scripts listening to the grid's events (SGrid / SGridAnimator) hear what happened since last time.
+    void sendGridEvents();
 };

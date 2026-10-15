@@ -3,7 +3,7 @@ mismatch) to a PNG using the sheet images in assets/sheets, to see what a golden
 
     python tools/render_drawlist.py build-pc/test-out/artifact_selected.txt [out.png] [--size 320x240] [--scale 3]
 
-Each line: sheet sx sy sw sh x y flags [xN]  (xN = scale; an empty sheet name = a rect, whose flags
+Each line: sheet sx sy sw sh x y flags [xN] [fC]  (xN = scale, fC = a solid fill (RGBA) over the sprite's shape; an empty sheet name = a rect, whose flags
 is its RGBA color; sheet "line" = a line from (x, y) to (sx, sy), sw = its width in 1/100 px).
 """
 import argparse
@@ -48,6 +48,7 @@ def main():
                                                   fill=(c >> 24, (c >> 16) & 255, (c >> 8) & 255, c & 255))
                     canvas.alpha_composite(layer)
                 continue
+            fill = int(parts.pop()[1:]) if parts[-1].startswith("f") else 0
             scale = int(parts.pop()[1:]) if parts[-1].startswith("x") else 1
             name, sx, sy, sw, sh, x, y, flags = parts
             if name not in sheets:
@@ -56,6 +57,10 @@ def main():
             img = sheets[name].crop((sx, sy, sx + sw, sy + sh))
             if scale != 1:
                 img = img.resize((sw * scale, sh * scale), Image.NEAREST)
+            if fill:
+                solid = Image.new("RGBA", img.size, (fill >> 24, (fill >> 16) & 255, (fill >> 8) & 255, 255))
+                solid.putalpha(img.getchannel("A").point(lambda a: a * (fill & 255) // 255))
+                img = solid
             if flags & ROT90:
                 img = img.transpose(Image.Transpose.ROTATE_90)
             if flags & FLIP_X:

@@ -148,16 +148,22 @@ TEST(knot_box_drop_sparkles_only_when_solved) {
     for (const ItemDef& it : area.items)
         if (!it.onDrop.empty() && it.onDrop[0].method == CallDef::Method::KnotCheckParticles) node = &it;
     check(node != nullptr, "a knot node item");
+    // (Only the knot's sparkles count: the collectibles' play on their own.)
+    auto knotSparkles = [&] {
+        int n = 0;
+        for (const Particles::Particle& p : world.particles.particles())
+            for (int k : area.knotBoxes[0].particles) n += p.def == &area.particles[k];
+        return n;
+    };
     runCalls(world, node->onDrop);
     world.update(1.0f / 60, 0, 0, false);
-    check(world.particles.particles().empty(), "tangled: no sparkles");
+    check(knotSparkles() == 0, "tangled: no sparkles");
 
     village::knotSetToCorrectPositions(world, 0);
     world.knots.update(world);
     runCalls(world, node->onDrop);
     world.update(1.0f / 60, 0, 0, false);
-    check(world.particles.particles().size() == 7 * 3, "solved: each node's first burst (" +
-                                                           std::to_string(world.particles.particles().size()) + ")");
+    check(knotSparkles() == 7 * 3, "solved: each node's first burst (" + std::to_string(knotSparkles()) + ")");
 }
 
 TEST(knot_box_first_and_last_lines_are_neighbours) {

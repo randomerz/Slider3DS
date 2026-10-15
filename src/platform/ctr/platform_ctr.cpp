@@ -144,7 +144,7 @@ void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t colo
     C2D_DrawLine(x0, y0, c, x1, y1, c, width, 0.5f);
 }
 
-void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale) {
+void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale, uint32_t fill) {
     // Texture v runs bottom-up (top = 1 - y/H). Don't flip by swapping UVs: citro2d reads a
     // subtexture with top < bottom as a rotated atlas entry. A negative draw size flips instead,
     // in texture space before the rotation, so a flip that follows ROT90 is a rotation the
@@ -164,6 +164,12 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
     p.center = {w * 0.5f, h * 0.5f};
     p.depth = 0.5f;
     p.angle = angle;
+    if (fill) { // the texture's alpha, the fill's color
+        C2D_ImageTint tint;
+        C2D_PlainImageTint(&tint, C2D_Color32(fill >> 24, (fill >> 16) & 0xff, (fill >> 8) & 0xff, fill & 0xff), 1.0f);
+        C2D_DrawImage(img, &p, &tint);
+        return;
+    }
     C2D_DrawImage(img, &p, nullptr);
 }
 

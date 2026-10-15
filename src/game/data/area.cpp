@@ -244,10 +244,15 @@ static ConditionDef readCondition(const Json& c) {
     }
         SLIDER_SPEC_CHECKS(SLIDER_SPEC_MATCH)
 #undef SLIDER_SPEC_MATCH
-        // A KnotBox spec names its box; without one (the exporter left the box out) it stays unchecked.
+        // A KnotBox / RuinsArrow spec names its component; without one (the exporter left it out) it
+        // stays unchecked.
         if (d.type == T::Spec && (d.spec == ConditionDef::Spec::KnotSolved || d.spec == ConditionDef::Spec::KnotPartlySolved)) {
             d.data = c["knotBox"].asInt(-1);
             if (!c.has("knotBox")) d.type = T::Unsupported;
+        }
+        if (d.type == T::Spec && d.spec == ConditionDef::Spec::RuinsRodsOn) {
+            d.data = c["ruinsArrow"].asInt(-1);
+            if (!c.has("ruinsArrow")) d.type = T::Unsupported;
         }
     }
     return d;
@@ -283,14 +288,22 @@ static void readObjectCollider(const Json& j, ObjectCollider& c);
 static ParticlesDef readParticles(const Json& j) {
     ParticlesDef d;
     d.object = j["object"].asInt(-1);
+    d.playOnAwake = j["playOnAwake"].asBool();
+    d.loop = j["loop"].asBool();
     d.duration = j["duration"].asFloat();
     d.lifetimeMin = j["lifetime"].at(0).asFloat();
     d.lifetimeMax = j["lifetime"].at(1).asFloat();
     d.speedMin = j["speed"].at(0).asFloat();
     d.speedMax = j["speed"].at(1).asFloat();
     d.size = j["size"].asFloat();
-    d.color = readColor(j["color"]);
+    for (const Json& t : j["colorTimes"].items()) d.colorTimes.push_back(t.asFloat());
+    for (const Json& c : j["colors"].items()) d.colors.push_back(readColor(c));
+    d.colorsFixed = j["colorsFixed"].asBool();
     d.shapeRadius = j["shapeRadius"].asFloat();
+    d.rateMin = j["rate"].at(0).asFloat();
+    d.rateMax = j["rate"].at(1).asFloat();
+    d.forceX = j["force"].at(0).asFloat();
+    d.forceY = j["force"].at(1).asFloat();
     for (const Json& b : j["bursts"].items())
         d.bursts.push_back({b["time"].asFloat(), b["count"].at(0).asFloat(), b["count"].at(1).asFloat(),
                             b["cycles"].asInt(1), b["interval"].asFloat()});
@@ -324,7 +337,42 @@ static KnotBoxDef readKnotBox(const Json& j) {
     }
     for (const Json& c : j["correct"].items())
         d.correct.push_back({c["owner"].asInt(), c["pos"].at(0).asFloat(), c["pos"].at(1).asFloat()});
-    for (const Json& p : j["particles"].items()) d.particles.push_back(readParticles(p));
+    for (const Json& p : j["particles"].items()) d.particles.push_back(p.asInt(-1));
+    return d;
+}
+
+static RuinsArrowDef readRuinsArrow(const Json& j) {
+    RuinsArrowDef d;
+    d.object = j["object"].asInt(-1);
+    d.renderer = j["renderer"].asInt(-1);
+    for (int i = 0; i < RuinsArrowDef::ARROWS; i++) d.arrows[i] = j["arrows"].at(i).asInt(-2);
+    if (j["arrows"].size() != (size_t)RuinsArrowDef::ARROWS) d.arrows[0] = -2; // (fails validation)
+    d.complete = j["complete"].asInt(-1);
+    d.buriedSlider = j["buriedSlider"].asInt(-1);
+    for (const Json& r : j["rods"].items())
+        d.rods.push_back({r["island"].asInt(), r["object"].asInt(-1), r["off"].asInt(-1), r["on"].asInt(-1),
+                          r["particles"].asInt(-1), r["runes"].asInt(-1), r["flashTime"].asFloat(0.25f)});
+    d.flashColor = readColor(j["flashColor"]);
+    d.particles = j["particles"].asInt(-1);
+    const Json& t = j["trail"];
+    d.trail.particles = t["particles"].asInt(-1);
+    d.trail.object = t["object"].asInt(-1);
+    d.trail.start = t["start"].asInt(-1);
+    d.trail.target = t["target"].asInt(-1);
+    d.trail.distance = t["distance"].asFloat(2);
+    d.trail.delay = t["delay"].asFloat(0.1f);
+    d.trail.repeat = t["repeat"].asFloat(8);
+    for (const Json& m : j["mapIcons"].items())
+        d.mapIcons.push_back({m["corner"].asInt(), m["button"].asInt(), m["icon"].asInt(-1)});
+    if (j.has("bob")) {
+        const Json& b = j["bob"];
+        d.bob = true;
+        d.bobLength = b["length"].asFloat(3);
+        d.bobDown = b["down"].asFloat(0.5f);
+        d.bobMiddle = b["middle"].asFloat(1.5f);
+        d.bobUp = b["up"].asFloat(2);
+        d.bobOffset = b["offset"].asFloat();
+    }
     return d;
 }
 
@@ -479,7 +527,10 @@ static void readArtifact(const Json& j, ArtifactDef& a) {
         d.islandId = b["islandId"].asInt();
         d.island = b["island"].asInt(-1);
         d.completed = b["completed"].asInt(-1);
-        for (const Json& icon : b["icons"].items()) d.icons.push_back(readPart(icon));
+        for (const Json& icon : b["icons"].items()) {
+            d.icons.push_back(readPart(icon));
+            d.iconsEnabled.push_back(icon["enabled"].asBool(true) ? 1 : 0);
+        }
         a.buttons.push_back(std::move(d));
     }
 }
@@ -632,11 +683,16 @@ static bool validate(const Area& a, std::string* error) {
         if (!ok) return fail(error, "item " + it.name + ": bad object, collider or call");
     }
     auto conditionsOk = [&](const std::vector<ConditionDef>& conditions) {
-        for (const ConditionDef& d : conditions)
-            if (d.type == ConditionDef::Type::Spec &&
-                (d.spec == ConditionDef::Spec::KnotSolved || d.spec == ConditionDef::Spec::KnotPartlySolved) &&
+        using S = ConditionDef::Spec;
+        for (const ConditionDef& d : conditions) {
+            if (d.type != ConditionDef::Type::Spec) continue;
+            if ((d.spec == S::KnotSolved || d.spec == S::KnotPartlySolved) &&
                 (d.data < 0 || d.data >= (int)a.knotBoxes.size() || a.knotBoxes[d.data].object != d.specTarget))
                 return false;
+            if (d.spec == S::RuinsRodsOn &&
+                (d.data < 0 || d.data >= (int)a.ruinsArrows.size() || a.ruinsArrows[d.data].object != d.specTarget))
+                return false;
+        }
         return true;
     };
     for (const ConditionCheckerDef& cc : a.conditionCheckers)
@@ -644,6 +700,16 @@ static bool validate(const Area& a, std::string* error) {
     for (const NpcDef& n : a.npcs)
         for (const NpcCondDef& c : n.conds)
             if (!conditionsOk(c.conditions)) return fail(error, "npc " + n.name + ": bad spec target");
+    for (const ParticlesDef& pd : a.particles) {
+        bool ok = objectOk(pd.object) && pd.lifetimeMin <= pd.lifetimeMax && pd.speedMin <= pd.speedMax &&
+                  pd.rateMin >= 0 && pd.rateMin <= pd.rateMax && pd.size >= 0 && pd.duration >= 0 &&
+                  !(pd.loop && pd.duration <= 0) && !pd.colors.empty() && pd.colors.size() == pd.colorTimes.size();
+        for (size_t i = 1; i < pd.colorTimes.size(); i++) ok = ok && pd.colorTimes[i - 1] <= pd.colorTimes[i];
+        for (const ParticleBurstDef& b : pd.bursts) ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0;
+        if (!ok) return fail(error, "particles " + (objectOk(pd.object) ? a.pathOf(pd.object) : std::string("?")) +
+                                        ": bad object, ranges, colors or bursts");
+    }
+    auto particlesOk = [&](int i) { return i >= 0 && i < (int)a.particles.size(); };
     for (const KnotBoxDef& k : a.knotBoxes) {
         bool ok = objectOk(k.object) && k.nodes.size() >= 3 && k.nodes.size() <= (size_t)KnotBoxDef::MAX_NODES &&
                   k.lines.size() == k.nodes.size() &&
@@ -652,11 +718,27 @@ static bool validate(const Area& a, std::string* error) {
         for (const KnotLineDef& l : k.lines) ok = ok && objectOk(l.object) && l.width > 0;
         for (const ObjectCollider& c : k.rayColliders) ok = ok && sameOwner(c.object, c.owner);
         for (const KnotBoxDef::Pos& p : k.correct) ok = ok && ownerOk(p.owner);
-        for (const ParticlesDef& pd : k.particles) {
-            ok = ok && objectOk(pd.object) && pd.lifetimeMin <= pd.lifetimeMax && pd.speedMin <= pd.speedMax;
-            for (const ParticleBurstDef& b : pd.bursts) ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0;
-        }
+        for (int pd : k.particles) ok = ok && particlesOk(pd);
         if (!ok) return fail(error, "knot box: bad object, node, line, ray collider, position or particles");
+    }
+    std::vector<bool> worldSpriteOn(a.objects.size(), false); // objects with a world sprite
+    for (const WorldSprite& ws : a.worldSprites) worldSpriteOn[ws.object] = true;
+    for (const RuinsArrowDef& r : a.ruinsArrows) {
+        auto spriteOrNone = [&](int sp) { return sp == -1 || (spriteIndexOk(sp) && a.sprites[sp].ppu == (float)a.ppu); };
+        bool ok = objectOk(r.object) && objectOk(r.renderer) && worldSpriteOn[r.renderer] && objectOk(r.buriedSlider) &&
+                  spriteOrNone(r.complete) && particlesOk(r.particles) && particlesOk(r.trail.particles) &&
+                  objectOk(r.trail.object) && objectOk(r.trail.start) && objectOk(r.trail.target) && r.trail.distance > 0 &&
+                  r.trail.delay >= 0 && r.trail.repeat > 0 && (!r.bob || r.bobLength > 0);
+        for (int sp : r.arrows) ok = ok && sp != -1 && spriteOrNone(sp);
+        for (const RuinsRodDef& rod : r.rods)
+            ok = ok && a.stile(rod.island) && objectOk(rod.object) && worldSpriteOn[rod.object] && spriteOrNone(rod.off) &&
+                 spriteOrNone(rod.on) && rod.off != -1 && rod.on != -1 && particlesOk(rod.particles) && objectOk(rod.runes) &&
+                 worldSpriteOn[rod.runes] && rod.flashTime >= 0;
+        for (const RuinsArrowDef::MapIcon& m : r.mapIcons) {
+            const ArtifactButtonDef* b = a.artifact.button(m.button);
+            ok = ok && b && m.icon >= 0 && m.icon < (int)b->icons.size();
+        }
+        if (!ok) return fail(error, "ruins arrow: bad object, sprite, rod, particles, trail or map icon");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");
@@ -675,6 +757,7 @@ static bool validate(const Area& a, std::string* error) {
         for (const ArtifactButtonDef& b : d.buttons) {
             ok = ok && a.stile(b.islandId) && spriteOk(b.island) && spriteOk(b.completed);
             for (const UiPart& icon : b.icons) ok = ok && spriteOk(icon.sprite);
+            ok = ok && b.iconsEnabled.size() == b.icons.size();
         }
         for (const STileDef& s : a.stiles) ok = ok && d.button(s.islandId);
         if (!ok) return fail(error, "artifact: bad sprite index or button set");
@@ -735,6 +818,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         ws.place = readPlacement(s);
         ws.animStart = s["animStart"].asFloat();
         ws.animRandom = s["animRandom"].asFloat();
+        ws.enabled = s["enabled"].asBool(true);
         out.worldSprites.push_back(std::move(ws));
     }
 
@@ -799,6 +883,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.items.push_back(std::move(d));
     }
     for (const Json& j : doc["knotBoxes"].items()) out.knotBoxes.push_back(readKnotBox(j));
+    for (const Json& j : doc["ruinsArrows"].items()) out.ruinsArrows.push_back(readRuinsArrow(j));
+    for (const Json& j : doc["particles"].items()) out.particles.push_back(readParticles(j));
     if (doc.has("playerAction")) {
         const Json& pa = doc["playerAction"];
         PlayerActionDef& d = out.playerAction;

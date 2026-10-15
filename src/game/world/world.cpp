@@ -17,7 +17,16 @@ void setTileObjects(World& world, const STileDef& s, bool active) {
 
 void World::runStarts() {
     animators.enable(*this); // OnEnable comes before Start
+    ruins.activate(*this);   // (rods' Awake, the arrow's Start)
     starts.update(*this);
+}
+
+void World::sendGridEvents() {
+    if (grid.events().empty()) return;
+    const std::vector<GridEvent> events = grid.events();
+    grid.clearEvents();
+    ruins.gridEvents(*this, events);
+    runStarts(); // (the arrow may show the buried Slider)
 }
 
 World::World(const Area& a) : area(a) {
@@ -29,6 +38,7 @@ World::World(const Area& a) : area(a) {
 
 void World::reloadObjects() {
     objects.init(area);
+    grid.clearEvents(); // (a fresh load: nothing has happened yet)
     for (const STileDef& s : area.stiles) setTileObjects(*this, s, grid.tileActive(s.islandId));
     // SGrid.Start: collectibles already in the inventory stay picked up.
     for (const CollectibleDef& c : area.collectibles)
@@ -39,6 +49,7 @@ void World::reloadObjects() {
     items.reset(area);
     animators.reset(area);
     particles.reset();
+    ruins.reset(area);
     starts.reset(area);
     runStarts();
     knots.update(*this);
@@ -48,6 +59,7 @@ void World::setTileActive(int islandId, bool active) {
     grid.setTileActive(islandId, active);
     if (const STileDef* s = area.stile(islandId)) setTileObjects(*this, *s, active);
     runStarts(); // Start runs before the newly active objects' first update
+    sendGridEvents(); // (SGrid.OnSTileEnabled)
     knots.update(*this);
 }
 
@@ -73,6 +85,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
     artifact.update(grid, dt, player.stile);
+    sendGridEvents(); // moves queued since the last frame started; tiles arrived
     if (t) {
         player.x += (t->posX - ox) * grid.tileWidth();
         player.y += (t->posY - oy) * grid.tileWidth();
@@ -111,6 +124,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     npcs.update(*this, dt);
     runStarts();
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
+    ruins.update(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
     if (effects.fade > 0)

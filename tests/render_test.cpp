@@ -35,6 +35,7 @@ std::string drawListText(const std::vector<DrawCall>& calls) {
         out << c.sheet << ' ' << c.sx << ' ' << c.sy << ' ' << c.sw << ' ' << c.sh << ' ' << c.x << ' ' << c.y << ' '
             << c.flags;
         if (!c.sheet.empty() && c.w != (float)c.sw) out << " x" << (int)(c.w / c.sw); // sprite scale, if not 1
+        if (c.fill) out << " f" << c.fill;                                                // solid fill, if any
         out << '\n';
     }
     return out.str();
@@ -128,6 +129,17 @@ static void solvedKnotSparkles(World& w, int frames) {
     for (int i = 0; i < frames; i++) w.particles.update(w, 1.0f / 60.0f);
 }
 
+// Tiles 1-6, the ruins assembled by sliding 2 into place, `frames` frames after it arrived: the
+// arrow, all four rods lit (runes 1 and 2 flashing white early on), the trail toward tile 5.
+static void ruinsLit(World& w, int frames) {
+    for (int id = 2; id <= 6; id++) w.setTileActive(id, true);
+    w.artifact.setGrid(w.grid, "314_692_578");
+    w.reloadObjects();
+    w.artifact.tryMove(w.grid, 2, 1, 1, 1, 0);
+    for (int i = 0; i < 600 && !w.artifact.queueEmpty(); i++) w.update(1.0f / 60.0f, 0, 0, false);
+    for (int i = 0; i < frames; i++) w.update(1.0f / 60.0f, 0, 0, false);
+}
+
 TEST(render_goldens) {
     const Area& area = villageArea();
     SpriteSheets sheets;
@@ -158,6 +170,8 @@ TEST(render_goldens) {
         // The solved knot (good lines) and its sparkles flying out, then fading.
         {"knot_sparkles", 32, 33, 0, false, [](World& w) { solvedKnotSparkles(w, 30); }},
         {"knot_sparkles_fading", 32, 33, 0, false, [](World& w) { solvedKnotSparkles(w, 114); }},
+        {"ruins_lit_flash", 8, 24, 0, false, [](World& w) { ruinsLit(w, 6); }},
+        {"ruins_lit", 8, 24, 0, false, [](World& w) { ruinsLit(w, 60); }},
     };
 
     GoldenSet goldens("render.txt");
