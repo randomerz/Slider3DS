@@ -38,6 +38,7 @@ void World::reloadObjects() {
     npcs.reset(area);
     items.reset(area);
     animators.reset(area);
+    particles.reset();
     starts.reset(area);
     runStarts();
 }
@@ -108,6 +109,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     npcs.update(*this, dt);
     runStarts();
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
+    particles.update(*this, dt);
     if (effects.fade > 0)
         effects.fade = area.fadeDuration > 0 ? std::max(0.0f, effects.fade - dt / area.fadeDuration) : 0;
 }

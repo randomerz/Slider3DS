@@ -80,6 +80,9 @@ void freeSheet(Texture* tex);
 void beginFrame();
 void beginScreen(Screen screen, uint32_t clearColor);
 void drawRect(float x, float y, float w, float h, uint32_t color);
+// A `width`-wide band along the segment (x0, y0)-(x1, y1), ending square at its endpoints (a
+// two-point LineRenderer without caps). Colors with alpha < 255 blend, as for drawRect.
+void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t color);
 // Draws the sw x sh pixel rect at (sx, sy) of `tex` (top-left origin) with its top-left at (x, y).
 // Rotation is about the rect's center, so ROT90 suits square sprites (all tiles are 16x16).
 // `scale` is a whole-pixel magnification (the drawn size is sw*scale x sh*scale).

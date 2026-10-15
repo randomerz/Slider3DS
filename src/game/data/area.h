@@ -124,7 +124,7 @@ struct ObjectCollider {
 //   VillageFishOn   VillageGrid.CheckFishOn: VillageGrid.TurnFishOn ran (GameState flag "villageFishOn")
 // To add one: a line here, its cases in village::checkSpec / specReadsOnlyStateAndGrid (game/village),
 // and its name in the exporter's PortSpecs.
-#define SLIDER_SPEC_CHECKS(X) X(VillageFishOn, "VillageGrid.CheckFishOn")
+#define SLIDER_SPEC_CHECKS(X)                              X(VillageFishOn, "VillageGrid.CheckFishOn")            X(KnotSolved, "KnotBox.CheckPuzzle")                   X(KnotPartlySolved, "KnotBox.CheckPuzzlePartial")
 
 // One Condition (Condition.cs) as exported. Spec conditions the port doesn't check load as Unsupported.
 struct ConditionDef {
@@ -140,6 +140,7 @@ struct ConditionDef {
     std::string pattern;  // grid conditions: CheckGrid.contains pattern
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
     Spec spec = Spec(0);              // Spec: which check (name: its exported method)
+    int specTarget = -1;              // Spec: the object its check runs on (e.g. the KnotBox)
 };
 
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
@@ -165,6 +166,8 @@ struct ConditionDef {
 //   VillageTurnFishOn / VillageExplode / VillageWaterfallEntry / VillageHouseExit: VillageGrid's methods
 //   SetColliderEnabled      BoxCollider2D.set_enabled(boolArg) on the collider with slot data
 //   ItemSortingOrderInc/Dec PlayerAction.SetItemSortingOrderInc/Dec(intArg): the carried item's sorting order
+//   KnotCheckParticles      KnotBox.CheckParticles on knotBoxes[data]: sparkles if solved
+//   KnotSetToCorrect        KnotBox.SetToCorrectPositions on knotBoxes[data]: the nodes go to their solved spots
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -195,7 +198,7 @@ struct ConditionDef {
     X(VillageHouseExit, "VillageGrid.OnHouseExit")                     \
     X(SetColliderEnabled, "BoxCollider2D.set_enabled")                 \
     X(ItemSortingOrderInc, "PlayerAction.SetItemSortingOrderInc")      \
-    X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")
+    X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")          X(KnotCheckParticles, "KnotBox.CheckParticles")                        X(KnotSetToCorrect, "KnotBox.SetToCorrectPositions")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -214,7 +217,8 @@ struct CallDef {
     int intArg = 0;
     std::string stringArg;
     // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index;
-    // SetAnimatorController: Area::animatorControllers index; SetColliderEnabled: ObjectCollider::slot.
+    // SetAnimatorController: Area::animatorControllers index; SetColliderEnabled: ObjectCollider::slot;
+    // KnotCheckParticles / KnotSetToCorrect: Area::knotBoxes index.
     int data = -1;
 };
 
@@ -409,6 +413,49 @@ struct ComponentRange {
     const ComponentRef* end() const { return last; }
 };
 
+// A ParticleSystem the port plays (ParticleSystem.Play): bursts of flat squares from a circle,
+// flying outward, slowed by limit-velocity, fading by color-over-lifetime alpha; world space.
+struct ParticleBurstDef {
+    float time = 0;               // s after Play
+    float countMin = 0, countMax = 0;
+    int cycles = 1;
+    float interval = 0;           // s between cycles
+};
+struct ParticlesDef {
+    int object = -1;              // where it emits (Area::objects)
+    float duration = 0;           // s; bursts past it don't fire
+    float lifetimeMin = 0, lifetimeMax = 0, speedMin = 0, speedMax = 0;
+    float size = 0;               // world units (square)
+    uint32_t color = 0xffffffff;  // RGBA
+    float shapeRadius = 0;        // Circle shape: start inside it, moving away from its center
+    std::vector<ParticleBurstDef> bursts;
+    bool limitVelocity = false;   // limit velocity over lifetime:
+    float limit = 0, dampen = 0;  //   speed over `limit` loses the `dampen` fraction (per 1/60 s)
+    float drag = 0;               //   and drag (times size / speed when dragBySize / dragByVelocity)
+    bool dragBySize = false, dragByVelocity = false;
+    std::vector<std::pair<float, float>> alpha; // color over lifetime: (normalized age, alpha) keys; empty = 1
+    int sortLayer = 0, order = 0;
+};
+
+// KnotBox (the knot puzzle): line i joins node i and node i + 1 (the last back to the first). A
+// line is bad when it crosses a ray collider other than its own two nodes', or a line that isn't
+// next to it; the knot is solved with no bad lines.
+struct KnotLineDef {
+    int object = -1;              // its LineRenderer's object (drawn while active)
+    float width = 0;              // world units
+    int sortLayer = 0, order = 0;
+};
+struct KnotBoxDef {
+    int object = -1;              // the KnotBox (Update draws and checks the lines while it's active)
+    std::vector<int> nodes;       // objects; their positions are the knot's points
+    std::vector<KnotLineDef> lines; // as many as nodes
+    uint32_t good = 0, bad = 0;   // line colors, RGBA
+    std::vector<ObjectCollider> rayColliders; // what CheckLines' raycast hits (the nodes' trigger circles)
+    struct Pos { int owner; float x, y; };
+    std::vector<Pos> correct;     // SetToCorrectPositions: where each node's parent goes
+    std::vector<ParticlesDef> particles; // CheckParticles plays them when solved
+};
+
 // The area's SGrid subclass and the objects its methods act on.
 struct AreaGridDef {
     std::string type;          // e.g. "VillageGrid"
@@ -416,9 +463,9 @@ struct AreaGridDef {
     int caveDoorRocks = -1;     // and hides these
 };
 
-// What collides on one owner (an STile, or 0 = the world), for physics' broadphase: its collision
-// tilemaps and the object colliders whose objects belong to it as exported, and their bounds
-// relative to the owner's center.
+// What collides on one owner (an STile, or 0 = the world) in one band (its surface, or its house
+// interiors), for physics' broadphase: its collision tilemaps and the object colliders whose objects
+// belong to it as exported, and their bounds relative to the owner's center.
 struct ColliderGroup {
     std::vector<int> layers;    // Area::collision indices
     std::vector<int> colliders; // Area::objectColliders indices
@@ -510,6 +557,7 @@ struct Area {
     std::vector<CollectibleDef> collectibles;
     std::vector<NpcDef> npcs;
     std::vector<ItemDef> items;
+    std::vector<KnotBoxDef> knotBoxes;
     PlayerActionDef playerAction;
     std::vector<AnimatorControllerDef> animatorControllers;
     std::vector<AnimatorDef> animators;
@@ -541,6 +589,7 @@ struct Area {
     const std::string& pathOf(int object) const { return objects[object].path; }
     int findObject(const std::string& path) const; // index in objects, -1 if none
     int npcOn(int object) const; // index in npcs of the NPC on `object`, -1 if none
+    int knotBoxOn(int object) const; // index in knotBoxes of the KnotBox on `object`, -1 if none
     int animatorOn(int object) const { return animatorByObject[object]; } // Area::animators index, -1 if none
     int animatorDrivenBy(int controllerObject) const; // the Animator an NPCAnimatorController object drives, -1 if none
     std::vector<int> animatorByObject; // per object (derived at load)

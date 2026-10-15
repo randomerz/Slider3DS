@@ -161,7 +161,7 @@ TEST(triggers_tiles_sliding_without_the_player_turn_their_triggers_off) {
     // SGridAnimator: while the player rides a tile (here tile 1), the other tiles in a move have
     // their colliders, triggers included, off until it ends. Tile 7 (Nemsy's talk trigger) slides
     // into the empty middle slot.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
     world.artifact.init(world.grid);
@@ -186,7 +186,7 @@ TEST(triggers_tiles_sliding_without_the_player_turn_their_triggers_off) {
 
 TEST(triggers_collected_collectibles_stay_hidden_on_reload) {
     // SGrid.Start: a collectible already in the inventory is hidden when the scene (re)loads.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     const int slider2 = area.findObject("Map/World Grid/Objects/Slider 2 Collectible");
     world.reloadObjects();
@@ -198,7 +198,7 @@ TEST(triggers_collected_collectibles_stay_hidden_on_reload) {
 
 TEST(physics_resting_player_is_pushed_out) {
     // Box2D pushes a resting body out too: a player left overlapping the well moves out without input.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int well = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Well");
@@ -217,7 +217,7 @@ TEST(physics_resting_player_is_pushed_out) {
 
 TEST(objects_runtime_placement_moves_colliders) {
     // ObjectStates placement: moving an object moves its colliders (NPC walking, carried items).
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int well = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Well");
@@ -238,7 +238,7 @@ TEST(objects_runtime_placement_moves_colliders) {
 TEST(objects_placement_follows_the_hierarchy_and_owner) {
     // Moving a parent moves its children's colliders; an owner override makes an object follow
     // another tile (its exported position then counts from that tile's center).
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int house = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House5");
@@ -267,7 +267,7 @@ TEST(objects_placement_follows_the_hierarchy_and_owner) {
 TEST(calls_unsupported_in_the_village_are_pinned) {
     // Every call method the Village uses that the port doesn't run yet. The exporter's PortMethods
     // and SLIDER_CALL_METHODS must agree: a method added on one side only shows up here.
-    const Area& area = village();
+    const Area& area = villageArea();
     std::set<std::string> unsupported;
     auto collect = [&](const std::vector<CallDef>& calls) {
         for (const CallDef& c : calls)
@@ -299,9 +299,9 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
     const std::set<std::string> expected = {
         "ArtifactScreenHider.AddScreensAndShow",
         "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "Breadge.Pickup",
-        "CatAbductionController.SetPickedUp", "KnotBox.CheckParticles",
+        "CatAbductionController.SetPickedUp",
         "ChadJump.JumpStarter", "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
-        "KnotBox.SetToCorrectPositions", "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
+        "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
         "PlaySound.PlayString",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
         "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.FillInHole",
@@ -340,7 +340,7 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         if (end != std::string::npos) reportedSpecs.insert(report.substr(at + sp.size(), end - at - sp.size()));
     }
     const std::set<std::string> expectedSpecs = {"CatTrick.CheckAutumn", "CatTrick.CheckMittens", "CatTrick.CheckTofu",
-                                                 "ChadJump.ChadFell", "KnotBox.CheckPuzzle", "Player.GetIsOnWater",
+                                                 "ChadJump.ChadFell", "Player.GetIsOnWater",
                                                  "RuinsArrow.CheckActiveRods", "VillageChadJump.DidSlideAfterJumping"};
     std::string got2;
     for (const std::string& n : specs) got2 += n + ", ";

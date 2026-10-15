@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "game/events/conditions.h"
+#include "game/village/knot_box.h"
 #include "game/village/village_grid.h"
 #include "game/world/world.h"
 
@@ -122,6 +123,12 @@ void runCall(World& world, const CallDef& c) {
         break;
     case M::ItemSortingOrderDec:
         world.items.sortingOrderDec(c.intArg);
+        break;
+    case M::KnotCheckParticles:
+        village::knotCheckParticles(world, c.data);
+        break;
+    case M::KnotSetToCorrect:
+        village::knotSetToCorrectPositions(world, c.data);
         break;
     case M::Unsupported:
         break;

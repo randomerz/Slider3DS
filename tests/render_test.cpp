@@ -111,7 +111,7 @@ void allButNine(World& world) {
 
 // A new-game World with the player parked far off screen (scenes that want it place it).
 World sceneWorld() {
-    World world(village());
+    World world(villageArea());
     world.player.x = world.player.y = 10000;
     return world;
 }
@@ -119,7 +119,7 @@ World sceneWorld() {
 } // namespace
 
 TEST(render_goldens) {
-    const Area& area = village();
+    const Area& area = villageArea();
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
@@ -159,26 +159,26 @@ TEST(render_goldens) {
 }
 
 TEST(render_artifact_goldens) {
-    const Area& area = village();
+    const Area& area = villageArea();
     SpriteSheets sheets;
     check(sheets.load(area), "sheets load");
     GoldenSet goldens("artifact.txt");
 
     struct Setup {
-        World world{village()};
+        World world{villageArea()};
         ArtifactUI ui;
         explicit Setup(bool allButNine) {
             if (allButNine)
                 for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
             world.artifact.init(world.grid);
-            ui.init(village(), world.artifact);
+            ui.init(villageArea(), world.artifact);
         }
         void touch(bool down, int x, int y, int frames = 1) {
             for (int i = 0; i < frames; i++) {
                 plat::Input in;
                 in.touching = down;
                 float cx, cy;
-                ui.slotCenter(village(), x, y, cx, cy);
+                ui.slotCenter(villageArea(), x, y, cx, cy);
                 in.touchX = (int)cx + (down && i > 0 ? i : 0); // wiggle to start drags
                 in.touchY = (int)cy;
                 ui.update(in, world, 1.0f / 60.0f);
@@ -225,7 +225,7 @@ TEST(render_artifact_goldens) {
 TEST(render_layer_ranges_compose) {
     // Drawing sorting layer by sorting layer gives exactly the same
     // draw list as drawing everything at once.
-    const Area& area = village();
+    const Area& area = villageArea();
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
@@ -260,7 +260,7 @@ TEST(render_player_y_sorts_with_world_sprites) {
     // Unity's custom sort axis (0,1,0): in the same sorting layer and order, the sprite with the
     // lower sort point draws later (in front). The player just below tile 1's tree is drawn after
     // it, just above it before it.
-    const Area& area = village();
+    const Area& area = villageArea();
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
@@ -303,7 +303,7 @@ TEST(render_player_y_sorts_with_world_sprites) {
 TEST(render_start_check_goldens) {
     // The cave door after the new-game start checks (rocks, no dither shadow) and once the door
     // has exploded (shadowed doorway, no rocks).
-    const Area& area = village();
+    const Area& area = villageArea();
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
@@ -322,7 +322,7 @@ TEST(render_start_check_goldens) {
 TEST(render_action_indicator_while_an_interaction_is_offered) {
     // PlayerAction's indicator above the player shows while an offered interactable asks for it: a
     // door always, an NPC once its line waiting for the player is typed.
-    const Area& area = village();
+    const Area& area = villageArea();
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
@@ -372,7 +372,7 @@ TEST(render_action_indicator_while_an_interaction_is_offered) {
 TEST(render_npc_dialogue_goldens) {
     // Exploresse's greeting typed over her head: part-way, and fully typed (the wavy "strange."
     // bobbing, the " ..." waiting for the player). The camera is on her.
-    const Area& area = village();
+    const Area& area = villageArea();
     SpriteSheets sheets;
     Font font;
     AreaView view;

@@ -199,7 +199,7 @@ void listen(World& world, int npc, int frames) {
     }
 }
 
-int villageNpc(const char* path) { return village().npcOn(village().findObject(path)); }
+int villageNpc(const char* path) { return villageArea().npcOn(villageArea().findObject(path)); }
 
 bool npcOffered(const World& world, int npc) {
     return std::find(world.interactables.begin(), world.interactables.end(), Interactable{Interactable::Kind::Npc, npc}) !=
@@ -219,7 +219,7 @@ TEST(dialogue_parse_replaces_vars_and_marks_effects) {
     check(t.chars == "Boomo! ..." && t.typeFirst == 6 && t.typeLast == 9, "profile string replaced; <type> range " +
                                                                                std::to_string(t.typeFirst) + ".." +
                                                                                std::to_string(t.typeLast));
-    World world(village());
+    World world(villageArea());
     check(parseDialogue("<var>CatUpper</var> NOOO", world.state).chars == "CAT NOOO",
           "a new profile sets Cat and CatUpper (SaveProfile's constructor)");
     t = parseDialogue("a <b>c</b> <var>x", state);
@@ -383,7 +383,7 @@ TEST(npcs_conditional_change_teleports_and_dont_interrupt_finishes) {
 }
 
 TEST(npcs_village_new_game) {
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     world.placeAt(*area.spawn("Default"));
     world.update(DT, 0, 0, false);
@@ -515,7 +515,7 @@ TEST(npcs_recheck_when_the_grid_alone_changes) {
     world.update(DT, 0, 0, true);
     check(world.npcs.currentCond(0) == 4, "the grid conditional wins without any state change");
     // Kinds that read more (carried items, specs) make an NPC re-check every frame.
-    const Area& v = village();
+    const Area& v = villageArea();
     auto byName = [&](const char* name) {
         for (const NpcDef& n : v.npcs)
             if (n.name == name) return &n;
@@ -643,7 +643,7 @@ TEST(npcs_empty_animation_goes_back_to_idle) {
 
 TEST(animators_village_archibald_turns_sus) {
     // Archibald's first line sets his Animator's "sus" bool (NPCAnimatorController.SetBoolToTrue).
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     world.setTileActive(3, true);
     const int npc = area.npcOn(area.findObject("Map/Village 8Puzzle/STile (3)/Objects/Archibald"));
@@ -659,7 +659,7 @@ TEST(animators_village_archibald_turns_sus) {
 
 TEST(village_archeologist_hands_out_slider_3) {
     // The Archeologist's first chain ends with VillageGrid.ActivateSliderCollectible(3).
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     world.setTileActive(2, true);
     const int npc = villageNpc("Map/Village 8Puzzle/STile (2)/Objects/Archeologist");
@@ -676,7 +676,7 @@ TEST(village_archeologist_hands_out_slider_3) {
 TEST(village_fish_back_pierre_hands_out_slider_8) {
     // VillageGrid.TurnFishOn (Sam's line at the river) sets the fish flag; Pierre's CheckFishOn spec
     // then picks the conditional whose line activates Slider 8 (on his tile).
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     world.setTileActive(6, true);
     const int npc = villageNpc("Map/Village 8Puzzle/STile (6)/Objects/Pierre");
@@ -697,7 +697,7 @@ TEST(village_fish_back_pierre_hands_out_slider_8) {
 TEST(village_activate_collectible_beats_its_start) {
     // SGrid.ActivateCollectible clears shouldDisableAtStart, so the collectible's later Start (its tile
     // collected) doesn't hide it; ActivateSliderCollectible doesn't, so Start hides it again.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     const int breadge = area.collectible("Breadge"), slider9 = area.collectible("Slider 9");
     check(breadge >= 0 && slider9 >= 0 && area.collectibles[breadge].disableAtStart && area.collectibles[slider9].disableAtStart,
@@ -721,7 +721,7 @@ TEST(village_activate_collectible_beats_its_start) {
 }
 
 TEST(village_explode_opens_the_cave_door) {
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     CallDef c;
     c.method = CallDef::Method::VillageExplode;
@@ -734,7 +734,7 @@ TEST(village_explode_opens_the_cave_door) {
 TEST(village_archibald_slider_4_can_be_picked_up) {
     // With the Coffee, Archibald's lines show Slider 4 and switch its (initially disabled) trigger
     // on (BoxCollider2D.set_enabled): walking onto it picks it up and collects tile 4.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     world.setTileActive(3, true);
     world.state.setCollectible("Coffee", "Village", true);
@@ -761,7 +761,7 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
 
 TEST(animators_player_runs_while_moving) {
     // Player.Update sets isRunning from the input and isOnWater from the boat; the body shows the state.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     const int animator = area.player.animator;
     check(animator >= 0, "the player has an Animator");

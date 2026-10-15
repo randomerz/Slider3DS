@@ -23,4 +23,4 @@ void check(bool ok, const std::string& what);
 
 // The real Village export, loaded once (a failed load fails the calling test and returns an
 // empty Area).
-const Area& village();
+const Area& villageArea();

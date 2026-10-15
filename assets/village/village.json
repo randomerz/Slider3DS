@@ -6063,7 +6063,8 @@
       "onSuccess": [
         {
           "method": "KnotBox.SetToCorrectPositions",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ],
       "onFail": [
@@ -6207,7 +6208,8 @@
       "conditions": [
         {
           "type": "spec",
-          "spec": "Player.GetIsOnWater"
+          "spec": "Player.GetIsOnWater",
+          "specTarget": 471
         }
       ],
       "onSuccess": [
@@ -6280,7 +6282,7 @@
         },
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "interact"
         }
       ]
@@ -6670,17 +6672,17 @@
       "onEnter": [
         {
           "method": "PlayerActionHints.TriggerHint",
-          "target": 471,
+          "target": 472,
           "string": "tab"
         },
         {
           "method": "VarManager.SetBoolOn",
-          "target": 472,
+          "target": 473,
           "string": "villageTouchedGrass"
         },
         {
           "method": "PlayerActionHints.TriggerHint",
-          "target": 471,
+          "target": 472,
           "string": "tiles"
         }
       ],
@@ -6725,14 +6727,14 @@
       "onEnter": [
         {
           "method": "PlayerAction.SetItemSortingOrderInc",
-          "target": 473,
+          "target": 471,
           "int": 5
         }
       ],
       "onExit": [
         {
           "method": "PlayerAction.SetItemSortingOrderDec",
-          "target": 473,
+          "target": 471,
           "int": 0
         }
       ]
@@ -6836,14 +6838,14 @@
       "onEnter": [
         {
           "method": "PlayerAction.SetItemSortingOrderInc",
-          "target": 473,
+          "target": 471,
           "int": 5
         }
       ],
       "onExit": [
         {
           "method": "PlayerAction.SetItemSortingOrderDec",
-          "target": 473,
+          "target": 471,
           "int": 0
         }
       ]
@@ -7056,7 +7058,7 @@
       "onCollect": [
         {
           "method": "PlayerActionHints.TriggerHint",
-          "target": 471,
+          "target": 472,
           "string": "interact"
         }
       ]
@@ -7075,7 +7077,7 @@
         },
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "dialogue"
         }
       ]
@@ -7426,7 +7428,7 @@
             },
             {
               "method": "VarManager.SetBoolOn",
-              "target": 472,
+              "target": 473,
               "string": "villageRomeoAtDefaultPosition"
             }
           ],
@@ -7875,7 +7877,7 @@
               "onEnd": [
                 {
                   "method": "VarManager.SetBoolOn",
-                  "target": 472,
+                  "target": 473,
                   "string": "villageExploresseSequenceDone"
                 }
               ]
@@ -8585,7 +8587,7 @@
               "onStart": [
                 {
                   "method": "PlayerActionHints.TriggerHint",
-                  "target": 471,
+                  "target": 472,
                   "string": "dialogue"
                 }
               ],
@@ -8606,7 +8608,7 @@
               "onStart": [
                 {
                   "method": "PlayerActionHints.DisableHint",
-                  "target": 471,
+                  "target": 472,
                   "string": "dialogue"
                 },
                 {
@@ -8768,7 +8770,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "RuinsArrow.CheckActiveRods"
+              "spec": "RuinsArrow.CheckActiveRods",
+              "specTarget": 487
             },
             {
               "type": "item",
@@ -8954,7 +8957,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 487
+              "objectArg": 488
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9014,7 +9017,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 487
+              "objectArg": 488
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9058,7 +9061,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 487
+              "objectArg": 488
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9126,7 +9129,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 487
+              "objectArg": 488
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9203,7 +9206,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 487
+              "objectArg": 488
             }
           ],
           "onDialogueChainExhausted": [
@@ -9317,7 +9320,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 488
+              "objectArg": 489
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9402,7 +9405,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 488
+              "objectArg": 489
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9504,7 +9507,7 @@
       },
       "pingObject": 201,
       "emote": {
-        "object": 489,
+        "object": 490,
         "sprite": 211,
         "pos": [1,6.5],
         "sortY": 6.5,
@@ -9555,7 +9558,7 @@
                 },
                 {
                   "method": "VarManager.SetBoolOn",
-                  "target": 472,
+                  "target": 473,
                   "string": "villageOldManFirstLine"
                 },
                 {
@@ -9678,7 +9681,7 @@
                 },
                 {
                   "method": "PlayerActionHints.EnableDisabling",
-                  "target": 471,
+                  "target": 472,
                   "string": "items"
                 },
                 {
@@ -9734,7 +9737,7 @@
                 },
                 {
                   "method": "PlayerActionHints.EnableDisabling",
-                  "target": 471,
+                  "target": 472,
                   "string": "items"
                 },
                 {
@@ -9782,7 +9785,7 @@
             {
               "method": "NPC.Teleport",
               "target": 199,
-              "objectArg": 490
+              "objectArg": 491
             }
           ],
           "onDialogueChainExhausted": [
@@ -9823,7 +9826,7 @@
       },
       "pingObject": 239,
       "emote": {
-        "object": 491,
+        "object": 492,
         "sprite": 211,
         "pos": [-5.5,4.5],
         "sortY": 4.5,
@@ -9869,7 +9872,7 @@
               "onStart": [
                 {
                   "method": "PlayerActionHints.TriggerHint",
-                  "target": 471,
+                  "target": 472,
                   "string": "items"
                 }
               ],
@@ -9882,7 +9885,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "KnotBox.CheckPuzzle"
+              "spec": "KnotBox.CheckPuzzle",
+              "specTarget": 222
             }
           ],
           "anyOf": false,
@@ -9968,7 +9972,7 @@
             {
               "method": "NPC.Teleport",
               "target": 237,
-              "objectArg": 492
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
@@ -10008,7 +10012,7 @@
             {
               "method": "NPC.Teleport",
               "target": 237,
-              "objectArg": 492
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
@@ -10089,7 +10093,7 @@
       },
       "pingObject": 248,
       "emote": {
-        "object": 493,
+        "object": 494,
         "sprite": 211,
         "pos": [-7.25,0.5],
         "sortY": 0.5,
@@ -10311,7 +10315,7 @@
       },
       "pingObject": 282,
       "emote": {
-        "object": 494,
+        "object": 495,
         "sprite": 211,
         "pos": [2.5,-144.5],
         "sortY": -144.5,
@@ -10436,7 +10440,7 @@
       },
       "pingObject": 285,
       "emote": {
-        "object": 495,
+        "object": 496,
         "sprite": 211,
         "pos": [-2.5,-2.5],
         "sortY": -2.5,
@@ -10484,7 +10488,7 @@
               "onEnd": [
                 {
                   "method": "VarManager.SetBoolOn",
-                  "target": 472,
+                  "target": 473,
                   "string": "villagePierreFirstLine"
                 }
               ]
@@ -10617,7 +10621,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "VillageGrid.CheckFishOn"
+              "spec": "VillageGrid.CheckFishOn",
+              "specTarget": 1
             }
           ],
           "anyOf": false,
@@ -10668,7 +10673,7 @@
             {
               "method": "NPC.Teleport",
               "target": 283,
-              "objectArg": 496
+              "objectArg": 497
             }
           ],
           "onDialogueChainExhausted": [
@@ -10713,7 +10718,7 @@
             {
               "method": "NPC.Teleport",
               "target": 283,
-              "objectArg": 496
+              "objectArg": 497
             }
           ],
           "onDialogueChainExhausted": [
@@ -10815,7 +10820,7 @@
       },
       "pingObject": 306,
       "emote": {
-        "object": 497,
+        "object": 498,
         "sprite": 211,
         "pos": [-7,2],
         "sortY": 2,
@@ -10945,7 +10950,7 @@
               "onEnd": [
                 {
                   "method": "UIArtifactWorldMap.SetAreaStatusSilhouette",
-                  "target": 500,
+                  "target": 501,
                   "string": "Military"
                 }
               ]
@@ -11052,7 +11057,7 @@
               "onEnd": [
                 {
                   "method": "UIArtifactWorldMap.SetAreaStatusSilhouette",
-                  "target": 500,
+                  "target": 501,
                   "string": "Military"
                 }
               ]
@@ -11108,7 +11113,7 @@
       },
       "pingObject": 326,
       "emote": {
-        "object": 501,
+        "object": 502,
         "pos": [4,3.5],
         "sortY": 3.5,
         "sortingLayerValue": 9,
@@ -11175,7 +11180,7 @@
                 },
                 {
                   "method": "VarManager.SetBoolOn",
-                  "target": 472,
+                  "target": 473,
                   "string": "VillageFoundChad"
                 }
               ]
@@ -11234,7 +11239,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "VillageChadJump.DidSlideAfterJumping"
+              "spec": "VillageChadJump.DidSlideAfterJumping",
+              "specTarget": 324
             }
           ],
           "anyOf": false,
@@ -11268,7 +11274,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "ChadJump.ChadFell"
+              "spec": "ChadJump.ChadFell",
+              "specTarget": 324
             }
           ],
           "anyOf": false,
@@ -11418,7 +11425,7 @@
             {
               "method": "NPC.Teleport",
               "target": 324,
-              "objectArg": 502
+              "objectArg": 503
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -11509,7 +11516,7 @@
       },
       "pingObject": 367,
       "emote": {
-        "object": 503,
+        "object": 504,
         "sprite": 211,
         "pos": [-0.5,-4],
         "sortY": -4,
@@ -11681,7 +11688,7 @@
       },
       "pingObject": 399,
       "emote": {
-        "object": 504,
+        "object": 505,
         "sprite": 211,
         "pos": [-3.5,-144.5],
         "sortY": -144.5,
@@ -11863,7 +11870,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "CatTrick.CheckMittens"
+              "spec": "CatTrick.CheckMittens",
+              "specTarget": 506
             }
           ],
           "anyOf": false,
@@ -11897,7 +11905,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "CatTrick.CheckAutumn"
+              "spec": "CatTrick.CheckAutumn",
+              "specTarget": 506
             }
           ],
           "anyOf": false,
@@ -11931,7 +11940,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "CatTrick.CheckTofu"
+              "spec": "CatTrick.CheckTofu",
+              "specTarget": 506
             }
           ],
           "anyOf": false,
@@ -11965,11 +11975,13 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "CatTrick.CheckMittens"
+              "spec": "CatTrick.CheckMittens",
+              "specTarget": 506
             },
             {
               "type": "spec",
-              "spec": "CatTrick.CheckAutumn"
+              "spec": "CatTrick.CheckAutumn",
+              "specTarget": 506
             }
           ],
           "anyOf": false,
@@ -12003,11 +12015,13 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "CatTrick.CheckMittens"
+              "spec": "CatTrick.CheckMittens",
+              "specTarget": 506
             },
             {
               "type": "spec",
-              "spec": "CatTrick.CheckTofu"
+              "spec": "CatTrick.CheckTofu",
+              "specTarget": 506
             }
           ],
           "anyOf": false,
@@ -12041,11 +12055,13 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "CatTrick.CheckAutumn"
+              "spec": "CatTrick.CheckAutumn",
+              "specTarget": 506
             },
             {
               "type": "spec",
-              "spec": "CatTrick.CheckTofu"
+              "spec": "CatTrick.CheckTofu",
+              "specTarget": 506
             }
           ],
           "anyOf": false,
@@ -12181,15 +12197,18 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "CatTrick.CheckAutumn"
+              "spec": "CatTrick.CheckAutumn",
+              "specTarget": 506
             },
             {
               "type": "spec",
-              "spec": "CatTrick.CheckMittens"
+              "spec": "CatTrick.CheckMittens",
+              "specTarget": 506
             },
             {
               "type": "spec",
-              "spec": "CatTrick.CheckTofu"
+              "spec": "CatTrick.CheckTofu",
+              "specTarget": 506
             }
           ],
           "anyOf": false,
@@ -12276,7 +12295,7 @@
       },
       "pingObject": 436,
       "emote": {
-        "object": 505,
+        "object": 507,
         "sprite": 211,
         "pos": [4.5625,-143.4375],
         "sortY": -143.4375,
@@ -12533,7 +12552,7 @@
       },
       "pingObject": 43,
       "emote": {
-        "object": 506,
+        "object": 508,
         "sprite": 211,
         "pos": [55,3],
         "sortY": 3,
@@ -12610,7 +12629,7 @@
       },
       "pingObject": 46,
       "emote": {
-        "object": 507,
+        "object": 509,
         "sprite": 211,
         "pos": [46,17.5],
         "sortY": 17.5,
@@ -12727,7 +12746,7 @@
             {
               "method": "NPC.Teleport",
               "target": 44,
-              "objectArg": 508
+              "objectArg": 510
             }
           ],
           "onDialogueChainExhausted": [
@@ -12823,11 +12842,11 @@
                 },
                 {
                   "method": "ParticleSystem.Play",
-                  "target": 510
+                  "target": 512
                 },
                 {
                   "method": "ParticleSystem.Play",
-                  "target": 511
+                  "target": 513
                 }
               ],
               "onEnd": [
@@ -12851,7 +12870,7 @@
             {
               "method": "NPC.Teleport",
               "target": 44,
-              "objectArg": 508
+              "objectArg": 510
             }
           ],
           "onDialogueChainExhausted": [
@@ -12892,7 +12911,7 @@
       },
       "pingObject": 53,
       "emote": {
-        "object": 512,
+        "object": 514,
         "sprite": 211,
         "pos": [37.5,48.5],
         "sortY": 48.5,
@@ -12953,7 +12972,7 @@
       },
       "pingObject": 130,
       "emote": {
-        "object": 513,
+        "object": 515,
         "sprite": 211,
         "pos": [69,70],
         "sortY": 70,
@@ -13068,7 +13087,8 @@
           "conditions": [
             {
               "type": "spec",
-              "spec": "RuinsArrow.CheckActiveRods"
+              "spec": "RuinsArrow.CheckActiveRods",
+              "specTarget": 487
             },
             {
               "type": "item",
@@ -13174,7 +13194,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 487
+              "objectArg": 488
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -13223,7 +13243,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 487
+              "objectArg": 488
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -13248,7 +13268,7 @@
               "onStart": [
                 {
                   "method": "AudioManager.Play",
-                  "target": 514,
+                  "target": 516,
                   "string": "Puzzle Complete"
                 },
                 {
@@ -13317,7 +13337,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 487
+              "objectArg": 488
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -13367,7 +13387,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 487
+              "objectArg": 488
             }
           ],
           "onDialogueChainExhausted": [
@@ -13412,7 +13432,7 @@
                 },
                 {
                   "method": "VarManager.SetBoolOn",
-                  "target": 472,
+                  "target": 473,
                   "string": "villageFezziwigGone"
                 }
               ],
@@ -13521,7 +13541,7 @@
       },
       "pingObject": 140,
       "emote": {
-        "object": 515,
+        "object": 517,
         "sprite": 211,
         "pos": [48.5,9.3125],
         "sortY": 9.3125,
@@ -13585,7 +13605,7 @@
       "onPickUp": [
         {
           "method": "CatAbductionController.SetPickedUp",
-          "target": 516
+          "target": 518
         }
       ],
       "onDrop": [
@@ -13607,14 +13627,15 @@
       "onPickUp": [
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "items"
         }
       ],
       "onDrop": [
         {
           "method": "KnotBox.CheckParticles",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ]
     },
@@ -13634,14 +13655,15 @@
       "onPickUp": [
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "items"
         }
       ],
       "onDrop": [
         {
           "method": "KnotBox.CheckParticles",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ]
     },
@@ -13661,14 +13683,15 @@
       "onPickUp": [
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "items"
         }
       ],
       "onDrop": [
         {
           "method": "KnotBox.CheckParticles",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ]
     },
@@ -13688,14 +13711,15 @@
       "onPickUp": [
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "items"
         }
       ],
       "onDrop": [
         {
           "method": "KnotBox.CheckParticles",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ]
     },
@@ -13715,14 +13739,15 @@
       "onPickUp": [
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "items"
         }
       ],
       "onDrop": [
         {
           "method": "KnotBox.CheckParticles",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ]
     },
@@ -13742,14 +13767,15 @@
       "onPickUp": [
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "items"
         }
       ],
       "onDrop": [
         {
           "method": "KnotBox.CheckParticles",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ]
     },
@@ -13769,14 +13795,15 @@
       "onPickUp": [
         {
           "method": "PlayerActionHints.DisableHint",
-          "target": 471,
+          "target": 472,
           "string": "items"
         }
       ],
       "onDrop": [
         {
           "method": "KnotBox.CheckParticles",
-          "target": 222
+          "target": 222,
+          "knotBox": 0
         }
       ]
     },
@@ -13904,6 +13931,365 @@
       "onPickUp": [
       ],
       "onDrop": [
+      ]
+    }
+  ],
+  "knotBoxes": [
+    {
+      "object": 222,
+      "nodes": [224,226,228,230,232,234,236],
+      "lines": [
+        {
+          "object": 519,
+          "width": 0.1075,
+          "sortingLayerValue": 0,
+          "order": 10
+        },
+        {
+          "object": 520,
+          "width": 0.1075,
+          "sortingLayerValue": 0,
+          "order": 10
+        },
+        {
+          "object": 521,
+          "width": 0.1075,
+          "sortingLayerValue": 0,
+          "order": 10
+        },
+        {
+          "object": 522,
+          "width": 0.1075,
+          "sortingLayerValue": 0,
+          "order": 10
+        },
+        {
+          "object": 523,
+          "width": 0.1075,
+          "sortingLayerValue": 0,
+          "order": 10
+        },
+        {
+          "object": 524,
+          "width": 0.1075,
+          "sortingLayerValue": 0,
+          "order": 10
+        },
+        {
+          "object": 525,
+          "width": 0.1075,
+          "sortingLayerValue": 0,
+          "order": 10
+        }
+      ],
+      "good": [230,230,230,255],
+      "bad": [102,102,102,255],
+      "rayColliders": [
+        {
+          "object": 224,
+          "owner": 4,
+          "layer": "LaserRaycast",
+          "kind": "circle",
+          "center": [-6.5,-3.5],
+          "radius": 0.4
+        },
+        {
+          "object": 226,
+          "owner": 4,
+          "layer": "LaserRaycast",
+          "kind": "circle",
+          "center": [-0.5,5.5],
+          "radius": 0.4
+        },
+        {
+          "object": 228,
+          "owner": 4,
+          "layer": "LaserRaycast",
+          "kind": "circle",
+          "center": [3.5,-1.5],
+          "radius": 0.4
+        },
+        {
+          "object": 230,
+          "owner": 4,
+          "layer": "LaserRaycast",
+          "kind": "circle",
+          "center": [-5,-5.5],
+          "radius": 0.4
+        },
+        {
+          "object": 232,
+          "owner": 4,
+          "layer": "LaserRaycast",
+          "kind": "circle",
+          "center": [-3.5,3.5],
+          "radius": 0.4
+        },
+        {
+          "object": 234,
+          "owner": 4,
+          "layer": "LaserRaycast",
+          "kind": "circle",
+          "center": [2,3.5],
+          "radius": 0.4
+        },
+        {
+          "object": 236,
+          "owner": 4,
+          "layer": "LaserRaycast",
+          "kind": "circle",
+          "center": [-1.5,-5],
+          "radius": 0.4
+        }
+      ],
+      "correct": [
+        {
+          "owner": 4,
+          "pos": [-6.5,-3.5]
+        },
+        {
+          "owner": 4,
+          "pos": [-5,1]
+        },
+        {
+          "owner": 4,
+          "pos": [-1.5,2]
+        },
+        {
+          "owner": 4,
+          "pos": [1.5,2]
+        },
+        {
+          "owner": 4,
+          "pos": [3,-1]
+        },
+        {
+          "owner": 4,
+          "pos": [3,-4]
+        },
+        {
+          "owner": 4,
+          "pos": [-1.5,-5]
+        }
+      ],
+      "particles": [
+        {
+          "object": 526,
+          "duration": 3,
+          "lifetime": [2,2.5],
+          "speed": [1,4],
+          "size": 0.0625,
+          "color": [230,230,230,255],
+          "shapeRadius": 0.1,
+          "bursts": [
+            {
+              "time": 0,
+              "count": [3,3],
+              "cycles": 3,
+              "interval": 0.05
+            }
+          ],
+          "limitVelocity": {
+            "limit": 0.05,
+            "dampen": 0.15,
+            "drag": 50,
+            "dragBySize": true,
+            "dragByVelocity": true
+          },
+          "alpha": [
+            [0,1],
+            [0.75,1],
+            [1,0]
+          ],
+          "sortingLayerValue": 9,
+          "order": 0
+        },
+        {
+          "object": 527,
+          "duration": 3,
+          "lifetime": [2,2.5],
+          "speed": [1,4],
+          "size": 0.0625,
+          "color": [230,230,230,255],
+          "shapeRadius": 0.1,
+          "bursts": [
+            {
+              "time": 0,
+              "count": [3,3],
+              "cycles": 3,
+              "interval": 0.05
+            }
+          ],
+          "limitVelocity": {
+            "limit": 0.05,
+            "dampen": 0.15,
+            "drag": 50,
+            "dragBySize": true,
+            "dragByVelocity": true
+          },
+          "alpha": [
+            [0,1],
+            [0.75,1],
+            [1,0]
+          ],
+          "sortingLayerValue": 9,
+          "order": 0
+        },
+        {
+          "object": 528,
+          "duration": 3,
+          "lifetime": [2,2.5],
+          "speed": [1,4],
+          "size": 0.0625,
+          "color": [230,230,230,255],
+          "shapeRadius": 0.1,
+          "bursts": [
+            {
+              "time": 0,
+              "count": [3,3],
+              "cycles": 3,
+              "interval": 0.05
+            }
+          ],
+          "limitVelocity": {
+            "limit": 0.05,
+            "dampen": 0.15,
+            "drag": 50,
+            "dragBySize": true,
+            "dragByVelocity": true
+          },
+          "alpha": [
+            [0,1],
+            [0.75,1],
+            [1,0]
+          ],
+          "sortingLayerValue": 9,
+          "order": 0
+        },
+        {
+          "object": 529,
+          "duration": 3,
+          "lifetime": [2,2.5],
+          "speed": [1,4],
+          "size": 0.0625,
+          "color": [230,230,230,255],
+          "shapeRadius": 0.1,
+          "bursts": [
+            {
+              "time": 0,
+              "count": [3,3],
+              "cycles": 3,
+              "interval": 0.05
+            }
+          ],
+          "limitVelocity": {
+            "limit": 0.05,
+            "dampen": 0.15,
+            "drag": 50,
+            "dragBySize": true,
+            "dragByVelocity": true
+          },
+          "alpha": [
+            [0,1],
+            [0.75,1],
+            [1,0]
+          ],
+          "sortingLayerValue": 9,
+          "order": 0
+        },
+        {
+          "object": 530,
+          "duration": 3,
+          "lifetime": [2,2.5],
+          "speed": [1,4],
+          "size": 0.0625,
+          "color": [230,230,230,255],
+          "shapeRadius": 0.1,
+          "bursts": [
+            {
+              "time": 0,
+              "count": [3,3],
+              "cycles": 3,
+              "interval": 0.05
+            }
+          ],
+          "limitVelocity": {
+            "limit": 0.05,
+            "dampen": 0.15,
+            "drag": 50,
+            "dragBySize": true,
+            "dragByVelocity": true
+          },
+          "alpha": [
+            [0,1],
+            [0.75,1],
+            [1,0]
+          ],
+          "sortingLayerValue": 9,
+          "order": 0
+        },
+        {
+          "object": 531,
+          "duration": 3,
+          "lifetime": [2,2.5],
+          "speed": [1,4],
+          "size": 0.0625,
+          "color": [230,230,230,255],
+          "shapeRadius": 0.1,
+          "bursts": [
+            {
+              "time": 0,
+              "count": [3,3],
+              "cycles": 3,
+              "interval": 0.05
+            }
+          ],
+          "limitVelocity": {
+            "limit": 0.05,
+            "dampen": 0.15,
+            "drag": 50,
+            "dragBySize": true,
+            "dragByVelocity": true
+          },
+          "alpha": [
+            [0,1],
+            [0.75,1],
+            [1,0]
+          ],
+          "sortingLayerValue": 9,
+          "order": 0
+        },
+        {
+          "object": 532,
+          "duration": 3,
+          "lifetime": [2,2.5],
+          "speed": [1,4],
+          "size": 0.0625,
+          "color": [230,230,230,255],
+          "shapeRadius": 0.1,
+          "bursts": [
+            {
+              "time": 0,
+              "count": [3,3],
+              "cycles": 3,
+              "interval": 0.05
+            }
+          ],
+          "limitVelocity": {
+            "limit": 0.05,
+            "dampen": 0.15,
+            "drag": 50,
+            "dragBySize": true,
+            "dragByVelocity": true
+          },
+          "alpha": [
+            [0,1],
+            [0.75,1],
+            [1,0]
+          ],
+          "sortingLayerValue": 9,
+          "order": 0
+        }
       ]
     }
   ],
@@ -17212,6 +17598,13 @@
       "pos": [4,-149]
     },
     {
+      "path": "Player",
+      "parent": -1,
+      "active": true,
+      "owner": 0,
+      "pos": [-3,-145.5]
+    },
+    {
       "path": "Village Hints",
       "parent": -1,
       "active": true,
@@ -17224,13 +17617,6 @@
       "active": true,
       "owner": 0,
       "pos": [0,0]
-    },
-    {
-      "path": "Player",
-      "parent": -1,
-      "active": true,
-      "owner": 0,
-      "pos": [-3,-145.5]
     },
     {
       "path": "ArtifactCanvas",
@@ -17324,6 +17710,13 @@
       "pos": [-7,4]
     },
     {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/Ruins Arrow",
+      "parent": 6,
+      "active": true,
+      "owner": 2,
+      "pos": [-8.5,10]
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/ArcheologistTexts",
       "parent": 485,
       "active": true,
@@ -17409,14 +17802,14 @@
     },
     {
       "path": "ArtifactCanvas/ArtifactFrame/ScreenMask",
-      "parent": 498,
+      "parent": 499,
       "active": true,
       "owner": 0,
       "pos": [320,240]
     },
     {
       "path": "ArtifactCanvas/ArtifactFrame/ScreenMask/WorldMapPanel",
-      "parent": 499,
+      "parent": 500,
       "active": false,
       "owner": 0,
       "pos": [320,240]
@@ -17448,6 +17841,13 @@
       "active": true,
       "owner": 9,
       "pos": [-3.5,-144.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/CatTrick",
+      "parent": 396,
+      "active": true,
+      "owner": 9,
+      "pos": [-5,-145.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Boulangerie/Carlton/NPC Sprite/Emotes",
@@ -17486,14 +17886,14 @@
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle",
-      "parent": 509,
+      "parent": 511,
       "active": true,
       "owner": 7,
       "pos": [8,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle (2)",
-      "parent": 509,
+      "parent": 511,
       "active": true,
       "owner": 7,
       "pos": [5,3]
@@ -17532,6 +17932,104 @@
       "active": true,
       "owner": 0,
       "pos": [-0.5,-0.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node/ItemSprite/LineRenderer",
+      "parent": 224,
+      "active": true,
+      "owner": 4,
+      "pos": [-6.5,-3.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)/ItemSprite/LineRenderer",
+      "parent": 226,
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,5.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)/ItemSprite/LineRenderer",
+      "parent": 228,
+      "active": true,
+      "owner": 4,
+      "pos": [3.5,-1.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)/ItemSprite/LineRenderer",
+      "parent": 230,
+      "active": true,
+      "owner": 4,
+      "pos": [-5,-5.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)/ItemSprite/LineRenderer",
+      "parent": 232,
+      "active": true,
+      "owner": 4,
+      "pos": [-3.5,3.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)/ItemSprite/LineRenderer",
+      "parent": 234,
+      "active": true,
+      "owner": 4,
+      "pos": [2,3.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)/ItemSprite/LineRenderer",
+      "parent": 236,
+      "active": true,
+      "owner": 4,
+      "pos": [-1.5,-5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node/SparkleEffect",
+      "parent": 223,
+      "active": true,
+      "owner": 4,
+      "pos": [-6.5,-3.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (1)/SparkleEffect",
+      "parent": 225,
+      "active": true,
+      "owner": 4,
+      "pos": [-0.5,5.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (2)/SparkleEffect",
+      "parent": 227,
+      "active": true,
+      "owner": 4,
+      "pos": [3.5,-1.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (3)/SparkleEffect",
+      "parent": 229,
+      "active": true,
+      "owner": 4,
+      "pos": [-5,-5.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (4)/SparkleEffect",
+      "parent": 231,
+      "active": true,
+      "owner": 4,
+      "pos": [-3.5,3.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (5)/SparkleEffect",
+      "parent": 233,
+      "active": true,
+      "owner": 4,
+      "pos": [2,3.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/Knot/Knot Node (6)/SparkleEffect",
+      "parent": 235,
+      "active": true,
+      "owner": 4,
+      "pos": [-1.5,-5]
     }
   ],
   "player": {

@@ -1,5 +1,6 @@
 #include "game/village/village_grid.h"
 
+#include "game/village/knot_box.h"
 #include "game/world/world.h"
 
 namespace village {
@@ -31,9 +32,16 @@ void houseExit(World& world) {
     world.state.setFlag(INTRO_CUTSCENE_FLAG, true); // (the camera-dolly cutscene isn't ported yet)
 }
 
-bool checkSpec(const World& world, ConditionDef::Spec spec) {
+bool checkSpec(const World& world, ConditionDef::Spec spec, int specTarget) {
     switch (spec) {
     case ConditionDef::Spec::VillageFishOn: return world.state.flag(FISH_ON_FLAG); // CheckFishOn
+    case ConditionDef::Spec::KnotSolved: // KnotBox.CheckPuzzle / CheckPuzzlePartial on the condition's KnotBox
+    case ConditionDef::Spec::KnotPartlySolved: {
+        const int box = world.area.knotBoxOn(specTarget);
+        if (box < 0) return false;
+        const int bad = knotBadLines(world, box);
+        return spec == ConditionDef::Spec::KnotSolved ? bad == 0 : bad <= 3;
+    }
     }
     return false;
 }
@@ -41,6 +49,8 @@ bool checkSpec(const World& world, ConditionDef::Spec spec) {
 bool specReadsOnlyStateAndGrid(ConditionDef::Spec spec) {
     switch (spec) {
     case ConditionDef::Spec::VillageFishOn: return true; // a GameState flag
+    case ConditionDef::Spec::KnotSolved:
+    case ConditionDef::Spec::KnotPartlySolved: return false; // where the knot's nodes are
     }
     return false;
 }

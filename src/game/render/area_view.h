@@ -1,5 +1,5 @@
 // Draws a World's area (tile layers, active world sprites, the player, NPCs' dialogue and message
-// pings) through the platform layer.
+// pings, knot lines, particles) through the platform layer.
 //
 // Per frame: begin() sets the camera, then draw() draws everything visible in Unity's order:
 // sorting layer, then order in layer, then (GraphicsSettings custom sort axis (0,1,0)) higher sort
@@ -52,16 +52,24 @@ public:
     int lastSpriteCount() const { return spriteCount_; } // sprites drawn since begin()
 
 private:
-    enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue }; // tie order at equal sort keys
+    enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue, Line, Particle }; // tie order at equal sort keys
     struct Item {
         ItemKind kind;
-        int index; // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order; Emote, Dialogue: Area::npcs
+        // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order; Emote, Dialogue:
+        // Area::npcs; Line: lines_; Particle: World::particles
+        int index;
         SortedSprite sprite; // sort keys (all kinds) and what to draw (sprites)
+    };
+    struct LineDraw {
+        float x0, y0, x1, y1, width; // world units
+        uint32_t color;
     };
 
     void drawLayer(const Area& area, const Grid& grid, const TileLayer& L);
     void drawSprite(const Area& area, const SortedSprite& sp); // if on screen
     void drawDialogue(const World& world, int npc);
+    void drawLine(const LineDraw& l);
+    void drawParticle(const Particles::Particle& p);
     // Screen top-left of `sp`; false if it is off screen.
     bool spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const;
 
@@ -72,6 +80,7 @@ private:
     bool showInactive_ = false;
     int spriteCount_ = 0;
     std::vector<Item> items_; // reused every frame
+    std::vector<LineDraw> lines_; // this frame's knot lines
     struct Layout {
         uint32_t textVersion = 0; // Npcs::textVersion it was laid out for (0 = none)
         std::vector<GlyphPlace> glyphs;

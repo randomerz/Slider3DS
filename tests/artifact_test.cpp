@@ -20,7 +20,7 @@ float settle(Artifact& artifact, Grid& grid, int playerStile = 0) {
 
 TEST(artifact_move_rules) {
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     Artifact artifact;
     artifact.init(grid);
     // Only tile 1 (bottom-left) is collected: it can slide 1 or 2 slots right or up.
@@ -37,7 +37,7 @@ TEST(artifact_move_rules) {
 
 TEST(artifact_slide_animates) {
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     Artifact artifact;
     artifact.init(grid);
     const TileState* t1 = grid.tile(1);
@@ -58,7 +58,7 @@ TEST(artifact_slide_animates) {
 
 TEST(artifact_queue_chains_and_speeds_up) {
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     Artifact artifact;
     artifact.init(grid);
     CHECK(artifact.tryMove(grid, 0, 0, 1, 0, 0) && artifact.tryMove(grid, 1, 0, 1, 1, 0) &&
@@ -77,7 +77,7 @@ TEST(artifact_queue_chains_and_speeds_up) {
 
 TEST(artifact_set_grid_resyncs) {
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     Artifact artifact;
     artifact.init(grid);
     CHECK(artifact.tryMove(grid, 0, 0, 1, 0, 0) && artifact.tryMove(grid, 1, 0, 2, 0, 0));
@@ -93,7 +93,7 @@ TEST(artifact_set_grid_resyncs) {
 TEST(world_player_rides_tile) {
     // World::update: the player standing on tile 1 rides it as it slides up one slot; while it
     // slides, the player is fenced in and the slot it slid over (tile 8's) isn't solid.
-    World world(village());
+    World world(villageArea());
     world.placeNear(0, 3); // on tile 1, outdoors (somewhere free: a resting player is pushed out)
     const float startY = world.player.y;
     CHECK(world.player.stile == 1);

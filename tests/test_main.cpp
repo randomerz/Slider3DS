@@ -35,7 +35,7 @@ void check(bool ok, const std::string& what) {
     }
 }
 
-const Area& village() {
+const Area& villageArea() {
     static Area area;
     static bool loaded = false, failed = false;
     static std::string error;

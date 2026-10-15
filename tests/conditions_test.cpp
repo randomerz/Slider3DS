@@ -63,7 +63,7 @@ TEST(object_states_follow_the_hierarchy) {
 TEST(starts_run_when_their_object_first_activates) {
     // Slider 7's collectible sits under the inactive "Burried Slider": its Start (which hides it,
     // shouldDisableAtStart) runs only when digging shows its parent, and only once.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     const int buried = area.findObject("Map/Village 8Puzzle/STile (5)/Objects/Burried Slider");
     size_t slider7 = area.collectibles.size();
@@ -84,7 +84,7 @@ TEST(starts_run_when_their_object_first_activates) {
 }
 
 TEST(conditions_check) {
-    World world(village());
+    World world(villageArea());
     GameState& state = world.state;
     using T = ConditionDef::Type;
     const ConditionDef flag{T::Flag, "caveDoorExploded", "", "", {}};
@@ -119,7 +119,7 @@ TEST(conditions_check) {
 TEST(conditions_grid_stationary) {
     // GridStationary: the pattern matches and the listed tiles aren't sliding. The grid string
     // changes as soon as a move starts; the animation follows.
-    World world(village());
+    World world(villageArea());
     CHECK(world.artifact.tryMove(world.grid, 0, 0, 0, 2, 0)); // tile 1 up to the top-left slot
     world.artifact.update(world.grid, 1.0f / 60.0f, 0);
     using T = ConditionDef::Type;
@@ -134,7 +134,7 @@ TEST(conditions_grid_stationary) {
 TEST(start_checks_cave_door) {
     // Rocks Blocking Door's checker: without caveDoorExploded the rocks stay and the scene change
     // door (with its dither shadow) is hidden; with it, the other way round.
-    const Area& area = village();
+    const Area& area = villageArea();
     const std::string door = "Map/World Grid/Alcove/Cave Door/";
     const int rocks = spriteOf(area, door + "Rocks Blocking Door");
     const int dither = spriteOf(area, door + "Scene Change Collider/Dither");
@@ -158,7 +158,7 @@ TEST(start_checks_cave_door) {
 }
 
 TEST(start_checks_rock_and_hole_follow_slider_7) {
-    const Area& area = village();
+    const Area& area = villageArea();
     const int rockObject = area.findObject("Map/Village 8Puzzle/STile (5)/Objects/Rock");
     const int holeObject = area.findObject("Map/Village 8Puzzle/STile (5)/Objects/Hole");
     check(rockObject >= 0 && holeObject >= 0, "tile 5 has the rock and the hole");
@@ -177,7 +177,7 @@ TEST(start_checks_rock_and_hole_follow_slider_7) {
 
 TEST(start_checks_skip_the_inactive_raft) {
     // The Raft's own checker sits on an inactive object, so on a new game it never starts.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     const int raft = area.findObject("Map/World Grid/Beach/Raft");
     check(raft >= 0, "the raft object exists");

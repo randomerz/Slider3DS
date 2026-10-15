@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "game/village/knot_box.h"
 #include "platform/platform.h"
 
 void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
@@ -111,6 +112,39 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         it.sprite.sortY = y;
         items_.push_back(it);
     }
+    // Knot lines (LineRenderers): sorted by their bounds' center.
+    lines_.clear();
+    for (int b = 0; b < (int)area.knotBoxes.size(); b++) {
+        const KnotBoxDef& k = area.knotBoxes[b];
+        if (!objects.activeInHierarchy(k.object)) continue; // (OnDisable put its lines at the origin)
+        bool bad[village::MAX_KNOT_LINES];
+        village::knotBadLines(world, b, bad);
+        for (int i = 0; i < (int)k.lines.size() && i < village::MAX_KNOT_LINES; i++) {
+            const KnotLineDef& l = k.lines[i];
+            if (!inRange(l.sortLayer) || !objects.activeInHierarchy(l.object) || !ownerShown(objects.owner(l.object))) continue;
+            LineDraw d;
+            village::knotLine(world, b, i, d.x0, d.y0, d.x1, d.y1);
+            d.width = l.width;
+            d.color = bad[i] ? k.bad : k.good;
+            Item it{ItemKind::Line, (int)lines_.size(), {}};
+            it.sprite.sortLayer = l.sortLayer;
+            it.sprite.order = l.order;
+            it.sprite.sortY = (d.y0 + d.y1) * 0.5f;
+            lines_.push_back(d);
+            items_.push_back(it);
+        }
+    }
+    const std::vector<Particles::Particle>& particles = world.particles.particles();
+    for (int i = 0; i < (int)particles.size(); i++) {
+        const Particles::Particle& p = particles[i];
+        if (!inRange(p.def->sortLayer)) continue;
+        Item it{ItemKind::Particle, i, {}};
+        it.sprite.sortLayer = p.def->sortLayer;
+        it.sprite.order = p.def->order;
+        it.sprite.sortY = p.y;
+        items_.push_back(it);
+    }
+
     float dropX, dropY; // PlayerAction's item drop indicator
     if (world.items.dropIndicator(dropX, dropY) && area.playerAction.dropIndicator.sprite >= 0 &&
         inRange(area.playerAction.dropIndicator.sortLayer))
@@ -141,8 +175,34 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     for (const Item& it : items_) {
         if (it.kind == ItemKind::Layer) drawLayer(area, grid, area.layers[it.index]);
         else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
+        else if (it.kind == ItemKind::Line) drawLine(lines_[it.index]);
+        else if (it.kind == ItemKind::Particle) drawParticle(particles[it.index]);
         else drawSprite(area, it.sprite);
     }
+}
+
+void AreaView::drawLine(const LineDraw& l) {
+    float x0, y0, x1, y1;
+    worldToScreen(l.x0, l.y0, x0, y0);
+    worldToScreen(l.x1, l.y1, x1, y1);
+    const float pad = l.width * ppu_;
+    if (std::max(x0, x1) < -pad || std::min(x0, x1) > screenW_ + pad || std::max(y0, y1) < -pad ||
+        std::min(y0, y1) > screenH_ + pad)
+        return;
+    plat::drawLine(x0, y0, x1, y1, l.width * ppu_, l.color);
+    spriteCount_++;
+}
+
+void AreaView::drawParticle(const Particles::Particle& p) {
+    // A billboard square around its position.
+    const float size = p.def->size * ppu_;
+    float x, y;
+    worldToScreen(p.x, p.y, x, y);
+    x -= size * 0.5f;
+    y -= size * 0.5f;
+    if (x + size < 0 || x > screenW_ || y + size < 0 || y > screenH_) return;
+    plat::drawRect(x, y, size, size, Particles::color(p));
+    spriteCount_++;
 }
 
 void AreaView::drawDialogue(const World& world, int npc) {

@@ -11,7 +11,7 @@ constexpr float DT = 1.0f / 60.0f;
 
 // A world with no player on a tile (stile 0), so no move keeps walls for it.
 struct Fixture {
-    World world{village()};
+    World world{villageArea()};
     Grid& grid = world.grid;
     Artifact& artifact = world.artifact;
     ArtifactUI ui;
@@ -19,7 +19,7 @@ struct Fixture {
         if (allButNine)
             for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
         artifact.init(grid);
-        ui.init(village(), artifact);
+        ui.init(villageArea(), artifact);
     }
     void frame(bool touching, float x = 0, float y = 0) {
         plat::Input in;
@@ -31,7 +31,7 @@ struct Fixture {
     }
     void tap(int sx, int sy) {
         float x, y;
-        ui.slotCenter(village(), sx, sy, x, y);
+        ui.slotCenter(villageArea(), sx, sy, x, y);
         frame(true, x, y);
         frame(true, x, y);
         frame(false); // the 3DS reports no position on release
@@ -39,8 +39,8 @@ struct Fixture {
     // Drags from slot a to slot b in small steps, releasing over b (or off the panel if b < 0).
     void drag(int ax, int ay, int bx, int by) {
         float x0, y0, x1 = 5, y1 = 5;
-        ui.slotCenter(village(), ax, ay, x0, y0);
-        if (bx >= 0) ui.slotCenter(village(), bx, by, x1, y1);
+        ui.slotCenter(villageArea(), ax, ay, x0, y0);
+        if (bx >= 0) ui.slotCenter(villageArea(), bx, by, x1, y1);
         for (int i = 0; i <= 10; i++) frame(true, x0 + (x1 - x0) * i / 10, y0 + (y1 - y0) * i / 10);
         frame(false);
     }
@@ -91,7 +91,7 @@ TEST(artifact_ui_drag) {
 TEST(artifact_ui_drag_back_onto_itself_selects) {
     Fixture f;
     float x, y;
-    f.ui.slotCenter(village(), 0, 0, x, y);
+    f.ui.slotCenter(villageArea(), 0, 0, x, y);
     for (int i = 0; i <= 10; i++) f.frame(true, x + (i <= 5 ? i : 10 - i) * 4, y); // out and back
     f.frame(false);
     CHECK(f.ui.selected() == 1 && f.ui.isOption(1, 0) && f.artifact.queueEmpty());

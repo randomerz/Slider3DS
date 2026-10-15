@@ -169,7 +169,7 @@ TEST(area_validation_rejects_bad_indices) {
 // Pinned shape of the committed export. A re-export that changes these is a real content
 // change: check the previews, then update the numbers here on purpose.
 TEST(area_village_export_stats) {
-    const Area& a = village();
+    const Area& a = villageArea();
     check(a.gridW == 3 && a.gridH == 3 && a.targetGrid == "624897153" && a.housingOffset == -150, "grid config");
     check(a.stiles.size() == 9, "stiles " + std::to_string(a.stiles.size()));
     check(a.spawns.size() == 4, "spawns " + std::to_string(a.spawns.size()));

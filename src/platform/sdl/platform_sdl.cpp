@@ -11,6 +11,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include <cmath>
 #include <cstdlib>
 
 #ifndef ASSET_ROOT
@@ -85,6 +86,7 @@ bool init() {
     }
     SDL_RenderSetLogicalSize(g_renderer, LOGICAL_W, LOGICAL_H);
     SDL_RenderSetIntegerScale(g_renderer, SDL_TRUE);
+    SDL_SetRenderDrawBlendMode(g_renderer, SDL_BLENDMODE_BLEND); // rects and lines with alpha blend (as citro2d's)
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
         SDL_Log("IMG_Init failed: %s", IMG_GetError());
         return false;
@@ -179,6 +181,17 @@ void drawRect(float x, float y, float w, float h, uint32_t color) {
     setColor(color);
     SDL_FRect r{x, y, w, h};
     SDL_RenderFillRectF(g_renderer, &r);
+}
+
+void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t color) {
+    const float dx = x1 - x0, dy = y1 - y0, len = std::sqrt(dx * dx + dy * dy);
+    if (len <= 0) return;
+    const float nx = -dy / len * width * 0.5f, ny = dx / len * width * 0.5f; // half-width across
+    const SDL_Color c{(Uint8)(color >> 24), (Uint8)(color >> 16), (Uint8)(color >> 8), (Uint8)color};
+    const SDL_Vertex v[4] = {{{x0 + nx, y0 + ny}, c, {0, 0}}, {{x1 + nx, y1 + ny}, c, {0, 0}},
+                             {{x1 - nx, y1 - ny}, c, {0, 0}}, {{x0 - nx, y0 - ny}, c, {0, 0}}};
+    const int idx[6] = {0, 1, 2, 0, 2, 3};
+    SDL_RenderGeometry(g_renderer, nullptr, v, 4, idx, 6);
 }
 
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale) {

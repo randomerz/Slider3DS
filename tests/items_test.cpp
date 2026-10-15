@@ -175,7 +175,7 @@ TEST(items_carried_item_gates_conditions_and_interactions) {
 
 TEST(items_village_knot_node_round_trip) {
     // Kevin's knot nodes (tile 4) are Items: pick one up and drop it on the tile.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     world.setTileActive(4, true);
     int knot = -1;

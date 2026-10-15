@@ -8,6 +8,7 @@
 
 #include "game/anim/animators.h"
 #include "game/data/area.h"
+#include "game/fx/particles.h"
 #include "game/grid/artifact.h"
 #include "game/world/game_state.h"
 #include "game/grid/grid.h"
@@ -71,7 +72,7 @@ public:
     // One frame: queued slides advance and the player rides the tile under it; the player walks
     // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless noclip
     // (and is pushed out of anything it overlaps); triggers react to what it touches; NPCs update;
-    // Starts run for components that became active; Animators advance.
+    // Starts run for components that became active; Animators and particles advance.
     void update(float dt, float moveX, float moveY, bool noclip);
 
     // PlayerAction.Action (the action button): pick up an item if one is in reach, use the offered
@@ -103,6 +104,7 @@ public:
     Npcs npcs;
     Items items;
     Animators animators;
+    Particles particles;
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now

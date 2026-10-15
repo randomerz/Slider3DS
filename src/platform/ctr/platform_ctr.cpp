@@ -139,6 +139,11 @@ void drawRect(float x, float y, float w, float h, uint32_t color) {
     C2D_DrawRectSolid(x, y, 0.5f, w, h, toC2D(color));
 }
 
+void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t color) {
+    const u32 c = toC2D(color);
+    C2D_DrawLine(x0, y0, c, x1, y1, c, width, 0.5f);
+}
+
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale) {
     // Texture v runs bottom-up (top = 1 - y/H). Don't flip by swapping UVs: citro2d reads a
     // subtexture with top < bottom as a rotated atlas entry. A negative draw size flips instead,

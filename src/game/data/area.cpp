@@ -92,6 +92,12 @@ int Area::npcOn(int object) const {
     return -1;
 }
 
+int Area::knotBoxOn(int object) const {
+    for (size_t i = 0; i < knotBoxes.size(); i++)
+        if (knotBoxes[i].object == object) return (int)i;
+    return -1;
+}
+
 const char* NpcEmoteDef::name(int emote) {
     static const char* names[Count] = {"", "Sparkle", "Exclamation", "Question", "Annoyed", "Sweat"};
     return emote >= 0 && emote < Count ? names[emote] : "";
@@ -186,6 +192,8 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         d.stringArg = c["string"].asString();
         if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
         if (d.method == CallDef::Method::SetAnimatorController) d.data = c["controller"].asInt(-1);
+        if (d.method == CallDef::Method::KnotCheckParticles || d.method == CallDef::Method::KnotSetToCorrect)
+            d.data = c["knotBox"].asInt(-1);
         if (d.method == CallDef::Method::SetColliderEnabled) { // (colliders load first)
             if (c.has("collider")) d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
             else d.method = CallDef::Method::Unsupported; // a collider the export left out (it warns)
@@ -232,6 +240,7 @@ static ConditionDef readCondition(const Json& c) {
         d.name = c["playerItem"].asString();
     } else if (type == "spec") {
         d.name = c["spec"].asString(); // unchecked specs stay Unsupported (false)
+        d.specTarget = c["specTarget"].asInt(-1);
 #define SLIDER_SPEC_MATCH(id, exported)        \
     if (d.name == exported) {                  \
         d.type = T::Spec;                      \
@@ -259,6 +268,63 @@ static ConditionalsDef readConditionals(const Json& j, Area& out) {
 
 static Hitbox readHitbox(const Json& j) {
     return {j["offset"].at(0).asFloat(), j["offset"].at(1).asFloat(), j["size"].at(0).asFloat(), j["size"].at(1).asFloat()};
+}
+
+// [r, g, b, a] 0-255 -> RGBA.
+static uint32_t readColor(const Json& j) {
+    uint32_t c = 0;
+    for (int i = 0; i < 4; i++) c = (c << 8) | (uint32_t)(j.at(i).asInt(255) & 0xff);
+    return c;
+}
+
+static void readObjectCollider(const Json& j, ObjectCollider& c);
+
+static ParticlesDef readParticles(const Json& j) {
+    ParticlesDef d;
+    d.object = j["object"].asInt(-1);
+    d.duration = j["duration"].asFloat();
+    d.lifetimeMin = j["lifetime"].at(0).asFloat();
+    d.lifetimeMax = j["lifetime"].at(1).asFloat();
+    d.speedMin = j["speed"].at(0).asFloat();
+    d.speedMax = j["speed"].at(1).asFloat();
+    d.size = j["size"].asFloat();
+    d.color = readColor(j["color"]);
+    d.shapeRadius = j["shapeRadius"].asFloat();
+    for (const Json& b : j["bursts"].items())
+        d.bursts.push_back({b["time"].asFloat(), b["count"].at(0).asFloat(), b["count"].at(1).asFloat(),
+                            b["cycles"].asInt(1), b["interval"].asFloat()});
+    if (j.has("limitVelocity")) {
+        const Json& lv = j["limitVelocity"];
+        d.limitVelocity = true;
+        d.limit = lv["limit"].asFloat();
+        d.dampen = lv["dampen"].asFloat();
+        d.drag = lv["drag"].asFloat();
+        d.dragBySize = lv["dragBySize"].asBool();
+        d.dragByVelocity = lv["dragByVelocity"].asBool();
+    }
+    for (const Json& k : j["alpha"].items()) d.alpha.push_back({k.at(0).asFloat(), k.at(1).asFloat()});
+    d.sortLayer = j["sortingLayerValue"].asInt();
+    d.order = j["order"].asInt();
+    return d;
+}
+
+static KnotBoxDef readKnotBox(const Json& j) {
+    KnotBoxDef d;
+    d.object = j["object"].asInt(-1);
+    for (const Json& n : j["nodes"].items()) d.nodes.push_back(n.asInt(-1));
+    for (const Json& l : j["lines"].items())
+        d.lines.push_back({l["object"].asInt(-1), l["width"].asFloat(), l["sortingLayerValue"].asInt(), l["order"].asInt()});
+    d.good = readColor(j["good"]);
+    d.bad = readColor(j["bad"]);
+    for (const Json& c : j["rayColliders"].items()) {
+        ObjectCollider oc;
+        readObjectCollider(c, oc);
+        d.rayColliders.push_back(std::move(oc));
+    }
+    for (const Json& c : j["correct"].items())
+        d.correct.push_back({c["owner"].asInt(), c["pos"].at(0).asFloat(), c["pos"].at(1).asFloat()});
+    for (const Json& p : j["particles"].items()) d.particles.push_back(readParticles(p));
+    return d;
 }
 
 static void readObjectCollider(const Json& j, ObjectCollider& c) {
@@ -511,6 +577,9 @@ static bool validate(const Area& a, std::string* error) {
                 (c.target == -1 || a.animatorByObject[c.target] < 0 || c.data < 0 || c.data >= (int)a.animatorControllers.size()))
                 return false;
             if (c.method == M::CheckConditions && (c.data < 0 || c.data >= (int)a.conditionCheckers.size())) return false;
+            if ((c.method == M::KnotCheckParticles || c.method == M::KnotSetToCorrect) &&
+                (c.data < 0 || c.data >= (int)a.knotBoxes.size() || a.knotBoxes[c.data].object != c.target))
+                return false;
             if (isTeleport(c.method)) {
                 if (c.data < 0 || c.data >= (int)a.teleports.size()) return false;
                 const TeleportDef& t = a.teleports[c.data];
@@ -560,6 +629,19 @@ static bool validate(const Area& a, std::string* error) {
                   callsOk(it.onPickUp) && callsOk(it.onDrop);
         for (int o : it.enableOnDrop) ok = ok && objectOk(o);
         if (!ok) return fail(error, "item " + it.name + ": bad object, collider or call");
+    }
+    for (const KnotBoxDef& k : a.knotBoxes) {
+        bool ok = objectOk(k.object) && k.nodes.size() >= 3 && k.lines.size() == k.nodes.size() &&
+                  (k.correct.empty() || k.correct.size() == k.nodes.size());
+        for (int n : k.nodes) ok = ok && objectOk(n) && a.objects[n].parent >= 0; // (SetToCorrectPositions moves the parent)
+        for (const KnotLineDef& l : k.lines) ok = ok && objectOk(l.object) && l.width > 0;
+        for (const ObjectCollider& c : k.rayColliders) ok = ok && sameOwner(c.object, c.owner);
+        for (const KnotBoxDef::Pos& p : k.correct) ok = ok && ownerOk(p.owner);
+        for (const ParticlesDef& pd : k.particles) {
+            ok = ok && objectOk(pd.object) && pd.lifetimeMin <= pd.lifetimeMax && pd.speedMin <= pd.speedMax;
+            for (const ParticleBurstDef& b : pd.bursts) ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0;
+        }
+        if (!ok) return fail(error, "knot box: bad object, node, line, ray collider, position or particles");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");
@@ -701,6 +783,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         d.onDrop = readCalls(j["onDrop"], out);
         out.items.push_back(std::move(d));
     }
+    for (const Json& j : doc["knotBoxes"].items()) out.knotBoxes.push_back(readKnotBox(j));
     if (doc.has("playerAction")) {
         const Json& pa = doc["playerAction"];
         PlayerActionDef& d = out.playerAction;

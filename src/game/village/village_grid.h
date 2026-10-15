@@ -1,6 +1,6 @@
 // VillageGrid (the Village's SGrid): the methods its UnityEvent calls and spec conditions use.
-// Not yet: the knot box, ruins, Chad's jump, cats (their specs), FillInHole / ShufflePuzzle and the
-// final 8-puzzle, the intro cutscene, trackers, particles and sounds.
+// The knot box is in game/village/knot_box. Not yet: ruins, Chad's jump, cats (their specs), FillInHole /
+// ShufflePuzzle and the final 8-puzzle, the intro cutscene, trackers, particles and sounds.
 #pragma once
 
 #include <string>
@@ -28,8 +28,9 @@ void waterfallEntry(World& world);
 // OnHouseExit: the first time, the intro cutscene would play (not yet: only its flag).
 void houseExit(World& world);
 
-// The spec conditions (Condition.checkBool) on VillageGrid & co., and what they read.
-bool checkSpec(const World& world, ConditionDef::Spec spec);
+// The spec conditions (Condition.checkBool) on VillageGrid & co. (`specTarget`: the object the
+// check runs on, ConditionDef::specTarget), and what they read.
+bool checkSpec(const World& world, ConditionDef::Spec spec, int specTarget);
 bool specReadsOnlyStateAndGrid(ConditionDef::Spec spec);
 
 } // namespace village

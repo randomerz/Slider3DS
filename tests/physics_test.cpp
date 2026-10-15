@@ -59,7 +59,7 @@ const ObjectCollider* findCollider(const Area& area, const std::string& pathPart
 } // namespace
 
 TEST(physics_player_hitboxes) {
-    const Area& area = village();
+    const Area& area = villageArea();
     const Hitbox& f = area.player.footBox;
     const Hitbox& b = area.player.boatBox;
     check(f.w == 0.75f && f.h == 0.75f && f.offY == -0.0625f, "foot box: 0.5x0.5 + 0.125 edge radius at (0,-1/16)");
@@ -69,7 +69,7 @@ TEST(physics_player_hitboxes) {
 TEST(physics_spawns_start_free) {
     // Spawns on tiles that aren't collected yet (e.g. VillageWaterfall on tile 6) are only used
     // once they are, so check with every tile active.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
@@ -86,7 +86,7 @@ TEST(physics_house_walls_stop_the_player) {
     // From the Default spawn (inside tile 1's house, beside the bed) the player can walk some way
     // right, up (to the computer desk) and down, and is stopped flush before leaving the house;
     // left, the bed (an object collider) is just an eighth of a unit away.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     const Spawn* def = area.spawn("Default");
@@ -113,7 +113,7 @@ TEST(physics_house_walls_stop_the_player) {
 TEST(physics_slides_along_walls) {
     // Walking diagonally into the house's top wall keeps the sideways part of the move (Box2D
     // pushes the box out along the wall's normal), and the box rests flush against the wall.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     const Spawn* def = area.spawn("Default");
@@ -134,7 +134,7 @@ TEST(physics_object_colliders_block) {
     // Every active box-shaped object collider blocks a probe at its center (where its object is
     // now: NPCs move at Start) once its tile is collected; a collider on an uncollected tile is off
     // (the slot itself is solid instead).
-    const Area& area = village();
+    const Area& area = villageArea();
     check(area.objectColliders.size() > 150, "village has object colliders (" + std::to_string(area.objectColliders.size()) + ")");
     World world(area);
     Grid& grid = world.grid;
@@ -170,7 +170,7 @@ TEST(physics_object_colliders_block) {
 TEST(physics_npcs_and_items_block_collectibles_dont) {
     // NPCs have a big trigger (talk range) and a small solid box; items (cats, knot nodes) a solid
     // circle. The solid ones stop the player; collectibles are triggers only.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     for (const char* name : {"Objects/Nemsy", "Objects/Knot/Knot Node (2)", "Objects/Mittens"}) {
@@ -193,7 +193,7 @@ TEST(physics_npcs_and_items_block_collectibles_dont) {
 TEST(physics_inactive_tile_is_solid) {
     // Walking from tile 8's slot (center 0,17, collected here) into tile 9's slot (center 17,17):
     // the slot's left edge blocks while tile 9 is uncollected, and the tile itself does not once it is.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     world.setTileActive(8, true);
@@ -213,7 +213,7 @@ TEST(physics_raft_stops_at_the_coast) {
     // On water the land colliders apply: the raft's 1.5-wide box starts a little east of the coast,
     // so sailing west from the Beach spawn stops there; east is open sea. On foot the spawn point is
     // free too.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     const Spawn* beach = area.spawn("VillageBeach");
@@ -235,7 +235,7 @@ TEST(physics_raft_stops_at_the_coast) {
 }
 
 TEST(physics_slide_fences_block_in_world_and_house) {
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     // Everything collected except 9 (the empty slot, middle), then slide tile 7 (2,1) left into it.
@@ -256,7 +256,7 @@ TEST(physics_slide_fences_block_in_world_and_house) {
 TEST(physics_overlapping_box_is_pushed_out_not_in) {
     // A box overlapping a wall (as after a slide) is pushed out, and walking further into the wall
     // doesn't get it any deeper.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     const Spawn* def = area.spawn("Default");
@@ -276,7 +276,7 @@ TEST(physics_overlapping_box_is_pushed_out_not_in) {
 TEST(physics_buried_box_walks_free) {
     // Buried deeper than a unit (the middle of an inactive slot), the box walks free rather than
     // being stuck forever.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     const TileState* t9 = grid.tile(9);
@@ -292,7 +292,7 @@ TEST(physics_slides_around_round_colliders) {
     // Walking straight into a knot node (a circle) so the box's corner meets it (0.6 off center; the
     // box is 0.75 tall, so a flat face at a smaller offset stops dead, as in Box2D) slides around it; a flat wall still stops the player dead (house walls test). The lane is
     // chosen so it is clear with the knot hidden (the negative control).
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     Grid& grid = world.grid;
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
@@ -395,7 +395,7 @@ TEST(physics_box_blocker_matches_testing_everything) {
     // the other tile in the move, has its colliders off, its objects' too, also one placed onto it
     // since), an inactive slot, a
     // disabled collider; on foot and on water; then again once the slide is over.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     world.setTileActive(5, false);
@@ -457,7 +457,7 @@ TEST(physics_collision_near_answers_like_box_blocker) {
     // CollisionNear (a move's gathered geometry) must give boxBlocker's answer for every box: inside
     // its region from the short list, outside (or too crowded) from the full query. Mid-slide (fences,
     // a tile with colliders off), with a moved item and an inactive slot, on foot and on water.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     world.setTileActive(9, false);
@@ -510,7 +510,7 @@ TEST(physics_collision_near_answers_like_box_blocker) {
 TEST(physics_moved_objects_follow_placements) {
     // ObjectStates::moved() (kept up to date as placements change) is exactly the objects not where
     // they were exported: physics checks their colliders on their own.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     auto expected = [&] {
         std::vector<int> v;
@@ -543,7 +543,7 @@ TEST(physics_scripted_walk_is_pinned) {
     // across physics refactors: the broadphase and CollisionNear must move the player exactly as a
     // test of every shape does. (It caught a touch-only segment counting as a hit before the cull,
     // which left the raft stuck on the east edge.) An intended movement change re-pins the hash.
-    const Area& area = village();
+    const Area& area = villageArea();
     World world(area);
     for (int t = 2; t <= 9; t++) world.setTileActive(t, true);
     unsigned long long h = 1469598103934665603ull; // FNV-1a over the positions' bits

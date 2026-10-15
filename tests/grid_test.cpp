@@ -37,7 +37,7 @@ TEST(slide_curve) {
 
 TEST(grid_start_state) {
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     check(grid.gridString(true) == "624_897_153", "start layout " + grid.gridString(true));
     check(grid.gridString() == "###_###_1##", "start grid string " + grid.gridString());
     CHECK(grid.checkTarget());
@@ -47,7 +47,7 @@ TEST(grid_start_state) {
 
 TEST(grid_set_grid) {
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     // VillageGrid.DoShuffle: new int[3,3] {{7,0,1},{6,4,8},{5,3,2}} indexed puzzle[x,y], 0 = tile 9.
     CHECK(grid.setGrid("182_043_765"));
     check(grid.gridString(true) == "182_943_765" && !grid.checkTarget(), "shuffle layout " + grid.gridString(true));
@@ -65,7 +65,7 @@ TEST(grid_set_grid) {
 TEST(grid_move_without_active_tile_ends) {
     // A move of two empty slots animates nothing; it must still end and drop its fences.
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     grid.startMove(SMove::swap(1, 1, 2, 1, 9, 7), 0, 42);
     CHECK(grid.moving() && !grid.walls().empty());
     std::vector<int> done = grid.update(1.0f / 60.0f);
@@ -76,7 +76,7 @@ TEST(grid_move_without_active_tile_ends) {
 
 TEST(grid_stile_under) {
     Grid grid;
-    grid.init(village());
+    grid.init(villageArea());
     CHECK(grid.stileUnder(0, 3) == 1);
     CHECK(grid.stileUnder(0, 3.0f + grid.housingOffset()) == 1); // tile 1's house
     CHECK(grid.stileUnder(17, 17) == 0);                      // tile 9: not collected
