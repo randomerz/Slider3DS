@@ -60,6 +60,7 @@ public:
 private:
     void buildOrder();                         // order_ etc. from parent_
     void propagate(const Area& area, int object); // effective state of `object` and everything under it
+    void updateMoved(const Area& area, int object); // moved_ for `object` and everything under it
 
     std::vector<int> parent_;              // runtime parent, -1 = root
     std::vector<int> order_, at_, end_;    // depth-first order; object's index in it; end of its subtree

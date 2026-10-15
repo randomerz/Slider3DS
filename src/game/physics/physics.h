@@ -10,6 +10,7 @@
 #include <string>
 
 #include "game/data/area.h"
+#include "game/physics/geometry.h"
 
 class World;
 
@@ -22,16 +23,11 @@ struct Blocker {
     explicit operator bool() const { return kind != None; }
 };
 
-// An axis-aligned box in world units.
-struct Box {
-    float minX, minY, maxX, maxY;
-};
-
 struct Wall;
 
 // A piece of solid geometry near a query (CollisionNear): one slide fence, inactive-slot box,
 // collision-map polygon (at its cell) or object collider (at its base).
-// (No member initializers: CollisionNear's array of them stays uninitialized until filled.)
+// (No member initializers of its own, so CollisionNear's array costs next to nothing until filled.)
 struct NearShape {
     Blocker blocker;                // what it is
     Box bounds;                     // in world units
@@ -63,6 +59,8 @@ inline bool boxBlocked(const World& world, const Box& box, bool onWater, int ign
 // The solid geometry near a region, gathered once for a run of queries inside it (a move's sweeps
 // and probes, an item's drop search): blocker() answers as boxBlocker does, from a short list.
 // Boxes not inside the region (or a region with too much in it) take the full query.
+// It points into the World (tile positions, slide fences, object placements as of the gather):
+// use it only until the grid or objects change, never keep one across updates.
 class CollisionNear {
 public:
     CollisionNear(const World& world, const Box& region, bool onWater, int ignoreCollider = -1);

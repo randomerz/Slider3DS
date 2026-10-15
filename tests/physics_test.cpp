@@ -8,6 +8,7 @@
 
 #include "game/data/area.h"
 #include "game/grid/grid.h"
+#include "game/physics/geometry.h"
 #include "game/physics/physics.h"
 #include "game/world/world.h"
 #include "test.h"
@@ -321,6 +322,135 @@ TEST(physics_slides_around_round_colliders) {
         }
     }
     check(lanes >= 2, "found clear lanes past knot nodes (" + std::to_string(lanes) + ")");
+}
+
+TEST(physics_geometry_touching_is_not_overlap) {
+    // Exact boundary cases of the shape tests (in = the unit box's interior): touching is free,
+    // and a hair further in is a hit.
+    using namespace geom;
+    const Box in = {0, 0, 1, 1};
+    CHECK(!segmentHitsBox(2, 0.5f, 1, 0.5f, in));   // ends on the right face
+    CHECK(segmentHitsBox(2, 0.5f, 0.9f, 0.5f, in)); // ...just inside
+    CHECK(!segmentHitsBox(0, 2, 2, 0, in));         // diagonal through the corner (1, 1)
+    CHECK(segmentHitsBox(0, 1.9f, 1.9f, 0, in));
+    CHECK(!segmentHitsBox(1, -1, 1, 2, in));        // along the face
+    const float flush[] = {1, 0, 2, 0, 2, 1, 1, 1}, into[] = {0.9f, 0, 2, 0, 2, 1, 0.9f, 1};
+    CHECK(!polygonHitsBox(flush, 4, 0, 0, in));
+    CHECK(polygonHitsBox(into, 4, 0, 0, in));
+    const float around[] = {-1, -1, 2, -1, 2, 2, -1, 2};
+    CHECK(polygonHitsBox(around, 4, 0, 0, in));     // contains the box: no edge crosses it
+    CHECK(!circleHitsBox(2, 0.5f, 1, in));
+    CHECK(circleHitsBox(2, 0.5f, 1.01f, in));
+    CHECK(!boxesOverlap(in, {1, 0, 2, 1}) && boxesOverlap(in, {0.99f, 0, 2, 1}));
+}
+
+namespace {
+
+// Independent reference for boxBlocked: every fence, inactive slot, collision-map shape and object
+// collider, no broadphase or culling.
+bool blockedByAnything(const World& world, const Box& box, bool onWater) {
+    using namespace geom;
+    const Area& area = world.area;
+    const Grid& grid = world.grid;
+    const Box in = inner(box);
+    for (const Wall& w : grid.walls())
+        if (segmentHitsBox(w.x0, w.y0, w.x1, w.y1, in)) return true;
+    auto collides = [&](int owner) {
+        const TileState* t = owner ? grid.tile(owner) : nullptr;
+        return owner == 0 || (t && t->active && t->collidersOff <= 0);
+    };
+    const float half = grid.tileWidth() * 0.5f;
+    for (const TileState& t : grid.tiles()) {
+        if (t.active || t.collidersOff > 0) continue;
+        const float cx = t.posX * grid.tileWidth(), cy = t.posY * grid.tileWidth(), hy = cy + grid.housingOffset();
+        if (boxesOverlap(in, {cx - half, cy - half, cx + half, cy + half}) ||
+            boxesOverlap(in, {cx - half, hy - half, cx + half, hy + half}))
+            return true;
+    }
+    for (const CollisionLayer& L : area.collision) {
+        if ((L.mode == CollisionMode::OnFoot && onWater) || (L.mode == CollisionMode::OnWater && !onWater) ||
+            (L.mode == CollisionMode::Always && !L.active) || !collides(L.owner))
+            continue;
+        float bx, by;
+        grid.ownerBase(L.owner, bx, by);
+        const float ox = bx + L.originX + L.minX, oy = by + L.originY + L.minY;
+        for (int cy = 0; cy < L.h; cy++)
+            for (int cx = 0; cx < L.w; cx++) {
+                const int shape = L.cell(cx, cy);
+                if (shape < 0) continue;
+                for (const Polygon& p : area.shapes[shape])
+                    if (polygonHitsBox(p.data(), p.size() / 2, ox + cx, oy + cy, in)) return true;
+            }
+    }
+    for (const ObjectCollider& c : area.objectColliders)
+        if (colliderOverlaps(world, c, box)) return true;
+    return false;
+}
+
+} // namespace
+
+TEST(physics_box_blocker_matches_testing_everything) {
+    // The broadphase (owner bounds, cell ranges, shape bounds, moved objects) must not change an
+    // answer: boxBlocked vs testing every shape, mid-slide with the player riding tile 9 (so tile 7,
+    // the other tile in the move, has its colliders off, its objects' too, also one placed onto it
+    // since), an inactive slot, a
+    // disabled collider; on foot and on water; then again once the slide is over.
+    const Area& area = village();
+    World world(area);
+    for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
+    world.setTileActive(5, false);
+    world.grid.startMove(SMove::swap(2, 1, 1, 1, 7, 9), 9, 1);
+    for (int i = 0; i < 20; i++) world.grid.update(1.0f / 60.0f);
+    check(world.grid.tile(7)->collidersOff > 0, "tile 7 slides with its colliders off");
+    // An item with a solid collider, placed onto the sliding tile.
+    int item = -1;
+    for (const ItemDef& it : area.items)
+        if (area.objectColliderStart[it.object + 1] > area.objectColliderStart[it.object]) item = it.object;
+    check(item >= 0, "an item with a solid collider");
+    float tx, ty;
+    world.grid.ownerBase(7, tx, ty);
+    world.placeObject(item, 7, tx + 2.5f, ty - 1.5f);
+    world.objects.setColliderEnabled(area.objectColliders[area.objectCollidersOf[0]].slot, false);
+
+    unsigned rng = 11;
+    auto rnd = [&](float lo, float hi) {
+        rng = rng * 1103515245u + 12345u;
+        return lo + (hi - lo) * ((rng >> 8) & 0xffff) / 65535.0f;
+    };
+    auto compare = [&](const char* phase, int& blocked, int& onSlidingFree) {
+        int mismatches = 0;
+        auto one = [&](const Box& b, bool onWater, bool onSliding) {
+            const bool want = blockedByAnything(world, b, onWater), got = boxBlocked(world, b, onWater);
+            blocked += want;
+            onSlidingFree += onSliding && !want;
+            if (want != got && mismatches++ < 5)
+                check(false, std::string(phase) + ": box " + std::to_string(b.minX) + "," + std::to_string(b.minY) +
+                                 (onWater ? " on water" : "") + ": every shape says " + (want ? "blocked" : "free"));
+        };
+        // A small box on each object collider, where it is now.
+        for (const ObjectCollider& c : area.objectColliders) {
+            float bx, by;
+            world.objectBase(c.object, bx, by);
+            const float x = bx + (c.minX + c.maxX) * 0.5f, y = by + (c.minY + c.maxY) * 0.5f;
+            one({x - 0.15f, y - 0.15f, x + 0.15f, y + 0.15f}, false, world.objects.owner(c.object) == 7);
+        }
+        // Random boxes over the grid and the house interiors.
+        for (int k = 0; k < 300; k++) {
+            const float w = rnd(0.2f, 1.5f), h = rnd(0.2f, 1.5f);
+            const float x = rnd(-10, 60), y = k % 4 == 0 ? rnd(-165, -120) : rnd(-10, 60);
+            one({x, y, x + w, y + h}, k % 3 == 0, false);
+        }
+        check(mismatches == 0, std::string(phase) + ": " + std::to_string(mismatches) + " mismatches");
+    };
+    int blocked = 0, slidingFree = 0;
+    compare("mid-slide", blocked, slidingFree);
+    check(blocked > 100 && slidingFree > 3, "mid-slide covers blocked boxes and the sliding tile's colliders (" +
+                                                 std::to_string(blocked) + ", " + std::to_string(slidingFree) + ")");
+    for (int i = 0; i < 600 && world.grid.tile(7)->collidersOff > 0; i++) world.grid.update(1.0f / 60.0f);
+    check(world.grid.tile(7)->collidersOff == 0, "the slide ended");
+    int blockedAfter = 0, slidingFreeAfter = 0;
+    compare("after the slide", blockedAfter, slidingFreeAfter);
+    check(slidingFreeAfter < slidingFree, "tile 7's colliders block again");
 }
 
 TEST(physics_collision_near_answers_like_box_blocker) {

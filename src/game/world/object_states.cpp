@@ -24,7 +24,10 @@ void ObjectStates::init(const Area& area) {
     }
     buildOrder();
     for (int root = 0; root < (int)n; root++)
-        if (parent_[root] < 0) propagate(area, root);
+        if (parent_[root] < 0) {
+            propagate(area, root);
+            updateMoved(area, root);
+        }
     activeVersion_++;
     placementVersion_++;
 }
@@ -86,7 +89,10 @@ void ObjectStates::propagate(const Area& area, int object) {
         offX_[i] = selfDx_[i] + offX_[p];
         offY_[i] = selfDy_[i] + offY_[p];
     }
-    // moved_: only this subtree's objects can have changed.
+}
+
+// moved_ after a placement change under `object`: only its subtree's objects can have moved.
+void ObjectStates::updateMoved(const Area& area, int object) {
     for (int k = at_[object]; k < end_[object]; k++) {
         const int i = order_[k];
         const auto it = std::lower_bound(moved_.begin(), moved_.end(), i);
@@ -108,6 +114,7 @@ void ObjectStates::setPlacement(const Area& area, int object, int owner, float d
     selfDx_[object] = dx;
     selfDy_[object] = dy;
     propagate(area, object);
+    updateMoved(area, object);
     placementVersion_++;
 }
 
@@ -121,6 +128,7 @@ void ObjectStates::moveOnto(const Area& area, int object, int target) {
     selfDy_[object] = area.objects[target].y - area.objects[object].y;
     buildOrder();
     propagate(area, object);
+    updateMoved(area, object);
     activeVersion_++;
     placementVersion_++;
 }
