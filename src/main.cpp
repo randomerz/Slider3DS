@@ -5,6 +5,7 @@
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
 //   L + D-pad: slide the tile you stand on          SELECT: toggle the perf overlay
+//   L + B: tiles 2-4 only, next to Kevin's unsolved knot (Slider 5)
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
 // add a perf overlay (game/dev/dev_overlay).
 #include <cstdio>

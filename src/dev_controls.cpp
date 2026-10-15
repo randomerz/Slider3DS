@@ -15,7 +15,25 @@ bool DevControls::update(const plat::Input& in, World& world) {
         printf("Spawn: %s\n", area.spawns[spawnIndex].name.c_str());
     }
 
-    if (in.pressed & plat::BTN_B) {
+    if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_B)) {
+        // Kevin's knot: Sliders 2-4 collected (the knot's tile 4 in the grid, unsolved), 5-8 not;
+        // reload as a save with them would, and stand next to Kevin.
+        collected = false;
+        for (int id = 2; id <= 8; id++) {
+            world.setTileActive(id, id <= 4);
+            world.state.setCollectible("Slider " + std::to_string(id), "Village", id <= 4);
+        }
+        world.reloadObjects();
+        for (const NpcDef& n : area.npcs)
+            for (const NpcCondDef& c : n.conds)
+                for (const ConditionDef& d : c.conditions)
+                    if (d.type == ConditionDef::Type::Spec && d.spec == ConditionDef::Spec::KnotSolved) {
+                        float x, y;
+                        world.objectPosition(n.object, x, y);
+                        world.placeNear(x, y - 1);
+                    }
+        printf("Knot setup: tiles 2-4 collected, next to Kevin; grid %s\n", world.grid.gridString().c_str());
+    } else if (in.pressed & plat::BTN_B) {
         // Collect (or drop) Sliders 2-8, then reload the scene objects as a save with them would.
         collected = !collected;
         for (int id = 2; id <= 8; id++) {

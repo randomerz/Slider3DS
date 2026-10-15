@@ -175,3 +175,34 @@ TEST(knot_box_first_and_last_lines_are_neighbours) {
     const int n = village::knotBadLines(world, 0, bad);
     check(n == 0, "still solved (" + std::to_string(n) + " bad)");
 }
+
+TEST(knot_box_solved_kevin_hands_out_slider_5) {
+    // The L + B dev setup (tiles 2-4 collected), the knot solved: Kevin's CheckPuzzle conditional
+    // takes over, and standing at him plays its line, whose end shows the Slider 5 collectible.
+    const Area& area = villageArea();
+    World world(area);
+    for (int id = 2; id <= 4; id++) {
+        world.setTileActive(id, true);
+        world.state.setCollectible("Slider " + std::to_string(id), "Village", true);
+    }
+    world.reloadObjects();
+    int kevin = -1;
+    for (int i = 0; i < (int)area.npcs.size(); i++)
+        if (area.npcs[i].name == "Kevin") kevin = i;
+    check(kevin >= 0, "Kevin");
+    const int slider5 = area.collectible("Slider 5");
+    check(slider5 >= 0 && !world.objects.activeInHierarchy(area.collectibles[slider5].object), "Slider 5 hidden");
+    world.update(1.0f / 60, 0, 0, false);
+    check(world.npcs.currentCond(kevin) == 0, "tangled: asks for help");
+
+    village::knotSetToCorrectPositions(world, 0);
+    float x, y;
+    world.objectPosition(area.npcs[kevin].object, x, y);
+    world.placeNear(x, y - 1);
+    for (int f = 0; f < 60 * 20 && !world.objects.activeInHierarchy(area.collectibles[slider5].object); f++) {
+        world.update(1.0f / 60, 0, 0, false);
+        if (f % 30 == 0) world.action(); // (advances a line that waits for the action button)
+    }
+    check(world.npcs.currentCond(kevin) == 1, "solved: thanks you");
+    check(world.objects.activeInHierarchy(area.collectibles[slider5].object), "Slider 5 shows up");
+}
