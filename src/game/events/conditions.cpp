@@ -21,7 +21,7 @@ bool checkCondition(const ConditionDef& c, const World& world) {
         return true;
     case T::Flag: return state.flag(c.name);
     case T::NoFlag: return !state.flag(c.name);
-    case T::Spec: return village::checkSpec(world, c.spec, c.specTarget);
+    case T::Spec: return village::checkSpec(world, c);
     case T::PlayerCarryingItem: return world.items.carrying(world.area, c.name);
     case T::Unsupported: return false;
     }

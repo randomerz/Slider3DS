@@ -17,6 +17,7 @@
 #include "game/world/object_states.h"
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
+#include "game/village/knot_box.h"
 
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
 // the STile it stands on, which it rides while that tile slides.
@@ -105,6 +106,7 @@ public:
     Items items;
     Animators animators;
     Particles particles;
+    village::KnotBoxes knots; // the knot puzzle's lines (Village)
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now

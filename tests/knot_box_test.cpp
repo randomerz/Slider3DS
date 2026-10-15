@@ -81,7 +81,9 @@ TEST(knot_box_starts_tangled_and_solves_at_the_correct_positions) {
         CHECK(world.objects.owner(world.objects.parent(area.knotBoxes[0].nodes[i])) == 4); // still on tile 4
     }
     check(village::knotBadLines(world, 0) == 0, "solved");
-    CHECK(checkCondition(solved, world));
+    CHECK(!checkCondition(solved, world)); // the spec reads the knot as of the last update...
+    world.update(1.0f / 60, 0, 0, false);
+    CHECK(checkCondition(solved, world)); // ...and sees it solved after the next one
 }
 
 TEST(knot_box_start_check_solves_it_with_slider_5) {
@@ -132,6 +134,8 @@ TEST(knot_box_crossing_lines_are_bad) {
     partial.type = ConditionDef::Type::Spec;
     partial.spec = ConditionDef::Spec::KnotPartlySolved;
     partial.specTarget = area.knotBoxes[0].object;
+    partial.data = 0;
+    world.knots.update(world); // (the knot as of the frame's end)
     CHECK(checkCondition(partial, world) == (n <= 3));
     CHECK(!checkCondition(*knotSpec(area, ConditionDef::Spec::KnotSolved), world));
 }
@@ -149,8 +153,25 @@ TEST(knot_box_drop_sparkles_only_when_solved) {
     check(world.particles.particles().empty(), "tangled: no sparkles");
 
     village::knotSetToCorrectPositions(world, 0);
+    world.knots.update(world);
     runCalls(world, node->onDrop);
     world.update(1.0f / 60, 0, 0, false);
     check(world.particles.particles().size() == 7 * 3, "solved: each node's first burst (" +
                                                            std::to_string(world.particles.particles().size()) + ")");
+}
+
+TEST(knot_box_first_and_last_lines_are_neighbours) {
+    // Lines 0 and 6 share node 0, so CheckLines never tests them against each other. With node 0
+    // here (solved otherwise) the shared end turns so IntersectingSegs would call them crossing:
+    // its orientations are exactly 0 at the shared node, which Mathf.Sign counts as positive.
+    const Area& area = villageArea();
+    World world(area);
+    world.setTileActive(4, true);
+    village::knotSetToCorrectPositions(world, 0);
+    float bx, by;
+    world.grid.ownerBase(4, bx, by);
+    placeNode(world, 0, bx - 2, by - 1);
+    bool bad[village::MAX_KNOT_LINES];
+    const int n = village::knotBadLines(world, 0, bad);
+    check(n == 0, "still solved (" + std::to_string(n) + " bad)");
 }

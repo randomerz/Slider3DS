@@ -82,3 +82,39 @@ TEST(particles_play_while_playing_and_objects_turning_off) {
     world.particles.update(world, dt);
     CHECK(world.particles.particles().empty());
 }
+
+TEST(particles_slow_down_like_unity) {
+    // SparkleEffect's limit velocity with one particle, no spread: speed and distance against
+    // Unity's (ParticleSystem.Simulate at 60 fps; Slider3DSSceneSurvey.SurveyParticleSpeedBatch).
+    const Area& area = villageArea();
+    World world(area);
+    world.setTileActive(4, true);
+    struct Sample { float t, v, x; };
+    const struct { float speed; Sample at[3]; } runs[] = {
+        {4, {{0.2f, 1.4319f, 0.4750f}, {0.5f, 0.3586f, 0.6952f}, {1.0f, 0.0765f, 0.7752f}}},
+        {1, {{0.2f, 0.4009f, 0.1253f}, {0.5f, 0.1302f, 0.1930f}, {1.0f, 0.0569f, 0.2324f}}},
+    };
+    for (const auto& run : runs) {
+        ParticlesDef d = sparkles();
+        d.speedMin = d.speedMax = run.speed;
+        d.lifetimeMin = d.lifetimeMax = d.duration = 10;
+        d.shapeRadius = 0;
+        d.bursts = {{0, 1, 1, 1, 0}};
+        world.particles.reset();
+        float ox, oy;
+        world.objectPosition(d.object, ox, oy);
+        world.particles.play(world, d);
+        int frame = 0;
+        for (const Sample& s : run.at) {
+            while (frame < (int)std::lround(s.t * 60)) {
+                world.particles.update(world, 1.0f / 60);
+                frame++;
+            }
+            const Particles::Particle& p = world.particles.particles().at(0);
+            const float v = std::hypot(p.vx, p.vy), x = std::hypot(p.x - ox, p.y - oy);
+            check(std::fabs(v - s.v) < 0.02f * s.v + 1e-3f && std::fabs(x - s.x) < 0.02f * s.x,
+                  "speed " + std::to_string(run.speed) + " at " + std::to_string(s.t) + " s: v " + std::to_string(v) +
+                      " (Unity " + std::to_string(s.v) + "), x " + std::to_string(x) + " (Unity " + std::to_string(s.x) + ")");
+        }
+    }
+}

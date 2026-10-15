@@ -8,3 +8,5 @@ all_beach 599:7fc2f4df9b56e400
 all_top_left 1081:1e2901b01857452e
 mid_slide 532:671d48c0d9b87d86
 shuffled 820:88838b726664c0e4
+knot_sparkles 905:b0957e156b9317e8
+knot_sparkles_fading 905:85b0188230a84568

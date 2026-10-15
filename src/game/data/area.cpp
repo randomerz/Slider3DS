@@ -92,12 +92,6 @@ int Area::npcOn(int object) const {
     return -1;
 }
 
-int Area::knotBoxOn(int object) const {
-    for (size_t i = 0; i < knotBoxes.size(); i++)
-        if (knotBoxes[i].object == object) return (int)i;
-    return -1;
-}
-
 const char* NpcEmoteDef::name(int emote) {
     static const char* names[Count] = {"", "Sparkle", "Exclamation", "Question", "Annoyed", "Sweat"};
     return emote >= 0 && emote < Count ? names[emote] : "";
@@ -192,8 +186,10 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         d.stringArg = c["string"].asString();
         if (d.method == CallDef::Method::CheckConditions) d.data = c["checker"].asInt(-1);
         if (d.method == CallDef::Method::SetAnimatorController) d.data = c["controller"].asInt(-1);
-        if (d.method == CallDef::Method::KnotCheckParticles || d.method == CallDef::Method::KnotSetToCorrect)
-            d.data = c["knotBox"].asInt(-1);
+        if (d.method == CallDef::Method::KnotCheckParticles || d.method == CallDef::Method::KnotSetToCorrect) {
+            if (c.has("knotBox")) d.data = c["knotBox"].asInt(-1);
+            else d.method = CallDef::Method::Unsupported; // its knot box was left out (the export says so)
+        }
         if (d.method == CallDef::Method::SetColliderEnabled) { // (colliders load first)
             if (c.has("collider")) d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
             else d.method = CallDef::Method::Unsupported; // a collider the export left out (it warns)
@@ -248,6 +244,11 @@ static ConditionDef readCondition(const Json& c) {
     }
         SLIDER_SPEC_CHECKS(SLIDER_SPEC_MATCH)
 #undef SLIDER_SPEC_MATCH
+        // A KnotBox spec names its box; without one (the exporter left the box out) it stays unchecked.
+        if (d.type == T::Spec && (d.spec == ConditionDef::Spec::KnotSolved || d.spec == ConditionDef::Spec::KnotPartlySolved)) {
+            d.data = c["knotBox"].asInt(-1);
+            if (!c.has("knotBox")) d.type = T::Unsupported;
+        }
     }
     return d;
 }
@@ -630,8 +631,22 @@ static bool validate(const Area& a, std::string* error) {
         for (int o : it.enableOnDrop) ok = ok && objectOk(o);
         if (!ok) return fail(error, "item " + it.name + ": bad object, collider or call");
     }
+    auto conditionsOk = [&](const std::vector<ConditionDef>& conditions) {
+        for (const ConditionDef& d : conditions)
+            if (d.type == ConditionDef::Type::Spec &&
+                (d.spec == ConditionDef::Spec::KnotSolved || d.spec == ConditionDef::Spec::KnotPartlySolved) &&
+                (d.data < 0 || d.data >= (int)a.knotBoxes.size() || a.knotBoxes[d.data].object != d.specTarget))
+                return false;
+        return true;
+    };
+    for (const ConditionCheckerDef& cc : a.conditionCheckers)
+        if (!conditionsOk(cc.conditionals.conditions)) return fail(error, "condition checker: bad spec target");
+    for (const NpcDef& n : a.npcs)
+        for (const NpcCondDef& c : n.conds)
+            if (!conditionsOk(c.conditions)) return fail(error, "npc " + n.name + ": bad spec target");
     for (const KnotBoxDef& k : a.knotBoxes) {
-        bool ok = objectOk(k.object) && k.nodes.size() >= 3 && k.lines.size() == k.nodes.size() &&
+        bool ok = objectOk(k.object) && k.nodes.size() >= 3 && k.nodes.size() <= (size_t)KnotBoxDef::MAX_NODES &&
+                  k.lines.size() == k.nodes.size() &&
                   (k.correct.empty() || k.correct.size() == k.nodes.size());
         for (int n : k.nodes) ok = ok && objectOk(n) && a.objects[n].parent >= 0; // (SetToCorrectPositions moves the parent)
         for (const KnotLineDef& l : k.lines) ok = ok && objectOk(l.object) && l.width > 0;

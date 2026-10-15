@@ -41,12 +41,14 @@ void World::reloadObjects() {
     particles.reset();
     starts.reset(area);
     runStarts();
+    knots.update(*this);
 }
 
 void World::setTileActive(int islandId, bool active) {
     grid.setTileActive(islandId, active);
     if (const STileDef* s = area.stile(islandId)) setTileObjects(*this, *s, active);
     runStarts(); // Start runs before the newly active objects' first update
+    knots.update(*this);
 }
 
 void World::placeAt(const Spawn& spawn) {
@@ -110,6 +112,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     runStarts();
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
     particles.update(*this, dt);
+    knots.update(*this); // (KnotBox.LateUpdate)
     if (effects.fade > 0)
         effects.fade = area.fadeDuration > 0 ? std::max(0.0f, effects.fade - dt / area.fadeDuration) : 0;
 }

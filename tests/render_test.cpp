@@ -18,6 +18,7 @@
 
 #include "game/render/area_view.h"
 #include "game/ui/artifact_ui.h"
+#include "game/village/knot_box.h"
 #include "game/grid/artifact.h"
 #include "game/grid/grid.h"
 #include "game/world/world.h"
@@ -118,6 +119,15 @@ World sceneWorld() {
 
 } // namespace
 
+// Tiles 1-8, the knot solved and its sparkles played `frames` frames ago.
+static void solvedKnotSparkles(World& w, int frames) {
+    allButNine(w);
+    village::knotSetToCorrectPositions(w, 0);
+    w.knots.update(w);
+    village::knotCheckParticles(w, 0);
+    for (int i = 0; i < frames; i++) w.particles.update(w, 1.0f / 60.0f);
+}
+
 TEST(render_goldens) {
     const Area& area = villageArea();
     SpriteSheets sheets;
@@ -145,12 +155,16 @@ TEST(render_goldens) {
              allButNine(w);
              w.artifact.setGrid(w.grid, "182_043_765");
          }},
+        // The solved knot (good lines) and its sparkles flying out, then fading.
+        {"knot_sparkles", 32, 33, 0, false, [](World& w) { solvedKnotSparkles(w, 30); }},
+        {"knot_sparkles_fading", 32, 33, 0, false, [](World& w) { solvedKnotSparkles(w, 114); }},
     };
 
     GoldenSet goldens("render.txt");
     for (const Scene& sc : scenes) {
         World world = sceneWorld();
         if (sc.setup) sc.setup(world);
+        world.knots.update(world); // (the setups change the world outside World::update)
         testResetDrawCalls();
         view.begin(area, sheets, sc.camX, sc.camY, plat::TOP_W, plat::TOP_H, sc.time, sc.showInactive);
         view.draw(world);

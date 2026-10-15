@@ -108,8 +108,34 @@ int knotBadLines(const World& world, int box, bool* bad) {
     return count;
 }
 
+void KnotBoxes::update(const World& world) {
+    const std::vector<KnotBoxDef>& defs = world.area.knotBoxes;
+    boxes_.resize(defs.size());
+    for (size_t b = 0; b < defs.size(); b++) {
+        Box& box = boxes_[b];
+        const int n = std::min((int)defs[b].lines.size(), MAX_KNOT_LINES);
+        box.bad.assign(n, 0);
+        box.ends.assign(n * 4, 0.0f);
+        bool bad[MAX_KNOT_LINES];
+        box.badCount = knotBadLines(world, (int)b, bad);
+        if (!world.objects.activeInHierarchy(defs[b].object)) continue; // (lines at the origin)
+        for (int i = 0; i < n; i++) {
+            box.bad[i] = bad[i];
+            knotLine(world, (int)b, i, box.ends[4 * i], box.ends[4 * i + 1], box.ends[4 * i + 2], box.ends[4 * i + 3]);
+        }
+    }
+}
+
+void KnotBoxes::line(int box, int line, float& x0, float& y0, float& x1, float& y1) const {
+    const float* e = &boxes_[box].ends[4 * line];
+    x0 = e[0];
+    y0 = e[1];
+    x1 = e[2];
+    y1 = e[3];
+}
+
 void knotCheckParticles(World& world, int box) {
-    if (knotBadLines(world, box) != 0) return;
+    if (world.knots.badLines(box) != 0) return;
     for (const ParticlesDef& p : world.area.knotBoxes[box].particles) world.particles.play(world, p);
 }
 

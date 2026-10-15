@@ -32,16 +32,11 @@ void houseExit(World& world) {
     world.state.setFlag(INTRO_CUTSCENE_FLAG, true); // (the camera-dolly cutscene isn't ported yet)
 }
 
-bool checkSpec(const World& world, ConditionDef::Spec spec, int specTarget) {
-    switch (spec) {
+bool checkSpec(const World& world, const ConditionDef& c) {
+    switch (c.spec) {
     case ConditionDef::Spec::VillageFishOn: return world.state.flag(FISH_ON_FLAG); // CheckFishOn
-    case ConditionDef::Spec::KnotSolved: // KnotBox.CheckPuzzle / CheckPuzzlePartial on the condition's KnotBox
-    case ConditionDef::Spec::KnotPartlySolved: {
-        const int box = world.area.knotBoxOn(specTarget);
-        if (box < 0) return false;
-        const int bad = knotBadLines(world, box);
-        return spec == ConditionDef::Spec::KnotSolved ? bad == 0 : bad <= 3;
-    }
+    case ConditionDef::Spec::KnotSolved: return world.knots.badLines(c.data) == 0;      // KnotBox.CheckPuzzle
+    case ConditionDef::Spec::KnotPartlySolved: return world.knots.badLines(c.data) <= 3; // CheckPuzzlePartial
     }
     return false;
 }

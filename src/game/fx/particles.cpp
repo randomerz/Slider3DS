@@ -50,27 +50,6 @@ void Particles::update(const World& world, float dt) {
     particles_.erase(std::remove_if(particles_.begin(), particles_.end(), [&](const Particle& p) { return off(p.def); }),
                      particles_.end());
 
-    // Particles move, slow down and age (the ones emitted below start next frame).
-    for (Particle& p : particles_) {
-        const ParticlesDef& d = *p.def;
-        float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
-        if (d.limitVelocity && speed > 0) {
-            float s = speed;
-            if (d.drag > 0) {
-                const float k = d.drag * (d.dragBySize ? d.size * d.size : 1.0f) * (d.dragByVelocity ? s * s : s);
-                s = std::max(0.0f, s - k * dt);
-            }
-            if (s > d.limit) s = d.limit + (s - d.limit) * std::pow(1.0f - d.dampen, dt * 60.0f);
-            p.vx *= s / speed;
-            p.vy *= s / speed;
-        }
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        p.age += dt;
-    }
-    particles_.erase(std::remove_if(particles_.begin(), particles_.end(), [](const Particle& p) { return p.age >= p.lifetime; }),
-                     particles_.end());
-
     // Bursts due in [time, time + dt) (the first frame after Play fires time 0), within the duration.
     for (Emitter& e : emitters_) {
         const ParticlesDef& d = *e.def;
@@ -88,6 +67,30 @@ void Particles::update(const World& world, float dt) {
     }
     emitters_.erase(std::remove_if(emitters_.begin(), emitters_.end(), [](const Emitter& e) { return e.time >= e.def->duration; }),
                     emitters_.end());
+
+    // Particles (also the ones just emitted) slow down, move and age. Limit velocity as measured in
+    // Unity (ParticleSystem.Simulate, the same at 30 and 60 fps): speed over the limit loses the
+    // dampen fraction per 1/30 s, then drag: dv/dt = -k v^2 (dragByVelocity; else -k v), k = drag
+    // times the particle's circle area pi (size/2)^2 (dragBySize), integrated exactly per step.
+    for (Particle& p : particles_) {
+        const ParticlesDef& d = *p.def;
+        const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
+        if (d.limitVelocity && speed > 0) {
+            float s = speed;
+            if (s > d.limit) s = d.limit + (s - d.limit) * std::pow(1.0f - d.dampen, dt * 30.0f);
+            if (d.drag > 0) {
+                const float k = d.drag * (d.dragBySize ? 0.78539816f * d.size * d.size : 1.0f);
+                s = d.dragByVelocity ? s / (1 + k * s * dt) : s * std::exp(-k * dt);
+            }
+            p.vx *= s / speed;
+            p.vy *= s / speed;
+        }
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.age += dt;
+    }
+    particles_.erase(std::remove_if(particles_.begin(), particles_.end(), [](const Particle& p) { return p.age >= p.lifetime; }),
+                     particles_.end());
 }
 
 uint32_t Particles::color(const Particle& p) {

@@ -9886,7 +9886,8 @@
             {
               "type": "spec",
               "spec": "KnotBox.CheckPuzzle",
-              "specTarget": 222
+              "specTarget": 222,
+              "knotBox": 0
             }
           ],
           "anyOf": false,

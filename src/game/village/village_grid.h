@@ -28,9 +28,8 @@ void waterfallEntry(World& world);
 // OnHouseExit: the first time, the intro cutscene would play (not yet: only its flag).
 void houseExit(World& world);
 
-// The spec conditions (Condition.checkBool) on VillageGrid & co. (`specTarget`: the object the
-// check runs on, ConditionDef::specTarget), and what they read.
-bool checkSpec(const World& world, ConditionDef::Spec spec, int specTarget);
+// The spec conditions (Condition.checkBool) on VillageGrid & co., and what they read.
+bool checkSpec(const World& world, const ConditionDef& c);
 bool specReadsOnlyStateAndGrid(ConditionDef::Spec spec);
 
 } // namespace village

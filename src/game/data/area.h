@@ -121,10 +121,15 @@ struct ObjectCollider {
 
 // The spec conditions (Condition.checkBool methods) the port evaluates, as X(enum name, exported
 // "<TargetType>.<Method>"):
-//   VillageFishOn   VillageGrid.CheckFishOn: VillageGrid.TurnFishOn ran (GameState flag "villageFishOn")
+//   VillageFishOn     VillageGrid.CheckFishOn: VillageGrid.TurnFishOn ran (GameState flag "villageFishOn")
+//   KnotSolved        KnotBox.CheckPuzzle on knotBoxes[data]: no bad lines
+//   KnotPartlySolved  KnotBox.CheckPuzzlePartial on knotBoxes[data]: at most 3 bad lines
 // To add one: a line here, its cases in village::checkSpec / specReadsOnlyStateAndGrid (game/village),
 // and its name in the exporter's PortSpecs.
-#define SLIDER_SPEC_CHECKS(X)                              X(VillageFishOn, "VillageGrid.CheckFishOn")            X(KnotSolved, "KnotBox.CheckPuzzle")                   X(KnotPartlySolved, "KnotBox.CheckPuzzlePartial")
+#define SLIDER_SPEC_CHECKS(X)                   \
+    X(VillageFishOn, "VillageGrid.CheckFishOn") \
+    X(KnotSolved, "KnotBox.CheckPuzzle")        \
+    X(KnotPartlySolved, "KnotBox.CheckPuzzlePartial")
 
 // One Condition (Condition.cs) as exported. Spec conditions the port doesn't check load as Unsupported.
 struct ConditionDef {
@@ -141,6 +146,7 @@ struct ConditionDef {
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
     Spec spec = Spec(0);              // Spec: which check (name: its exported method)
     int specTarget = -1;              // Spec: the object its check runs on (e.g. the KnotBox)
+    int data = -1;                    // KnotSolved / KnotPartlySolved: Area::knotBoxes index
 };
 
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
@@ -198,7 +204,9 @@ struct ConditionDef {
     X(VillageHouseExit, "VillageGrid.OnHouseExit")                     \
     X(SetColliderEnabled, "BoxCollider2D.set_enabled")                 \
     X(ItemSortingOrderInc, "PlayerAction.SetItemSortingOrderInc")      \
-    X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")          X(KnotCheckParticles, "KnotBox.CheckParticles")                        X(KnotSetToCorrect, "KnotBox.SetToCorrectPositions")
+    X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")      \
+    X(KnotCheckParticles, "KnotBox.CheckParticles")                    \
+    X(KnotSetToCorrect, "KnotBox.SetToCorrectPositions")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -430,8 +438,8 @@ struct ParticlesDef {
     float shapeRadius = 0;        // Circle shape: start inside it, moving away from its center
     std::vector<ParticleBurstDef> bursts;
     bool limitVelocity = false;   // limit velocity over lifetime:
-    float limit = 0, dampen = 0;  //   speed over `limit` loses the `dampen` fraction (per 1/60 s)
-    float drag = 0;               //   and drag (times size / speed when dragBySize / dragByVelocity)
+    float limit = 0, dampen = 0;  //   speed over `limit` loses the `dampen` fraction (per 1/30 s)
+    float drag = 0;               //   and drag (on the particle's area / quadratic in speed when dragBySize / dragByVelocity)
     bool dragBySize = false, dragByVelocity = false;
     std::vector<std::pair<float, float>> alpha; // color over lifetime: (normalized age, alpha) keys; empty = 1
     int sortLayer = 0, order = 0;
@@ -446,6 +454,7 @@ struct KnotLineDef {
     int sortLayer = 0, order = 0;
 };
 struct KnotBoxDef {
+    static constexpr int MAX_NODES = 64;
     int object = -1;              // the KnotBox (Update draws and checks the lines while it's active)
     std::vector<int> nodes;       // objects; their positions are the knot's points
     std::vector<KnotLineDef> lines; // as many as nodes
@@ -589,7 +598,6 @@ struct Area {
     const std::string& pathOf(int object) const { return objects[object].path; }
     int findObject(const std::string& path) const; // index in objects, -1 if none
     int npcOn(int object) const; // index in npcs of the NPC on `object`, -1 if none
-    int knotBoxOn(int object) const; // index in knotBoxes of the KnotBox on `object`, -1 if none
     int animatorOn(int object) const { return animatorByObject[object]; } // Area::animators index, -1 if none
     int animatorDrivenBy(int controllerObject) const; // the Animator an NPCAnimatorController object drives, -1 if none
     std::vector<int> animatorByObject; // per object (derived at load)

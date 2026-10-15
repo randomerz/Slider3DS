@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "game/village/knot_box.h"
 #include "platform/platform.h"
 
 void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
@@ -112,20 +111,18 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         it.sprite.sortY = y;
         items_.push_back(it);
     }
-    // Knot lines (LineRenderers): sorted by their bounds' center.
+    // Knot lines (LineRenderers, as KnotBox left them this frame): sorted by their bounds' center.
     lines_.clear();
     for (int b = 0; b < (int)area.knotBoxes.size(); b++) {
         const KnotBoxDef& k = area.knotBoxes[b];
         if (!objects.activeInHierarchy(k.object)) continue; // (OnDisable put its lines at the origin)
-        bool bad[village::MAX_KNOT_LINES];
-        village::knotBadLines(world, b, bad);
-        for (int i = 0; i < (int)k.lines.size() && i < village::MAX_KNOT_LINES; i++) {
+        for (int i = 0; i < (int)k.lines.size(); i++) {
             const KnotLineDef& l = k.lines[i];
             if (!inRange(l.sortLayer) || !objects.activeInHierarchy(l.object) || !ownerShown(objects.owner(l.object))) continue;
             LineDraw d;
-            village::knotLine(world, b, i, d.x0, d.y0, d.x1, d.y1);
+            world.knots.line(b, i, d.x0, d.y0, d.x1, d.y1);
             d.width = l.width;
-            d.color = bad[i] ? k.bad : k.good;
+            d.color = world.knots.lineBad(b, i) ? k.bad : k.good;
             Item it{ItemKind::Line, (int)lines_.size(), {}};
             it.sprite.sortLayer = l.sortLayer;
             it.sprite.order = l.order;

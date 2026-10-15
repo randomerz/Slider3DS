@@ -1,8 +1,8 @@
 // ParticleSystem playback for the systems the export describes (ParticlesDef): bursts of flat
 // squares in world space, emitted from a circle around the system's object, flying outward, slowed
 // by limit-velocity and faded by color-over-lifetime alpha.
-// Not exact: Unity's limit-velocity drag formula isn't documented; drag here is quadratic in speed
-// (dragByVelocity) on the particle's square area (dragBySize), and dampen is per 1/60 s.
+// Limit velocity follows speed curves measured in Unity (Slider3DSSceneSurvey.SurveyParticleSpeedBatch):
+// within ~1% for SparkleEffect.
 #pragma once
 
 #include <cstdint>
