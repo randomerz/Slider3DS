@@ -50,8 +50,8 @@ bool layerEnabled(const Grid& grid, const CollisionLayer& L, bool onWater) {
 }
 
 // Calls fn(const NearShape&) for each piece of solid geometry whose bounds overlap `region`, in
-// boxBlocker's order (slide fences, inactive STiles, collision maps by owner, object colliders as
-// exported by owner, then those of moved objects), until fn returns true; returns whether it did.
+// boxBlocker's order (slide fences, inactive STiles, collision maps by group, object colliders as
+// exported by group, then those of moved objects), until fn returns true; returns whether it did.
 template <class Fn>
 bool forEachNear(const World& world, const Box& region, bool onWater, int ignoreCollider, Fn&& fn) {
     const Area& area = world.area;
@@ -84,22 +84,24 @@ bool forEachNear(const World& world, const Box& region, bool onWater, int ignore
         }
     }
 
-    // Broadphase: only owners whose colliders' bounds (at the owner's current position) touch the
-    // region. (islandIds are < 64: validated at load.)
-    const size_t owners = std::min<size_t>(area.colliderGroups.size(), 64);
+    // Broadphase: only groups (an owner's surface or its house interiors: Area::colliderGroups) whose
+    // colliders' bounds, at the owner's current position, touch the region. (islandIds are < 64:
+    // validated at load.)
+    const size_t groups = std::min<size_t>(area.colliderGroups.size(), 128);
     float baseX[64], baseY[64];
-    bool near[64];
-    for (size_t o = 0; o < owners; o++) {
-        const ColliderGroup& g = area.colliderGroups[o];
-        near[o] = false;
-        if (g.empty()) continue;
-        grid.ownerBase((int)o, baseX[o], baseY[o]);
-        near[o] = boxesOverlap(region, {g.minX + baseX[o], g.minY + baseY[o], g.maxX + baseX[o], g.maxY + baseY[o]});
+    bool near[128];
+    for (size_t o = 0; 2 * o < groups; o++) grid.ownerBase((int)o, baseX[o], baseY[o]);
+    for (size_t gi = 0; gi < groups; gi++) {
+        const ColliderGroup& g = area.colliderGroups[gi];
+        const size_t o = gi / 2;
+        near[gi] = !g.empty() &&
+                   boxesOverlap(region, {g.minX + baseX[o], g.minY + baseY[o], g.maxX + baseX[o], g.maxY + baseY[o]});
     }
 
-    for (size_t o = 0; o < owners; o++) {
-        if (!near[o]) continue;
-        for (int li : area.colliderGroups[o].layers) {
+    for (size_t gi = 0; gi < groups; gi++) {
+        if (!near[gi]) continue;
+        const size_t o = gi / 2;
+        for (int li : area.colliderGroups[gi].layers) {
             const CollisionLayer& L = area.collision[li];
             if (!layerEnabled(grid, L, onWater)) continue;
             // Cell (cx, cy)'s min corner sits at (ox + cx, oy + cy); a shape may poke into its neighbours.
@@ -131,7 +133,7 @@ bool forEachNear(const World& world, const Box& region, bool onWater, int ignore
         }
     }
 
-    // Object colliders where they were exported, by owner; then those of objects moved since.
+    // Object colliders where they were exported, by group; then those of objects moved since.
     const ObjectStates& objects = world.objects;
     auto collider = [&](int i, float bx, float by) {
         const ObjectCollider& c = area.objectColliders[i];
@@ -144,9 +146,10 @@ bool forEachNear(const World& world, const Box& region, bool onWater, int ignore
         s.oy = by;
         return fn(s);
     };
-    for (size_t o = 0; o < owners; o++) {
-        if (!near[o] || (o != 0 && !ownerCollides(grid, (int)o))) continue;
-        for (int i : area.colliderGroups[o].colliders) {
+    for (size_t gi = 0; gi < groups; gi++) {
+        const size_t o = gi / 2;
+        if (!near[gi] || (o != 0 && !ownerCollides(grid, (int)o))) continue;
+        for (int i : area.colliderGroups[gi].colliders) {
             const ObjectCollider& c = area.objectColliders[i];
             if (i == ignoreCollider || !objects.active(c) || objects.isMoved(area, c.object)) continue;
             if (collider(i, baseX[o], baseY[o])) return true;

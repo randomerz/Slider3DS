@@ -41,30 +41,35 @@ static void buildComponentIndex(Area& a) {
 static void buildColliderIndex(Area& a) {
     int maxOwner = 0;
     for (const STileDef& s : a.stiles) maxOwner = std::max(maxOwner, s.islandId);
-    a.colliderGroups.assign(maxOwner + 1, ColliderGroup());
+    a.colliderGroups.assign(2 * (maxOwner + 1), ColliderGroup());
     std::vector<bool> started(a.colliderGroups.size(), false);
-    auto grow = [&](int owner, float x0, float y0, float x1, float y1) {
-        ColliderGroup& g = a.colliderGroups[owner];
-        if (!started[owner]) {
-            g.minX = x0, g.minY = y0, g.maxX = x1, g.maxY = y1;
-            started[owner] = true;
+    // Owner-relative y below this: a house interior.
+    const float split = a.housingOffset * 0.5f;
+    auto group = [&](int owner, float y0, float y1) { return 2 * owner + ((y0 + y1) * 0.5f < split ? 1 : 0); };
+    auto grow = [&](int g, float x0, float y0, float x1, float y1) {
+        ColliderGroup& c = a.colliderGroups[g];
+        if (!started[g]) {
+            c.minX = x0, c.minY = y0, c.maxX = x1, c.maxY = y1;
+            started[g] = true;
             return;
         }
-        g.minX = std::min(g.minX, x0), g.minY = std::min(g.minY, y0);
-        g.maxX = std::max(g.maxX, x1), g.maxY = std::max(g.maxY, y1);
+        c.minX = std::min(c.minX, x0), c.minY = std::min(c.minY, y0);
+        c.maxX = std::max(c.maxX, x1), c.maxY = std::max(c.maxY, y1);
     };
     for (size_t i = 0; i < a.collision.size(); i++) {
         const CollisionLayer& L = a.collision[i];
-        a.colliderGroups[L.owner].layers.push_back((int)i);
         // (a cell's shape may poke one cell into its neighbours)
         const float x0 = L.originX + L.minX, y0 = L.originY + L.minY;
-        grow(L.owner, x0 - 1, y0 - 1, x0 + L.w + 1, y0 + L.h + 1);
+        const int g = group(L.owner, y0, y0 + L.h);
+        a.colliderGroups[g].layers.push_back((int)i);
+        grow(g, x0 - 1, y0 - 1, x0 + L.w + 1, y0 + L.h + 1);
     }
     std::vector<std::vector<int>> byObject(a.objects.size());
     for (size_t i = 0; i < a.objectColliders.size(); i++) {
         const ObjectCollider& c = a.objectColliders[i];
-        a.colliderGroups[c.owner].colliders.push_back((int)i);
-        grow(c.owner, c.minX, c.minY, c.maxX, c.maxY);
+        const int g = group(c.owner, c.minY, c.maxY);
+        a.colliderGroups[g].colliders.push_back((int)i);
+        grow(g, c.minX, c.minY, c.maxX, c.maxY);
         byObject[c.object].push_back((int)i);
     }
     a.objectColliderStart.assign(1, 0);

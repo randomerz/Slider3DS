@@ -524,8 +524,10 @@ struct Area {
         const ComponentRef* base = componentRefs.data();
         return {base + componentStart[object], base + componentStart[object + 1]};
     }
-    // Physics broadphase (derived at load): groups by owner islandId (index), and each object's
-    // solid colliders: objectCollidersOf[objectColliderStart[o] .. objectColliderStart[o + 1]).
+    // Physics broadphase (derived at load): groups by owner islandId and band, at index
+    // 2 * owner + band (band 1: below halfway to housingOffset, the house interiors; their bounds and
+    // the surface's never overlap, so splitting keeps a tall box from covering both); and each
+    // object's solid colliders: objectCollidersOf[objectColliderStart[o] .. objectColliderStart[o + 1]).
     std::vector<ColliderGroup> colliderGroups;
     std::vector<int> objectColliderStart, objectCollidersOf;
     PlayerDef player;
