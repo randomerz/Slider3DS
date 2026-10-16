@@ -46,6 +46,9 @@ public:
     int owner(int object) const { return owner_[object]; }
     float offsetX(int object) const { return offX_[object]; }
     float offsetY(int object) const { return offY_[object]; }
+    // The offset set on the object itself (setPlacement's dx, dy; not inherited).
+    float selfOffsetX(int object) const { return selfDx_[object]; }
+    float selfOffsetY(int object) const { return selfDy_[object]; }
 
     // SpriteRenderer.flipX of the sprite on `object` (not inherited): 1 / 0, or -1 = as exported.
     void setFlipX(int object, bool flip) { flipX_[object] = flip ? 1 : 0; }

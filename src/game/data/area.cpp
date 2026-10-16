@@ -476,7 +476,7 @@ static NpcDef readNpc(const Json& j, Area& out) {
         const Json& a = j["animator"];
         n.animator = (int)out.animators.size();
         out.animators.push_back({a["object"].asInt(-1), a["controller"].asInt(-1), a["keepState"].asBool(),
-                                 a["controllerObject"].asInt(-1), readTargets(a["targets"])});
+                                 a["controllerObject"].asInt(-1), readTargets(a["targets"]), {}});
     }
     if (j.has("emote")) {
         const Json& e = j["emote"];
@@ -487,7 +487,7 @@ static NpcDef readNpc(const Json& j, Area& out) {
         n.emote.npcSprite = e["npcSprite"].asInt(-1);
         n.emote.npcSpriteFlipped = e["npcSpriteFlipped"].asBool();
         n.emote.animator = (int)out.animators.size();
-        out.animators.push_back({n.emote.object, e["controller"].asInt(-1), e["keepState"].asBool(), -1, {}});
+        out.animators.push_back({n.emote.object, e["controller"].asInt(-1), e["keepState"].asBool(), -1, {}, {}});
     }
     for (const Json& c : j["conds"].items()) {
         NpcCondDef d;
@@ -542,11 +542,10 @@ static AnimatorControllerDef readController(const Json& j) {
         st.anim = s["anim"].asInt(-1);
         st.speed = s["speed"].asFloat(1);
         st.transitions = readTransitions(s["transitions"]);
+        st.length = s["length"].asFloat();
+        st.loop = s["loop"].asBool(true);
         st.writeDefaults = s["writeDefaults"].asBool(true);
-        const Json& m = s["moves"];
-        st.moves.length = m["length"].asFloat();
-        st.moves.loop = m["loop"].asBool(true);
-        for (const Json& cj : m["curves"].items()) {
+        for (const Json& cj : s["moves"].items()) {
             MoveCurveDef mc;
             mc.path = cj["path"].asString();
             for (int axis = 0; axis < 2; axis++) {
@@ -555,7 +554,7 @@ static AnimatorControllerDef readController(const Json& j) {
                 for (size_t i = 0; i + 3 < k.size(); i += 4)
                     keys.push_back({k.at(i).asFloat(), k.at(i + 1).asFloat(), k.at(i + 2).asFloat(), k.at(i + 3).asFloat()});
             }
-            st.moves.curves.push_back(std::move(mc));
+            st.moves.push_back(std::move(mc));
         }
         c.states.push_back(std::move(st));
     }
@@ -672,6 +671,15 @@ static bool validate(const Area& a, std::string* error) {
     for (const AnimatorDef& an : a.animators)
         for (const AnimatorDef::Target& t : an.targets)
             if (t.object != -1 && !objectOk(t.object)) return fail(error, "animator: bad target " + t.path);
+    // The player's item holder: found if named; nothing else inside the player is moved by the port.
+    if (a.playerAction.present && !a.playerAction.carryPath.empty() && a.playerAction.carryTarget < 0)
+        return fail(error, "player action: carryPath " + a.playerAction.carryPath + " isn't a target of the player's Animator");
+    if (a.player.animator >= 0) {
+        const std::vector<AnimatorDef::Target>& targets = a.animators[a.player.animator].targets;
+        for (int t = 0; t < (int)targets.size(); t++)
+            if (targets[t].object == -1 && t != a.playerAction.carryTarget)
+                return fail(error, "player animator: target " + targets[t].path + " inside the player isn't moved by the port");
+    }
     std::vector<bool> isNpc(a.objects.size(), false);
     for (const NpcDef& n : a.npcs)
         if (objectOk(n.object)) isNpc[n.object] = true;
@@ -998,7 +1006,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         if (doc["player"].has("animator")) {
             out.player.animator = (int)out.animators.size();
             out.animators.push_back({-1, doc["player"]["animator"].asInt(-1), false, -1,
-                                     readTargets(doc["player"]["animatorTargets"]["targets"])});
+                                     readTargets(doc["player"]["animatorTargets"]["targets"]), {}});
         }
         out.player.boatBox = readHitbox(doc["player"]["boatBox"]);
     }
@@ -1103,6 +1111,25 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (size_t i = 0; i < out.animators.size(); i++) {
         const int o = out.animators[i].object;
         if (o >= 0 && o < (int)out.objects.size()) out.animatorByObject[o] = (int)i;
+    }
+    // Transform curves: numbered, then each Animator's target for each (by path). A state without its
+    // clip's length (older / hand-written data) takes its sprite clip's.
+    int curves = 0;
+    for (AnimatorControllerDef& c : out.animatorControllers)
+        for (AnimatorStateDef& st : c.states) {
+            if (st.length <= 0 && st.anim >= 0 && st.anim < (int)out.anims.size()) {
+                st.length = out.anims[st.anim].length;
+                st.loop = out.anims[st.anim].loop;
+            }
+            for (MoveCurveDef& mc : st.moves) mc.id = curves++;
+        }
+    for (AnimatorDef& an : out.animators) {
+        an.curveTarget.assign(curves, -1);
+        for (const AnimatorControllerDef& c : out.animatorControllers)
+            for (const AnimatorStateDef& st : c.states)
+                for (const MoveCurveDef& mc : st.moves)
+                    for (int t = 0; t < (int)an.targets.size(); t++)
+                        if (an.targets[t].path == mc.path) an.curveTarget[mc.id] = t;
     }
     if (out.player.animator >= 0 && out.playerAction.present && !out.playerAction.carryPath.empty()) {
         const std::vector<AnimatorDef::Target>& targets = out.animators[out.player.animator].targets;

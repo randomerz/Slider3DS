@@ -256,19 +256,17 @@ struct AnimatorTransitionDef {
 struct MoveCurveDef {
     std::string path;               // the transform, relative to the Animator ("" = its own)
     std::vector<CurveKey> x, y;     // empty = that axis isn't animated
-};
-struct StateMovesDef {
-    float length = 0;
-    bool loop = true;
-    std::vector<MoveCurveDef> curves;
+    int id = -1;                    // numbered across the area (AnimatorDef::curveTarget)
 };
 struct AnimatorStateDef {
     std::string name;
     int anim = -1;        // Area::anims index, -1 = no clip (the sprite keeps its last frame)
     float speed = 1;
     std::vector<AnimatorTransitionDef> transitions;
+    float length = 0;          // its clip's (0 = no clip)
+    bool loop = true;
     bool writeDefaults = true; // what its clip doesn't move goes back to the default (authored) position
-    StateMovesDef moves;
+    std::vector<MoveCurveDef> moves;
 };
 struct AnimatorControllerDef {
     std::string name;
@@ -293,6 +291,9 @@ struct AnimatorDef {
         float localX = 0, localY = 0; // its localPosition as authored (the default)
     };
     std::vector<Target> targets;
+    // Per MoveCurveDef::id (of every controller): the target it moves on this Animator, -1 = none
+    // here (a path its hierarchy doesn't have; the export warns). Built at load.
+    std::vector<int> curveTarget;
 };
 
 // What a PlayerPositionChanger call needs of its component.

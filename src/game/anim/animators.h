@@ -6,7 +6,9 @@
 // An Animator only runs while its object is active; re-enabling one rebinds it (default state and
 // parameters) unless keepAnimatorStateOnDisable. Clips' transform curves move their targets
 // (AnimatorDef::targets: an item holder bobbing; scene objects via their ObjectStates placement);
-// with writeDefaults, a state that doesn't move a target puts it back where it was authored.
+// with writeDefaults, a state that doesn't move a target puts it back where it was authored. An
+// Animator owns its targets' placement: nothing else may set it (asserted), and reset() (with
+// ObjectStates::init, World::reloadObjects) puts both back as authored.
 #pragma once
 
 #include <cstdint>
@@ -65,4 +67,5 @@ private:
     void refreshSprite(const Area& area, State& st);
 
     std::vector<State> s_;
+    std::vector<float> scratchX_, scratchY_; // applyMoves
 };

@@ -28071,6 +28071,8 @@
       "name": "Sparkle",
       "anim": 2,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
       ]
@@ -28079,6 +28081,8 @@
       "name": "Exclamation",
       "anim": 34,
       "speed": 1,
+      "length": 0.25,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28093,6 +28097,8 @@
       "name": "ExclamationLoop",
       "anim": 35,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
       ]
@@ -28101,6 +28107,8 @@
       "name": "Question",
       "anim": 36,
       "speed": 1,
+      "length": 0.25,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28115,6 +28123,8 @@
       "name": "QuestionLoop",
       "anim": 37,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
       ]
@@ -28123,6 +28133,8 @@
       "name": "Annoyed",
       "anim": 38,
       "speed": 1,
+      "length": 0.25,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28137,6 +28149,8 @@
       "name": "AnnoyedLoop",
       "anim": 39,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
       ]
@@ -28145,6 +28159,8 @@
       "name": "Sweat",
       "anim": 40,
       "speed": 1,
+      "length": 0.75,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
       ]
@@ -28167,6 +28183,8 @@
       "name": "NPCIdle",
       "anim": 15,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28182,6 +28200,8 @@
       "name": "NPCWalk",
       "anim": 41,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28211,17 +28231,15 @@
       "name": "NPCIdle",
       "anim": 42,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
-      "moves": {
-        "length": 1,
-        "loop": true,
-        "curves": [
-          {
-            "path": "Item Pickup Location",
-            "y": [0,0.8125,0,1000000000000000000000000000000,0.5,0.75,0,1000000000000000000000000000000]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "Item Pickup Location",
+          "y": [0,0.8125,0,1000000000000000000000000000000,0.5,0.75,0,1000000000000000000000000000000]
+        }
+      ],
       "transitions": [
         {
           "to": 1,
@@ -28236,6 +28254,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28265,6 +28285,8 @@
       "name": "Idle",
       "anim": 16,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28280,6 +28302,8 @@
       "name": "Walk",
       "anim": 43,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28295,6 +28319,8 @@
       "name": "Crying",
       "anim": 44,
       "speed": 1,
+      "length": 4,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28324,6 +28350,8 @@
       "name": "Idle",
       "anim": 18,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28339,6 +28367,8 @@
       "name": "Walk",
       "anim": 45,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28354,6 +28384,8 @@
       "name": "Shocked",
       "anim": 46,
       "speed": 1,
+      "length": 1.125,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28369,6 +28401,8 @@
       "name": "Skeptical",
       "anim": 47,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28384,6 +28418,8 @@
       "name": "Crying",
       "anim": 48,
       "speed": 1,
+      "length": 2,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28399,6 +28435,8 @@
       "name": "Smug",
       "anim": 49,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28414,6 +28452,8 @@
       "name": "Expressionless",
       "anim": 50,
       "speed": 1,
+      "length": 2,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28429,6 +28469,8 @@
       "name": "Interested",
       "anim": 51,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28444,6 +28486,8 @@
       "name": "TakingNotes",
       "anim": 52,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28473,6 +28517,8 @@
       "name": "ArchibaldIdle",
       "anim": 20,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28488,6 +28534,8 @@
       "name": "ArchibaldIdleSus",
       "anim": 53,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28517,6 +28565,8 @@
       "name": "NPCIdle",
       "anim": 22,
       "speed": 1,
+      "length": 0.5,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28532,6 +28582,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28561,6 +28613,8 @@
       "name": "NPCIdle",
       "anim": 23,
       "speed": 1,
+      "length": 0.5,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28576,6 +28630,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28605,6 +28661,8 @@
       "name": "NPCIdle",
       "anim": 54,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28620,6 +28678,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28649,6 +28709,8 @@
       "name": "NPCIdle",
       "anim": 25,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28664,6 +28726,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28693,6 +28757,8 @@
       "name": "NPCIdle",
       "anim": 26,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28708,6 +28774,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28773,18 +28841,16 @@
       "name": "ChadChillin",
       "anim": 27,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
-      "moves": {
-        "length": 1,
-        "loop": true,
-        "curves": [
-          {
-            "path": "PickUpLocation",
-            "x": [0,0,0,0],
-            "y": [0,0.8125,0,1000000000000000000000000000000,0.5,0.75,0,0]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "PickUpLocation",
+          "x": [0,0,0,0],
+          "y": [0,0.8125,0,1000000000000000000000000000000,0.5,0.75,0,0]
+        }
+      ],
       "transitions": [
         {
           "to": 2,
@@ -28855,23 +28921,21 @@
       "name": "ChadFall",
       "anim": 55,
       "speed": 1,
+      "length": 0.75,
+      "loop": false,
       "writeDefaults": true,
-      "moves": {
-        "length": 0.75,
-        "loop": false,
-        "curves": [
-          {
-            "path": "PickUpLocation",
-            "x": [0,0.125,0,1000000000000000000000000000000,0.125,0.5,1,1000000000000000000000000000000,0.25,0.5625,0,1000000000000000000000000000000],
-            "y": [0,0.8125,0,1000000000000000000000000000000,0.125,0.6875,-0.75,1000000000000000000000000000000,0.25,0.625,0,1000000000000000000000000000000]
-          },
-          {
-            "path": "",
-            "x": [0,0,0,0,0.625,-0.25,0,0],
-            "y": [0,0,0,0]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "PickUpLocation",
+          "x": [0,0.125,0,1000000000000000000000000000000,0.125,0.5,1,1000000000000000000000000000000,0.25,0.5625,0,1000000000000000000000000000000],
+          "y": [0,0.8125,0,1000000000000000000000000000000,0.125,0.6875,-0.75,1000000000000000000000000000000,0.25,0.625,0,1000000000000000000000000000000]
+        },
+        {
+          "path": "",
+          "x": [0,0,0,0,0.625,-0.25,0,0],
+          "y": [0,0,0,0]
+        }
+      ],
       "transitions": [
         {
           "to": 5,
@@ -28900,18 +28964,16 @@
       "name": "ChadJump",
       "anim": 56,
       "speed": 1,
+      "length": 1.0167,
+      "loop": false,
       "writeDefaults": true,
-      "moves": {
-        "length": 1.0167,
-        "loop": false,
-        "curves": [
-          {
-            "path": "PickUpLocation",
-            "x": [0,0,0,0],
-            "y": [0,0.75,0,1000000000000000000000000000000,0.0833,0.6875,0,1000000000000000000000000000000,0.1667,0.8125,2.25,1000000000000000000000000000000,0.25,1.0625,2.25,1000000000000000000000000000000,0.3333,1.1875,1.5,1000000000000000000000000000000,0.4167,1.3125,1.125,1000000000000000000000000000000,0.5,1.375,0,1000000000000000000000000000000,0.5833,1.3125,-1.125,1000000000000000000000000000000,0.6667,1.1875,-2.25,1000000000000000000000000000000,0.75,0.9375,-2.625,1000000000000000000000000000000,0.8333,0.75,0,1000000000000000000000000000000,0.9167,0.8088,0,1000000000000000000000000000000]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "PickUpLocation",
+          "x": [0,0,0,0],
+          "y": [0,0.75,0,1000000000000000000000000000000,0.0833,0.6875,0,1000000000000000000000000000000,0.1667,0.8125,2.25,1000000000000000000000000000000,0.25,1.0625,2.25,1000000000000000000000000000000,0.3333,1.1875,1.5,1000000000000000000000000000000,0.4167,1.3125,1.125,1000000000000000000000000000000,0.5,1.375,0,1000000000000000000000000000000,0.5833,1.3125,-1.125,1000000000000000000000000000000,0.6667,1.1875,-2.25,1000000000000000000000000000000,0.75,0.9375,-2.625,1000000000000000000000000000000,0.8333,0.75,0,1000000000000000000000000000000,0.9167,0.8088,0,1000000000000000000000000000000]
+        }
+      ],
       "transitions": [
         {
           "to": 0,
@@ -28926,6 +28988,8 @@
       "name": "ChadSad",
       "anim": 57,
       "speed": 1,
+      "length": 0.5,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -28977,18 +29041,16 @@
       "name": "ChadTipping",
       "anim": 58,
       "speed": 1,
+      "length": 0.5,
+      "loop": false,
       "writeDefaults": true,
-      "moves": {
-        "length": 0.5,
-        "loop": false,
-        "curves": [
-          {
-            "path": "PickUpLocation",
-            "x": [0,0,0,1000000000000000000000000000000,0.25,0.0625,0,1000000000000000000000000000000],
-            "y": [0,0.8125,0,1000000000000000000000000000000,0.25,0.8125,0,1000000000000000000000000000000]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "PickUpLocation",
+          "x": [0,0,0,1000000000000000000000000000000,0.25,0.0625,0,1000000000000000000000000000000],
+          "y": [0,0.8125,0,1000000000000000000000000000000,0.25,0.8125,0,1000000000000000000000000000000]
+        }
+      ],
       "transitions": [
         {
           "to": 0,
@@ -29010,6 +29072,8 @@
       "name": "ChadWalk",
       "anim": 59,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29043,6 +29107,8 @@
       "name": "ChadDepressed",
       "anim": 60,
       "speed": 1,
+      "length": 0.5,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29058,6 +29124,8 @@
       "name": "ChadCrutch",
       "anim": 61,
       "speed": 1,
+      "length": 2,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
       ]
@@ -29066,6 +29134,8 @@
       "name": "ChadPortalIdle",
       "anim": 62,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29095,6 +29165,8 @@
       "name": "ChadPortalShoot",
       "anim": 63,
       "speed": 1,
+      "length": 2.25,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29110,6 +29182,8 @@
       "name": "ChadPortalSad",
       "anim": 64,
       "speed": 1,
+      "length": 2,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29132,6 +29206,8 @@
       "name": "ChadSurprised",
       "anim": 65,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29161,6 +29237,8 @@
       "name": "NPCIdle",
       "anim": 28,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29176,6 +29254,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29205,6 +29285,8 @@
       "name": "NPCIdle",
       "anim": 31,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29220,6 +29302,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29249,6 +29333,8 @@
       "name": "NPCIdle",
       "anim": 33,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29264,6 +29350,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29293,6 +29381,8 @@
       "name": "NPCIdle",
       "anim": 0,
       "speed": 1,
+      "length": 0.5,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29308,6 +29398,8 @@
       "name": "NPCWalk",
       "anim": -1,
       "speed": 1,
+      "length": 1,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29353,6 +29445,8 @@
       "name": "Idle",
       "anim": 11,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29396,6 +29490,8 @@
       "name": "Forward",
       "anim": 66,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29439,6 +29535,8 @@
       "name": "Sad",
       "anim": 67,
       "speed": 1,
+      "length": 2,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29482,6 +29580,8 @@
       "name": "Depressed",
       "anim": 68,
       "speed": 1,
+      "length": 0.5,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29525,6 +29625,8 @@
       "name": "Surprised",
       "anim": 69,
       "speed": 1,
+      "length": 1.75,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29568,6 +29670,8 @@
       "name": "Walk",
       "anim": 70,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29583,6 +29687,8 @@
       "name": "FezziwigTipping",
       "anim": 71,
       "speed": 1,
+      "length": 0.5,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29605,6 +29711,8 @@
       "name": "FezziwigFall",
       "anim": 72,
       "speed": 1,
+      "length": 0.625,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29620,6 +29728,8 @@
       "name": "FezziwigJumping",
       "anim": 73,
       "speed": 1,
+      "length": 0.85,
+      "loop": false,
       "writeDefaults": true,
       "transitions": [
         {
@@ -29635,18 +29745,16 @@
       "name": "FezziwigFloat",
       "anim": 74,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
-      "moves": {
-        "length": 1,
-        "loop": true,
-        "curves": [
-          {
-            "path": "",
-            "x": [0,0,0,0,1,0,0,0],
-            "y": [0,0,0,0,0.25,0.5,1000000000000000000000000000000,0,1,0.5,0,0]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "",
+          "x": [0,0,0,0,1,0,0,0],
+          "y": [0,0,0,0,0.25,0.5,1000000000000000000000000000000,0,1,0.5,0,0]
+        }
+      ],
       "transitions": [
         {
           "to": 0,
@@ -29679,18 +29787,16 @@
       "name": "PlayerIdle",
       "anim": 75,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
-      "moves": {
-        "length": 1,
-        "loop": true,
-        "curves": [
-          {
-            "path": "Item Pickup Location",
-            "x": [0,0,0,1000000000000000000000000000000],
-            "y": [0,0.8125,0,1000000000000000000000000000000,0.5,0.75,0,0]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "Item Pickup Location",
+          "x": [0,0,0,1000000000000000000000000000000],
+          "y": [0,0.8125,0,1000000000000000000000000000000,0.5,0.75,0,0]
+        }
+      ],
       "transitions": [
         {
           "to": 1,
@@ -29712,18 +29818,16 @@
       "name": "PlayerRun",
       "anim": 77,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
-      "moves": {
-        "length": 1,
-        "loop": true,
-        "curves": [
-          {
-            "path": "Item Pickup Location",
-            "x": [0,0,0,0,0.25,0,0,0,0.5,0,0,0,0.75,0,0,0],
-            "y": [0,0.875,0,1000000000000000000000000000000,0.25,0.8125,1000000000000000000000000000000,1000000000000000000000000000000,0.5,0.875,1000000000000000000000000000000,1000000000000000000000000000000,0.75,0.8125,1000000000000000000000000000000,1000000000000000000000000000000]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "Item Pickup Location",
+          "x": [0,0,0,0,0.25,0,0,0,0.5,0,0,0,0.75,0,0,0],
+          "y": [0,0.875,0,1000000000000000000000000000000,0.25,0.8125,1000000000000000000000000000000,1000000000000000000000000000000,0.5,0.875,1000000000000000000000000000000,1000000000000000000000000000000,0.75,0.8125,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
       "transitions": [
         {
           "to": 0,
@@ -29745,18 +29849,16 @@
       "name": "PlayerPirateIdle",
       "anim": 78,
       "speed": 1,
+      "length": 1,
+      "loop": true,
       "writeDefaults": true,
-      "moves": {
-        "length": 1,
-        "loop": true,
-        "curves": [
-          {
-            "path": "Item Pickup Location",
-            "x": [0,0,0,0],
-            "y": [0,0.8125,1000000000000000000000000000000,1000000000000000000000000000000,0.5,0.75,0,0]
-          }
-        ]
-      },
+      "moves": [
+        {
+          "path": "Item Pickup Location",
+          "x": [0,0,0,0],
+          "y": [0,0.8125,1000000000000000000000000000000,1000000000000000000000000000000,0.5,0.75,0,0]
+        }
+      ],
       "transitions": [
         {
           "to": 0,

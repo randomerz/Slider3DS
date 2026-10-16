@@ -33,9 +33,10 @@ public:
 
     void reset(const Area& area); // nothing carried, no animation
 
-    // Animations advance, the carried item follows the player, the drop spot is worked out.
+    // Animations advance, the drop spot is worked out.
     void update(World& world, float dt);
-    // The carried item to the carry point (again after the Animators moved it: it's a child of it).
+    // The carried item to the carry point: World calls it after the Animators moved the holder (it's
+    // a child of it).
     void follow(World& world);
     // Where carried items sit: PlayerAction.pickedItemLocation, as the player's Animator has it now.
     static void carryPoint(const World& world, float& x, float& y);

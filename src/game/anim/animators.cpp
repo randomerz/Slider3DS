@@ -1,5 +1,6 @@
 #include "game/anim/animators.h"
 
+#include <cassert>
 #include <cmath>
 
 #include "game/world/world.h"
@@ -55,9 +56,7 @@ void Animators::update(World& world, float dt) {
         const AnimatorStateDef& s = c.states[st.state];
         st.time += dt * s.speed;
         // Any State transitions first, then the state's own, in order; one per frame.
-        const int anim = s.anim;
-        const float length = anim >= 0 ? area.anims[anim].length : s.moves.length;
-        const float normalized = length > 0 ? st.time / length : 1;
+        const float normalized = s.length > 0 ? st.time / s.length : 1;
         auto fires = [&](const AnimatorTransitionDef& t) {
             if (t.exitTime >= 0 && normalized < t.exitTime) return false;
             for (const auto& k : t.conds)
@@ -84,19 +83,28 @@ void Animators::applyMoves(World& world, int animator) {
     if (def.targets.empty()) return;
     State& st = s_[animator];
     const AnimatorStateDef& s = area.animatorControllers[st.controller].states[st.state];
-    const StateMovesDef& m = s.moves;
-    const float t = m.length <= 0 ? 0 : m.loop ? std::fmod(st.time, m.length) : std::min(st.time, m.length);
+    const float t = s.length <= 0 ? 0 : s.loop ? std::fmod(st.time, s.length) : std::min(st.time, s.length);
+    // What the state doesn't move: back to the default (writeDefaults) or left as it is.
+    scratchX_ = st.targetX;
+    scratchY_ = st.targetY;
+    if (s.writeDefaults)
+        for (size_t k = 0; k < def.targets.size(); k++) {
+            scratchX_[k] = def.targets[k].localX;
+            scratchY_[k] = def.targets[k].localY;
+        }
+    for (const MoveCurveDef& c : s.moves) {
+        const int k = def.curveTarget[c.id];
+        if (k < 0) continue;
+        if (!c.x.empty()) scratchX_[k] = evalKeys(c.x, t);
+        if (!c.y.empty()) scratchY_[k] = evalKeys(c.y, t);
+    }
     for (size_t k = 0; k < def.targets.size(); k++) {
         const AnimatorDef::Target& target = def.targets[k];
-        const MoveCurveDef* curve = nullptr;
-        for (const MoveCurveDef& c : m.curves)
-            if (c.path == target.path) curve = &c;
-        float x = st.targetX[k], y = st.targetY[k];
-        if (curve && !curve->x.empty()) x = evalKeys(curve->x, t);
-        else if (s.writeDefaults) x = target.localX;
-        if (curve && !curve->y.empty()) y = evalKeys(curve->y, t);
-        else if (s.writeDefaults) y = target.localY;
+        const float x = scratchX_[k], y = scratchY_[k];
         if (x == st.targetX[k] && y == st.targetY[k]) continue;
+        // The Animator owns its targets' placement: nothing else may have moved them since.
+        assert(target.object < 0 || (world.objects.selfOffsetX(target.object) == st.targetX[k] - target.localX &&
+                                     world.objects.selfOffsetY(target.object) == st.targetY[k] - target.localY));
         st.targetX[k] = x;
         st.targetY[k] = y;
         if (target.object >= 0) world.objects.setPlacement(area, target.object, -1, x - target.localX, y - target.localY);

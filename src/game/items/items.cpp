@@ -233,7 +233,6 @@ void Items::update(World& world, float dt) {
             world.dropLanded(drops_[i].done, drops_[i].doneArg);
         }
     drops_.erase(std::remove_if(drops_.begin(), drops_.end(), [](const Drop& d) { return d.item < 0; }), drops_.end());
-    follow(world);
     if (carried_ >= 0 && phase_ != Phase::PickingUp) computeDrop(world);
 }
 

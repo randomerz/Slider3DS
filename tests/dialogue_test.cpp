@@ -791,6 +791,8 @@ TEST(animators_curve_keys_evaluate_like_unity) {
     check(std::fabs(evalKeys(linear, 0.5f) - 0.5f) < 1e-5f && std::fabs(evalKeys(linear, 1.5f) - 1.5f) < 1e-5f, "linear");
     const std::vector<CurveKey> flat = {{0, 0, 0, 0}, {1, 1, 0, 0}}; // smoothstep
     check(std::fabs(evalKeys(flat, 0.25f) - 0.15625f) < 1e-5f, "flat tangents: smoothstep");
+    const std::vector<CurveKey> inStep = {{0, 0, 0, 0}, {0.25f, 0.5f, INF, 0}}; // the next key's in tangent infinite
+    check(evalKeys(inStep, 0.2f) == 0 && evalKeys(inStep, 0.25f) == 0.5f, "stepped by the next key's in tangent");
 }
 
 TEST(animators_player_item_holder_bobs) {
@@ -809,10 +811,35 @@ TEST(animators_player_item_holder_bobs) {
     check(std::fabs(carryDy() - 0.8125f) < 1e-4f, "idle, first half: " + std::to_string(carryDy()));
     for (int f = 0; f < 31; f++) world.update(DT, 0, 0, false);
     check(std::fabs(carryDy() - 0.75f) < 1e-4f, "idle, second half: " + std::to_string(carryDy()));
+    for (int f = 0; f < 34; f++) world.update(DT, 0, 0, false); // ~1.1 s: the loop wraps
+    check(std::fabs(carryDy() - 0.8125f) < 1e-4f, "idle, looped: " + std::to_string(carryDy()));
     world.update(DT, 1, 0, true);
     check(std::fabs(carryDy() - 0.875f) < 1e-4f, "running: " + std::to_string(carryDy()));
-    for (int f = 0; f < 15; f++) world.update(DT, 1, 0, true);
-    check(std::fabs(carryDy() - 0.8125f) < 1e-4f, "running, a quarter second on: " + std::to_string(carryDy()));
+    for (int f = 0; f < 19; f++) world.update(DT, 1, 0, true); // ~0.33 s (between keys)
+    check(std::fabs(carryDy() - 0.8125f) < 1e-4f, "running, a third of a second on: " + std::to_string(carryDy()));
+    for (int f = 0; f < 46; f++) world.update(DT, 1, 0, true); // ~1.1 s: the loop wraps
+    check(std::fabs(carryDy() - 0.875f) < 1e-4f, "running, looped: " + std::to_string(carryDy()));
+
+    // A carried item sits at the bobbing point (placed after the Animators move it).
+    int item = -1;
+    for (int i = 0; i < (int)area.items.size() && item < 0; i++)
+        if (area.items[i].colliderSlot >= 0 && world.objects.active(area.objectColliders[area.items[i].colliderSlot])) item = i;
+    CHECK(item >= 0);
+    if (item < 0) return;
+    float ix, iy;
+    world.objectPosition(area.items[item].object, ix, iy);
+    world.placeNear(ix, iy - 0.75f);
+    world.update(DT, 0, 0, false);
+    CHECK(world.items.tryPickUp(world));
+    for (int f = 0; f < 40; f++) world.update(DT, 0, 0, false);
+    for (int f = 0; f < 90; f++) {
+        world.update(DT, 0, 0, false);
+        world.objectPosition(area.items[item].object, ix, iy);
+        if (std::fabs((iy - world.player.y) - carryDy()) > 1e-4f) {
+            check(false, "carried item off the holder at frame " + std::to_string(f));
+            break;
+        }
+    }
 }
 
 TEST(animators_move_npc_transforms) {
@@ -837,6 +864,11 @@ TEST(animators_move_npc_transforms) {
     for (int f = 0; f < 45; f++) world.update(DT, 0, 0, false); // 0.75 s: past the 0.625 s key
     world.objectPosition(d.renderer, sx, sy);
     check(std::fabs((sx - sx0) + 0.25f) < 1e-4f, "ChadFall: his sprite shifts a quarter unit left");
+    // Back to ChadChillin (isFallen off), which doesn't move his sprite: writeDefaults puts it back.
+    world.animators.setBool(world, d.animator, "isFallen", false);
+    world.update(DT, 0, 0, false);
+    world.objectPosition(d.renderer, sx, sy);
+    check(world.animators.stateName(area, d.animator) == "ChadChillin" && std::fabs(sx - sx0) < 1e-4f, "idle again: sprite back");
 }
 
 TEST(npcs_emote_shown_again_mid_intro_restarts_it) {
