@@ -101,6 +101,8 @@ public:
     void objectPosition(int object, float& x, float& y) const;
     // Moves `object` (and what's under it) so it sits at world (x, y), on STile `owner` (0 = the world).
     void placeObject(int object, int owner, float x, float y);
+    // A script's item drop has landed: runs its callback (Items::drop's DropDone).
+    void dropLanded(DropDone done, int arg);
 
     const Area& area;
     Grid grid;

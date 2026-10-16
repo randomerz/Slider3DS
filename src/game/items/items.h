@@ -10,12 +10,18 @@
 // Not yet: canKeep / item cycling, saved item positions, reflections, Item subclasses' behaviour.
 #pragma once
 
-#include <functional>
+#include <cstdint>
 #include <vector>
 
 #include "game/data/area.h"
 
 class World;
+
+// What runs once a script's drop has landed (its callback; World::dropLanded dispatches it).
+enum class DropDone : uint8_t {
+    None,
+    ChadFinishFall, // ChadJump.FinishFall on Area::chadJumps[arg]
+};
 
 class Items {
 public:
@@ -34,8 +40,8 @@ public:
     bool tryPickUp(World& world);
     bool tryDrop(World& world);
     // Item.DropItem from a script: Area::items[item] lands at world (x, y) (on the STile there), its
-    // sprite falling from where the item is; then its OnDrop calls and `done` (the callback).
-    void drop(World& world, int item, float x, float y, std::function<void(World&)> done = nullptr);
+    // sprite falling from where the item is; then its OnDrop calls and `done` (the callback, with `arg`).
+    void drop(World& world, int item, float x, float y, DropDone done = DropDone::None, int arg = -1);
 
     int carried() const { return carried_; } // Area::items index, -1 = none
     const ItemDef* carriedDef(const Area& area) const { return carried_ >= 0 ? &area.items[carried_] : nullptr; }
@@ -45,11 +51,10 @@ public:
     // The drop indicator (where a drop would land), if it shows.
     bool dropIndicator(float& x, float& y) const;
 
-    // PlayerAction.SetItemSortingOrderInc / Dec: the carried item's sprite sorting order (houses).
-    void sortingOrderInc(int order);
-    void sortingOrderDec(int order);
-    // The sorting order a carried item's sprite uses, if `spriteObject` is the carried item's.
-    bool carriedSortingOrder(const Area& area, int spriteObject, int& order) const;
+    // PlayerAction.SetItemSortingOrderInc / Dec: the sorting order carried items' sprites get (at
+    // pick-up, and the carried one's now; houses), in ObjectStates like any script-set order.
+    void sortingOrderInc(World& world, int order);
+    void sortingOrderDec(World& world, int order);
 
 private:
     enum class Phase { None, PickingUp, Dropping };
@@ -57,12 +62,14 @@ private:
         int item = -1;
         float t = 0;             // time left
         float startX = 0, startY = 0, endX = 0, endY = 0; // the sprite falls from start to end
-        std::function<void(World&)> done;
+        DropDone done = DropDone::None;
+        int doneArg = -1;
     };
     // Item.DropItem: the item at (x, y) on the STile there, collider on, its sprite at (fromX, fromY).
     static void startDrop(World& world, Drop& d, int item, float fromX, float fromY, float x, float y);
     static bool stepDrop(World& world, Drop& d, float dt); // true once it has landed (OnDrop ran)
     void computeDrop(const World& world);
+    void setSortingOrder(World& world, int order);
     // The item's sprite object at world (x, y) for an animation (its pivot offset kept), or back on the item.
     static void placeSprite(World& world, const ItemDef& it, float x, float y);
     static void resetSprite(World& world, const ItemDef& it);

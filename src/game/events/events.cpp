@@ -119,10 +119,10 @@ void runCall(World& world, const CallDef& c) {
         world.objects.setColliderEnabled(c.data, c.boolArg);
         break;
     case M::ItemSortingOrderInc:
-        world.items.sortingOrderInc(c.intArg);
+        world.items.sortingOrderInc(world, c.intArg);
         break;
     case M::ItemSortingOrderDec:
-        world.items.sortingOrderDec(c.intArg);
+        world.items.sortingOrderDec(world, c.intArg);
         break;
     case M::KnotCheckParticles:
         village::knotCheckParticles(world, c.data);

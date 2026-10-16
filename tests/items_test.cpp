@@ -197,3 +197,26 @@ TEST(items_village_knot_node_round_trip) {
     check(world.items.carried() < 0 && world.objects.owner(area.items[knot].object) == 4 && y < world.player.y,
           "dropped below the player, onto tile 4");
 }
+
+TEST(items_sorting_order_while_carried) {
+    // PlayerAction.SetItemSortingOrderInc / Dec set the order carried items' sprites get (at pick-up,
+    // and the carried one's at once); a landed drop resets it (as exported).
+    World world(itemArea());
+    frames(world, 1);
+    world.items.sortingOrderInc(world, 5);
+    world.action();
+    CHECK(world.objects.sortingOrder(1) == 5);
+    frames(world, 40);
+    world.items.sortingOrderInc(world, 7);
+    CHECK(world.objects.sortingOrder(1) == 7);
+    world.items.sortingOrderDec(world, 3); // (two calls in: no change)
+    CHECK(world.objects.sortingOrder(1) == 7);
+    world.items.sortingOrderDec(world, 3);
+    CHECK(world.objects.sortingOrder(1) == 3);
+    world.player.x = 4;
+    frames(world, 1, -1, 0);
+    world.action();
+    CHECK(world.objects.sortingOrder(1) == 3); // falling: still the carried order
+    frames(world, 40);
+    CHECK(world.objects.sortingOrder(1) == ObjectStates::EXPORTED_ORDER);
+}

@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "game/data/curve.h"
+
 struct SpriteDef {
     int sheet;            // -1 for an outline sprite
     int x, y, w, h;       // pixel rect in the sheet, top-left origin
@@ -394,7 +396,6 @@ struct NpcDef {
 
 // An Item the player can pick up, carry above its head and drop (action button; PlayerAction).
 struct ItemDef {
-    static constexpr int CURVE_SAMPLES = 21; // pick-up motion curves, sampled evenly over 0..1
     int object = 0;
     std::string type, name;   // class ("Item"), itemName
     bool canKeep = false, disableAtStart = false;
@@ -402,11 +403,9 @@ struct ItemDef {
     int spriteObject = -1;    // its SpriteRenderer's object (the pick-up / drop animation moves it)
     int colliderSlot = -1;    // its collider (ObjectCollider::slot), -1 = none
     float pickUpDuration = 0.5f;
-    float xCurve[CURVE_SAMPLES] = {}, yCurve[CURVE_SAMPLES] = {}; // xPickUpMotion / yPickUpMotion
+    SampledCurve xCurve, yCurve; // xPickUpMotion / yPickUpMotion
     std::vector<int> enableOnDrop;
     std::vector<CallDef> onPickUp, onDrop;
-    float curveX(float t) const; // xPickUpMotion.Evaluate(t), t in 0..1 (interpolated samples)
-    float curveY(float t) const;
 };
 
 // PlayerAction: where the player carries an item and how drops are placed.
@@ -532,15 +531,13 @@ struct ChadJumpDef {
     int island = 0;               // islandId: the STile whose move makes him fall
     int owner = 0;                // start / jump / fall transforms: positions on this owner
     float startX = 0, startY = 0, jumpX = 0, jumpY = 0, fallX = 0, fallY = 0;
-    float xCurve[ItemDef::CURVE_SAMPLES] = {}, yCurve[ItemDef::CURVE_SAMPLES] = {}; // xJumpMotion / yJumpMotion
+    SampledCurve xCurve, yCurve;  // xJumpMotion / yJumpMotion
     float jumpDuration = 1, fallDuration = 0.5f;
     std::vector<CallDef> onJumpFinish;
     bool tips = false;            // a VillageChadJump on the same object:
     float timeTipped = 2;         //   how long a slide tips him
     int tipNpc = -1;              //   chadNPC: Area::npcs index (types its current dialogue after a tip; exported: its object)
     int tipAnimator = -1;         //   chadAnimator: Area::animators index (exported: its object)
-    float curveX(float t) const;  // xJumpMotion.Evaluate(t), t in 0..1
-    float curveY(float t) const;
 };
 
 // The area's SGrid subclass and the objects its methods act on.

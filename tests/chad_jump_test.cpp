@@ -56,6 +56,22 @@ const ConditionDef* chadSpec(const Area& area, ConditionDef::Spec spec) {
 
 bool param(const World& world, const char* name) { return world.animators.param(world.area, world.area.chadJumps[0].animator, name); }
 
+// Frames until a coroutine started between frames gets through `wait` seconds: one frame before it
+// resumes (yield / WaitForSeconds start counting the next frame), then dt at a time.
+int framesFor(float wait, bool countDown) {
+    int n = 1;
+    if (countDown) {
+        float left = wait;
+        do { n++; left -= DT; } while (left > 0);
+    } else {
+        float t = 0;
+        do { n++; t += DT; } while (t < wait);
+    }
+    return n;
+}
+
+int chadNpc(const Area& area) { return area.chadJumps[0].tipNpc; }
+
 // Jumps and lands on the rock.
 void jump(World& world) {
     world.chad.jumpStarter(world, 0);
@@ -74,7 +90,7 @@ TEST(chad_export) {
     CHECK(d.item >= 0 && area.items[d.item].name == "Ruins Fragment");
     CHECK(area.objectColliders[d.collider].object == d.object && area.objectColliders[d.collider].layer == "NPC");
     CHECK(d.tips && d.timeTipped == 3 && area.npcs[d.tipNpc].object == d.object && d.tipAnimator == d.animator);
-    CHECK(d.curveY(0.5f) > 1.1f); // (the y curve overshoots; Mathf.Lerp clamps it)
+    CHECK(d.yCurve.eval(0.5f) > 1.1f); // (the y curve overshoots; Mathf.Lerp clamps it)
     CHECK(d.onJumpFinish.size() == 1 && d.onJumpFinish[0].method == CallDef::Method::ChadSetIsOnRock);
     // His second line ends with JumpStarter; both specs are his.
     bool starter = false;
@@ -200,4 +216,69 @@ TEST(chad_falls_when_his_tile_slides) {
     CHECK(world.items.tryPickUp(world));
     frames(world, 40);
     CHECK(world.items.carrying(area, "Ruins Fragment") && world.objects.parent(it.object) == -1);
+}
+
+TEST(chad_talking_makes_him_jump_and_a_tip_makes_him_speak) {
+    // The real path: his second line's onEnd calls JumpStarter. Then, with the player away, the first
+    // tip types his current dialogue 0.5 s later (DelayThenChirp); a slide while he's still tipping doesn't.
+    World world = chadWorld();
+    const Area& area = world.area;
+    const ChadJumpDef& d = area.chadJumps[0];
+    float cx, cy;
+    world.objectPosition(d.object, cx, cy);
+    world.placeNear(cx - 1, cy - 1);
+    bool jumped = false;
+    for (int f = 0; f < 60 * 15 && !jumped; f++) {
+        world.update(DT, 0, 0, false);
+        if (f % 30 == 0) world.action(); // (advances lines that wait for the action button)
+        jumped = param(world, "isJumping");
+    }
+    CHECK(jumped && world.state.flag("VillageFoundChad"));
+    world.placeNear(cx - 12, cy); // out of his dialogue trigger
+    frames(world, 90);
+    float x, y;
+    chadAt(world, x, y);
+    CHECK(near(x, d.jumpX) && near(y, d.jumpY));
+    frames(world, 120); // whatever he was saying is gone
+    CHECK(!world.npcs.textShown(chadNpc(area)));
+
+    CHECK(world.artifact.tryMove(world.grid, 2, 1, 1, 1, 0)); // 7 into the middle: a tip
+    settle(world, 0);
+    const uint32_t before = world.npcs.textVersion(chadNpc(area));
+    frames(world, framesFor(0.5f, true) - 2);
+    CHECK(world.npcs.textVersion(chadNpc(area)) == before);
+    frames(world, 2);
+    check(world.npcs.textVersion(chadNpc(area)) != before && world.npcs.textShown(chadNpc(area)), "he speaks 0.5 s after the tip");
+    CHECK(world.npcs.currentCond(chadNpc(area)) == 1); // "Woah, what's shaking?" (DidSlideAfterJumping)
+    const uint32_t spoke = world.npcs.textVersion(chadNpc(area));
+    CHECK(world.artifact.tryMove(world.grid, 1, 1, 2, 1, 0)); // 7 back while he's still tipping
+    settle(world, 40);
+    CHECK(world.npcs.textVersion(chadNpc(area)) == spoke);
+}
+
+TEST(chad_coroutines_keep_unity_frames) {
+    // A coroutine started between frames resumes from the frame after next; the fall's
+    // WaitForSeconds(0.5) holds him on the rock, then he moves from the frame after it ends.
+    World world = chadWorld();
+    const ChadJumpDef& d = world.area.chadJumps[0];
+    world.chad.jumpStarter(world, 0);
+    const int land = framesFor(d.jumpDuration, false); // (the last frame runs the landing)
+    frames(world, land - 1);
+    CHECK(param(world, "isJumping"));
+    frames(world, 1);
+    CHECK(!param(world, "isJumping"));
+
+    CHECK(world.artifact.tryMove(world.grid, 0, 1, 1, 1, 0)); // 8 into the middle: he falls
+    settle(world, 0); // (the frame his tile arrived)
+    const int waited = framesFor(0.5f, true) - 1; // (started inside that frame: its skip was that frame)
+    frames(world, waited - 1);
+    float x, y;
+    chadAt(world, x, y);
+    CHECK(!param(world, "isFallen") && near(x, d.jumpX) && near(y, d.jumpY));
+    frames(world, 1); // the wait ends: fallen, still where he was
+    chadAt(world, x, y);
+    CHECK(param(world, "isFallen") && near(x, d.jumpX) && near(y, d.jumpY));
+    frames(world, 1);
+    chadAt(world, x, y);
+    CHECK(x > d.jumpX + 1e-4f);
 }

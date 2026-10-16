@@ -82,8 +82,6 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         if (objects.sortingOrder(ws.object) != ObjectStates::EXPORTED_ORDER) sp.order = objects.sortingOrder(ws.object);
         const int animator = area.animatorOn(ws.object);
         if (animator >= 0 && world.animators.sprite(animator) >= 0) sp.sprite = world.animators.sprite(animator);
-        int carriedOrder;
-        if (world.items.carriedSortingOrder(area, ws.object, carriedOrder)) sp.order = carriedOrder;
         if (objects.flipX(ws.object) >= 0) // set by an event (SpriteRenderer.set_flipX)
             sp.flags = (sp.flags & ~(uint32_t)plat::FLIP_X) | (objects.flipX(ws.object) ? (uint32_t)plat::FLIP_X : 0u);
         float px, py;

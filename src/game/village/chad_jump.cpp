@@ -15,7 +15,6 @@ constexpr int CHAD_TILE = 8;      // VillageChadJump.TipOnTileMove: tile 8's mov
 constexpr float CHIRP_DELAY = 0.5f; // DelayThenChirp
 constexpr float TIP_TIME = 0.5f;    // ChadJump.Fall: tipping before he falls
 
-float lerp(float a, float b, float t) { return a + (b - a) * std::min(std::max(t, 0.0f), 1.0f); } // Mathf.Lerp (clamped)
 
 } // namespace
 
@@ -27,7 +26,7 @@ void ChadJumps::activate(World& world) {
         const ChadJumpDef& d = area.chadJumps[c];
         Chad& s = chads_[c];
         if (s.started || !world.objects.activeInHierarchy(d.object)) continue;
-        s.awake = s.started = true;
+        s.started = true;
         // Awake: the item can be picked up off Chad only if the Caves were finished first.
         if (d.item >= 0 && area.items[d.item].colliderSlot >= 0)
             world.objects.setColliderEnabled(area.items[d.item].colliderSlot,
@@ -71,7 +70,8 @@ void ChadJumps::update(World& world, float dt) {
         Chad& s = chads_[c];
         if (!d.tips || !s.started || !world.objects.activeInHierarchy(d.object) || s.fallen || !s.onRock) continue;
         if (s.timeTillNormal < 0) {
-            world.animators.setBool(world, d.tipAnimator, "isTipping", false);
+            // (Unity sets it every frame; only a tip sets it true while he's up, so once is the same.)
+            if (s.tipping) world.animators.setBool(world, d.tipAnimator, "isTipping", false);
             s.tipping = false;
         } else {
             s.timeTillNormal -= dt;
@@ -94,7 +94,7 @@ void ChadJumps::coroutines(World& world, float dt) {
             s.jumpT += dt;
             if (s.jumpT < d.jumpDuration) {
                 const float k = s.jumpT / d.jumpDuration;
-                place(world, c, lerp(d.startX, d.jumpX, d.curveX(k)), lerp(d.startY, d.jumpY, d.curveY(k)));
+                place(world, c, mathf::lerp(d.startX, d.jumpX, d.xCurve.eval(k)), mathf::lerp(d.startY, d.jumpY, d.yCurve.eval(k)));
             } else {
                 place(world, c, d.jumpX, d.jumpY);
                 s.jumping = false;
@@ -116,7 +116,7 @@ void ChadJumps::coroutines(World& world, float dt) {
             s.fallT += dt;
             if (s.fallT < d.fallDuration) {
                 const float k = s.fallT / d.fallDuration;
-                place(world, c, lerp(d.jumpX, d.fallX, k), lerp(d.jumpY, d.fallY, k));
+                place(world, c, mathf::lerp(d.jumpX, d.fallX, k), mathf::lerp(d.jumpY, d.fallY, k));
             } else {
                 place(world, c, d.fallX, d.fallY);
                 s.fall = Chad::Fall::None;
@@ -127,7 +127,7 @@ void ChadJumps::coroutines(World& world, float dt) {
                     // collider off until it lands (FinishFall).
                     float x, y;
                     world.objectPosition(d.object, x, y);
-                    world.items.drop(world, d.item, x + 1, y, [this, c](World& w) { finishFall(w, c); });
+                    world.items.drop(world, d.item, x + 1, y, DropDone::ChadFinishFall, c);
                     if (area.items[d.item].colliderSlot >= 0) world.objects.setColliderEnabled(area.items[d.item].colliderSlot, false);
                 }
             }
@@ -153,7 +153,7 @@ void ChadJumps::jumpStarter(World& world, int c) {
     world.animators.setBool(world, d.animator, "isTipping", false);
     world.objects.setColliderEnabled(d.collider, false);
     world.objects.setSortingOrder(d.renderer, 1);
-    place(world, c, lerp(d.startX, d.jumpX, d.curveX(0)), lerp(d.startY, d.jumpY, d.curveY(0)));
+    place(world, c, mathf::lerp(d.startX, d.jumpX, d.xCurve.eval(0)), mathf::lerp(d.startY, d.jumpY, d.yCurve.eval(0)));
     s.jumping = true;
     s.jumpFresh = true;
     s.jumpT = 0;

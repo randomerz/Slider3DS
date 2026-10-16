@@ -27,18 +27,20 @@ public:
     // VillageChadJump.Update: a tip wears off. Runs before the frame's grid events, as Unity's
     // Update comes before the coroutine that sends OnSTileMoveEnd.
     void update(World& world, float dt);
-    // The coroutines (the jump, the fall, the chirp after a tip), after the scripts' updates.
+    // The coroutines (the jump, the fall, the chirp after a tip): after the scripts' updates, before
+    // the Animators' (their SetBools show the same frame).
     void coroutines(World& world, float dt);
 
     void jumpStarter(World& world, int c); // ChadJump.JumpStarter on Area::chadJumps[c]
     void setIsOnRock(int c) { chads_.at(c).onRock = true; } // VillageChadJump.SetIsOnRock
     bool fell(int c) const { return chads_.at(c).state == State::Fell; } // ChadJump.ChadFell
     bool slidAfterJumping(int c) const { return chads_.at(c).slid; }     // VillageChadJump.DidSlideAfterJumping
+    void finishFall(World& world, int c); // ChadJump.FinishFall: the dropped item has landed
 
 private:
     enum class State { Standing, Jumping, Jumped, Falling, Fell }; // ChadJump.JumpState
     struct Chad {
-        bool awake = false, started = false;
+        bool started = false;      // Awake / Start ran
         State state = State::Standing;
         // The coroutines (fresh: started this frame, so they resume from the next one).
         bool jumping = false, jumpFresh = false;
@@ -56,7 +58,6 @@ private:
     void place(World& world, int c, float x, float y); // transform.localPosition (owner-relative)
     void clearBools(World& world, int animator);        // every bool parameter false
     void startFall(World& world, int c);
-    void finishFall(World& world, int c);
 
     std::vector<Chad> chads_;
 };

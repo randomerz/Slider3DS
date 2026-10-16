@@ -122,15 +122,12 @@ int AnimatorControllerDef::paramIndex(const std::string& n) const {
     return -1;
 }
 
-static float sampleCurve(const float* samples, float t) {
-    const float x = std::min(std::max(t, 0.0f), 1.0f) * (ItemDef::CURVE_SAMPLES - 1);
-    const int i = std::min((int)x, ItemDef::CURVE_SAMPLES - 2);
-    return samples[i] + (samples[i + 1] - samples[i]) * (x - (float)i);
+// An exported curve: SampledCurve::SAMPLES values (missing ones: linear 0..1).
+static SampledCurve readCurve(const Json& j) {
+    SampledCurve c;
+    for (int k = 0; k < SampledCurve::SAMPLES; k++) c.s[k] = j.at(k).asFloat((float)k / (SampledCurve::SAMPLES - 1));
+    return c;
 }
-float ItemDef::curveX(float t) const { return sampleCurve(xCurve, t); }
-float ItemDef::curveY(float t) const { return sampleCurve(yCurve, t); }
-float ChadJumpDef::curveX(float t) const { return sampleCurve(xCurve, t); }
-float ChadJumpDef::curveY(float t) const { return sampleCurve(yCurve, t); }
 
 int Anim::frameAt(float t) const {
     if (frames.empty()) return -1;
@@ -401,10 +398,8 @@ static ChadJumpDef readChadJump(const Json& j, Area& out) {
     d.jumpY = j["jump"].at(1).asFloat();
     d.fallX = j["fall"].at(0).asFloat();
     d.fallY = j["fall"].at(1).asFloat();
-    for (int k = 0; k < ItemDef::CURVE_SAMPLES; k++) {
-        d.xCurve[k] = j["xCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
-        d.yCurve[k] = j["yCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
-    }
+    d.xCurve = readCurve(j["xCurve"]);
+    d.yCurve = readCurve(j["yCurve"]);
     d.jumpDuration = j["jumpDuration"].asFloat(1);
     d.fallDuration = j["fallDuration"].asFloat(0.5f);
     d.onJumpFinish = readCalls(j["onJumpFinish"], out);
@@ -933,10 +928,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         const int collider = j["collider"].asInt(-1);
         d.colliderSlot = collider < 0 ? -1 : collider + (j["colliderTrigger"].asBool() ? (int)out.objectColliders.size() : 0);
         d.pickUpDuration = j["pickUpDuration"].asFloat(0.5f);
-        for (int k = 0; k < ItemDef::CURVE_SAMPLES; k++) {
-            d.xCurve[k] = j["xCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
-            d.yCurve[k] = j["yCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
-        }
+        d.xCurve = readCurve(j["xCurve"]);
+        d.yCurve = readCurve(j["yCurve"]);
         for (const Json& o : j["enableOnDrop"].items()) d.enableOnDrop.push_back(o.asInt(-1));
         d.onPickUp = readCalls(j["onPickUp"], out);
         d.onDrop = readCalls(j["onDrop"], out);

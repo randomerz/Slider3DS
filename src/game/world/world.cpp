@@ -31,6 +31,13 @@ void World::sendGridEvents() {
     runStarts(); // (the arrow may show the buried Slider)
 }
 
+void World::dropLanded(DropDone done, int arg) {
+    switch (done) {
+    case DropDone::None: break;
+    case DropDone::ChadFinishFall: chad.finishFall(*this, arg); break;
+    }
+}
+
 World::World(const Area& a) : area(a) {
     state.newProfile("Cat"); // (until a new-game screen names the profile)
     grid.init(area);
@@ -133,9 +140,9 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     runStarts();
     npcs.update(*this, dt);
     runStarts();
+    chad.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
     ruins.update(*this, dt);
-    chad.coroutines(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
     if (effects.fade > 0)

@@ -43,9 +43,6 @@ bool rayClear(const World& world, float x0, float y0, float x1, float y1, int ig
     return true;
 }
 
-// Mathf.Lerp: t clamped to 0..1 (the y curve overshoots to 1.16; the item doesn't).
-float lerp(float a, float b, float t) { return a + (b - a) * std::min(std::max(t, 0.0f), 1.0f); }
-
 int solidIndex(const Area& area, int slot) { return slot >= 0 && slot < (int)area.objectColliders.size() ? slot : -1; }
 
 // The STile's own object (what Item.DropItem parents to), -1 = none (the scene root).
@@ -80,21 +77,20 @@ bool Items::dropIndicator(float& x, float& y) const {
     return true;
 }
 
-void Items::sortingOrderInc(int order) {
+void Items::sortingOrderInc(World& world, int order) {
     sortingOrderCalls_++;
+    setSortingOrder(world, order);
+}
+
+void Items::sortingOrderDec(World& world, int order) {
+    if (--sortingOrderCalls_ == 0) setSortingOrder(world, order);
+}
+
+void Items::setSortingOrder(World& world, int order) {
+    // PlayerInventory.SetItemSortingOrder: the current (carried) item's too.
     sortingOrder_ = order;
-}
-
-void Items::sortingOrderDec(int order) {
-    if (--sortingOrderCalls_ == 0) sortingOrder_ = order;
-}
-
-bool Items::carriedSortingOrder(const Area& area, int spriteObject, int& order) const {
-    // Item.SetSortingOrder at pick-up, ResetSortingOrder once a drop has landed.
-    const int item = carried_ >= 0 ? carried_ : phase_ == Phase::Dropping ? playerDrop_.item : -1;
-    if (item < 0 || area.items[item].spriteObject != spriteObject) return false;
-    order = sortingOrder_;
-    return true;
+    if (carried_ >= 0 && world.area.items[carried_].spriteObject >= 0)
+        world.objects.setSortingOrder(world.area.items[carried_].spriteObject, order);
 }
 
 bool Items::tryPickUp(World& world) {
@@ -129,6 +125,7 @@ bool Items::tryPickUp(World& world) {
     phase_ = Phase::PickingUp;
     t_ = 0;
     world.objectPosition(it.object, startX_, startY_);
+    if (it.spriteObject >= 0) world.objects.setSortingOrder(it.spriteObject, sortingOrder_); // Item.SetSortingOrder
     for (int o : it.enableOnDrop) world.objects.setActive(area, o, false);
     return true;
 }
@@ -145,17 +142,18 @@ bool Items::tryDrop(World& world) {
     return true;
 }
 
-void Items::drop(World& world, int item, float x, float y, std::function<void(World&)> done) {
+void Items::drop(World& world, int item, float x, float y, DropDone done, int arg) {
     float fromX, fromY;
     world.objectPosition(world.area.items[item].object, fromX, fromY);
     drops_.emplace_back();
     startDrop(world, drops_.back(), item, fromX, fromY, x, y);
-    drops_.back().done = std::move(done);
+    drops_.back().done = done;
+    drops_.back().doneArg = arg;
 }
 
 void Items::startDrop(World& world, Drop& d, int item, float fromX, float fromY, float x, float y) {
     const ItemDef& it = world.area.items[item];
-    d = Drop{item, it.pickUpDuration, fromX, fromY, x, y, nullptr};
+    d = Drop{item, it.pickUpDuration, fromX, fromY, x, y, DropDone::None, -1};
     // AnimateDrop's first step (it runs at once): the item at the landing spot, collider on, the
     // sprite where the item was. Then DropItem parents it to the STile under it there.
     const int stile = world.grid.stileUnder(x, y);
@@ -170,7 +168,7 @@ bool Items::stepDrop(World& world, Drop& d, float dt) {
     const ItemDef& it = world.area.items[d.item];
     d.t -= dt;
     const float k = std::max(d.t / it.pickUpDuration, 0.0f);
-    placeSprite(world, it, lerp(d.endX, d.startX, it.curveX(k)), lerp(d.endY, d.startY, it.curveY(k)));
+    placeSprite(world, it, mathf::lerp(d.endX, d.startX, it.xCurve.eval(k)), mathf::lerp(d.endY, d.startY, it.yCurve.eval(k)));
     if (d.t >= 0) return false;
     resetSprite(world, it);
     runCalls(world, it.onDrop);
@@ -187,7 +185,7 @@ void Items::update(World& world, float dt) {
         const ItemDef& it = area.items[animated_];
         t_ += dt;
         const float k = std::min(t_ / it.pickUpDuration, 1.0f);
-        placeSprite(world, it, lerp(startX_, carryX, it.curveX(k)), lerp(startY_, carryY, it.curveY(k)));
+        placeSprite(world, it, mathf::lerp(startX_, carryX, it.xCurve.eval(k)), mathf::lerp(startY_, carryY, it.yCurve.eval(k)));
         if (t_ >= it.pickUpDuration) {
             // AnimatePickUpEnd: the item at the carry point, collider off, OnPickUp; then the player's
             // (FinishPicking parents it to the carry point).
@@ -209,9 +207,8 @@ void Items::update(World& world, float dt) {
     // Scripts' drops (a callback may start another drop: by index, finished ones removed after).
     for (size_t i = 0; i < drops_.size(); i++)
         if (drops_[i].item >= 0 && stepDrop(world, drops_[i], dt)) {
-            std::function<void(World&)> done = std::move(drops_[i].done);
             drops_[i].item = -1;
-            if (done) done(world);
+            world.dropLanded(drops_[i].done, drops_[i].doneArg);
         }
     drops_.erase(std::remove_if(drops_.begin(), drops_.end(), [](const Drop& d) { return d.item < 0; }), drops_.end());
     if (carried_ >= 0 && phase_ != Phase::PickingUp) world.placeObject(area.items[carried_].object, 0, carryX, carryY);
