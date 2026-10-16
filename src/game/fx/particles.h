@@ -17,6 +17,7 @@ class Particles {
 public:
     struct Particle {
         const ParticlesDef* def;
+        int defIndex;       // its Area::particles index
         int emitter;        // the emitter that made it (its id)
         float x, y, vx, vy; // world units, per second
         float age, lifetime;
@@ -54,7 +55,7 @@ private:
         float rateDebt;    // particles owed by the rate, carried between frames
         int live;          // its particles alive
     };
-    void emit(const ParticlesDef& def, Emitter& emitter, float x, float y, int count);
+    void emit(const Area& area, Emitter& emitter, float x, float y, int count);
     uint32_t startColor(const ParticlesDef& def);
     float random(); // [0, 1)
 

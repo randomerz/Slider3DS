@@ -78,9 +78,12 @@ struct Wall { float x0, y0, x1, y1; };
 // Something that happened to the grid, for scripts listening to SGrid / SGridAnimator events:
 // Move = SGrid.OnGridMove (a move started; the slots already changed), TileMoveEnd =
 // SGridAnimator.OnSTileMoveEnd (an active tile arrived), TileEnabled = SGrid.OnSTileEnabled (a tile
-// was collected). Events are handed out later (World::sendGridEvents), by when the grid may have
-// changed again (the Artifact starts its next queued move right after one ends), so each carries the
-// grid as it was when it fired: handlers read those, never the Grid.
+// was collected). Events are handed out later in the frame (World::sendGridEvents), by when the
+// grid may have changed again (the Artifact starts its next queued move right after one ends), so
+// each carries the grid's slots and grid string as they were when it fired: handlers read those,
+// never the Grid's. Hand-out happens before tiles slide any further (at the top of World::update
+// for moves started between frames, right after Artifact::update for the rest), so tile positions
+// and other state are still as Unity's handlers would see them.
 struct GridEvent {
     enum class Kind : uint8_t { Move, TileMoveEnd, TileEnabled };
     Kind kind;
@@ -139,6 +142,8 @@ public:
     // The events since the last clearEvents(), in order (World hands them to their listeners).
     const std::vector<GridEvent>& events() const { return events_; }
     void clearEvents() { events_.clear(); }
+    // Moves them out (cleared); events fired while they're handled collect anew.
+    std::vector<GridEvent> takeEvents() { return std::move(events_); }
 
 private:
     struct Anim {

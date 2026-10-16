@@ -62,7 +62,8 @@ uint32_t Particles::startColor(const ParticlesDef& def) {
     return c.back();
 }
 
-void Particles::emit(const ParticlesDef& def, Emitter& emitter, float x, float y, int count) {
+void Particles::emit(const Area& area, Emitter& emitter, float x, float y, int count) {
+    const ParticlesDef& def = area.particles[emitter.def];
     emitter.live += count;
     for (int i = 0; i < count; i++) {
         // Circle shape: anywhere inside it (uniform over the area), moving away from its center.
@@ -70,7 +71,7 @@ void Particles::emit(const ParticlesDef& def, Emitter& emitter, float x, float y
         const float dx = std::cos(angle), dy = std::sin(angle);
         const float speed = def.speedMin + (def.speedMax - def.speedMin) * random();
         const float lifetime = def.lifetimeMin + (def.lifetimeMax - def.lifetimeMin) * random();
-        particles_.push_back({&def, emitter.id, x + dx * r, y + dy * r, dx * speed, dy * speed, 0.0f, lifetime, startColor(def)});
+        particles_.push_back({&def, emitter.def, emitter.id, x + dx * r, y + dy * r, dx * speed, dy * speed, 0.0f, lifetime, startColor(def)});
     }
 }
 
@@ -108,7 +109,7 @@ void Particles::update(const World& world, float dt) {
                 // Its times: t, and with looping t + n * duration.
                 float n = d.loop ? std::max(0.0f, std::ceil((from - t) / d.duration)) : 0.0f;
                 for (float at = t + n * d.duration; at < to; at = t + (++n) * d.duration) {
-                    if (at >= from) emit(d, e, x, y, (int)std::lround(b.countMin + (b.countMax - b.countMin) * random()));
+                    if (at >= from) emit(area, e, x, y, (int)std::lround(b.countMin + (b.countMax - b.countMin) * random()));
                     if (!d.loop) break;
                 }
             }
@@ -117,7 +118,7 @@ void Particles::update(const World& world, float dt) {
             e.rateDebt += (d.rateMin + (d.rateMax - d.rateMin) * random()) * span;
             const int n = (int)e.rateDebt;
             e.rateDebt -= (float)n;
-            emit(d, e, x, y, n);
+            emit(area, e, x, y, n);
         }
         e.time = to;
         if (!d.loop && e.time >= d.duration) e.emitting = false;
@@ -137,7 +138,7 @@ void Particles::update(const World& world, float dt) {
         const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
         if (d.limitVelocity && speed > 0) {
             float s = speed;
-            if (s > d.limit) s = d.limit + (s - d.limit) * keep_[&d - area.particles.data()];
+            if (s > d.limit) s = d.limit + (s - d.limit) * keep_[p.defIndex];
             if (d.drag > 0) {
                 const float k = d.drag * (d.dragBySize ? 0.78539816f * d.size * d.size : 1.0f);
                 s = d.dragByVelocity ? s / (1 + k * s * dt) : s * std::exp(-k * dt);

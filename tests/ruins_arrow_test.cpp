@@ -1,6 +1,7 @@
 // The ruins arrow (RuinsArrow, Slider 7) on the exported Village: rods, runes and Artifact corners
 // lit by assembled pairs, the arrow appearing (and pointing from tile 2 to tile 5) when 3-1 sit on
 // 6-2, the buried Slider and its trail, CheckActiveRods, and digging up Slider 7.
+#include <cmath>
 #include <string>
 
 #include "game/events/conditions.h"
@@ -246,6 +247,27 @@ TEST(ruins_queued_moves_see_their_own_grid) {
     CHECK(!world.objects.rendererEnabled(r.renderer) && !world.particles.playing(r.particles));
     CHECK(world.objects.activeInHierarchy(r.buriedSlider));
     CHECK(litRods(world) == "1-36");
+}
+
+TEST(ruins_move_events_see_tiles_at_rest) {
+    // 3 1 / 6 2 stay assembled while 5 slides right (into 7's empty slot): OnGridMove re-aims the
+    // trail at the buried Slider before tile 5 has moved, even when the move starts between frames
+    // (the stylus) and the next frame is long.
+    const RuinsArrowDef& r = villageArea().ruinsArrows[0];
+    World world = ruinsWorld("314_629_578");
+    world.update(DT, 0, 0, false);
+    float sx, sy, tx, ty;
+    world.objectPosition(r.trail.start, sx, sy);
+    world.objectPosition(r.trail.target, tx, ty);
+    CHECK(world.artifact.tryMove(world.grid, 0, 0, 1, 0, 0));
+    world.update(0.1f, 0, 0, false);
+    const village::RuinsArrows::Points& p = world.ruins.trailPoints(0);
+    CHECK(p.size() >= 2);
+    if (p.size() < 2) return;
+    const float len = std::hypot(tx - sx, ty - sy);
+    const float ux = (p[1].first - p[0].first) / r.trail.distance, uy = (p[1].second - p[0].second) / r.trail.distance;
+    check(std::fabs(ux - (tx - sx) / len) < 1e-4f && std::fabs(uy - (ty - sy) / len) < 1e-4f,
+          "trail direction " + std::to_string(ux) + ", " + std::to_string(uy));
 }
 
 TEST(ruins_trail_repeats_every_8_seconds) {

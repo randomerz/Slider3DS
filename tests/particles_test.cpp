@@ -251,11 +251,56 @@ TEST(particles_slow_down_like_unity) {
     }
 }
 
+TEST(particles_rate_between_two_constants) {
+    // A ruins rod's sparkles without their burst: 0.5-1.5 a second. Unity (SurveyParticleSemanticsBatch
+    // (c), 8 seeds) emitted 9-10 in 10 s, 0-2 in any one second: about the mean, with some jitter.
+    Area area = villageArea();
+    const int k = area.ruinsArrows.at(0).rods.at(0).particles;
+    ParticlesDef& d = area.particles[k];
+    d.bursts.clear();
+    d.lifetimeMin = d.lifetimeMax = 100;
+    World world(area);
+    world.particles.reset();
+    world.particles.play(world, k);
+    int last = 0;
+    for (int s = 0; s < 10; s++) {
+        for (int f = 0; f < 60; f++) world.particles.update(world, 1.0f / 60);
+        const int n = countOf(world, k);
+        check(n - last <= 2, "second " + std::to_string(s) + ": " + std::to_string(n - last));
+        last = n;
+    }
+    check(last >= 9 && last <= 11, "10 s: " + std::to_string(last));
+}
+
+TEST(particles_play_until_the_last_particle_dies) {
+    // A non-looping system whose particles outlive its duration counts as playing (a Play does
+    // nothing) until the last of them is gone.
+    Area area = villageArea();
+    const int k = sparkles();
+    ParticlesDef& d = area.particles[k];
+    CHECK(!d.loop);
+    d.lifetimeMin = d.lifetimeMax = d.duration + 1;
+    World world(area);
+    world.setTileActive(4, true);
+    world.particles.reset();
+    world.particles.play(world, k);
+    const float dt = 1.0f / 60;
+    int f = 0, after = 0, mismatches = 0;
+    for (; f * dt < d.duration + 0.05f; f++) world.particles.update(world, dt);
+    for (; f * dt < 2 * d.duration + 2; f++) { // past the duration: playing while any are left
+        world.particles.update(world, dt);
+        after += countOf(world, k) > 0;
+        mismatches += world.particles.playing(k) != (countOf(world, k) > 0);
+    }
+    check(after > 10 && mismatches == 0, std::to_string(after) + " frames with particles, " + std::to_string(mismatches) + " mismatches");
+    CHECK(countOf(world, k) == 0 && !world.particles.playing(k));
+}
+
 TEST(particles_force_then_limit_like_unity) {
     // A ruins rod's sparkle from rest: the force (0.5 up) is added before limit velocity, as measured
     // in Unity (Slider3DSSceneSurvey.SurveyParticleSemanticsBatch (b); the other order is ~2% off).
-    // The same survey measured: Stop + Play in one frame restarts with the burst, and a rate between
-    // two constants emits steadily at its mean (both as the port does).
+    // The same survey measured that Stop + Play in one frame restarts with the burst (as the port
+    // does); the rate's counts are pinned by particles_rate_between_two_constants.
     Area area = villageArea();
     const int k = area.ruinsArrows.at(0).rods.at(0).particles;
     ParticlesDef& d = area.particles[k];

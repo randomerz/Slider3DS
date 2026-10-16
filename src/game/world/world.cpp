@@ -23,8 +23,8 @@ void World::runStarts() {
 
 void World::sendGridEvents() {
     if (grid.events().empty()) return;
-    const std::vector<GridEvent> events = grid.events();
-    grid.clearEvents();
+    const std::vector<GridEvent> events = grid.takeEvents();
+    grid.clearEvents(); // (a moved-from vector is valid but unspecified)
     ruins.gridEvents(*this, events);
     runStarts(); // (the arrow may show the buried Slider)
 }
@@ -58,6 +58,9 @@ void World::reloadObjects() {
 }
 
 void World::setTileActive(int islandId, bool active) {
+    // What happened before goes out first: the tile's objects subscribe (OnEnable) only now, so
+    // they mustn't hear it.
+    sendGridEvents();
     grid.setTileActive(islandId, active);
     if (const STileDef* s = area.stile(islandId)) setTileObjects(*this, *s, active);
     runStarts(); // Start runs before the newly active objects' first update
@@ -86,8 +89,9 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
+    sendGridEvents(); // moves started since the last frame (the stylus), before their tiles slide
     artifact.update(grid, dt, player.stile);
-    sendGridEvents(); // moves queued since the last frame started; tiles arrived
+    sendGridEvents(); // tiles arrived, queued moves started
     if (t) {
         player.x += (t->posX - ox) * grid.tileWidth();
         player.y += (t->posY - oy) * grid.tileWidth();

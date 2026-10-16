@@ -35,8 +35,11 @@ public:
     // RuinsArrow.CheckActiveRods on Area::ruinsArrows[arrow]: a rod was lit by the last update of the rods.
     bool rodsOn(int arrow) const { return arrow >= 0 && arrow < (int)arrows_.size() && arrows_[arrow].anyRodsOn; }
 
-private:
     using Points = std::vector<std::pair<float, float>>; // trail spawn points, relative to the trail's object
+    // The points the trail repeats, as last worked out (tests).
+    const Points& trailPoints(int arrow) const { return arrows_.at(arrow).repeatPoints; }
+
+private:
     struct Rod {
         bool awake = false;
         bool onLastFrame = false; // runes shown as of the last LateUpdate
