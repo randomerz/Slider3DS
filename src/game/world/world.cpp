@@ -142,6 +142,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     runStarts();
     chad.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
+    items.follow(*this);          // (the carried item is a child of the item holder the Animator moves)
     ruins.update(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)

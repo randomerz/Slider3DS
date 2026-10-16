@@ -252,11 +252,23 @@ struct AnimatorTransitionDef {
     float exitTime = -1;  // normalized time it waits for, -1 = none
     std::vector<std::pair<int, bool>> conds; // parameter index, value it must have
 };
+// A clip's Transform localPosition curves (an item holder bobbing, Chad's sprite shifting as he falls).
+struct MoveCurveDef {
+    std::string path;               // the transform, relative to the Animator ("" = its own)
+    std::vector<CurveKey> x, y;     // empty = that axis isn't animated
+};
+struct StateMovesDef {
+    float length = 0;
+    bool loop = true;
+    std::vector<MoveCurveDef> curves;
+};
 struct AnimatorStateDef {
     std::string name;
     int anim = -1;        // Area::anims index, -1 = no clip (the sprite keeps its last frame)
     float speed = 1;
     std::vector<AnimatorTransitionDef> transitions;
+    bool writeDefaults = true; // what its clip doesn't move goes back to the default (authored) position
+    StateMovesDef moves;
 };
 struct AnimatorControllerDef {
     std::string name;
@@ -275,6 +287,12 @@ struct AnimatorDef {
     int controller = 0;      // Area::animatorControllers index at the start
     bool keepState = false;  // keepAnimatorStateOnDisable (else re-enabling rebinds: default state, parameters)
     int controllerObject = -1; // object of the NPCAnimatorController that drives it (calls target it), -1 = none
+    struct Target {            // a transform its clips move
+        std::string path;      // relative to the Animator (MoveCurveDef::path)
+        int object = -1;       // Area::objects index, -1 = not a scene object (the player's item holder)
+        float localX = 0, localY = 0; // its localPosition as authored (the default)
+    };
+    std::vector<Target> targets;
 };
 
 // What a PlayerPositionChanger call needs of its component.
@@ -411,7 +429,9 @@ struct ItemDef {
 // PlayerAction: where the player carries an item and how drops are placed.
 struct PlayerActionDef {
     bool present = false;
-    float carryX = 0, carryY = 0.8125f;  // pickedItemLocation, player-relative
+    float carryX = 0, carryY = 0.8125f;  // pickedItemLocation, player-relative (as authored)
+    std::string carryPath;               // its path from the player's Animator
+    int carryTarget = -1;                // that AnimatorDef::Target on the player's Animator (it bobs), -1 = none
     float boatDropX = 0, boatDropY = 0;  // boatDropItemBaseTransform, player-relative (drops from the boat)
     SpritePlacement dropIndicator;       // relative to the drop position; sprite -1 = none
     std::vector<std::string> itemLayers; // itemMask: colliders that can be picked up

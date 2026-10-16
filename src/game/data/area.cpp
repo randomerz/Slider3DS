@@ -172,6 +172,8 @@ static bool isTeleport(CallDef::Method m) {
            m == M::TeleportTransform;
 }
 
+static std::vector<AnimatorDef::Target> readTargets(const Json& j);
+
 // Calls; teleport payloads go to out.teleports.
 static std::vector<CallDef> readCalls(const Json& j, Area& out) {
     std::vector<CallDef> calls;
@@ -474,7 +476,7 @@ static NpcDef readNpc(const Json& j, Area& out) {
         const Json& a = j["animator"];
         n.animator = (int)out.animators.size();
         out.animators.push_back({a["object"].asInt(-1), a["controller"].asInt(-1), a["keepState"].asBool(),
-                                 a["controllerObject"].asInt(-1)});
+                                 a["controllerObject"].asInt(-1), readTargets(a["targets"])});
     }
     if (j.has("emote")) {
         const Json& e = j["emote"];
@@ -485,7 +487,7 @@ static NpcDef readNpc(const Json& j, Area& out) {
         n.emote.npcSprite = e["npcSprite"].asInt(-1);
         n.emote.npcSpriteFlipped = e["npcSpriteFlipped"].asBool();
         n.emote.animator = (int)out.animators.size();
-        out.animators.push_back({n.emote.object, e["controller"].asInt(-1), e["keepState"].asBool(), -1});
+        out.animators.push_back({n.emote.object, e["controller"].asInt(-1), e["keepState"].asBool(), -1, {}});
     }
     for (const Json& c : j["conds"].items()) {
         NpcCondDef d;
@@ -519,6 +521,13 @@ static std::vector<AnimatorTransitionDef> readTransitions(const Json& j) {
     return out;
 }
 
+static std::vector<AnimatorDef::Target> readTargets(const Json& j) {
+    std::vector<AnimatorDef::Target> targets;
+    for (const Json& t : j.items())
+        targets.push_back({t["path"].asString(), t["object"].asInt(-1), t["local"].at(0).asFloat(), t["local"].at(1).asFloat()});
+    return targets;
+}
+
 static AnimatorControllerDef readController(const Json& j) {
     AnimatorControllerDef c;
     c.name = j["name"].asString();
@@ -527,8 +536,29 @@ static AnimatorControllerDef readController(const Json& j) {
         c.paramDefaults.push_back(p["default"].asBool() ? 1 : 0);
     }
     c.defaultState = j["default"].asInt();
-    for (const Json& s : j["states"].items())
-        c.states.push_back({s["name"].asString(), s["anim"].asInt(-1), s["speed"].asFloat(1), readTransitions(s["transitions"])});
+    for (const Json& s : j["states"].items()) {
+        AnimatorStateDef st;
+        st.name = s["name"].asString();
+        st.anim = s["anim"].asInt(-1);
+        st.speed = s["speed"].asFloat(1);
+        st.transitions = readTransitions(s["transitions"]);
+        st.writeDefaults = s["writeDefaults"].asBool(true);
+        const Json& m = s["moves"];
+        st.moves.length = m["length"].asFloat();
+        st.moves.loop = m["loop"].asBool(true);
+        for (const Json& cj : m["curves"].items()) {
+            MoveCurveDef mc;
+            mc.path = cj["path"].asString();
+            for (int axis = 0; axis < 2; axis++) {
+                const Json& k = cj[axis ? "y" : "x"];
+                std::vector<CurveKey>& keys = axis ? mc.y : mc.x;
+                for (size_t i = 0; i + 3 < k.size(); i += 4)
+                    keys.push_back({k.at(i).asFloat(), k.at(i + 1).asFloat(), k.at(i + 2).asFloat(), k.at(i + 3).asFloat()});
+            }
+            st.moves.curves.push_back(std::move(mc));
+        }
+        c.states.push_back(std::move(st));
+    }
     c.anyState = readTransitions(j["any"]);
     return c;
 }
@@ -639,6 +669,9 @@ static bool validate(const Area& a, std::string* error) {
         if ((an.object != -1 && !objectOk(an.object)) || an.controller < 0 || an.controller >= (int)a.animatorControllers.size() ||
             (an.controllerObject != -1 && !objectOk(an.controllerObject)))
             return fail(error, "animator: bad object or controller");
+    for (const AnimatorDef& an : a.animators)
+        for (const AnimatorDef::Target& t : an.targets)
+            if (t.object != -1 && !objectOk(t.object)) return fail(error, "animator: bad target " + t.path);
     std::vector<bool> isNpc(a.objects.size(), false);
     for (const NpcDef& n : a.npcs)
         if (objectOk(n.object)) isNpc[n.object] = true;
@@ -945,6 +978,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         d.present = true;
         d.carryX = pa["carryPos"].at(0).asFloat();
         d.carryY = pa["carryPos"].at(1).asFloat();
+        d.carryPath = pa["carryPath"].asString();
         d.boatDropX = pa["boatDropBase"].at(0).asFloat();
         d.boatDropY = pa["boatDropBase"].at(1).asFloat();
         if (pa.has("dropIndicator")) d.dropIndicator = readPlacement(pa["dropIndicator"]);
@@ -963,7 +997,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.player.footBox = readHitbox(doc["player"]["footBox"]);
         if (doc["player"].has("animator")) {
             out.player.animator = (int)out.animators.size();
-            out.animators.push_back({-1, doc["player"]["animator"].asInt(-1), false, -1});
+            out.animators.push_back({-1, doc["player"]["animator"].asInt(-1), false, -1,
+                                     readTargets(doc["player"]["animatorTargets"]["targets"])});
         }
         out.player.boatBox = readHitbox(doc["player"]["boatBox"]);
     }
@@ -1068,6 +1103,11 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (size_t i = 0; i < out.animators.size(); i++) {
         const int o = out.animators[i].object;
         if (o >= 0 && o < (int)out.objects.size()) out.animatorByObject[o] = (int)i;
+    }
+    if (out.player.animator >= 0 && out.playerAction.present && !out.playerAction.carryPath.empty()) {
+        const std::vector<AnimatorDef::Target>& targets = out.animators[out.player.animator].targets;
+        for (int i = 0; i < (int)targets.size(); i++)
+            if (targets[i].path == out.playerAction.carryPath) out.playerAction.carryTarget = i;
     }
     for (ChadJumpDef& c : out.chadJumps) { // exported as objects
         auto animatorOf = [&](int o) { return o >= 0 && o < (int)out.objects.size() ? out.animatorByObject[o] : -1; };

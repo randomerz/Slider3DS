@@ -175,10 +175,32 @@ bool Items::stepDrop(World& world, Drop& d, float dt) {
     return true;
 }
 
-void Items::update(World& world, float dt) {
+void Items::carryPoint(const World& world, float& x, float& y) {
+    // pickedItemLocation: as authored, moved by the player's Animator (it bobs with idle / run).
     const Area& area = world.area;
     const PlayerActionDef& pa = area.playerAction;
-    const float carryX = world.player.x + pa.carryX, carryY = world.player.y + pa.carryY;
+    x = world.player.x + pa.carryX;
+    y = world.player.y + pa.carryY;
+    if (pa.carryTarget >= 0 && area.player.animator >= 0) {
+        const AnimatorDef::Target& t = area.animators[area.player.animator].targets[pa.carryTarget];
+        float ax, ay;
+        world.animators.targetPosition(area.player.animator, pa.carryTarget, ax, ay);
+        x += ax - t.localX;
+        y += ay - t.localY;
+    }
+}
+
+void Items::follow(World& world) {
+    if (carried_ < 0 || phase_ == Phase::PickingUp) return;
+    float x, y;
+    carryPoint(world, x, y);
+    world.placeObject(world.area.items[carried_].object, 0, x, y);
+}
+
+void Items::update(World& world, float dt) {
+    const Area& area = world.area;
+    float carryX, carryY;
+    carryPoint(world, carryX, carryY);
 
     if (phase_ == Phase::PickingUp) {
         // AnimatePickUp: the sprite flies to the (moving) carry point; the item itself stays put.
@@ -211,7 +233,7 @@ void Items::update(World& world, float dt) {
             world.dropLanded(drops_[i].done, drops_[i].doneArg);
         }
     drops_.erase(std::remove_if(drops_.begin(), drops_.end(), [](const Drop& d) { return d.item < 0; }), drops_.end());
-    if (carried_ >= 0 && phase_ != Phase::PickingUp) world.placeObject(area.items[carried_].object, 0, carryX, carryY);
+    follow(world);
     if (carried_ >= 0 && phase_ != Phase::PickingUp) computeDrop(world);
 }
 

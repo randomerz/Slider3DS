@@ -4,7 +4,9 @@
 #include <cmath>
 #include <string>
 
+#include "game/data/curve.h"
 #include "game/events/events.h"
+#include "game/items/items.h"
 #include "game/npc/dialogue_text.h"
 #include "game/npc/npcs.h"
 #include "game/render/area_view.h"
@@ -776,6 +778,65 @@ TEST(animators_player_runs_while_moving) {
     world.player.onWater = true;
     world.update(DT, 0, 0, true);
     check(world.animators.stateName(area, animator) == "PlayerPirateIdle", "in the boat");
+}
+
+TEST(animators_curve_keys_evaluate_like_unity) {
+    // Stepped (an infinite tangent holds the value until the next key) and Hermite segments.
+    const float INF = 1e30f;
+    const std::vector<CurveKey> stepped = {{0, 0.8125f, 0, INF}, {0.5f, 0.75f, 0, 0}};
+    check(evalKeys(stepped, 0) == 0.8125f && evalKeys(stepped, 0.49f) == 0.8125f && evalKeys(stepped, 0.5f) == 0.75f &&
+              evalKeys(stepped, 0.9f) == 0.75f && evalKeys(stepped, -1) == 0.8125f,
+          "stepped");
+    const std::vector<CurveKey> linear = {{0, 0, 1, 1}, {2, 2, 1, 1}}; // tangents of the straight line
+    check(std::fabs(evalKeys(linear, 0.5f) - 0.5f) < 1e-5f && std::fabs(evalKeys(linear, 1.5f) - 1.5f) < 1e-5f, "linear");
+    const std::vector<CurveKey> flat = {{0, 0, 0, 0}, {1, 1, 0, 0}}; // smoothstep
+    check(std::fabs(evalKeys(flat, 0.25f) - 0.15625f) < 1e-5f, "flat tangents: smoothstep");
+}
+
+TEST(animators_player_item_holder_bobs) {
+    // PlayerIdle / PlayerRun move "Item Pickup Location": idle 0.8125 then 0.75 each second, running
+    // 0.875 / 0.8125 every quarter second; carried items sit there.
+    const Area& area = villageArea();
+    CHECK(area.playerAction.carryTarget >= 0);
+    World world(area);
+    world.placeNear(0, 0);
+    auto carryDy = [&]() {
+        float x, y;
+        Items::carryPoint(world, x, y);
+        return y - world.player.y;
+    };
+    world.update(DT, 0, 0, false);
+    check(std::fabs(carryDy() - 0.8125f) < 1e-4f, "idle, first half: " + std::to_string(carryDy()));
+    for (int f = 0; f < 31; f++) world.update(DT, 0, 0, false);
+    check(std::fabs(carryDy() - 0.75f) < 1e-4f, "idle, second half: " + std::to_string(carryDy()));
+    world.update(DT, 1, 0, true);
+    check(std::fabs(carryDy() - 0.875f) < 1e-4f, "running: " + std::to_string(carryDy()));
+    for (int f = 0; f < 15; f++) world.update(DT, 1, 0, true);
+    check(std::fabs(carryDy() - 0.8125f) < 1e-4f, "running, a quarter second on: " + std::to_string(carryDy()));
+}
+
+TEST(animators_move_npc_transforms) {
+    // Chad's clips move his PickUpLocation (the fragment on his head bobs) and, as he falls, his sprite.
+    const Area& area = villageArea();
+    World world(area);
+    for (int id = 2; id <= 8; id++) world.setTileActive(id, true);
+    world.reloadObjects();
+    const ChadJumpDef& d = area.chadJumps.at(0);
+    const int holder = area.objects[area.items[d.item].object].parent;
+    CHECK(area.pathOf(holder).find("PickUpLocation") != std::string::npos);
+    float x0, y0, x, y;
+    world.update(DT, 0, 0, false);
+    world.objectPosition(holder, x0, y0);
+    for (int f = 0; f < 31; f++) world.update(DT, 0, 0, false);
+    world.objectPosition(holder, x, y);
+    check(std::fabs((y0 - y) - 0.0625f) < 1e-4f, "ChadChillin: the holder dips a pixel at 0.5 s");
+    world.animators.setBool(world, d.animator, "isFallen", true); // (ChadFall leaves without it)
+    world.animators.play(world, d.animator, "ChadFall");
+    float sx0, sy0, sx, sy;
+    world.objectPosition(d.renderer, sx0, sy0);
+    for (int f = 0; f < 45; f++) world.update(DT, 0, 0, false); // 0.75 s: past the 0.625 s key
+    world.objectPosition(d.renderer, sx, sy);
+    check(std::fabs((sx - sx0) + 0.25f) < 1e-4f, "ChadFall: his sprite shifts a quarter unit left");
 }
 
 TEST(npcs_emote_shown_again_mid_intro_restarts_it) {

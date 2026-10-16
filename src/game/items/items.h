@@ -35,6 +35,10 @@ public:
 
     // Animations advance, the carried item follows the player, the drop spot is worked out.
     void update(World& world, float dt);
+    // The carried item to the carry point (again after the Animators moved it: it's a child of it).
+    void follow(World& world);
+    // Where carried items sit: PlayerAction.pickedItemLocation, as the player's Animator has it now.
+    static void carryPoint(const World& world, float& x, float& y);
 
     // PlayerAction.AttemptItemPickup / AttemptItemDrop; true if something happened.
     bool tryPickUp(World& world);

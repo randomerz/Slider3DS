@@ -4,7 +4,9 @@
 // first transition whose conditions hold (and exit time has passed) switches state, instantly.
 // Play(state) jumps to a state; switching the controller starts over in the new one's default.
 // An Animator only runs while its object is active; re-enabling one rebinds it (default state and
-// parameters) unless keepAnimatorStateOnDisable.
+// parameters) unless keepAnimatorStateOnDisable. Clips' transform curves move their targets
+// (AnimatorDef::targets: an item holder bobbing; scene objects via their ObjectStates placement);
+// with writeDefaults, a state that doesn't move a target puts it back where it was authored.
 #pragma once
 
 #include <cstdint>
@@ -22,9 +24,9 @@ public:
     // OnEnable / OnDisable: Animators whose object became active since the last call rebind (unless
     // keepState). Call it right after objects may have been activated, before their Starts and scripts.
     void enable(const World& world);
-    // One frame: advances the enabled Animators' time, takes transitions, and records the sprite
-    // each now shows.
-    void update(const World& world, float dt);
+    // One frame: advances the enabled Animators' time, takes transitions, records the sprite each
+    // now shows and moves their targets.
+    void update(World& world, float dt);
 
     // These first catch up with the Animator's object activity (Unity's OnEnable runs inside
     // SetActive, before anything else can play on it).
@@ -39,6 +41,11 @@ public:
     // The sprite (Area::sprites index) the Animator's object shows, -1 = none yet (use the exported one).
     int sprite(int animator) const { return s_[animator].sprite; }
     int controller(int animator) const { return s_[animator].controller; } // Area::animatorControllers index
+    // Where AnimatorDef::targets[target] is now (its localPosition).
+    void targetPosition(int animator, int target, float& x, float& y) const {
+        x = s_[animator].targetX[target];
+        y = s_[animator].targetY[target];
+    }
     const std::string& stateName(const Area& area, int animator) const;
     bool param(const Area& area, int animator, const std::string& name) const;
 
@@ -50,7 +57,9 @@ private:
         std::vector<uint8_t> params;
         int sprite = -1;          // last frame shown (a state without a clip keeps it)
         bool enabled = false;     // its object was active at the last update
+        std::vector<float> targetX, targetY; // per AnimatorDef::targets entry: its localPosition now
     };
+    void applyMoves(World& world, int animator); // the current state's transform curves
     void rebind(const Area& area, State& st); // default state, default parameters
     void syncEnabled(const World& world, int animator); // enable() for one Animator
     void refreshSprite(const Area& area, State& st);

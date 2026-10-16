@@ -1,11 +1,17 @@
 #include "game/anim/animators.h"
 
+#include <cmath>
+
 #include "game/world/world.h"
 
 void Animators::reset(const Area& area) {
     s_.assign(area.animators.size(), State());
     for (size_t i = 0; i < s_.size(); i++) {
         s_[i].controller = area.animators[i].controller;
+        for (const AnimatorDef::Target& t : area.animators[i].targets) {
+            s_[i].targetX.push_back(t.localX);
+            s_[i].targetY.push_back(t.localY);
+        }
         rebind(area, s_[i]);
     }
 }
@@ -38,7 +44,7 @@ void Animators::enable(const World& world) {
     for (int i = 0; i < (int)s_.size(); i++) syncEnabled(world, i);
 }
 
-void Animators::update(const World& world, float dt) {
+void Animators::update(World& world, float dt) {
     const Area& area = world.area;
     enable(world);
     for (size_t i = 0; i < s_.size(); i++) {
@@ -50,7 +56,7 @@ void Animators::update(const World& world, float dt) {
         st.time += dt * s.speed;
         // Any State transitions first, then the state's own, in order; one per frame.
         const int anim = s.anim;
-        const float length = anim >= 0 ? area.anims[anim].length : 0;
+        const float length = anim >= 0 ? area.anims[anim].length : s.moves.length;
         const float normalized = length > 0 ? st.time / length : 1;
         auto fires = [&](const AnimatorTransitionDef& t) {
             if (t.exitTime >= 0 && normalized < t.exitTime) return false;
@@ -68,6 +74,32 @@ void Animators::update(const World& world, float dt) {
             st.time = 0;
         }
         refreshSprite(area, st);
+        applyMoves(world, (int)i);
+    }
+}
+
+void Animators::applyMoves(World& world, int animator) {
+    const Area& area = world.area;
+    const AnimatorDef& def = area.animators[animator];
+    if (def.targets.empty()) return;
+    State& st = s_[animator];
+    const AnimatorStateDef& s = area.animatorControllers[st.controller].states[st.state];
+    const StateMovesDef& m = s.moves;
+    const float t = m.length <= 0 ? 0 : m.loop ? std::fmod(st.time, m.length) : std::min(st.time, m.length);
+    for (size_t k = 0; k < def.targets.size(); k++) {
+        const AnimatorDef::Target& target = def.targets[k];
+        const MoveCurveDef* curve = nullptr;
+        for (const MoveCurveDef& c : m.curves)
+            if (c.path == target.path) curve = &c;
+        float x = st.targetX[k], y = st.targetY[k];
+        if (curve && !curve->x.empty()) x = evalKeys(curve->x, t);
+        else if (s.writeDefaults) x = target.localX;
+        if (curve && !curve->y.empty()) y = evalKeys(curve->y, t);
+        else if (s.writeDefaults) y = target.localY;
+        if (x == st.targetX[k] && y == st.targetY[k]) continue;
+        st.targetX[k] = x;
+        st.targetY[k] = y;
+        if (target.object >= 0) world.objects.setPlacement(area, target.object, -1, x - target.localX, y - target.localY);
     }
 }
 
