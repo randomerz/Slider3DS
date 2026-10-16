@@ -227,6 +227,7 @@ TEST(ruins_dig_up_slider_7) {
     check(world.state.hasCollectible("Slider 7", "Village") && world.grid.tileActive(7), "collected: tile 7 joins");
     CHECK(!world.objects.activeInHierarchy(r.buriedSlider));
     CHECK(world.objects.rendererEnabled(r.renderer) && world.objects.sprite(r.renderer) == ObjectStates::NO_SPRITE);
+    CHECK(!world.particles.playing(r.particles)); // (a port choice: its sparkles go with it)
     for (int f = 0; f < 60 * 12; f++) world.update(DT, 0, 0, false);
     check(trailParticles(world) == 0, "no more trails: " + std::to_string(trailParticles(world)));
 }

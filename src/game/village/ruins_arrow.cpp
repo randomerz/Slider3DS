@@ -81,7 +81,12 @@ void RuinsArrows::gridEvents(World& world, const std::vector<GridEvent>& events)
                 break;
             case GridEvent::Kind::TileEnabled: // UpdateArrowOnCollect
                 general(world, a, e.slots, e.gridString);
-                if (e.islandId == 7) arrows_[a].repeating = false; // particleTrail.StopRepeating
+                if (e.islandId == 7) {
+                    arrows_[a].repeating = false; // particleTrail.StopRepeating
+                    // Port choice (not in RuinsArrow.cs): the arrow's gone (arrowComplete is null), so its
+                    // sparkles stop too; Unity leaves them looping until the ruins come apart.
+                    world.particles.stop(world.area.ruinsArrows[a].particles);
+                }
                 break;
             }
         }
