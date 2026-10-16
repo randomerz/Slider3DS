@@ -78,12 +78,17 @@ struct Wall { float x0, y0, x1, y1; };
 // Something that happened to the grid, for scripts listening to SGrid / SGridAnimator events:
 // Move = SGrid.OnGridMove (a move started; the slots already changed), TileMoveEnd =
 // SGridAnimator.OnSTileMoveEnd (an active tile arrived), TileEnabled = SGrid.OnSTileEnabled (a tile
-// was collected).
+// was collected). Events are handed out later (World::sendGridEvents), by when the grid may have
+// changed again (the Artifact starts its next queued move right after one ends), so each carries the
+// grid as it was when it fired: handlers read those, never the Grid.
 struct GridEvent {
     enum class Kind : uint8_t { Move, TileMoveEnd, TileEnabled };
     Kind kind;
     int islandId = 0;          // TileMoveEnd / TileEnabled: the tile
-    std::vector<int> oldSlots; // Move: the slots before it (idAt order: y * width + x)
+    std::vector<int> slots;    // idAt as of the event (y * width + x; Move: after it)
+    std::string gridString;    // gridString() as of the event
+    std::vector<int> oldSlots; // Move: before it
+    std::string oldGridString;
 };
 
 class Grid {
@@ -148,6 +153,7 @@ private:
     };
 
     TileState* tileMut(int islandId);
+    GridEvent event(GridEvent::Kind kind, int islandId) const; // with the grid as it is now
     void clearMotion();
     void rebuildWalls();
 

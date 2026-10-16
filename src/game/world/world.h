@@ -88,8 +88,10 @@ public:
     int priority(const Interactable& it) const;     // IInteractable.InteractionPriority
     bool showsPrompt(const Interactable& it) const; // IInteractable.DisplayInteractionPrompt
     bool promptShown() const; // any offered interactable shows the prompt (the indicator)
-    // Whether icon `icon` of Artifact button `islandId` shows (its Image.enabled: RuinsMapIcons switches some).
-    bool artifactIconShown(int islandId, int icon) const { return ruins.iconShown(area, islandId, icon); }
+    // Image.enabled of icon `icon` on Artifact button `islandId` (as exported until a script sets it,
+    // e.g. RuinsMapIcons); false for a button or icon that doesn't exist.
+    bool artifactIconShown(int islandId, int icon) const;
+    void setArtifactIcon(int islandId, int icon, bool shown);
 
     // World position a component of `object` is placed relative to (its exported position is added):
     // its owner STile's center (as of now: ObjectStates) plus the object's runtime offset.
@@ -117,6 +119,8 @@ public:
     ScreenEffects effects;
 
 private:
+    std::vector<std::vector<uint8_t>> artifactIcons_; // per Area::artifact.buttons entry, per icon: shown
+
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.
     void runStarts();
     // Scripts listening to the grid's events (SGrid / SGridAnimator) hear what happened since last time.

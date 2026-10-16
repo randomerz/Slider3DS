@@ -231,6 +231,15 @@ void Grid::ownerBase(int owner, float& x, float& y) const {
     y = t ? t->posY * tileWidth_ : 0.0f;
 }
 
+GridEvent Grid::event(GridEvent::Kind kind, int islandId) const {
+    GridEvent e;
+    e.kind = kind;
+    e.islandId = islandId;
+    e.slots = slots_;
+    e.gridString = gridString();
+    return e;
+}
+
 const std::string& Grid::gridString(bool numsOnly) const {
     if (cachedVersion_[numsOnly] != version_) {
         cached_[numsOnly] = buildGridString(
@@ -293,7 +302,7 @@ void Grid::setTileActive(int islandId, bool active) {
     if (t && t->active != active) {
         t->active = active;
         version_++;
-        if (active) events_.push_back({GridEvent::Kind::TileEnabled, islandId, {}});
+        if (active) events_.push_back(event(GridEvent::Kind::TileEnabled, islandId));
     }
 }
 
@@ -331,10 +340,15 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
             t->posY = (float)m.ey;
         }
     }
-    events_.push_back({GridEvent::Kind::Move, 0, slots_});
+    GridEvent moved = event(GridEvent::Kind::Move, 0);
     slots_ = next;
     active_.push_back(std::move(am));
     version_++;
+    moved.oldSlots = std::move(moved.slots);
+    moved.oldGridString = std::move(moved.gridString);
+    moved.slots = slots_;
+    moved.gridString = gridString();
+    events_.push_back(std::move(moved));
     rebuildWalls();
 }
 
@@ -351,7 +365,7 @@ std::vector<int> Grid::update(float dt) {
             t->posX = a.ex;
             t->posY = a.ey;
             if (a.playerOn) tileBorderCount_[tileIndex_[a.islandId]]--;
-            events_.push_back({GridEvent::Kind::TileMoveEnd, a.islandId, {}});
+            events_.push_back(event(GridEvent::Kind::TileMoveEnd, a.islandId));
         }
     }
     const size_t animCount = anims_.size();

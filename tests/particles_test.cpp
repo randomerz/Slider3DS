@@ -250,3 +250,39 @@ TEST(particles_slow_down_like_unity) {
         }
     }
 }
+
+TEST(particles_force_then_limit_like_unity) {
+    // A ruins rod's sparkle from rest: the force (0.5 up) is added before limit velocity, as measured
+    // in Unity (Slider3DSSceneSurvey.SurveyParticleSemanticsBatch (b); the other order is ~2% off).
+    // The same survey measured: Stop + Play in one frame restarts with the burst, and a rate between
+    // two constants emits steadily at its mean (both as the port does).
+    Area area = villageArea();
+    const int k = area.ruinsArrows.at(0).rods.at(0).particles;
+    ParticlesDef& d = area.particles[k];
+    d.speedMin = d.speedMax = 0;
+    d.lifetimeMin = d.lifetimeMax = 10;
+    d.shapeRadius = 0;
+    d.rateMin = d.rateMax = 0;
+    d.bursts = {{0, 1, 1, 1, 0}};
+    World world(area);
+    world.particles.reset();
+    float ox, oy;
+    world.objectPosition(d.object, ox, oy);
+    world.particles.play(world, k);
+    const struct { int frame; float vy, y; } at[] = {{12, 0.09563f, 0.01063f}, {60, 0.28568f, 0.18067f}, {120, 0.34222f, 0.50256f}};
+    int frame = 0;
+    for (const auto& s : at) {
+        while (frame < s.frame) {
+            world.particles.update(world, 1.0f / 60);
+            frame++;
+        }
+        const Particles::Particle* p = nullptr;
+        for (const Particles::Particle& q : world.particles.particles())
+            if (q.def == &d) p = &q;
+        CHECK(p != nullptr);
+        if (!p) break;
+        check(std::fabs(p->vy - s.vy) < 0.003f * s.vy && std::fabs(p->y - oy - s.y) < 0.003f * s.y,
+              "frame " + std::to_string(s.frame) + ": vy " + std::to_string(p->vy) + " (Unity " + std::to_string(s.vy) +
+                  "), y " + std::to_string(p->y - oy) + " (Unity " + std::to_string(s.y) + ")");
+    }
+}

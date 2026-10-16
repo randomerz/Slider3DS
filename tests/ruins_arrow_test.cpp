@@ -230,3 +230,63 @@ TEST(ruins_dig_up_slider_7) {
     for (int f = 0; f < 60 * 12; f++) world.update(DT, 0, 0, false);
     check(trailParticles(world) == 0, "no more trails: " + std::to_string(trailParticles(world)));
 }
+
+TEST(ruins_queued_moves_see_their_own_grid) {
+    // Two moves queued back to back: 2 in (assembles the ruins) then 2 out. The second starts the
+    // moment the first ends, before the events are handed out; each event still reads the grid as it
+    // was when it fired, so the arrow shows as the first ends (revealing the buried Slider for good)
+    // and goes off as the second starts (in the same frame, as in Unity: never drawn in between).
+    const Area& area = villageArea();
+    const RuinsArrowDef& r = area.ruinsArrows[0];
+    World world = ruinsWorld("314_692_578");
+    world.update(DT, 0, 0, false);
+    CHECK(world.artifact.tryMove(world.grid, 2, 1, 1, 1, 0) && world.artifact.tryMove(world.grid, 1, 1, 2, 1, 0));
+    settle(world);
+    CHECK(!world.objects.rendererEnabled(r.renderer) && !world.particles.playing(r.particles));
+    CHECK(world.objects.activeInHierarchy(r.buriedSlider));
+    CHECK(litRods(world) == "1-36");
+}
+
+TEST(ruins_trail_repeats_every_8_seconds) {
+    // The trail runs at once and again every 8 s while the arrow shows; each run's sparkles live <= 5 s.
+    World world = ruinsWorld("314_629_578");
+    int runsSeen = 0;
+    bool was = false;
+    for (int f = 0; f < 60 * 20; f++) {
+        world.update(DT, 0, 0, false);
+        const bool any = trailParticles(world) > 0;
+        if (any && !was) runsSeen++;
+        was = any;
+    }
+    check(runsSeen == 3, "runs at 0, 8 and 16 s: " + std::to_string(runsSeen));
+}
+
+TEST(ruins_arrow_bobs_a_pixel) {
+    // BobAnimation (3 s cycle): level until 0.5 s, a pixel down until 1.5 s, level until 2 s, a pixel up.
+    const Area& area = villageArea();
+    const int renderer = area.ruinsArrows[0].renderer;
+    World world(area);
+    world.setTileActive(2, true);
+    const struct { float t, dy; } at[] = {{0.3f, 0}, {1.0f, -1}, {1.7f, 0}, {2.5f, 1}, {3.3f, 0}};
+    float t = 0;
+    for (const auto& s : at) {
+        while (t < s.t) {
+            world.update(DT, 0, 0, false);
+            t += DT;
+        }
+        check(world.objects.offsetY(renderer) * area.ppu == s.dy, "at " + std::to_string(s.t) + " s: " +
+                                                                   std::to_string(world.objects.offsetY(renderer) * area.ppu) + " px");
+    }
+}
+
+TEST(ruins_unlit_rods_stop_sparkling) {
+    const Area& area = villageArea();
+    World world = ruinsWorld("314_692_578");
+    world.update(DT, 0, 0, false);
+    CHECK(world.particles.playing(rod(area, 1).particles) && !world.particles.playing(rod(area, 2).particles));
+    // 1 slides out of the corner: 3 1 breaks (3 over 6 stays), rod 1 goes out.
+    CHECK(world.artifact.tryMove(world.grid, 1, 2, 1, 1, 0));
+    settle(world);
+    check(litRods(world) == "--36", "rods " + litRods(world));
+    CHECK(!world.particles.playing(rod(area, 1).particles) && world.particles.playing(rod(area, 3).particles));
+}

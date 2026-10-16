@@ -139,6 +139,10 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     for (int i = 0; i < (int)particles.size(); i++) {
         const Particles::Particle& p = particles[i];
         if (!inRange(p.def->sortLayer)) continue;
+        float sx, sy; // (off screen: not worth sorting)
+        worldToScreen(p.x, p.y, sx, sy);
+        const float half = p.def->size * ppu_ * 0.5f + 1;
+        if (sx + half < 0 || sx - half > screenW_ || sy + half < 0 || sy - half > screenH_) continue;
         Item it{ItemKind::Particle, i, {}};
         it.sprite.sortLayer = p.def->sortLayer;
         it.sprite.order = p.def->order;

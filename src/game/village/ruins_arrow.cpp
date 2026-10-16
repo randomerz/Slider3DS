@@ -20,12 +20,6 @@ std::vector<int> currentSlots(const Grid& grid) {
     return slots;
 }
 
-std::string slotsString(const Grid& grid, const std::vector<int>& slots) {
-    return buildGridString(
-        grid.width(), grid.height(), [&](int x, int y) { return slots[y * grid.width() + x]; },
-        [&](int id) { return grid.tileActive(id); });
-}
-
 bool assembled(const std::string& gridString) { return CheckGrid::contains(gridString, "31..62"); } // AreRuinsAssembled
 
 // The pairs of rods each assembled piece of the ruins lights (UpdateMap / UpdateRods), by island.
@@ -43,16 +37,10 @@ void RuinsArrows::reset(const Area& area) {
         const RuinsArrowDef& d = area.ruinsArrows[a];
         Arrow& s = arrows_[a];
         s.rods.assign(d.rods.size(), Rod());
-        s.icons.assign(d.mapIcons.size(), 0);
-        for (size_t i = 0; i < d.mapIcons.size(); i++) {
-            const ArtifactButtonDef* b = area.artifact.button(d.mapIcons[i].button);
-            s.icons[i] = b->iconsEnabled[d.mapIcons[i].icon];
-        }
         for (const WorldSprite& ws : area.worldSprites)
             if (ws.object == d.renderer) {
-                s.shown = ws.enabled;
-                s.sprite = ws.place.sprite;
-                s.flipX = (ws.place.flags & plat::FLIP_X) != 0;
+                s.exportedSprite = ws.place.sprite;
+                s.exportedFlip = (ws.place.flags & plat::FLIP_X) != 0;
             }
     }
     time_ = 0;
@@ -73,7 +61,7 @@ void RuinsArrows::activate(World& world) {
             }
         if (!s.started && world.objects.activeInHierarchy(d.object)) {
             s.started = true;
-            general(world, a);
+            general(world, a, currentSlots(world.grid), world.grid.gridString());
         }
     }
 }
@@ -82,20 +70,17 @@ void RuinsArrows::gridEvents(World& world, const std::vector<GridEvent>& events)
     for (int a = 0; a < (int)arrows_.size(); a++) {
         for (const GridEvent& e : events) {
             if (!world.objects.activeInHierarchy(world.area.ruinsArrows[a].object)) break; // (OnDisable unsubscribed)
-            const std::string now = world.grid.gridString();
             switch (e.kind) {
-            case GridEvent::Kind::Move: { // UpdateArrowOnStart
-                const bool on = assembled(slotsString(world.grid, e.oldSlots)) && assembled(now);
-                setArrowActive(world, a, on, e.oldSlots);
-                updateMap(world, a, now);
+            case GridEvent::Kind::Move: // UpdateArrowOnStart
+                setArrowActive(world, a, assembled(e.oldGridString) && assembled(e.gridString), e.oldSlots);
+                updateMap(world, a, e.gridString);
                 break;
-            }
             case GridEvent::Kind::TileMoveEnd: // UpdateArrowOnEnd
-                setArrowActive(world, a, assembled(now), currentSlots(world.grid));
-                updateRods(world, a, now);
+                setArrowActive(world, a, assembled(e.gridString), e.slots);
+                updateRods(world, a, e.gridString);
                 break;
             case GridEvent::Kind::TileEnabled: // UpdateArrowOnCollect
-                general(world, a);
+                general(world, a, e.slots, e.gridString);
                 if (e.islandId == 7) arrows_[a].repeating = false; // particleTrail.StopRepeating
                 break;
             }
@@ -103,22 +88,20 @@ void RuinsArrows::gridEvents(World& world, const std::vector<GridEvent>& events)
     }
 }
 
-void RuinsArrows::general(World& world, int a) {
-    const std::string now = world.grid.gridString();
-    setArrowActive(world, a, assembled(now), currentSlots(world.grid));
-    updateMap(world, a, now);
-    updateRods(world, a, now);
+void RuinsArrows::general(World& world, int a, const std::vector<int>& slots, const std::string& gridString) {
+    setArrowActive(world, a, assembled(gridString), slots);
+    updateMap(world, a, gridString);
+    updateRods(world, a, gridString);
 }
 
 void RuinsArrows::setArrowActive(World& world, int a, bool value, const std::vector<int>& slots) {
     const RuinsArrowDef& d = world.area.ruinsArrows[a];
     Arrow& s = arrows_[a];
     if (value) {
-        if (!s.shown && !hasSlider7(world)) { // (it just appeared)
+        if (!world.objects.rendererEnabled(d.renderer) && !hasSlider7(world)) { // (it just appeared)
             world.particles.play(world, d.particles);
             world.objects.setActive(world.area, d.buriedSlider, true);
         }
-        s.shown = true;
         world.objects.setRendererEnabled(d.renderer, true);
         updateDirection(world, a, slots);
         if (!hasSlider7(world)) {
@@ -126,7 +109,6 @@ void RuinsArrows::setArrowActive(World& world, int a, bool value, const std::vec
             spawnTrail(world, a);
         }
     } else {
-        s.shown = false;
         world.objects.setRendererEnabled(d.renderer, false);
         world.particles.stop(d.particles);
         s.repeating = false;
@@ -135,10 +117,10 @@ void RuinsArrows::setArrowActive(World& world, int a, bool value, const std::vec
 
 void RuinsArrows::updateDirection(World& world, int a, const std::vector<int>& slots) {
     const RuinsArrowDef& d = world.area.ruinsArrows[a];
-    Arrow& s = arrows_[a];
+    const Arrow& s = arrows_[a];
+    ObjectStates& objects = world.objects;
     if (hasSlider7(world)) {
-        s.sprite = d.complete >= 0 ? d.complete : ObjectStates::NO_SPRITE;
-        world.objects.setSprite(d.renderer, s.sprite);
+        objects.setSprite(d.renderer, d.complete >= 0 ? d.complete : ObjectStates::NO_SPRITE);
         return;
     }
     // From tile 2 to tile 5 (where Slider 7 is buried), in grid slots.
@@ -149,28 +131,26 @@ void RuinsArrows::updateDirection(World& world, int a, const std::vector<int>& s
         else if (slots[i] == 5) x5 = x, y5 = y;
     }
     const int dx = x5 - x2, dy = y5 - y2;
-    const int old = s.sprite;
-    const bool oldFlip = s.flipX;
+    const int old = objects.sprite(d.renderer) != -1 ? objects.sprite(d.renderer) : s.exportedSprite;
+    const bool oldFlip = objects.flipX(d.renderer) != -1 ? objects.flipX(d.renderer) == 1 : s.exportedFlip;
     int k = -1;
     if (dy == 2) k = (dx == 0 || dx == -1) ? 0 : (dx == 1 || dx == -2) ? 1 : -1; // NNE, NE
     else if (dy == 1) k = 2;                                                       // ENE
     else if (dy == 0) k = 3;                                                       // ESE
     else if (dy == -1) k = (dx == 1 || dx == -2) ? 4 : (dx == 0 || dx == -1) ? 5 : -1; // SE, SSE
-    if (k >= 0) s.sprite = d.arrows[k];
-    s.flipX = dx < 0;
-    world.objects.setSprite(d.renderer, s.sprite);
-    world.objects.setFlipX(d.renderer, s.flipX);
-    if (old != s.sprite || oldFlip != s.flipX) world.particles.play(world, d.particles);
+    const int sprite = k >= 0 ? d.arrows[k] : old;
+    const bool flip = dx < 0;
+    objects.setSprite(d.renderer, sprite);
+    objects.setFlipX(d.renderer, flip);
+    if (old != sprite || oldFlip != flip) world.particles.play(world, d.particles);
 }
 
 void RuinsArrows::updateMap(World& world, int a, const std::string& gridString) {
-    const RuinsArrowDef& d = world.area.ruinsArrows[a];
-    Arrow& s = arrows_[a];
-    for (size_t i = 0; i < s.icons.size(); i++) {
+    for (const RuinsArrowDef::MapIcon& m : world.area.ruinsArrows[a].mapIcons) {
         bool on = false;
         for (const Pair& p : PAIRS)
-            if ((d.mapIcons[i].corner == p.a || d.mapIcons[i].corner == p.b) && CheckGrid::contains(gridString, p.pattern)) on = true;
-        s.icons[i] = on ? 1 : 0;
+            if ((m.corner == p.a || m.corner == p.b) && CheckGrid::contains(gridString, p.pattern)) on = true;
+        world.setArtifactIcon(m.button, m.icon, on);
     }
 }
 
@@ -213,18 +193,24 @@ void RuinsArrows::spawnTrail(World& world, int a) {
     const float len = std::sqrt((tx - sx) * (tx - sx) + (ty - sy) * (ty - sy));
     const float ux = len > 0 ? (tx - sx) / len : 0, uy = len > 0 ? (ty - sy) / len : 0;
     const int n = (int)(len / t.distance) + 1;
-    s.trail.clear();
-    for (int i = 0; i < n; i++) s.trail.push_back({sx + i * t.distance * ux - ox, sy + i * t.distance * uy - oy});
+    s.repeatPoints.clear();
+    for (int i = 0; i < n; i++) s.repeatPoints.push_back({sx + i * t.distance * ux - ox, sy + i * t.distance * uy - oy});
     // RepeatTrailSpawns: a run now (its first spawn at once), then one every `repeat` seconds.
     s.repeating = true;
     s.repeatWait = t.repeat;
-    s.staggers.push_back(Stagger());
-    spawnNext(world, a, s.staggers.back());
+    startRun(world, a, s.repeatPoints);
+}
+
+void RuinsArrows::startRun(World& world, int a, const Points& points) {
+    Stagger st;
+    st.points = points;
+    spawnNext(world, a, st);
+    arrows_[a].staggers.push_back(std::move(st));
 }
 
 void RuinsArrows::spawnNext(World& world, int a, Stagger& st) {
     const RuinsArrowDef::Trail& t = world.area.ruinsArrows[a].trail;
-    const std::pair<float, float>& p = arrows_[a].trail[st.next++];
+    const std::pair<float, float>& p = st.points[st.next++];
     world.particles.spawn(world, t.particles, p.first, p.second);
     st.wait = t.delay;
 }
@@ -237,20 +223,18 @@ void RuinsArrows::update(World& world, float dt) {
         Arrow& s = arrows_[a];
         // The trail (coroutines on the trail's object: only while it's active).
         if (world.objects.activeInHierarchy(d.trail.object)) {
-            for (size_t i = 0; i < s.staggers.size(); i++) {
-                Stagger& st = s.staggers[i];
+            for (Stagger& st : s.staggers) {
                 st.wait -= dt;
-                if (st.wait <= 0 && st.next < s.trail.size()) spawnNext(world, a, st);
+                if (st.wait <= 0 && st.next < st.points.size()) spawnNext(world, a, st);
             }
             s.staggers.erase(std::remove_if(s.staggers.begin(), s.staggers.end(),
-                                            [&](const Stagger& st) { return st.next >= s.trail.size() && st.wait <= 0; }),
+                                            [](const Stagger& st) { return st.next >= st.points.size() && st.wait <= 0; }),
                              s.staggers.end());
             if (s.repeating) {
                 s.repeatWait -= dt;
                 if (s.repeatWait <= 0) {
                     s.repeatWait += d.trail.repeat;
-                    s.staggers.push_back(Stagger());
-                    spawnNext(world, a, s.staggers.back());
+                    startRun(world, a, s.repeatPoints);
                 }
             }
         } else {
@@ -265,10 +249,10 @@ void RuinsArrows::update(World& world, float dt) {
             if (rod.flash >= 2 * d.rods[r].flashTime) rod.flash = -1;
             world.objects.setFill(d.rods[r].runes, rod.flash >= 0 && rod.flash < d.rods[r].flashTime ? d.flashColor : 0);
         }
-        // BobAnimation: down a pixel, back, up a pixel, back, each cycle.
+        // BobAnimation: down a pixel, back, up a pixel (unless firstUp is -1), back, each cycle.
         if (d.bob && world.objects.activeInHierarchy(d.renderer)) {
             const float t = std::fmod(time_ + d.bobOffset, d.bobLength);
-            const int px = t >= d.bobUp ? 1 : t >= d.bobMiddle ? 0 : t >= d.bobDown ? -1 : 0;
+            const int px = d.bobUp >= 0 && t >= d.bobUp ? 1 : t >= d.bobMiddle ? 0 : t >= d.bobDown ? -1 : 0;
             if (px != s.bobPixels) {
                 s.bobPixels = px;
                 world.objects.setPlacement(area, d.renderer, -1, 0, px / (float)area.ppu);
@@ -279,16 +263,6 @@ void RuinsArrows::update(World& world, float dt) {
             if (world.objects.activeInHierarchy(d.rods[r].object))
                 s.rods[r].onLastFrame = world.objects.rendererEnabled(d.rods[r].runes);
     }
-}
-
-bool RuinsArrows::iconShown(const Area& area, int islandId, int icon) const {
-    for (size_t a = 0; a < arrows_.size(); a++) {
-        const RuinsArrowDef& d = area.ruinsArrows[a];
-        for (size_t i = 0; i < d.mapIcons.size(); i++)
-            if (d.mapIcons[i].button == islandId && d.mapIcons[i].icon == icon) return arrows_[a].icons[i] != 0;
-    }
-    const ArtifactButtonDef* b = area.artifact.button(islandId);
-    return b && icon >= 0 && icon < (int)b->iconsEnabled.size() && b->iconsEnabled[icon];
 }
 
 } // namespace village

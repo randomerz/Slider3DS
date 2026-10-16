@@ -50,6 +50,8 @@ void World::reloadObjects() {
     animators.reset(area);
     particles.reset();
     ruins.reset(area);
+    artifactIcons_.clear();
+    for (const ArtifactButtonDef& b : area.artifact.buttons) artifactIcons_.push_back(b.iconsEnabled);
     starts.reset(area);
     runStarts();
     knots.update(*this);
@@ -188,6 +190,19 @@ bool World::interact() {
         }
     }
     return interacted;
+}
+
+bool World::artifactIconShown(int islandId, int icon) const {
+    for (size_t b = 0; b < area.artifact.buttons.size(); b++)
+        if (area.artifact.buttons[b].islandId == islandId)
+            return icon >= 0 && icon < (int)artifactIcons_[b].size() && artifactIcons_[b][icon];
+    return false;
+}
+
+void World::setArtifactIcon(int islandId, int icon, bool shown) {
+    for (size_t b = 0; b < area.artifact.buttons.size(); b++)
+        if (area.artifact.buttons[b].islandId == islandId && icon >= 0 && icon < (int)artifactIcons_[b].size())
+            artifactIcons_[b][icon] = shown ? 1 : 0;
 }
 
 bool World::promptShown() const {
