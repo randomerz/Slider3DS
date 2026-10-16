@@ -18,6 +18,7 @@ void setTileObjects(World& world, const STileDef& s, bool active) {
 void World::runStarts() {
     animators.enable(*this); // OnEnable comes before Start
     ruins.activate(*this);   // (rods' Awake, the arrow's Start)
+    chad.activate(*this);
     starts.update(*this);
 }
 
@@ -26,6 +27,7 @@ void World::sendGridEvents() {
     const std::vector<GridEvent> events = grid.takeEvents();
     grid.clearEvents(); // (a moved-from vector is valid but unspecified)
     ruins.gridEvents(*this, events);
+    chad.gridEvents(*this, events);
     runStarts(); // (the arrow may show the buried Slider)
 }
 
@@ -50,6 +52,7 @@ void World::reloadObjects() {
     animators.reset(area);
     particles.reset();
     ruins.reset(area);
+    chad.reset(area);
     artifactIcons_.clear();
     for (const ArtifactButtonDef& b : area.artifact.buttons) artifactIcons_.push_back(b.iconsEnabled);
     starts.reset(area);
@@ -89,6 +92,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
+    chad.update(*this, dt); // (scripts' Update comes before the coroutine that ends moves)
     sendGridEvents(); // moves started since the last frame (the stylus), before their tiles slide
     artifact.update(grid, dt, player.stile);
     sendGridEvents(); // tiles arrived, queued moves started
@@ -131,6 +135,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     runStarts();
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
     ruins.update(*this, dt);
+    chad.coroutines(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
     if (effects.fade > 0)

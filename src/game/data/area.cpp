@@ -129,6 +129,8 @@ static float sampleCurve(const float* samples, float t) {
 }
 float ItemDef::curveX(float t) const { return sampleCurve(xCurve, t); }
 float ItemDef::curveY(float t) const { return sampleCurve(yCurve, t); }
+float ChadJumpDef::curveX(float t) const { return sampleCurve(xCurve, t); }
+float ChadJumpDef::curveY(float t) const { return sampleCurve(yCurve, t); }
 
 int Anim::frameAt(float t) const {
     if (frames.empty()) return -1;
@@ -189,6 +191,10 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
         if (d.method == CallDef::Method::KnotCheckParticles || d.method == CallDef::Method::KnotSetToCorrect) {
             if (c.has("knotBox")) d.data = c["knotBox"].asInt(-1);
             else d.method = CallDef::Method::Unsupported; // its knot box was left out (the export says so)
+        }
+        if (d.method == CallDef::Method::ChadJumpStarter || d.method == CallDef::Method::ChadSetIsOnRock) {
+            if (c.has("chadJump")) d.data = c["chadJump"].asInt(-1);
+            else d.method = CallDef::Method::Unsupported; // its ChadJump was left out (the export says so)
         }
         if (d.method == CallDef::Method::SetColliderEnabled) { // (colliders load first)
             if (c.has("collider")) d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
@@ -253,6 +259,10 @@ static ConditionDef readCondition(const Json& c) {
         if (d.type == T::Spec && d.spec == ConditionDef::Spec::RuinsRodsOn) {
             d.data = c["ruinsArrow"].asInt(-1);
             if (!c.has("ruinsArrow")) d.type = T::Unsupported;
+        }
+        if (d.type == T::Spec && (d.spec == ConditionDef::Spec::ChadFell || d.spec == ConditionDef::Spec::ChadTipped)) {
+            d.data = c["chadJump"].asInt(-1);
+            if (!c.has("chadJump")) d.type = T::Unsupported;
         }
     }
     return d;
@@ -372,6 +382,38 @@ static RuinsArrowDef readRuinsArrow(const Json& j) {
         d.bobMiddle = b["middle"].asFloat(1.5f);
         d.bobUp = b["up"].asFloat(2);
         d.bobOffset = b["offset"].asFloat();
+    }
+    return d;
+}
+
+static ChadJumpDef readChadJump(const Json& j, Area& out) {
+    ChadJumpDef d;
+    d.object = j["object"].asInt(-1);
+    d.renderer = j["renderer"].asInt(-1);
+    d.animator = j["animator"].asInt(-1);
+    d.collider = j["collider"].asInt(-1);
+    d.item = j["item"].asInt(-1);
+    d.island = j["island"].asInt();
+    d.owner = j["owner"].asInt();
+    d.startX = j["start"].at(0).asFloat();
+    d.startY = j["start"].at(1).asFloat();
+    d.jumpX = j["jump"].at(0).asFloat();
+    d.jumpY = j["jump"].at(1).asFloat();
+    d.fallX = j["fall"].at(0).asFloat();
+    d.fallY = j["fall"].at(1).asFloat();
+    for (int k = 0; k < ItemDef::CURVE_SAMPLES; k++) {
+        d.xCurve[k] = j["xCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
+        d.yCurve[k] = j["yCurve"].at(k).asFloat((float)k / (ItemDef::CURVE_SAMPLES - 1));
+    }
+    d.jumpDuration = j["jumpDuration"].asFloat(1);
+    d.fallDuration = j["fallDuration"].asFloat(0.5f);
+    d.onJumpFinish = readCalls(j["onJumpFinish"], out);
+    if (j.has("tip")) {
+        const Json& t = j["tip"];
+        d.tips = true;
+        d.timeTipped = t["time"].asFloat(2);
+        d.tipNpc = t["npc"].asInt(-1);
+        d.tipAnimator = t["animator"].asInt(-1);
     }
     return d;
 }
@@ -632,6 +674,10 @@ static bool validate(const Area& a, std::string* error) {
             if ((c.method == M::KnotCheckParticles || c.method == M::KnotSetToCorrect) &&
                 (c.data < 0 || c.data >= (int)a.knotBoxes.size() || a.knotBoxes[c.data].object != c.target))
                 return false;
+            if ((c.method == M::ChadJumpStarter || c.method == M::ChadSetIsOnRock) &&
+                (c.data < 0 || c.data >= (int)a.chadJumps.size() || a.chadJumps[c.data].object != c.target ||
+                 (c.method == M::ChadSetIsOnRock && !a.chadJumps[c.data].tips)))
+                return false;
             if (isTeleport(c.method)) {
                 if (c.data < 0 || c.data >= (int)a.teleports.size()) return false;
                 const TeleportDef& t = a.teleports[c.data];
@@ -692,6 +738,10 @@ static bool validate(const Area& a, std::string* error) {
             if (d.spec == S::RuinsRodsOn &&
                 (d.data < 0 || d.data >= (int)a.ruinsArrows.size() || a.ruinsArrows[d.data].object != d.specTarget))
                 return false;
+            if ((d.spec == S::ChadFell || d.spec == S::ChadTipped) &&
+                (d.data < 0 || d.data >= (int)a.chadJumps.size() || a.chadJumps[d.data].object != d.specTarget ||
+                 (d.spec == S::ChadTipped && !a.chadJumps[d.data].tips)))
+                return false;
         }
         return true;
     };
@@ -739,6 +789,16 @@ static bool validate(const Area& a, std::string* error) {
             ok = ok && b && m.icon >= 0 && m.icon < (int)b->icons.size();
         }
         if (!ok) return fail(error, "ruins arrow: bad object, sprite, rod, particles, trail or map icon");
+    }
+    for (const ChadJumpDef& c : a.chadJumps) {
+        const bool ok = objectOk(c.object) && objectOk(c.renderer) && worldSpriteOn[c.renderer] && c.animator >= 0 &&
+                        c.animator < (int)a.animators.size() && c.collider >= 0 && c.collider < (int)a.objectColliders.size() &&
+                        a.objectColliders[c.collider].object == c.object && c.item >= -1 && c.item < (int)a.items.size() &&
+                        a.stile(c.island) && ownerOk(c.owner) && c.jumpDuration > 0 && c.fallDuration > 0 &&
+                        callsOk(c.onJumpFinish) &&
+                        (!c.tips || (c.timeTipped >= 0 && c.tipNpc >= 0 && c.tipNpc < (int)a.npcs.size() && c.tipAnimator >= 0 &&
+                                     c.tipAnimator < (int)a.animators.size()));
+        if (!ok) return fail(error, "chad jump: bad object, renderer, animator, collider, item, island, owner or call");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");
@@ -884,6 +944,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
     for (const Json& j : doc["knotBoxes"].items()) out.knotBoxes.push_back(readKnotBox(j));
     for (const Json& j : doc["ruinsArrows"].items()) out.ruinsArrows.push_back(readRuinsArrow(j));
+    for (const Json& j : doc["chadJumps"].items()) out.chadJumps.push_back(readChadJump(j, out));
     for (const Json& j : doc["particles"].items()) out.particles.push_back(readParticles(j));
     if (doc.has("playerAction")) {
         const Json& pa = doc["playerAction"];
@@ -1014,6 +1075,15 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (size_t i = 0; i < out.animators.size(); i++) {
         const int o = out.animators[i].object;
         if (o >= 0 && o < (int)out.objects.size()) out.animatorByObject[o] = (int)i;
+    }
+    for (ChadJumpDef& c : out.chadJumps) { // exported as objects
+        auto animatorOf = [&](int o) { return o >= 0 && o < (int)out.objects.size() ? out.animatorByObject[o] : -1; };
+        c.animator = animatorOf(c.animator);
+        c.tipAnimator = animatorOf(c.tipAnimator);
+        int npc = -1; // (npcOn's component index isn't built yet)
+        for (int i = 0; i < (int)out.npcs.size(); i++)
+            if (out.npcs[i].object == c.tipNpc) npc = i;
+        c.tipNpc = c.tipNpc >= 0 ? npc : -1;
     }
     if (!validate(out, error)) return false;
     buildComponentIndex(out);

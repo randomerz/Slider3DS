@@ -79,6 +79,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
         if (objects.sprite(ws.object) >= 0) sp.sprite = objects.sprite(ws.object); // set by a script
         sp.fill = objects.fill(ws.object);
+        if (objects.sortingOrder(ws.object) != ObjectStates::EXPORTED_ORDER) sp.order = objects.sortingOrder(ws.object);
         const int animator = area.animatorOn(ws.object);
         if (animator >= 0 && world.animators.sprite(animator) >= 0) sp.sprite = world.animators.sprite(animator);
         int carriedOrder;

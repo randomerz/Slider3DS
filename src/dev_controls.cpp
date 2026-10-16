@@ -6,7 +6,24 @@
 bool DevControls::update(const plat::Input& in, World& world) {
     const Area& area = world.area;
     if (in.pressed & plat::BTN_SELECT) showPerf = !showPerf;
-    if (in.pressed & plat::BTN_X) noclip = !noclip;
+    if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_X)) {
+        // Chad: Sliders 2-8 collected (9's slot, in the middle, empty), next to him. Talk to him to
+        // make him jump; then slide another tile to tip him, or his tile 8 to make him fall.
+        collected = true;
+        for (int id = 2; id <= 8; id++) {
+            world.setTileActive(id, true);
+            world.state.setCollectible("Slider " + std::to_string(id), "Village", true);
+        }
+        world.reloadObjects();
+        if (!area.chadJumps.empty()) {
+            float x, y;
+            world.objectPosition(area.chadJumps[0].object, x, y);
+            world.placeNear(x - 1, y - 1);
+        }
+        printf("Chad setup: tiles 2-8 collected, next to Chad; grid %s\n", world.grid.gridString().c_str());
+    } else if (in.pressed & plat::BTN_X) {
+        noclip = !noclip;
+    }
 
     if (!area.spawns.empty() && (in.pressed & plat::BTN_R)) {
         spawnIndex = (spawnIndex + 1) % area.spawns.size();

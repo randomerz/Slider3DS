@@ -11189,7 +11189,8 @@
               "onEnd": [
                 {
                   "method": "ChadJump.JumpStarter",
-                  "target": 325
+                  "target": 325,
+                  "chadJump": 0
                 },
                 {
                   "method": "VarManager.SetBoolOn",
@@ -11253,7 +11254,8 @@
             {
               "type": "spec",
               "spec": "VillageChadJump.DidSlideAfterJumping",
-              "specTarget": 325
+              "specTarget": 325,
+              "chadJump": 0
             }
           ],
           "anyOf": false,
@@ -11288,7 +11290,8 @@
             {
               "type": "spec",
               "spec": "ChadJump.ChadFell",
-              "specTarget": 325
+              "specTarget": 325,
+              "chadJump": 0
             }
           ],
           "anyOf": false,
@@ -14173,6 +14176,36 @@
         "middle": 1.5,
         "up": 2,
         "offset": 0
+      }
+    }
+  ],
+  "chadJumps": [
+    {
+      "object": 325,
+      "renderer": 326,
+      "animator": 326,
+      "collider": 137,
+      "item": 9,
+      "island": 8,
+      "owner": 8,
+      "start": [3.5,3],
+      "jump": [5,4],
+      "fall": [6,3],
+      "xCurve": [0,0.0135,0.0361,0.0728,0.1339,0.2407,0.4027,0.547,0.6471,0.7194,0.7747,0.8188,0.8548,0.8847,0.91,0.9314,0.9497,0.9654,0.9788,0.9903,1],
+      "yCurve": [0,0.2255,0.4161,0.5906,0.7527,0.9023,1.0358,1.1397,1.1578,1.1618,1.1631,1.1553,1.1133,1.0022,0.9038,0.902,0.902,0.9045,0.9113,0.928,1],
+      "jumpDuration": 1,
+      "fallDuration": 0.5,
+      "onJumpFinish": [
+        {
+          "method": "VillageChadJump.SetIsOnRock",
+          "target": 325,
+          "chadJump": 0
+        }
+      ],
+      "tip": {
+        "time": 3,
+        "npc": 325,
+        "animator": 326
       }
     }
   ],

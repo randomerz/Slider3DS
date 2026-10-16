@@ -18,6 +18,7 @@
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
 #include "game/village/knot_box.h"
+#include "game/village/chad_jump.h"
 #include "game/village/ruins_arrow.h"
 
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
@@ -113,6 +114,7 @@ public:
     Particles particles;
     village::KnotBoxes knots; // the knot puzzle's lines (Village)
     village::RuinsArrows ruins; // the ruins arrow, its rods and trail (Village)
+    village::ChadJumps chad;    // Chad's jump onto the rock and fall (Village)
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now

@@ -38,6 +38,7 @@ public:
 
     // The sprite (Area::sprites index) the Animator's object shows, -1 = none yet (use the exported one).
     int sprite(int animator) const { return s_[animator].sprite; }
+    int controller(int animator) const { return s_[animator].controller; } // Area::animatorControllers index
     const std::string& stateName(const Area& area, int animator) const;
     bool param(const Area& area, int animator, const std::string& name) const;
 

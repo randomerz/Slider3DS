@@ -126,13 +126,17 @@ struct ObjectCollider {
 //   KnotSolved        KnotBox.CheckPuzzle on knotBoxes[data]: no bad lines
 //   KnotPartlySolved  KnotBox.CheckPuzzlePartial on knotBoxes[data]: at most 3 bad lines
 //   RuinsRodsOn       RuinsArrow.CheckActiveRods on ruinsArrows[data]: some rod is lit
+//   ChadFell          ChadJump.ChadFell on chadJumps[data]: he has fallen off the rock
+//   ChadTipped        VillageChadJump.DidSlideAfterJumping on chadJumps[data]: a tile slid while he was up
 // To add one: a line here, its cases in village::checkSpec / specReadsOnlyStateAndGrid (game/village),
 // and its name in the exporter's PortSpecs.
 #define SLIDER_SPEC_CHECKS(X)                   \
     X(VillageFishOn, "VillageGrid.CheckFishOn") \
     X(KnotSolved, "KnotBox.CheckPuzzle")        \
     X(KnotPartlySolved, "KnotBox.CheckPuzzlePartial") \
-    X(RuinsRodsOn, "RuinsArrow.CheckActiveRods")
+    X(RuinsRodsOn, "RuinsArrow.CheckActiveRods")      \
+    X(ChadFell, "ChadJump.ChadFell")                  \
+    X(ChadTipped, "VillageChadJump.DidSlideAfterJumping")
 
 // One Condition (Condition.cs) as exported. Spec conditions the port doesn't check load as Unsupported.
 struct ConditionDef {
@@ -149,7 +153,8 @@ struct ConditionDef {
     std::vector<int> stationaryTiles; // GridStationary: these tiles must not be moving
     Spec spec = Spec(0);              // Spec: which check (name: its exported method)
     int specTarget = -1;              // Spec: the object its check runs on (e.g. the KnotBox)
-    int data = -1;                    // KnotSolved / KnotPartlySolved: Area::knotBoxes index; RuinsRodsOn: Area::ruinsArrows
+    int data = -1;                    // KnotSolved / KnotPartlySolved: Area::knotBoxes index; RuinsRodsOn: Area::ruinsArrows;
+                                      // ChadFell / ChadTipped: Area::chadJumps
 };
 
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
@@ -177,6 +182,8 @@ struct ConditionDef {
 //   ItemSortingOrderInc/Dec PlayerAction.SetItemSortingOrderInc/Dec(intArg): the carried item's sorting order
 //   KnotCheckParticles      KnotBox.CheckParticles on knotBoxes[data]: sparkles if solved
 //   KnotSetToCorrect        KnotBox.SetToCorrectPositions on knotBoxes[data]: the nodes go to their solved spots
+//   ChadJumpStarter         ChadJump.JumpStarter on chadJumps[data]: he jumps onto the rock
+//   ChadSetIsOnRock         VillageChadJump.SetIsOnRock on chadJumps[data]: from now on slides tip him
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -209,7 +216,9 @@ struct ConditionDef {
     X(ItemSortingOrderInc, "PlayerAction.SetItemSortingOrderInc")      \
     X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")      \
     X(KnotCheckParticles, "KnotBox.CheckParticles")                    \
-    X(KnotSetToCorrect, "KnotBox.SetToCorrectPositions")
+    X(KnotSetToCorrect, "KnotBox.SetToCorrectPositions")              \
+    X(ChadJumpStarter, "ChadJump.JumpStarter")                         \
+    X(ChadSetIsOnRock, "VillageChadJump.SetIsOnRock")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -229,7 +238,8 @@ struct CallDef {
     std::string stringArg;
     // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index;
     // SetAnimatorController: Area::animatorControllers index; SetColliderEnabled: ObjectCollider::slot;
-    // KnotCheckParticles / KnotSetToCorrect: Area::knotBoxes index.
+    // KnotCheckParticles / KnotSetToCorrect: Area::knotBoxes index; ChadJumpStarter / ChadSetIsOnRock:
+    // Area::chadJumps index.
     int data = -1;
 };
 
@@ -510,6 +520,29 @@ struct RuinsArrowDef {
     float bobLength = 3, bobDown = 0.5f, bobMiddle = 1.5f, bobUp = 2, bobOffset = 0;
 };
 
+// ChadJump, with the VillageChadJump on the same object (Chad, holding the Ruins Fragment): JumpStarter
+// moves him onto a rock along two curves; once up, a slide of his own STile makes him tip, fall
+// off and drop the item, and (VillageChadJump) other slides make him tip for a while.
+struct ChadJumpDef {
+    int object = -1;              // the ChadJump (its transform moves: start -> jump -> fall)
+    int renderer = -1;            // npcRenderer's object (sorting order 1 from the jump until he lands)
+    int animator = -1;            // npcAnimator: Area::animators index (exported: its object)
+    int collider = -1;            // npcCollider: ObjectCollider::slot (off from the jump until the item lands)
+    int item = -1;                // artifactItem: Area::items index, -1 = none
+    int island = 0;               // islandId: the STile whose move makes him fall
+    int owner = 0;                // start / jump / fall transforms: positions on this owner
+    float startX = 0, startY = 0, jumpX = 0, jumpY = 0, fallX = 0, fallY = 0;
+    float xCurve[ItemDef::CURVE_SAMPLES] = {}, yCurve[ItemDef::CURVE_SAMPLES] = {}; // xJumpMotion / yJumpMotion
+    float jumpDuration = 1, fallDuration = 0.5f;
+    std::vector<CallDef> onJumpFinish;
+    bool tips = false;            // a VillageChadJump on the same object:
+    float timeTipped = 2;         //   how long a slide tips him
+    int tipNpc = -1;              //   chadNPC: Area::npcs index (types its current dialogue after a tip; exported: its object)
+    int tipAnimator = -1;         //   chadAnimator: Area::animators index (exported: its object)
+    float curveX(float t) const;  // xJumpMotion.Evaluate(t), t in 0..1
+    float curveY(float t) const;
+};
+
 // The area's SGrid subclass and the objects its methods act on.
 struct AreaGridDef {
     std::string type;          // e.g. "VillageGrid"
@@ -614,6 +647,7 @@ struct Area {
     std::vector<ItemDef> items;
     std::vector<KnotBoxDef> knotBoxes;
     std::vector<RuinsArrowDef> ruinsArrows;
+    std::vector<ChadJumpDef> chadJumps;
     std::vector<ParticlesDef> particles;
     PlayerActionDef playerAction;
     std::vector<AnimatorControllerDef> animatorControllers;

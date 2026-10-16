@@ -300,7 +300,7 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         "ArtifactScreenHider.AddScreensAndShow",
         "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "Breadge.Pickup",
         "CatAbductionController.SetPickedUp",
-        "ChadJump.JumpStarter", "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
+        "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
         "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
         "PlaySound.PlayString",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
@@ -340,8 +340,7 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         if (end != std::string::npos) reportedSpecs.insert(report.substr(at + sp.size(), end - at - sp.size()));
     }
     const std::set<std::string> expectedSpecs = {"CatTrick.CheckAutumn", "CatTrick.CheckMittens", "CatTrick.CheckTofu",
-                                                 "ChadJump.ChadFell", "Player.GetIsOnWater",
-                                                 "VillageChadJump.DidSlideAfterJumping"};
+                                                 "Player.GetIsOnWater"};
     std::string got2;
     for (const std::string& n : specs) got2 += n + ", ";
     check(specs == expectedSpecs, "unsupported spec conditions: " + got2);

@@ -130,6 +130,12 @@ void runCall(World& world, const CallDef& c) {
     case M::KnotSetToCorrect:
         village::knotSetToCorrectPositions(world, c.data);
         break;
+    case M::ChadJumpStarter:
+        world.chad.jumpStarter(world, c.data);
+        break;
+    case M::ChadSetIsOnRock:
+        world.chad.setIsOnRock(c.data);
+        break;
     case M::Unsupported:
         break;
     }

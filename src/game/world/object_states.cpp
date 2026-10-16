@@ -19,6 +19,7 @@ void ObjectStates::init(const Area& area) {
         if (!ws.enabled) rendererOn_[ws.object] = 0;
     sprite_.assign(n, -1);
     fill_.assign(n, 0);
+    sortingOrder_.assign(n, EXPORTED_ORDER);
     moved_.clear();
     colliderEnabled_.clear();
     for (const ObjectCollider& c : area.objectColliders) colliderEnabled_.push_back(c.enabled ? 1 : 0);
@@ -112,6 +113,16 @@ void ObjectStates::setActive(const Area& area, int object, bool active) {
     self_[object] = active;
     propagate(area, object);
     activeVersion_++;
+}
+
+void ObjectStates::setParent(const Area& area, int object, int parent) {
+    if (parent == parent_[object] || (parent >= 0 && at_[parent] >= at_[object] && at_[parent] < end_[object])) return;
+    parent_[object] = parent;
+    buildOrder();
+    propagate(area, object);
+    updateMoved(area, object);
+    activeVersion_++;
+    placementVersion_++;
 }
 
 void ObjectStates::setPlacement(const Area& area, int object, int owner, float dx, float dy) {

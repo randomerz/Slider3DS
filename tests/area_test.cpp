@@ -180,7 +180,7 @@ TEST(area_village_export_stats) {
     check(a.sprites.size() == VILLAGE_SPRITES, "sprites " + std::to_string(a.sprites.size()));
     check(a.sheetNames.size() == 25, "sheets " + std::to_string(a.sheetNames.size()));
     check(a.worldSprites.size() == 330, "world sprites " + std::to_string(a.worldSprites.size()));
-    check(a.knotBoxes.size() == 1 && a.ruinsArrows.size() == 1 && a.particles.size() == 28,
+    check(a.knotBoxes.size() == 1 && a.ruinsArrows.size() == 1 && a.chadJumps.size() == 1 && a.particles.size() == 28,
           "knot boxes / ruins arrows / particle systems " + std::to_string(a.knotBoxes.size()) + "/" +
               std::to_string(a.ruinsArrows.size()) + "/" + std::to_string(a.particles.size()));
     check(a.anims.size() == 80, "anims " + std::to_string(a.anims.size()));
