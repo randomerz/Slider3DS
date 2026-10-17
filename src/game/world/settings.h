@@ -4,8 +4,9 @@
 #pragma once
 
 struct Settings {
-    // Settings.AutoMove: a tap on an Artifact tile with a single move option moves it (as the save's
-    // forceAutoMove<Area> does during the final puzzle).
+    // A port feature (the user's "solve mode"): a tap on an Artifact tile with a single move option
+    // moves it, as the save's forceAutoMove<Area> does during the final puzzle. Unity registers
+    // Settings.AutoMove (default off) but never reads it.
     bool autoMove = false;
     // Settings.ScreenShake: scales CameraShake's amounts.
     float screenShake = 0.5f;

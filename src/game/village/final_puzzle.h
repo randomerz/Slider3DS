@@ -50,7 +50,8 @@ public:
     void coroutines(World& world, float dt);
 
     bool placingTile9() const { return placing_.active; } // PlaceTile9 is waiting for the move queue
-    // UpdateButtonCompletionsHelper (+ CheckFinalPlacements) now, e.g. after a dev setGrid.
+    // UpdateButtonCompletionsHelper (+ CheckFinalPlacements) now. Dev setups only (after their
+    // setGrid); the game goes through checkButtons / gridSet.
     void updateCompletions(World& world);
 
 private:
