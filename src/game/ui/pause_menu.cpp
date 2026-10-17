@@ -16,10 +16,10 @@ constexpr int CENTER_X = UI_W / 2;
 constexpr int TITLE_Y = 20;                              // the title's middle
 constexpr int BUTTON_W = 120, BUTTON_H = 20, PITCH = 24; // rows 4 px apart
 constexpr int FIRST_Y = 46;                              // the first row's middle
-// Option rows (GeneralOptionsPanel's: label at the left, control at the right), the slider at the
-// right end, the toggle centered under the slider's middle.
-constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X;
-constexpr int SLIDER_W = 64, SLIDER_X = ROW_X + ROW_W - SLIDER_W;
+// Option rows (GeneralOptionsPanel's: label at the left, control at the right), their content
+// padded clear of the cursor's brackets: the slider at the right end, the toggle centered under it.
+constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X, ROW_PAD = 4;
+constexpr int SLIDER_W = 64, SLIDER_X = ROW_X + ROW_W - ROW_PAD - SLIDER_W;
 constexpr int CONTROL_CENTER_X = SLIDER_X + SLIDER_W / 2;
 
 // An item: its kind, label, and for an option the setting it shows and changes (a toggle's flag; a
@@ -225,20 +225,20 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
         const ItemDef& def = p.items[i];
         const Box b = uiBox(def, i), c = uiControl(def, i);
         const bool selected = i == cursor_;
+        if (selected) skin.drawCursor(b.x, b.y, b.w, b.h);
         switch (def.kind) {
         case Kind::Button: {
             const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
             const char* label = def.item == QUIT && confirmQuit_ ? "Really quit?" : def.label;
-            skin.drawButton(b.x, b.y, b.w, b.h, label,
-                            held ? MenuSkin::Button::Pressed : selected ? MenuSkin::Button::Selected : MenuSkin::Button::Normal);
+            skin.drawButton(b.x, b.y, b.w, b.h, label, held);
             break;
         }
         case Kind::Slider:
-            skin.drawLabel(def.label, b.x, b.y + b.h / 2, selected);
+            skin.drawLabel(def.label, b.x + ROW_PAD, b.y + b.h / 2, selected);
             skin.drawSlider(c.x, c.y, c.w, settings.*def.value, selected);
             break;
         case Kind::Toggle:
-            skin.drawLabel(def.label, b.x, b.y + b.h / 2, selected);
+            skin.drawLabel(def.label, b.x + ROW_PAD, b.y + b.h / 2, selected);
             skin.drawToggle(c.x, c.y, settings.*def.flag, selected);
             break;
         }

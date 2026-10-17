@@ -2,10 +2,10 @@
 
 The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   Menu Button (the main menu's; Image sliced, Button sprite swap): normal Button24_0 (a light face
-      over a 2 px shaded bottom edge), pressed _1 (the face 1 px lower), selected _2 (outlined);
-      9-sliced, 4 px borders. (The pause panel's MainMenu Button Variant overrides these with
-      bracket outlines, MainMenuButton20; the port keeps the filled ones: they suit the 3DS's
-      bigger layout.)
+      over a 2 px shaded bottom edge), pressed _1 (the face 1 px lower); 9-sliced, 4 px borders.
+      (Its selected _2, an outline, isn't used.)
+  The cursor: the pause panel's MainMenu Button Variant selected sprite, MainMenuButton20_3 (thick
+      light side brackets; 9-sliced, 3 px borders), drawn around the selected item (user's choice).
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
   UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
@@ -30,7 +30,7 @@ ASSETS = sys.argv[1] if len(sys.argv) > 1 else os.path.join(REPO, "..", "Slider"
 SPRITES = {
     "button": ("Sprites/UI/Button24.png", "Button24_0"),
     "buttonPressed": ("Sprites/UI/Button24.png", "Button24_1"),
-    "buttonSelected": ("Sprites/UI/Button24.png", "Button24_2"),
+    "cursor": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_3"),
     "toggle": ("Sprites/UI/ui_toggle.png", "ui_toggle_0"),
     "toggleSelected": ("Sprites/UI/ui_toggle.png", "ui_toggle_0_selected"),
     "toggleCheck": ("Sprites/UI/ui_toggle.png", "ui_toggle_1"),

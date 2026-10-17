@@ -4,7 +4,7 @@
 //   Options: Screen Shake (slider) / Auto Move (toggle; a port feature) / Back (GeneralOptionsPanel's
 //            widgets, laid out like the Paused page rather than its side-nav panel's list)
 // Laid out for the touch screen on MenuSkin's 2x grid, filling it (bigger than the original's).
-// D-pad up / down: pick an item (it shows selected)   A: use it   left / right: move the slider or
+// D-pad up / down: pick an item (the cursor's brackets frame it)   A: use it   left / right: move the slider or
 // flip the toggle   B: back a page (on Paused: resume)   START: resume
 // Stylus: tap a button or the toggle's row (a button shows pressed while held), drag the slider
 // (only the slider: its label is just a label). Quit asks again (it ends the app; Unity's goes to

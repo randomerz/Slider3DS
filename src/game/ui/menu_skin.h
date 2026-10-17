@@ -1,5 +1,6 @@
 // The original's menu widgets, for the port's menus: its buttons (Menu Button: Button24, 9-sliced,
-// sprite swap), sliders (UI Slider) and toggles (UI Toggle), with TinyUnicode text (a port choice:
+// sprite swap), sliders (UI Slider) and toggles (UI Toggle), a cursor (the pause panel's selected
+// brackets, MainMenuButton20_3, around the selected item), with TinyUnicode text (a port choice:
 // it reads better on the 3DS than the original's menu fonts). Sprites cut by tools/make_ui.py
 // (assets/ui/menu.json), fonts baked by tools/make_font.py.
 //
@@ -20,8 +21,8 @@ public:
     // to 2x), the toggle its sprites' size (8x8 at 1x).
     static constexpr int SLIDER_H = 5, TOGGLE_SIZE = 8;
     static constexpr int PRESS_DROP = 1; // the label follows Button24's pressed face, 1 px lower
-
-    enum class Button { Normal, Selected, Pressed }; // Selected = the menu's cursor (keyboard selection)
+    static constexpr int CURSOR_GAP = 2; // between an item and the cursor's brackets
+    static constexpr int CURSOR_OUTSET = CURSOR_GAP + 2; // the brackets' outer edge (they're 2 px thick)
 
     MenuSkin() = default;
     MenuSkin(const MenuSkin&) = delete;
@@ -33,8 +34,10 @@ public:
 
     // A page title (light), centered on (cx, cy).
     void drawTitle(std::string_view text, int cx, int cy) const;
-    // A button filling the box (its label dark, centered on its face).
-    void drawButton(int x, int y, int w, int h, std::string_view label, Button state) const;
+    // A button filling the box (its label dark, centered on its face); `pressed` sinks the face.
+    void drawButton(int x, int y, int w, int h, std::string_view label, bool pressed) const;
+    // The cursor around the item in the box: brackets CURSOR_OUTSET px outside its sides.
+    void drawCursor(int x, int y, int w, int h) const;
     // An option's label, left-aligned at x, centered on cy: gray, light when selected.
     void drawLabel(std::string_view text, int x, int cy, bool selected) const;
     // A slider (w x SLIDER_H at (x, y)) at `value` 0-1; `selected` swaps its handle.
@@ -57,6 +60,6 @@ private:
     static void drawText(const Font& font, std::string_view text, int x, int cy);
 
     plat::Texture* sheet_ = nullptr;
-    Sprite button_, buttonPressed_, buttonSelected_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
+    Sprite button_, buttonPressed_, cursor_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
     Font dark_, light_, label_;
 };

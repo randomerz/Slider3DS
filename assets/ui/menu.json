@@ -3,11 +3,11 @@
   "sprites": {
     "button": {"rect":[0,0,24,24],"border":[4,4,4,4]},
     "buttonPressed": {"rect":[25,0,24,24],"border":[4,4,4,4]},
-    "buttonSelected": {"rect":[0,25,24,24],"border":[4,4,4,4]},
-    "toggle": {"rect":[25,25,8,8],"border":[0,0,0,0]},
-    "toggleSelected": {"rect":[34,25,8,8],"border":[0,0,0,0]},
-    "toggleCheck": {"rect":[43,25,8,8],"border":[0,0,0,0]},
-    "sliderHandle": {"rect":[52,25,3,5],"border":[0,0,0,0]},
-    "sliderHandleSelected": {"rect":[56,25,3,5],"border":[0,0,0,0]}
+    "cursor": {"rect":[0,25,20,20],"border":[3,3,3,3]},
+    "toggle": {"rect":[21,25,8,8],"border":[0,0,0,0]},
+    "toggleSelected": {"rect":[30,25,8,8],"border":[0,0,0,0]},
+    "toggleCheck": {"rect":[39,25,8,8],"border":[0,0,0,0]},
+    "sliderHandle": {"rect":[48,25,3,5],"border":[0,0,0,0]},
+    "sliderHandleSelected": {"rect":[52,25,3,5],"border":[0,0,0,0]}
   }
 }

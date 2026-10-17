@@ -190,6 +190,8 @@ TEST(pause_menu_boxes_fit_and_dont_overlap) {
         for (int i = 0; i < 3; i++) {
             const Menu::Box a = Menu::itemBox(page[i]);
             CHECK(a.x >= 0 && a.y >= 0 && a.x + a.w <= plat::BOTTOM_W && a.y + a.h <= plat::BOTTOM_H);
+            const int outset = MenuSkin::CURSOR_OUTSET * MenuSkin::UI_SCALE; // the cursor's brackets fit too
+            CHECK(a.x - outset >= 0 && a.x + a.w + outset <= plat::BOTTOM_W);
             if (i > 0) {
                 const Menu::Box prev = Menu::itemBox(page[i - 1]);
                 CHECK(prev.y + prev.h <= a.y);

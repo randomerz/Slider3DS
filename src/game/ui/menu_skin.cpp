@@ -46,7 +46,7 @@ bool MenuSkin::load(std::string* error) {
     };
     read("button", button_);
     read("buttonPressed", buttonPressed_);
-    read("buttonSelected", buttonSelected_);
+    read("cursor", cursor_);
     read("toggle", toggle_);
     read("toggleSelected", toggleSelected_);
     read("toggleCheck", toggleCheck_);
@@ -111,10 +111,14 @@ void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {
     drawText(light_, text, cx - light_.textWidth(text) / 2, cy);
 }
 
-void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, Button state) const {
-    drawNineSlice(state == Button::Pressed ? buttonPressed_ : state == Button::Selected ? buttonSelected_ : button_, x, y, w, h);
-    const int drop = state == Button::Pressed ? PRESS_DROP : 0;
+void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bool pressed) const {
+    drawNineSlice(pressed ? buttonPressed_ : button_, x, y, w, h);
+    const int drop = pressed ? PRESS_DROP : 0;
     drawText(dark_, label, x + (w - dark_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop);
+}
+
+void MenuSkin::drawCursor(int x, int y, int w, int h) const {
+    drawNineSlice(cursor_, x - CURSOR_OUTSET, y, w + 2 * CURSOR_OUTSET, h);
 }
 
 void MenuSkin::drawLabel(std::string_view text, int x, int cy, bool selected) const {
