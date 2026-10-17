@@ -4,8 +4,8 @@
 //   - tap a collected tile with somewhere to go: it's selected (pressed) and its move options
 //     highlight; tap an option to slide it there (it stays selected), anything else deselects
 //     (tapping another collected tile selects that one instead);
-//   - drag a tile onto an option to slide it there; releasing it back on itself selects it,
-//     anywhere else cancels;
+//   - drag a tile onto an option to slide it there; releasing it back on itself counts as a tap
+//     (selects it; auto-moves a single option), anywhere else cancels;
 //   - tiles in a running move show pressed; a button whose slot changes nudges toward it.
 // Positions are UI pixels from the Area's ArtifactDef, drawn `scale`x around (centerX, centerY).
 // At 2x the outer frame runs off the 320x240 screen; the buttons and the area art fit.

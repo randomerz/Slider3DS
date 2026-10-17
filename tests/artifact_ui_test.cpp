@@ -176,6 +176,14 @@ TEST(artifact_ui_auto_move_drag_back_onto_itself) {
     f.frame(false);
     CHECK(f.ui.selected() == 0);
     check(f.artifact.gridString(f.grid) == "624_857_1#3", "auto-moved: " + f.artifact.gridString(f.grid));
+
+    // With more than one option it only selects (here: tile 1 alone on the grid, four options).
+    Fixture g;
+    g.settings.autoMove = true;
+    g.ui.slotCenter(villageArea(), 0, 0, x, y);
+    for (int i = 0; i <= 4; i++) g.frame(true, x + (i <= 2 ? i : 4 - i) * 3, y);
+    g.frame(false);
+    CHECK(g.ui.selected() == 1 && g.ui.isOption(1, 0) && g.artifact.queueEmpty());
 }
 
 TEST(artifact_ui_auto_move) {
