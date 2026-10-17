@@ -15,7 +15,7 @@ constexpr float DT = 1.0f / 60;
 
 // Tiles 1-6 collected (as Sliders 2-6), the grid as `ids` (grid-string order), the scene reloaded.
 World ruinsWorld(const char* ids) {
-    World world(villageArea());
+    World world(villageArea(), DEFAULT_SETTINGS);
     for (int id = 2; id <= 6; id++) {
         world.setTileActive(id, true);
         world.state.setCollectible("Slider " + std::to_string(id), "Village", true);
@@ -97,7 +97,7 @@ TEST(ruins_arrow_export) {
 TEST(ruins_rods_start_off) {
     // RuinsArrowRod.Awake: off (its runes hidden), as is the arrow, on a new game.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.update(DT, 0, 0, false);
     const RuinsRodDef& r1 = rod(area, 1);
     CHECK(world.objects.sprite(r1.object) == r1.off && !world.objects.rendererEnabled(r1.runes));
@@ -288,7 +288,7 @@ TEST(ruins_arrow_bobs_a_pixel) {
     // BobAnimation (3 s cycle): level until 0.5 s, a pixel down until 1.5 s, level until 2 s, a pixel up.
     const Area& area = villageArea();
     const int renderer = area.ruinsArrows[0].renderer;
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(2, true);
     const struct { float t, dy; } at[] = {{0.3f, 0}, {1.0f, -1}, {1.7f, 0}, {2.5f, 1}, {3.3f, 0}};
     float t = 0;

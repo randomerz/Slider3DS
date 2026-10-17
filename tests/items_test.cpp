@@ -71,7 +71,7 @@ bool near(float a, float b) { return std::fabs(a - b) < 1e-3f; }
 } // namespace
 
 TEST(items_pick_up_animates_then_carries) {
-    World world(itemArea());
+    World world(itemArea(), DEFAULT_SETTINGS);
     const Area& a = world.area;
     frames(world, 1);
     world.action();
@@ -95,7 +95,7 @@ TEST(items_pick_up_animates_then_carries) {
 }
 
 TEST(items_need_a_clear_line_and_range) {
-    World world(itemArea());
+    World world(itemArea(), DEFAULT_SETTINGS);
     world.objects.setActive(world.area, 2, true); // the wall between
     frames(world, 1);
     world.action();
@@ -112,7 +112,7 @@ TEST(items_need_a_clear_line_and_range) {
 }
 
 TEST(items_drop_lands_ahead) {
-    World world(itemArea());
+    World world(itemArea(), DEFAULT_SETTINGS);
     const Area& a = world.area;
     frames(world, 1);
     world.action();
@@ -136,7 +136,7 @@ TEST(items_drop_lands_ahead) {
 }
 
 TEST(items_drop_needs_room) {
-    World world(itemArea());
+    World world(itemArea(), DEFAULT_SETTINGS);
     frames(world, 1);
     world.action();
     frames(world, 40);
@@ -154,7 +154,7 @@ TEST(items_drop_needs_room) {
 }
 
 TEST(items_carried_item_gates_conditions_and_interactions) {
-    World world(itemArea());
+    World world(itemArea(), DEFAULT_SETTINGS);
     const Area& a = world.area;
     check(!runConditionals(world, a.conditionCheckers[0].conditionals), "not carrying: the gate stays shut");
     world.player.x = -3; // into the pedestal's trigger without the knot: not offered
@@ -176,7 +176,7 @@ TEST(items_carried_item_gates_conditions_and_interactions) {
 TEST(items_village_knot_node_round_trip) {
     // Kevin's knot nodes (tile 4) are Items: pick one up and drop it on the tile.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     int knot = -1;
     for (size_t i = 0; i < area.items.size(); i++)
@@ -201,7 +201,7 @@ TEST(items_village_knot_node_round_trip) {
 TEST(items_sorting_order_while_carried) {
     // PlayerAction.SetItemSortingOrderInc / Dec set the order carried items' sprites get (at pick-up,
     // and the carried one's at once); a landed drop resets it (as exported).
-    World world(itemArea());
+    World world(itemArea(), DEFAULT_SETTINGS);
     frames(world, 1);
     world.items.sortingOrderInc(world, 5);
     world.action();

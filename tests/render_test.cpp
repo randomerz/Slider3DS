@@ -114,7 +114,7 @@ void allButNine(World& world) {
 
 // A new-game World with the player parked far off screen (scenes that want it place it).
 World sceneWorld() {
-    World world(villageArea());
+    World world(villageArea(), DEFAULT_SETTINGS);
     world.player.x = world.player.y = 10000;
     return world;
 }
@@ -194,7 +194,7 @@ TEST(render_artifact_goldens) {
     GoldenSet goldens("artifact.txt");
 
     struct Setup {
-        World world{villageArea()};
+        World world{villageArea(), DEFAULT_SETTINGS};
         ArtifactUI ui;
         explicit Setup(bool allButNine) {
             if (allButNine)
@@ -396,7 +396,7 @@ TEST(render_action_indicator_while_an_interaction_is_offered) {
             }
         world.update(1.0f / 60.0f, 0, 0, false);
     };
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.placeAt(*area.spawn("Default"));
     world.update(1.0f / 60.0f, 0, 0, false);
     check(world.interactables.empty() && !indicatorDrawn(world), "nothing on offer by the bed: no indicator");

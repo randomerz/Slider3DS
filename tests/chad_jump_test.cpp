@@ -14,7 +14,7 @@ constexpr float DT = 1.0f / 60;
 
 // Sliders 2-8 collected (the start grid: 9's slot, in the middle, is empty), the scene reloaded.
 World chadWorld() {
-    World world(villageArea());
+    World world(villageArea(), DEFAULT_SETTINGS);
     for (int id = 2; id <= 8; id++) {
         world.setTileActive(id, true);
         world.state.setCollectible("Slider " + std::to_string(id), "Village", true);
@@ -106,7 +106,7 @@ TEST(chad_fragment_out_of_reach_until_he_falls) {
     const ItemDef& it = villageArea().items[villageArea().chadJumps[0].item];
     World world = chadWorld();
     CHECK(!world.objects.active(world.area.objectColliders[it.colliderSlot]));
-    World caves(villageArea());
+    World caves(villageArea(), DEFAULT_SETTINGS);
     caves.state.setCollectible("Slider 3", "Caves", true);
     for (int id = 2; id <= 8; id++) caves.setTileActive(id, true);
     caves.reloadObjects();

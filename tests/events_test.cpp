@@ -44,7 +44,7 @@ TEST(events_house_door_round_trip) {
     // Tile 1's house: the exit inside is offered while the player stands on it; A (interact)
     // teleports the player outside with a fade from black. The door outside brings it back in.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     check(standIn(world, HOUSE1_EXIT), "standing on tile 1's house exit");
     world.update(DT, 0, 0, false);
     const int exitIndex = interactionOn(area, HOUSE1_EXIT);
@@ -78,7 +78,7 @@ TEST(events_house_door_round_trip) {
 TEST(events_doors_are_not_offered_without_their_trigger) {
     // Control: the Default spawn (inside, by the bed) touches no interaction, and A does nothing.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.placeAt(*area.spawn("Default"));
     const float x = world.player.x, y = world.player.y;
     world.update(DT, 0, 0, false);
@@ -91,7 +91,7 @@ TEST(events_collectible_pickup_collects_its_tile) {
     // Slider 2 lies in the world: touching it collects it (inventory), hides it, and its onCollect
     // (Collectible.ActivateSTile(2)) adds tile 2 to the grid.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     const std::string path = "Map/World Grid/Objects/Slider 2 Collectible";
     const int object = area.findObject(path);
     check(world.objects.activeInHierarchy(object), "Slider 2 is out at the start");
@@ -107,7 +107,7 @@ TEST(events_disabled_at_start_collectibles_are_hidden) {
     // Collectibles with shouldDisableAtStart (Sliders handed out by NPCs) start hidden, so walking
     // over where they sit collects nothing.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     const std::string path = "Map/Village 8Puzzle/STile (2)/Objects/Slider 3 Collectible";
     check(!world.objects.activeInHierarchy(area.findObject(path)), "Slider 3 starts hidden");
     world.setTileActive(2, true); // its tile, so the trigger could collide
@@ -119,7 +119,7 @@ TEST(events_disabled_at_start_collectibles_are_hidden) {
 TEST(events_trigger_enter_sets_a_flag) {
     // The Artifact prompt trigger on tile 1 sets villageTouchedGrass on entering.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     check(!world.state.flag("villageTouchedGrass"), "flag starts off");
     check(standIn(world, "Map/Village 8Puzzle/STile (1)/Objects/Artifact Prompt Trigger"), "standing in the prompt trigger");
     world.update(DT, 0, 0, false);

@@ -30,8 +30,8 @@ public:
     // player's tile keeps its walls while it slides). Call before world.update().
     void update(const plat::Input& in, World& world, float dt);
     void draw(const World& world, const SpriteSheets& sheets) const;
-    // Forgets the stylus (a drag in progress is dropped; the selection stays), e.g. when the pause
-    // menu takes the touch screen.
+    // Forgets the stylus (a drag in progress is dropped; the selection stays) and ignores a touch
+    // held now until it's lifted: around the pause menu, which takes the touch screen meanwhile.
     void releaseStylus();
 
     int selected() const { return selectedId_; } // islandId of the selected tile, 0 = none

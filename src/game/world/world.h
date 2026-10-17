@@ -50,16 +50,16 @@ struct Interactable {
     bool operator==(const Interactable& o) const { return kind == o.kind && index == o.index; }
 };
 
-inline const Settings DEFAULT_SETTINGS{};
+inline const Settings DEFAULT_SETTINGS{}; // SettingsManager's defaults
 
 class World {
 public:
     static constexpr float MOVE_SPEED = 5.0f; // world units per second (Player.moveSpeed)
 
     // A new game in `area`: tiles as authored, no flags or collectibles, Starts run. The player is
-    // at the origin until placed. `settings` (the player's, owned by main) must outlive the World;
-    // the default is SettingsManager's defaults.
-    explicit World(const Area& area, const Settings& settings = DEFAULT_SETTINGS);
+    // at the origin until placed. `settings` (the player's, owned by main) must outlive the World
+    // (tests: DEFAULT_SETTINGS, or their own).
+    World(const Area& area, const Settings& settings);
 
     // Scene objects as a fresh load with the current state would have them (e.g. after changing
     // the state in a dev control): authored, uncollected tiles' objects off (STile.Awake), then

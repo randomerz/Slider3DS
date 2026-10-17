@@ -57,7 +57,7 @@ TEST(particles_play_on_awake_export) {
 
 TEST(particles_burst_fly_out_slow_down_and_fade) {
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     const int k = sparkles();
     const ParticlesDef& d = area.particles[k];
@@ -101,7 +101,7 @@ TEST(particles_burst_fly_out_slow_down_and_fade) {
 
 TEST(particles_play_while_playing_and_objects_turning_off) {
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     const int k = sparkles();
     const float dt = 1.0f / 60;
@@ -124,7 +124,7 @@ TEST(particles_loop_rate_force_and_stop) {
     // A ruins rod's sparkles: a burst of 3 on Play, then 0.5-1.5 a second, pushed up by a force;
     // Stop ends the emission but lets them live; Play then starts over (a new burst).
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     const int k = area.ruinsArrows.at(0).rods.at(0).particles;
     const ParticlesDef& d = area.particles[k];
     CHECK(d.loop && d.rateMin == 0.5f && d.rateMax == 1.5f && d.forceY == 0.5f);
@@ -162,7 +162,7 @@ TEST(particles_loop_rate_force_and_stop) {
 TEST(particles_play_on_awake_when_the_object_turns_on) {
     // The buried Slider's sparkles play when it appears, and again each time it turns on.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     const int k = particlesOn(area, "Burried Slider/RuinsSparklesConstant Variant");
     CHECK(k >= 0 && area.particles[k].playOnAwake);
     world.setTileActive(5, true);
@@ -185,7 +185,7 @@ TEST(particles_spawned_copies_and_random_colors) {
     // The ruins trail's sparkle prefab, spawned twice at offsets from the arrow: each plays its bursts
     // (3 x 2) there on its own, in one of its gradient's two colors (fixed keys: gray or brown).
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(2, true);
     const RuinsArrowDef& r = area.ruinsArrows.at(0);
     const int k = r.trail.particles;
@@ -226,7 +226,7 @@ TEST(particles_slow_down_like_unity) {
         d.lifetimeMin = d.lifetimeMax = d.duration = 10;
         d.shapeRadius = 0;
         d.bursts = {{0, 1, 1, 1, 0}};
-        World world(area);
+        World world(area, DEFAULT_SETTINGS);
         world.setTileActive(4, true);
         world.particles.reset();
         float ox, oy;
@@ -259,7 +259,7 @@ TEST(particles_rate_between_two_constants) {
     ParticlesDef& d = area.particles[k];
     d.bursts.clear();
     d.lifetimeMin = d.lifetimeMax = 100;
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.particles.reset();
     world.particles.play(world, k);
     int last = 0;
@@ -280,7 +280,7 @@ TEST(particles_play_until_the_last_particle_dies) {
     ParticlesDef& d = area.particles[k];
     CHECK(!d.loop);
     d.lifetimeMin = d.lifetimeMax = d.duration + 1;
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     world.particles.reset();
     world.particles.play(world, k);
@@ -309,7 +309,7 @@ TEST(particles_force_then_limit_like_unity) {
     d.shapeRadius = 0;
     d.rateMin = d.rateMax = 0;
     d.bursts = {{0, 1, 1, 1, 0}};
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.particles.reset();
     float ox, oy;
     world.objectPosition(d.object, ox, oy);

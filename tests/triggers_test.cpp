@@ -77,7 +77,7 @@ bool offered(const World& world, int interaction) {
 } // namespace
 
 TEST(triggers_enter_and_exit_run_calls) {
-    World world(triggerArea());
+    World world(triggerArea(), DEFAULT_SETTINGS);
     standAt(world, -6);
     check(world.state.flag("entered") && !world.state.flag("exited"), "entering runs onEnter only");
     standAt(world, -6);
@@ -89,7 +89,7 @@ TEST(triggers_enter_and_exit_run_calls) {
 }
 
 TEST(triggers_hiding_the_object_counts_as_exit) {
-    World world(triggerArea());
+    World world(triggerArea(), DEFAULT_SETTINGS);
     standAt(world, -6);
     check(world.triggers.touching(0), "touching the event trigger");
     world.objects.setActive(world.area, 0, false);
@@ -98,7 +98,7 @@ TEST(triggers_hiding_the_object_counts_as_exit) {
 }
 
 TEST(triggers_contact_interaction_runs_on_entering) {
-    World world(triggerArea());
+    World world(triggerArea(), DEFAULT_SETTINGS);
     standAt(world, -3);
     check(world.state.flag("contact"), "PlayerConditionals without addToOnAction runs on contact");
     check(!offered(world, 0), "and isn't offered");
@@ -107,7 +107,7 @@ TEST(triggers_contact_interaction_runs_on_entering) {
 TEST(triggers_exclusions_follow_the_players_collider) {
     // excludeBoat / excludeLand are judged on entering; switching foot <-> boat swaps the player's
     // collider, which re-sends exit + enter (Player.SetIsOnWater), so the offer is re-judged.
-    World world(triggerArea());
+    World world(triggerArea(), DEFAULT_SETTINGS);
     standAt(world, 0);
     check(offered(world, 1), "NoBoat offered on land");
     world.player.onWater = true;
@@ -125,7 +125,7 @@ TEST(triggers_exclusions_follow_the_players_collider) {
 }
 
 TEST(triggers_collider_swap_resends_enter) {
-    World world(triggerArea());
+    World world(triggerArea(), DEFAULT_SETTINGS);
     standAt(world, -6);
     world.state.setFlag("entered", false);
     world.player.onWater = true;
@@ -134,7 +134,7 @@ TEST(triggers_collider_swap_resends_enter) {
 }
 
 TEST(triggers_carried_item_interactions_wait_for_an_item) {
-    World world(triggerArea());
+    World world(triggerArea(), DEFAULT_SETTINGS);
     standAt(world, 6);
     check(!offered(world, 3), "needs a carried item: not offered (no items yet)");
     world.offer({Interactable::Kind::Interaction, 3});
@@ -145,7 +145,7 @@ TEST(triggers_carried_item_interactions_wait_for_an_item) {
 TEST(triggers_interact_runs_the_highest_priority_only) {
     // PlayerAction.Interact: only the offered interactables with the highest priority run; an
     // unsupported call (CowProp.Moo) does nothing.
-    World world(triggerArea());
+    World world(triggerArea(), DEFAULT_SETTINGS);
     world.offer({Interactable::Kind::Interaction, 4});
     world.offer({Interactable::Kind::Interaction, 5});
     world.offer({Interactable::Kind::Interaction, 5}); // offered twice: listed once
@@ -162,7 +162,7 @@ TEST(triggers_tiles_sliding_without_the_player_turn_their_triggers_off) {
     // their colliders, triggers included, off until it ends. Tile 7 (Nemsy's talk trigger) slides
     // into the empty middle slot.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     for (int id = 1; id <= 8; id++) world.setTileActive(id, true);
     world.artifact.init(world.grid);
     const ObjectCollider* trigger = nullptr;
@@ -187,7 +187,7 @@ TEST(triggers_tiles_sliding_without_the_player_turn_their_triggers_off) {
 TEST(triggers_collected_collectibles_stay_hidden_on_reload) {
     // SGrid.Start: a collectible already in the inventory is hidden when the scene (re)loads.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     const int slider2 = area.findObject("Map/World Grid/Objects/Slider 2 Collectible");
     world.reloadObjects();
     check(world.objects.activeInHierarchy(slider2), "not collected: out");
@@ -199,7 +199,7 @@ TEST(triggers_collected_collectibles_stay_hidden_on_reload) {
 TEST(physics_resting_player_is_pushed_out) {
     // Box2D pushes a resting body out too: a player left overlapping the well moves out without input.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int well = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Well");
     for (const ObjectCollider& c : area.objectColliders)
@@ -218,7 +218,7 @@ TEST(physics_resting_player_is_pushed_out) {
 TEST(objects_runtime_placement_moves_colliders) {
     // ObjectStates placement: moving an object moves its colliders (NPC walking, carried items).
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int well = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Well");
     float cx = 0, cy = 0;
@@ -239,7 +239,7 @@ TEST(objects_placement_follows_the_hierarchy_and_owner) {
     // Moving a parent moves its children's colliders; an owner override makes an object follow
     // another tile (its exported position then counts from that tile's center).
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     for (const STileDef& d : area.stiles) world.setTileActive(d.islandId, true);
     const int house = area.findObject("Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/House5");
     const int decorations = area.objects[house].parent;

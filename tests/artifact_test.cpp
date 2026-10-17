@@ -93,7 +93,7 @@ TEST(artifact_set_grid_resyncs) {
 TEST(world_player_rides_tile) {
     // World::update: the player standing on tile 1 rides it as it slides up one slot; while it
     // slides, the player is fenced in and the slot it slid over (tile 8's) isn't solid.
-    World world(villageArea());
+    World world(villageArea(), DEFAULT_SETTINGS);
     world.placeNear(0, 3); // on tile 1, outdoors (somewhere free: a resting player is pushed out)
     const float startY = world.player.y;
     CHECK(world.player.stile == 1);

@@ -10,7 +10,7 @@
 //   L + Y: tiles 2-6 only, the ruins one slide from assembled (slide 2 left; Slider 7)
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there), or the pause
 // menu. Dev builds add a perf overlay (game/dev/dev_overlay). The player's Settings live here,
-// loaded at start and saved when the pause menu closes with them changed.
+// loaded at start and saved when they've changed: as the pause menu closes, and when the app exits.
 #include <cstdio>
 #include <string>
 
@@ -45,6 +45,13 @@ void showLoadError() {
 }
 
 // The new-game start (dev builds: outdoors on tile 1 instead of in the house).
+// Writes `settings` if they differ from what was last saved (one attempt per change).
+void saveIfChanged(const Settings& settings, Settings& saved) {
+    if (settings == saved) return;
+    if (!settings.save()) printf("Couldn't save the settings\n");
+    saved = settings;
+}
+
 void placeAtStart(World& world, DevControls& dev) {
     const Area& area = world.area;
     for (size_t i = 0; i < area.spawns.size(); i++)
@@ -87,19 +94,15 @@ int main(int, char**) {
     DevOverlay overlay;
     PauseMenu pauseMenu;
     placeAtStart(world, dev);
-    int frame = 0;
 
     while (plat::mainLoop()) {
         const double updateStart = plat::nowMs();
         const plat::Input in = plat::pollInput();
-        const bool paused = pauseMenu.isOpen();
-        if (paused) {
+        if (pauseMenu.isOpen()) {
             const PauseMenu::Action action = pauseMenu.update(in, settings);
+            if (action != PauseMenu::Action::None) saveIfChanged(settings, savedSettings);
             if (action == PauseMenu::Action::Quit) break;
-            if (action == PauseMenu::Action::Resume && settings != savedSettings) {
-                if (!settings.save()) printf("Couldn't save the settings\n");
-                savedSettings = settings; // (no retry each resume)
-            }
+            if (action == PauseMenu::Action::Resume) artifactUI.releaseStylus();
         } else if (in.pressed & plat::BTN_START) {
             pauseMenu.open();
             artifactUI.releaseStylus();
@@ -121,7 +124,7 @@ int main(int, char**) {
         plat::beginFrame();
         plat::beginScreen(plat::Screen::Top, plat::rgba(area.background[0], area.background[1], area.background[2]));
         view.begin(area, sheets, world.player.x + world.effects.shakeX(), world.player.y + world.effects.shakeY(),
-                   plat::TOP_W, plat::TOP_H, frame * FRAME_DT, DEV && dev.showInactive);
+                   plat::TOP_W, plat::TOP_H, world.frame * FRAME_DT, DEV && dev.showInactive);
         view.draw(world);
         if (DEV && dev.noclip) // the position point the player moves by (the camera follows it)
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
@@ -139,8 +142,8 @@ int main(int, char**) {
             if (dev.showPerf) overlay.draw();
         }
         plat::endFrame();
-        if (!paused) frame++; // (animations stop while paused)
     }
+    saveIfChanged(settings, savedSettings); // (closed while paused: HOME > Close, the PC window)
 
     font.unload();
     sheets.unload();

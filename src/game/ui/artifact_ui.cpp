@@ -14,7 +14,8 @@ void ArtifactUI::init(const Area& area, const Artifact& artifact) {
     options_.clear();
     artifactResets_ = artifact.resets();
     autoMoveFlag_ = "forceAutoMove" + area.name;
-    releaseStylus();
+    wasTouching_ = dragging_ = false;
+    downSlotX_ = downSlotY_ = hoverX_ = hoverY_ = -1;
     int maxId = 0;
     for (const STileDef& s : area.stiles) maxId = std::max(maxId, s.islandId);
     lastSlot_.assign(maxId + 1, {-1, -1});
@@ -47,7 +48,8 @@ bool ArtifactUI::isOption(int x, int y) const {
 }
 
 void ArtifactUI::releaseStylus() {
-    wasTouching_ = dragging_ = false;
+    wasTouching_ = true; // (no stylus-down until a release; a release with no down slot does nothing)
+    dragging_ = false;
     downSlotX_ = downSlotY_ = hoverX_ = hoverY_ = -1;
 }
 

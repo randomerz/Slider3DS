@@ -221,7 +221,7 @@ TEST(dialogue_parse_replaces_vars_and_marks_effects) {
     check(t.chars == "Boomo! ..." && t.typeFirst == 6 && t.typeLast == 9, "profile string replaced; <type> range " +
                                                                                std::to_string(t.typeFirst) + ".." +
                                                                                std::to_string(t.typeLast));
-    World world(villageArea());
+    World world(villageArea(), DEFAULT_SETTINGS);
     check(parseDialogue("<var>CatUpper</var> NOOO", world.state).chars == "CAT NOOO",
           "a new profile sets Cat and CatUpper (SaveProfile's constructor)");
     t = parseDialogue("a <b>c</b> <var>x", state);
@@ -315,7 +315,7 @@ TEST(dialogue_type_loop_retypes_the_ellipsis) {
 }
 
 TEST(npcs_dialogue_chain_waits_for_the_player) {
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 10, 0);
     check(world.npcs.currentCond(0) == 0 && world.npcs.pingShown(world, 0) && !world.npcs.textShown(0),
           "started: first conditional, ping up, nothing said");
@@ -345,7 +345,7 @@ TEST(npcs_dialogue_chain_waits_for_the_player) {
 }
 
 TEST(npcs_conditional_change_teleports_and_dont_interrupt_finishes) {
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 10, 0);
     world.state.setFlag("next", true);
     world.update(DT, 0, 0, true);
@@ -386,7 +386,7 @@ TEST(npcs_conditional_change_teleports_and_dont_interrupt_finishes) {
 
 TEST(npcs_village_new_game) {
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.placeAt(*area.spawn("Default"));
     world.update(DT, 0, 0, false);
     auto npc = [&](const char* path) { return area.npcOn(area.findObject(path)); };
@@ -452,7 +452,7 @@ TEST(npcs_validation_rejects_bad_references) {
 
 TEST(npcs_hiding_itself_ends_the_conversation) {
     // Exploresse / Kevin style: a conditional's onEnter hides the NPC; its trigger goes with it.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 0, 0);
     check(world.npcs.textShown(0) && npcOffered(world, 0), "talking");
     world.state.setFlag("vanish", true);
@@ -465,7 +465,7 @@ TEST(npcs_hiding_itself_ends_the_conversation) {
 TEST(npcs_type_current_dialogue_without_the_player) {
     // NPC.TypeCurrentDialogue from onConditionalEnter types even with nobody in the trigger; a
     // dontInterrupt line then stays up.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 10, 0);
     world.state.setFlag("shout", true);
     world.update(DT, 0, 0, true);
@@ -476,7 +476,7 @@ TEST(npcs_type_current_dialogue_without_the_player) {
 TEST(npcs_hidden_mid_line_stop_their_clocks) {
     // Unity stops a deactivated object's coroutines: the typing never finishes on its own (A still
     // skips it), even once the NPC is shown again.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 10, 0);
     world.state.setFlag("shout", true);
     world.update(DT, 0, 0, true);
@@ -489,7 +489,7 @@ TEST(npcs_hidden_mid_line_stop_their_clocks) {
 }
 
 TEST(npcs_emotes_show_beside_the_face) {
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     SpritePlacement e;
     standAt(world, 10, 0);
     check(world.npcs.emote(0) == 0 && !world.npcs.emoteSprite(world, 0, e), "no emote at first");
@@ -510,7 +510,7 @@ TEST(npcs_emotes_show_beside_the_face) {
 TEST(npcs_recheck_when_the_grid_alone_changes) {
     // Conditionals that read only the game state and the grid are re-checked when either changes:
     // here only the grid does.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 30, 0);
     check(world.npcs.currentCond(0) == 0, "first conditional");
     check(world.grid.setGrid("21"), "swap the tiles");
@@ -523,7 +523,7 @@ TEST(npcs_recheck_when_the_grid_alone_changes) {
             if (n.name == name) return &n;
         return (const NpcDef*)nullptr;
     };
-    World vw(v);
+    World vw(v, DEFAULT_SETTINGS);
     auto polls = [&](const char* name) {
         const NpcDef* n = byName(name);
         return n && vw.npcs.pollsEveryFrame((int)(n - v.npcs.data()));
@@ -534,7 +534,7 @@ TEST(npcs_recheck_when_the_grid_alone_changes) {
 
 TEST(npcs_teleport_onto_their_own_spot_does_nothing) {
     // NPC.Teleport only moves (and reparents) when the target is somewhere else.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 30, 0);
     world.state.setFlag("stay", true);
     world.update(DT, 0, 0, true);
@@ -543,7 +543,7 @@ TEST(npcs_teleport_onto_their_own_spot_does_nothing) {
 
 TEST(npcs_line_versions_stay_unique_across_reloads) {
     // AreaView caches a line's layout by textVersion, and survives World::reloadObjects.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 0, 0);
     const uint32_t before = world.npcs.textVersion(0);
     world.reloadObjects();
@@ -552,7 +552,7 @@ TEST(npcs_line_versions_stay_unique_across_reloads) {
 }
 
 TEST(npcs_emote_keeps_playing_across_lines_and_restarts_when_shown_again) {
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     SpritePlacement e;
     standAt(world, 0, 0);
     waitTyped(world); // "Hello there" (Exclamation) typed: well past the 0.25 s intro
@@ -565,7 +565,7 @@ TEST(npcs_emote_keeps_playing_across_lines_and_restarts_when_shown_again) {
 }
 
 TEST(npcs_emote_hidden_with_its_npc) {
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     SpriteSheets sheets;
     check(sheets.load(world.area), "sheets load");
     AreaView view;
@@ -584,7 +584,7 @@ TEST(npcs_emote_hidden_with_its_npc) {
 }
 
 TEST(animators_follow_bools_exit_times_and_npc_lines) {
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 30, 0);
     const Area& a = world.area;
     auto state = [&]() { return world.animators.stateName(a, 0); };
@@ -623,7 +623,7 @@ TEST(animators_follow_bools_exit_times_and_npc_lines) {
 
 TEST(animators_rebind_before_a_play_on_a_newly_shown_object) {
     // Unity rebinds an Animator inside SetActive(true): a Play right after (same call chain) survives.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 30, 0);
     world.objects.setActive(world.area, 0, false);
     world.update(DT, 0, 0, true);
@@ -635,7 +635,7 @@ TEST(animators_rebind_before_a_play_on_a_newly_shown_object) {
 
 TEST(npcs_empty_animation_goes_back_to_idle) {
     // NPCAnimatorController.Play(""): after a named state, back to "Idle".
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     standAt(world, 0, 0); // "Hello there": Cry (the NPC's current animation is now "Cry")
     waitTyped(world);
     world.animators.play(world, 0, "Sus"); // somewhere else meanwhile
@@ -646,7 +646,7 @@ TEST(npcs_empty_animation_goes_back_to_idle) {
 TEST(animators_village_archibald_turns_sus) {
     // Archibald's first line sets his Animator's "sus" bool (NPCAnimatorController.SetBoolToTrue).
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(3, true);
     const int npc = area.npcOn(area.findObject("Map/Village 8Puzzle/STile (3)/Objects/Archibald"));
     check(npc >= 0 && area.npcs[npc].animator >= 0, "Archibald has an Animator");
@@ -662,7 +662,7 @@ TEST(animators_village_archibald_turns_sus) {
 TEST(village_archeologist_hands_out_slider_3) {
     // The Archeologist's first chain ends with VillageGrid.ActivateSliderCollectible(3).
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(2, true);
     const int npc = villageNpc("Map/Village 8Puzzle/STile (2)/Objects/Archeologist");
     const int slider = area.collectible("Slider 3");
@@ -679,7 +679,7 @@ TEST(village_fish_back_pierre_hands_out_slider_8) {
     // VillageGrid.TurnFishOn (Sam's line at the river) sets the fish flag; Pierre's CheckFishOn spec
     // then picks the conditional whose line activates Slider 8 (on his tile).
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(6, true);
     const int npc = villageNpc("Map/Village 8Puzzle/STile (6)/Objects/Pierre");
     const int slider = area.collectible("Slider 8");
@@ -700,7 +700,7 @@ TEST(village_activate_collectible_beats_its_start) {
     // SGrid.ActivateCollectible clears shouldDisableAtStart, so the collectible's later Start (its tile
     // collected) doesn't hide it; ActivateSliderCollectible doesn't, so Start hides it again.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     const int breadge = area.collectible("Breadge"), slider9 = area.collectible("Slider 9");
     check(breadge >= 0 && slider9 >= 0 && area.collectibles[breadge].disableAtStart && area.collectibles[slider9].disableAtStart,
           "Breadge (tile 9) and Slider 9 (tile 8) hide at start");
@@ -724,7 +724,7 @@ TEST(village_activate_collectible_beats_its_start) {
 
 TEST(village_explode_opens_the_cave_door) {
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     CallDef c;
     c.method = CallDef::Method::VillageExplode;
     runCall(world, c);
@@ -737,7 +737,7 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
     // With the Coffee, Archibald's lines show Slider 4 and switch its (initially disabled) trigger
     // on (BoxCollider2D.set_enabled): walking onto it picks it up and collects tile 4.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(3, true);
     world.state.setCollectible("Coffee", "Village", true);
     const int npc = villageNpc("Map/Village 8Puzzle/STile (3)/Objects/Archibald");
@@ -764,7 +764,7 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
 TEST(animators_player_runs_while_moving) {
     // Player.Update sets isRunning from the input and isOnWater from the boat; the body shows the state.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     const int animator = area.player.animator;
     check(animator >= 0, "the player has an Animator");
     if (animator < 0) return;
@@ -800,7 +800,7 @@ TEST(animators_player_item_holder_bobs) {
     // 0.875 / 0.8125 every quarter second; carried items sit there.
     const Area& area = villageArea();
     CHECK(area.playerAction.carryTarget >= 0);
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.placeNear(0, 0);
     auto carryDy = [&]() {
         float x, y;
@@ -845,7 +845,7 @@ TEST(animators_player_item_holder_bobs) {
 TEST(animators_move_npc_transforms) {
     // Chad's clips move his PickUpLocation (the fragment on his head bobs) and, as he falls, his sprite.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     for (int id = 2; id <= 8; id++) world.setTileActive(id, true);
     world.reloadObjects();
     const ChadJumpDef& d = area.chadJumps.at(0);
@@ -873,7 +873,7 @@ TEST(animators_move_npc_transforms) {
 
 TEST(npcs_emote_shown_again_mid_intro_restarts_it) {
     // Off and on again while its Animator is still in the intro state: the intro starts over.
-    World world(npcArea());
+    World world(npcArea(), DEFAULT_SETTINGS);
     SpritePlacement e;
     standAt(world, 0, 0); // "Hello there": Exclamation's 0.25 s intro
     for (int i = 0; i < 8; i++) world.update(DT, 0, 0, true);

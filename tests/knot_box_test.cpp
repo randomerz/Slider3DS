@@ -63,7 +63,7 @@ TEST(knot_box_export) {
 
 TEST(knot_box_starts_tangled_and_solves_at_the_correct_positions) {
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     check(village::knotBadLines(world, 0) == 0, "tile 4 not collected: the box is off, its lines at the origin");
     world.setTileActive(4, true);
     bool bad[village::MAX_KNOT_LINES];
@@ -89,7 +89,7 @@ TEST(knot_box_starts_tangled_and_solves_at_the_correct_positions) {
 TEST(knot_box_start_check_solves_it_with_slider_5) {
     // The Knot's ConditionChecker (checkOnStart: Slider 5 collected) runs SetToCorrectPositions.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.state.setCollectible("Slider 5", "Village", true);
     world.setTileActive(4, true);
     CHECK(village::knotBadLines(world, 0) == 0);
@@ -99,7 +99,7 @@ TEST(knot_box_line_is_bad_through_another_node) {
     // Solved, then node 3 moves next to line 0 (node 0 -> 1), on the knot's inside: within its ray
     // collider's radius (0.4) of the line, line 0 is bad; a bit further, not.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     village::knotSetToCorrectPositions(world, 0);
     float x0, y0, x1, y1;
@@ -120,7 +120,7 @@ TEST(knot_box_crossing_lines_are_bad) {
     // Swapping two nodes' spots twists the loop: the lines that now cross go bad, and the partial
     // check (at most 3 bad) follows the count.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     village::knotSetToCorrectPositions(world, 0);
     float ax, ay, bx, by;
@@ -142,7 +142,7 @@ TEST(knot_box_crossing_lines_are_bad) {
 
 TEST(knot_box_drop_sparkles_only_when_solved) {
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     const ItemDef* node = nullptr;
     for (const ItemDef& it : area.items)
@@ -171,7 +171,7 @@ TEST(knot_box_first_and_last_lines_are_neighbours) {
     // here (solved otherwise) the shared end turns so IntersectingSegs would call them crossing:
     // its orientations are exactly 0 at the shared node, which Mathf.Sign counts as positive.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(4, true);
     village::knotSetToCorrectPositions(world, 0);
     float bx, by;
@@ -186,7 +186,7 @@ TEST(knot_box_solved_kevin_hands_out_slider_5) {
     // The L + B dev setup (tiles 2-4 collected), the knot solved: Kevin's CheckPuzzle conditional
     // takes over, and standing at him plays its line, whose end shows the Slider 5 collectible.
     const Area& area = villageArea();
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     for (int id = 2; id <= 4; id++) {
         world.setTileActive(id, true);
         world.state.setCollectible("Slider " + std::to_string(id), "Village", true);

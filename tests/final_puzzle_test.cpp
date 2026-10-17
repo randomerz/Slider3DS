@@ -13,7 +13,7 @@ namespace {
 constexpr float DT = 1.0f / 60;
 
 World finaleWorld() { // Sliders 2-8 collected (9's slot, in the middle, empty), the scene reloaded
-    World world(villageArea());
+    World world(villageArea(), DEFAULT_SETTINGS);
     for (int id = 2; id <= 8; id++) {
         world.setTileActive(id, true);
         world.state.setCollectible("Slider " + std::to_string(id), "Village", true);
@@ -90,7 +90,7 @@ TEST(final_export) {
             }
     CHECK(fill == 2 && shuffle == 2);
     // As authored: the first three runes and the hole show; the fourth (under the hole) doesn't.
-    World world(area);
+    World world(area, DEFAULT_SETTINGS);
     world.setTileActive(2, true);
     check(shown(world) == "11101", "symbols / hole: " + shown(world));
 }

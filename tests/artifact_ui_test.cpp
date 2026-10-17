@@ -100,6 +100,16 @@ TEST(artifact_ui_release_stylus_drops_a_drag) {
     f.ui.releaseStylus();
     f.frame(false);
     CHECK(f.artifact.queueEmpty() && f.ui.selected() == 1);
+    // Resuming with the stylus still down (closed with B): lifting it isn't a tap.
+    f.tap(0, 0); // (deselects tile 1)
+    CHECK(f.ui.selected() == 0);
+    f.ui.releaseStylus();
+    f.frame(true, x0, y0);
+    f.frame(true, x0, y0);
+    f.frame(false);
+    CHECK(f.ui.selected() == 0 && f.artifact.queueEmpty());
+    f.tap(0, 0); // the next real tap works
+    CHECK(f.ui.selected() == 1);
 }
 
 TEST(artifact_ui_drag_back_onto_itself_selects) {
