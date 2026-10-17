@@ -7,7 +7,7 @@
 namespace {
 
 constexpr size_t VILLAGE_LAYERS = 76, VILLAGE_COLLISION = 35, VILLAGE_SHAPES = 9, VILLAGE_TILES = 168,
-                 VILLAGE_SPRITES = 677, VILLAGE_FILLED_CELLS = 27554;
+                 VILLAGE_SPRITES = 678, VILLAGE_FILLED_CELLS = 27554;
 
 // A minimal valid area: 1x1 grid, one sheet/sprite/tile, one visual and one collision tilemap,
 // scene objects, a world sprite with a one-frame anim, two object colliders, a start check and the
@@ -179,7 +179,7 @@ TEST(area_village_export_stats) {
     check(a.tiles.size() == VILLAGE_TILES, "tiles " + std::to_string(a.tiles.size()));
     check(a.sprites.size() == VILLAGE_SPRITES, "sprites " + std::to_string(a.sprites.size()));
     check(a.sheetNames.size() == 25, "sheets " + std::to_string(a.sheetNames.size()));
-    check(a.worldSprites.size() == 330, "world sprites " + std::to_string(a.worldSprites.size()));
+    check(a.worldSprites.size() == 331, "world sprites " + std::to_string(a.worldSprites.size()));
     check(a.knotBoxes.size() == 1 && a.ruinsArrows.size() == 1 && a.chadJumps.size() == 1 && a.particles.size() == 28,
           "knot boxes / ruins arrows / particle systems " + std::to_string(a.knotBoxes.size()) + "/" +
               std::to_string(a.ruinsArrows.size()) + "/" + std::to_string(a.particles.size()));

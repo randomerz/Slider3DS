@@ -697,6 +697,8 @@ static bool validate(const Area& a, std::string* error) {
                 return false;
             if (c.method == M::VillageExplode && (!objectOk(a.areaGrid.caveDoorEntrance) || !objectOk(a.areaGrid.caveDoorRocks)))
                 return false;
+            if ((c.method == M::VillageFillInHole || c.method == M::VillageShufflePuzzle) && !a.areaGrid.ruinsSymbols.present)
+                return false;
             if (c.method == M::SetColliderEnabled) {
                 const int nSolid = (int)a.objectColliders.size();
                 if (c.data < 0 || c.data >= nSolid + (int)a.triggerColliders.size()) return false;
@@ -826,6 +828,15 @@ static bool validate(const Area& a, std::string* error) {
         }
         if (!ok) return fail(error, "ruins arrow: bad object, sprite, rod, particles, trail or map icon");
     }
+    if (const RuinsSymbolsDef& rs = a.areaGrid.ruinsSymbols; rs.present) {
+        bool ok = objectOk(rs.object) && objectOk(rs.hole) && worldSpriteOn[rs.hole];
+        for (int k = 0; k < RuinsSymbolsDef::SYMBOLS; k++)
+            ok = ok && objectOk(rs.symbols[k]) && worldSpriteOn[rs.symbols[k]] && rs.flashTime[k] >= 0;
+        if (!ok) return fail(error, "ruins symbols: bad object, hole, symbol or flash time");
+    }
+    if (a.areaGrid.ruinsFragment < -1 || a.areaGrid.ruinsFragment >= (int)a.items.size())
+        return fail(error, "area grid: bad ruinsFragment item");
+    if (a.areaGrid.slider8Floor != -1 && !objectOk(a.areaGrid.slider8Floor)) return fail(error, "area grid: bad slider8Floor");
     for (const ChadJumpDef& c : a.chadJumps) {
         const bool ok = objectOk(c.object) && objectOk(c.renderer) && worldSpriteOn[c.renderer] && c.animator >= 0 &&
                         c.animator < (int)a.animators.size() && c.collider >= 0 && c.collider < (int)a.objectColliders.size() &&
@@ -997,6 +1008,30 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.areaGrid.type = doc["areaGrid"]["type"].asString();
     out.areaGrid.caveDoorEntrance = doc["areaGrid"]["caveDoorEntrance"].asInt(-1);
     out.areaGrid.caveDoorRocks = doc["areaGrid"]["caveDoorRocks"].asInt(-1);
+    if (const Json& rs = doc["areaGrid"]["ruinsSymbols"]; !rs.isNull()) {
+        RuinsSymbolsDef& d = out.areaGrid.ruinsSymbols;
+        d.present = true;
+        d.object = rs["object"].asInt(-1);
+        for (int k = 0; k < RuinsSymbolsDef::SYMBOLS; k++) {
+            d.symbols[k] = rs["symbols"].at(k).asInt(-1);
+            d.flashTime[k] = rs["flashTime"].at(k).asFloat(0.25f);
+        }
+        if (!rs["flashColor"].isNull()) d.flashColor = readColor(rs["flashColor"]);
+        d.hole = rs["hole"].asInt(-1);
+    }
+    out.areaGrid.ruinsFragment = doc["areaGrid"]["ruinsFragment"].asInt(-1);
+    out.areaGrid.slider8Floor = doc["areaGrid"]["slider8Floor"].asInt(-1);
+    out.flashDuration = doc["flashDuration"].asFloat(1);
+    out.cameraShake.frequencyGain = doc["cameraShake"]["frequencyGain"].asFloat(1);
+    for (const Json& ch : doc["cameraShake"]["position"].items()) {
+        CameraShakeDef::Channel c;
+        for (int axis = 0; axis < 2; axis++) {
+            c.frequency[axis] = ch.at(axis * 3).asFloat();
+            c.amplitude[axis] = ch.at(axis * 3 + 1).asFloat();
+            c.constant[axis] = ch.at(axis * 3 + 2).asFloat() != 0;
+        }
+        out.cameraShake.position.push_back(c);
+    }
 
     if (doc.has("player")) {
         if (doc["player"].has("body")) out.player.body = readPlacement(doc["player"]["body"]);

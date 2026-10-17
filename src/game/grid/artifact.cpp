@@ -15,6 +15,7 @@ void Artifact::init(const Grid& grid) {
     queue_.clear();
     active_.clear();
     moveCounter_ = 0;
+    resets_++;
     consecutiveTimer_ = 0;
 }
 

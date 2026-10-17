@@ -1,6 +1,7 @@
 // VillageGrid (the Village's SGrid): the methods its UnityEvent calls and spec conditions use.
-// The knot box is in game/village/knot_box, the ruins arrow in game/village/ruins_arrow. Not yet: Chad's jump, cats (their specs), FillInHole /
-// ShufflePuzzle and the final 8-puzzle, the intro cutscene, trackers, particles and sounds.
+// The knot box is in game/village/knot_box, the ruins arrow in game/village/ruins_arrow, Chad in
+// game/village/chad_jump, FillInHole / ShufflePuzzle and the final 8-puzzle in game/village/final_puzzle.
+// Not yet: cats (their specs), the intro cutscene, trackers, particles and sounds.
 #pragma once
 
 #include <string>

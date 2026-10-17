@@ -41,8 +41,12 @@ public:
     std::string gridString(const Grid& grid) const;
     bool queueEmpty() const { return queue_.empty() && active_.empty(); }
     bool tileInActiveMove(int islandId) const; // part of a move that is animating now
+    // Counts init / setGrid: a UI holding a selection drops it when this changes (SGrid.SetGrid
+    // deselects the selected button).
+    int resets() const { return resets_; }
 
-    bool canQueue = true;
+    bool canQueue = true;     // UIArtifact queueing (tryMove)
+    bool canAddMoves = true;  // UIArtifact.playerCanAddSMoves: the player may select buttons (DisableMovement)
     static constexpr int MAX_QUEUE = 3;
 
 private:
@@ -57,6 +61,7 @@ private:
     std::deque<Queued> queue_;
     std::vector<Queued> active_;
     int nextId_ = 1;
+    int resets_ = 0;
     int moveCounter_ = 0;
     float consecutiveTimer_ = 0;
 };

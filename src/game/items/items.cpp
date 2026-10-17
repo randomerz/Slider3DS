@@ -55,6 +55,13 @@ int stileObject(const Area& area, int islandId) {
 
 void Items::reset(const Area&) { *this = Items(); }
 
+int Items::removeCarried() {
+    const int item = carried_;
+    carried_ = -1;
+    canDrop_ = false;
+    return item;
+}
+
 void Items::placeSprite(World& world, const ItemDef& it, float x, float y) {
     if (it.spriteObject < 0) return;
     const SceneObject& root = world.area.objects[it.object];

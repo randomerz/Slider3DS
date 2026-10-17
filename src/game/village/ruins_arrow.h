@@ -4,7 +4,7 @@
 // their scripts: the arrow listens to SGrid.OnGridMove, SGridAnimator.OnSTileMoveEnd and
 // SGrid.OnSTileEnabled (Grid::events, each with the grid as it was then), and CheckActiveRods reads
 // the rods as the last of those left them. The SpriteRenderers' state lives in ObjectStates, the
-// icons' in World (artifactIconShown).
+// icons' in World (artifactButtons).
 // Not yet: the "MagicChimes1" / "Hat Click" sounds.
 #pragma once
 

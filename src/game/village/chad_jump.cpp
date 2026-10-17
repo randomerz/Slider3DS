@@ -10,7 +10,6 @@ namespace village {
 
 namespace {
 
-constexpr const char* VILLAGE_COMPLETION_FLAG = "villageCompletion";
 constexpr int CHAD_TILE = 8;      // VillageChadJump.TipOnTileMove: tile 8's move ends the tipping (hard-coded)
 constexpr float CHIRP_DELAY = 0.5f; // DelayThenChirp
 constexpr float TIP_TIME = 0.5f;    // ChadJump.Fall: tipping before he falls

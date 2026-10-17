@@ -285,6 +285,14 @@ bool Grid::setGrid(const std::string& ids) {
     return true;
 }
 
+char Grid::targetAt(int x, int y) const {
+    std::string want;
+    for (char c : targetGrid_)
+        if (c != '_') want += c;
+    const size_t i = (size_t)((h_ - y - 1) * w_ + x);
+    return i < want.size() ? want[i] : '*';
+}
+
 bool Grid::checkTarget() const {
     std::string have, want;
     for (char c : gridString(true))

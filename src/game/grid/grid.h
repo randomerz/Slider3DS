@@ -121,6 +121,8 @@ public:
     // Artifact::setGrid to keep the Artifact in step). False, and no change, if malformed.
     bool setGrid(const std::string& ids);
     bool checkTarget() const; // gridString(true) matches the area's targetGrid ('*' = any)
+    // The area's targetGrid at slot (x, y) (SGrid.GetTileIdAt): an islandId char, '*' = any.
+    char targetAt(int x, int y) const;
 
     void setTileActive(int islandId, bool active); // collecting a Slider enables its tile
 

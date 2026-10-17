@@ -214,6 +214,8 @@ struct ConditionDef {
     X(VillageExplode, "VillageGrid.Explode")                           \
     X(VillageWaterfallEntry, "VillageGrid.OnWaterfallEntry")           \
     X(VillageHouseExit, "VillageGrid.OnHouseExit")                     \
+    X(VillageFillInHole, "VillageGrid.FillInHole")                     \
+    X(VillageShufflePuzzle, "VillageGrid.ShufflePuzzle")               \
     X(SetColliderEnabled, "BoxCollider2D.set_enabled")                 \
     X(ItemSortingOrderInc, "PlayerAction.SetItemSortingOrderInc")      \
     X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")      \
@@ -561,11 +563,37 @@ struct ChadJumpDef {
     int tipAnimator = -1;         //   chadAnimator: Area::animators index (exported: its object)
 };
 
+// RuinsSymbols (the ruins' runes by the hole the Ruins Fragment fills): FillInHole hides the hole
+// and the symbols, ShufflePuzzle flashes them back one by one (FlashWhiteSprite).
+struct RuinsSymbolsDef {
+    static constexpr int SYMBOLS = 4;
+    bool present = false;
+    int object = -1;              // the RuinsSymbols (its Start)
+    int symbols[SYMBOLS] = {};    // ruinSymbols: their SpriteRenderers' objects (world sprites)
+    float flashTime[SYMBOLS] = {0.25f, 0.25f, 0.25f, 0.25f};
+    uint32_t flashColor = 0xe6e6e6ff; // the white material's color (RGBA)
+    int hole = -1;                // ruinsHole's object (a world sprite)
+};
+
 // The area's SGrid subclass and the objects its methods act on.
 struct AreaGridDef {
     std::string type;          // e.g. "VillageGrid"
     int caveDoorEntrance = -1;  // VillageGrid.Explode shows it
     int caveDoorRocks = -1;     // and hides these
+    RuinsSymbolsDef ruinsSymbols; // FillInHole / ShufflePuzzle
+    int ruinsFragment = -1;     // Area::items index: CheckHole hides it (or, Caves first, puts it in the hole)
+    int slider8Floor = -1;      // slider8FloorTransform: where CheckHole puts it
+};
+
+// CameraShake's Cinemachine noise (CinemachineBasicMultiChannelPerlin's profile): position channels,
+// camera-relative x and y.
+struct CameraShakeDef {
+    struct Channel {
+        float frequency[2] = {}, amplitude[2] = {}; // x, y
+        bool constant[2] = {};                     // a cosine instead of Perlin noise
+    };
+    float frequencyGain = 1;
+    std::vector<Channel> position; // empty: shakes don't move the camera
 };
 
 // What collides on one owner (an STile, or 0 = the world) in one band (its surface, or its house
@@ -671,6 +699,8 @@ struct Area {
     std::vector<AnimatorControllerDef> animatorControllers;
     std::vector<AnimatorDef> animators;
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
+    float flashDuration = 1; // UIEffects.flashDuration (s): FlashWhite
+    CameraShakeDef cameraShake;
     AreaGridDef areaGrid;
     int collectible(const std::string& name) const; // index in collectibles of the area's own one named so, -1 if none
     // Each object's components (derived at load): componentRefs[componentStart[o] .. componentStart[o + 1]),

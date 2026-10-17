@@ -49,6 +49,9 @@ public:
     void drop(World& world, int item, float x, float y, DropDone done = DropDone::None, int arg = -1);
 
     int carried() const { return carried_; } // Area::items index, -1 = none
+    // PlayerInventory.RemoveItem: the carried item isn't carried any more (it stays where it is, as
+    // it is); returns it, -1 = none.
+    int removeCarried();
     const ItemDef* carriedDef(const Area& area) const { return carried_ >= 0 ? &area.items[carried_] : nullptr; }
     // PlayerAction.HasItem(name) / Condition playerCarryingItem ("" = any item).
     bool carrying(const Area& area, const std::string& name) const;

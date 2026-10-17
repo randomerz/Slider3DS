@@ -50,7 +50,7 @@ std::string litRods(const World& world) {
 
 std::string icons(const World& world) {
     std::string s;
-    for (int island : {1, 2, 3, 6}) s += world.artifactIconShown(island, 0) ? std::to_string(island) : "-";
+    for (int island : {1, 2, 3, 6}) s += world.artifactButtons.iconShown(island, 0) ? std::to_string(island) : "-";
     return s;
 }
 

@@ -102,13 +102,15 @@ int main(int, char**) {
 
         plat::beginFrame();
         plat::beginScreen(plat::Screen::Top, plat::rgba(area.background[0], area.background[1], area.background[2]));
-        view.begin(area, sheets, world.player.x, world.player.y, plat::TOP_W, plat::TOP_H, frame * FRAME_DT,
-                   DEV && dev.showInactive);
+        view.begin(area, sheets, world.player.x + world.effects.shakeX(), world.player.y + world.effects.shakeY(),
+                   plat::TOP_W, plat::TOP_H, frame * FRAME_DT, DEV && dev.showInactive);
         view.draw(world);
         if (DEV && dev.noclip) // the position point the player moves by (the camera follows it)
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
         if (world.effects.fade > 0) // FadeFromBlack (UIEffects' black panel)
             plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(world.effects.fade * 255)));
+        if (const float white = world.effects.whiteAlpha(area); white > 0) // FlashWhite (UIEffects' white panel)
+            plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0xff, 0xff, 0xff, (uint8_t)(white * 255)));
 
         plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));
         artifactUI.draw(world, sheets);

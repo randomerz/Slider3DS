@@ -35,7 +35,6 @@ public:
     // Screen pixel center of slot (x, y), without nudge (for tests and touch mapping).
     void slotCenter(const Area& area, int x, int y, float& sx, float& sy) const;
 
-    bool autoMove = false; // "forceAutoMoveVillage": a tap on a tile with one option moves it
     int centerX = plat::BOTTOM_W / 2, centerY = plat::BOTTOM_H / 2;
     int scale = 2; // whole-pixel magnification of the UI art
 
@@ -45,12 +44,13 @@ private:
     };
 
     bool slotAtPixel(const Area& area, const Artifact& artifact, int px, int py, int& x, int& y) const;
-    void selectButton(Grid& grid, Artifact& artifact, int x, int y, bool dragged, int playerStile);
+    void selectButton(Grid& grid, Artifact& artifact, int x, int y, bool dragged, int playerStile, bool autoMove);
     void deselect();
     void refreshOptions(const Grid& grid, const Artifact& artifact);
     bool buttonPressed(const Grid& grid, const Artifact& artifact, int islandId) const;
 
     int selectedId_ = 0;
+    int artifactResets_ = -1; // Artifact::resets() last seen
     std::vector<std::pair<int, int>> options_;
     // Stylus state.
     bool wasTouching_ = false, dragging_ = false;

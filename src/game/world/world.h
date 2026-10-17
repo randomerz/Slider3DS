@@ -4,12 +4,15 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "game/anim/animators.h"
 #include "game/data/area.h"
 #include "game/fx/particles.h"
+#include "game/fx/screen_effects.h"
 #include "game/grid/artifact.h"
+#include "game/grid/artifact_buttons.h"
 #include "game/world/game_state.h"
 #include "game/grid/grid.h"
 #include "game/items/items.h"
@@ -19,6 +22,7 @@
 #include "game/events/triggers.h"
 #include "game/village/knot_box.h"
 #include "game/village/chad_jump.h"
+#include "game/village/final_puzzle.h"
 #include "game/village/ruins_arrow.h"
 
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
@@ -45,12 +49,6 @@ struct Interactable {
     bool operator==(const Interactable& o) const { return kind == o.kind && index == o.index; }
 };
 
-// Screen-level effects events ask for (UIEffects, SceneChanger), for the frontend to show.
-struct ScreenEffects {
-    float fade = 0;        // FadeFromBlack: black overlay alpha, falls to 0 over area.fadeDuration
-    bool leftArea = false; // SceneChanger.ChangeScenes ran (the port ends at the Village)
-};
-
 class World {
 public:
     static constexpr float MOVE_SPEED = 5.0f; // world units per second (Player.moveSpeed)
@@ -67,6 +65,9 @@ public:
     // STile.SetTileActive: the tile joins (or leaves) the grid, with its objects and tilemaps (whose
     // components then Start).
     void setTileActive(int islandId, bool active);
+    // SGrid.SetGrid: the tiles jump to `ids` (Grid::setGrid's format) and the Artifact resets to
+    // match; the player rides along with its tile (it's parented to it). False if malformed.
+    bool setGrid(const std::string& ids);
     // Puts the player at a spawn point (SceneSpawns), in the boat if it says so.
     void placeAt(const Spawn& spawn);
     // Puts the player at (x, y) on foot (or the nearest spot where it fits, if any).
@@ -89,10 +90,6 @@ public:
     int priority(const Interactable& it) const;     // IInteractable.InteractionPriority
     bool showsPrompt(const Interactable& it) const; // IInteractable.DisplayInteractionPrompt
     bool promptShown() const; // any offered interactable shows the prompt (the indicator)
-    // Image.enabled of icon `icon` on Artifact button `islandId` (as exported until a script sets it,
-    // e.g. RuinsMapIcons); false for a button or icon that doesn't exist.
-    bool artifactIconShown(int islandId, int icon) const;
-    void setArtifactIcon(int islandId, int icon, bool shown);
 
     // World position a component of `object` is placed relative to (its exported position is added):
     // its owner STile's center (as of now: ObjectStates) plus the object's runtime offset.
@@ -107,6 +104,7 @@ public:
     const Area& area;
     Grid grid;
     Artifact artifact;
+    ArtifactButtons artifactButtons; // what scripts set on the Artifact's buttons (icons, completion)
     ObjectStates objects;
     Starts starts;
     TriggerTracker triggers;
@@ -117,14 +115,13 @@ public:
     village::KnotBoxes knots; // the knot puzzle's lines (Village)
     village::RuinsArrows ruins; // the ruins arrow, its rods and trail (Village)
     village::ChadJumps chad;    // Chad's jump onto the rock and fall (Village)
+    village::FinalPuzzle finale; // the fragment in the hole, the shuffle, the final 8-puzzle (Village)
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
 
 private:
-    std::vector<std::vector<uint8_t>> artifactIcons_; // per Area::artifact.buttons entry, per icon: shown
-
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.
     void runStarts();
     // Scripts listening to the grid's events (SGrid / SGridAnimator) hear what happened since last time.

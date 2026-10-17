@@ -155,7 +155,7 @@ void RuinsArrows::updateMap(World& world, int a, const std::string& gridString) 
         bool on = false;
         for (const Pair& p : PAIRS)
             if ((m.corner == p.a || m.corner == p.b) && CheckGrid::contains(gridString, p.pattern)) on = true;
-        world.setArtifactIcon(m.button, m.icon, on);
+        world.artifactButtons.setIcon(m.button, m.icon, on);
     }
 }
 

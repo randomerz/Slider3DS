@@ -25,7 +25,32 @@ bool DevControls::update(const plat::Input& in, World& world) {
         noclip = !noclip;
     }
 
-    if (!area.spawns.empty() && (in.pressed & plat::BTN_R)) {
+    if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_R)) {
+        // Slider 9. Before the shuffle: Sliders 2-8 collected, the Ruins Fragment dropped next to the
+        // player by the Archeologist (pick it up with A, then talk to him). After it: the grid one
+        // slide from solved (7 right).
+        if (world.state.flag(village::VILLAGE_COMPLETION_FLAG)) {
+            world.setGrid("624_879_153");
+            printf("Slider 9 setup: slide 7 right to finish; grid %s\n", world.artifact.gridString(world.grid).c_str());
+        } else {
+            collected = true;
+            for (int id = 2; id <= 8; id++) {
+                world.setTileActive(id, true);
+                world.state.setCollectible("Slider " + std::to_string(id), "Village", true);
+            }
+            world.reloadObjects();
+            for (const NpcDef& n : area.npcs)
+                if (area.objects[n.object].path.size() >= 12 &&
+                    area.objects[n.object].path.compare(area.objects[n.object].path.size() - 12, 12, "Archeologist") == 0) {
+                    float x, y;
+                    world.objectPosition(n.object, x, y);
+                    world.placeNear(x - 2, y - 1);
+                }
+            if (area.areaGrid.ruinsFragment >= 0)
+                world.items.drop(world, area.areaGrid.ruinsFragment, world.player.x + 1, world.player.y);
+            printf("Slider 9 setup: tiles 2-8 collected, the fragment at your feet (A), then talk to the Archeologist\n");
+        }
+    } else if (!area.spawns.empty() && (in.pressed & plat::BTN_R)) {
         spawnIndex = (spawnIndex + 1) % area.spawns.size();
         world.placeAt(area.spawns[spawnIndex]);
         printf("Spawn: %s\n", area.spawns[spawnIndex].name.c_str());

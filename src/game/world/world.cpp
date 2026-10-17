@@ -19,6 +19,7 @@ void World::runStarts() {
     animators.enable(*this); // OnEnable comes before Start
     ruins.activate(*this);   // (rods' Awake, the arrow's Start)
     chad.activate(*this);
+    finale.activate(*this); // (RuinsSymbols.Start)
     starts.update(*this);
 }
 
@@ -40,6 +41,7 @@ void World::dropLanded(DropDone done, int arg) {
 
 World::World(const Area& a) : area(a) {
     state.newProfile("Cat"); // (until a new-game screen names the profile)
+    effects.reset();
     grid.init(area);
     artifact.init(grid);
     reloadObjects();
@@ -60,9 +62,11 @@ void World::reloadObjects() {
     particles.reset();
     ruins.reset(area);
     chad.reset(area);
-    artifactIcons_.clear();
-    for (const ArtifactButtonDef& b : area.artifact.buttons) artifactIcons_.push_back(b.iconsEnabled);
+    finale.reset(area);
+    artifactButtons.reset(area);
     starts.reset(area);
+    runStarts();
+    finale.start(*this); // VillageGrid.Start (after every Awake; CheckHole may hide the fragment)
     runStarts();
     knots.update(*this);
 }
@@ -76,6 +80,18 @@ void World::setTileActive(int islandId, bool active) {
     runStarts(); // Start runs before the newly active objects' first update
     sendGridEvents(); // (SGrid.OnSTileEnabled)
     knots.update(*this);
+}
+
+bool World::setGrid(const std::string& ids) {
+    const int stile = player.stile;
+    const TileState* t = grid.tile(stile);
+    const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
+    if (!artifact.setGrid(grid, ids)) return false;
+    if (t) {
+        player.x += (t->posX - ox) * grid.tileWidth();
+        player.y += (t->posY - oy) * grid.tileWidth();
+    }
+    return true;
 }
 
 void World::placeAt(const Spawn& spawn) {
@@ -103,6 +119,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     sendGridEvents(); // moves started since the last frame (the stylus), before their tiles slide
     artifact.update(grid, dt, player.stile);
     sendGridEvents(); // tiles arrived, queued moves started
+    finale.checkButtons(*this); // (completions: the Artifact's buttons moved)
     if (t) {
         player.x += (t->posX - ox) * grid.tileWidth();
         player.y += (t->posY - oy) * grid.tileWidth();
@@ -141,13 +158,14 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     npcs.update(*this, dt);
     runStarts();
     chad.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
+    finale.coroutines(*this, dt);
+    runStarts(); // (the final Slider may have appeared)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
     items.follow(*this);          // (the carried item is a child of the item holder the Animator moves)
     ruins.update(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
-    if (effects.fade > 0)
-        effects.fade = area.fadeDuration > 0 ? std::max(0.0f, effects.fade - dt / area.fadeDuration) : 0;
+    effects.update(area, dt); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
 }
 
 void World::offer(const Interactable& it) {
@@ -207,19 +225,6 @@ bool World::interact() {
         }
     }
     return interacted;
-}
-
-bool World::artifactIconShown(int islandId, int icon) const {
-    for (size_t b = 0; b < area.artifact.buttons.size(); b++)
-        if (area.artifact.buttons[b].islandId == islandId)
-            return icon >= 0 && icon < (int)artifactIcons_[b].size() && artifactIcons_[b][icon];
-    return false;
-}
-
-void World::setArtifactIcon(int islandId, int icon, bool shown) {
-    for (size_t b = 0; b < area.artifact.buttons.size(); b++)
-        if (area.artifact.buttons[b].islandId == islandId && icon >= 0 && icon < (int)artifactIcons_[b].size())
-            artifactIcons_[b][icon] = shown ? 1 : 0;
 }
 
 bool World::promptShown() const {

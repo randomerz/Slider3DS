@@ -61,7 +61,7 @@ void runCall(World& world, const CallDef& c) {
         world.player.onWater = c.boolArg;
         break;
     case M::FadeFromBlack:
-        world.effects.fade = 1;
+        world.effects.fadeFromBlack();
         break;
     case M::CheckConditions:
         runConditionals(world, world.area.conditionCheckers[c.data].conditionals);
@@ -114,6 +114,12 @@ void runCall(World& world, const CallDef& c) {
         break;
     case M::VillageHouseExit:
         village::houseExit(world);
+        break;
+    case M::VillageFillInHole:
+        world.finale.fillInHole(world);
+        break;
+    case M::VillageShufflePuzzle:
+        world.finale.shufflePuzzle(world);
         break;
     case M::SetColliderEnabled:
         world.objects.setColliderEnabled(c.data, c.boolArg);

@@ -304,8 +304,8 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
         "PlaySound.PlayString",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
-        "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.FillInHole",
-        "VillageGrid.PlayDigSound", "VillageGrid.RemoveSlider2Tracker", "VillageGrid.ShufflePuzzle",
+        "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.PlayDigSound",
+        "VillageGrid.RemoveSlider2Tracker",
     };
     std::string got;
     for (const std::string& n : unsupported) got += n + ", ";

@@ -21,7 +21,8 @@ void explode(World& world) {
     const Area& area = world.area;
     world.objects.setActive(area, area.areaGrid.caveDoorEntrance, true);
     world.objects.setActive(area, area.areaGrid.caveDoorRocks, false);
-    world.state.setFlag(CAVE_DOOR_EXPLODED_FLAG, true); // (and a camera shake, smoke)
+    world.state.setFlag(CAVE_DOOR_EXPLODED_FLAG, true);
+    world.effects.shake(1, 3.5f); // (and the explosion sound, smoke)
 }
 
 void waterfallEntry(World& world) {

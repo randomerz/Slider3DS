@@ -103,19 +103,24 @@ TEST(artifact_ui_respects_rules) {
     Fixture f;
     f.tap(1, 0); // empty slot: can't select
     CHECK(f.ui.selected() == 0);
-    f.artifact.canQueue = false;
+    f.artifact.canAddMoves = false; // UIArtifact.DisableMovement
     f.tap(0, 0);
     CHECK(f.ui.selected() == 0 && f.artifact.queueEmpty());
+    f.artifact.canAddMoves = true;
+    f.artifact.canQueue = false; // queueing off: selects, but no move
+    f.tap(0, 0);
+    f.tap(1, 0);
+    CHECK(f.ui.selected() == 1 && f.artifact.queueEmpty());
 }
 
 TEST(artifact_ui_auto_move) {
     // After the final shuffle a tile with a single option moves on tap (forceAutoMoveVillage).
     Fixture f(true); // all but 9 collected: the only empty slot is the middle
-    f.ui.autoMove = true;
+    f.world.state.setFlag("forceAutoMoveVillage", true);
     f.tap(1, 0); // tile 5 (bottom middle) has one option: up into the middle
     CHECK(f.ui.selected() == 0);
     check(f.artifact.gridString(f.grid) == "624_857_1#3", "auto-moved: " + f.artifact.gridString(f.grid));
-    f.ui.autoMove = false;
+    f.world.state.setFlag("forceAutoMoveVillage", false);
     f.settle();
     f.tap(0, 0); // tile 1 now has one option (right), but without autoMove a tap only selects
     CHECK(f.ui.selected() == 1 && f.artifact.queueEmpty());
