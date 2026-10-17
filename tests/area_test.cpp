@@ -166,6 +166,58 @@ TEST(area_validation_rejects_bad_indices) {
     }
 }
 
+// Animator transform curves: one controller shared by the player's Animator (its item holder) and an
+// NPC's (its sprite); each curve resolves to the target its own Animator has, -1 on the other.
+std::string animatorFixture(const std::string& from = "", const std::string& to = "") {
+    std::string s = fixture(R"("fadeDuration": 0.5,)", R"("fadeDuration": 0.5,
+  "animatorControllers": [{"name": "P", "params": [], "default": 0, "any": [], "states": [
+    {"name": "Idle", "anim": 0, "speed": 1, "transitions": [], "length": 1, "loop": true,
+     "moves": [{"path": "Holder", "y": [0, 0.75, 0, 0]}, {"path": "Sprite", "x": [0, 0.25, 0, 0]}]}]}],
+  "npcs": [{"object": 0, "name": "N", "facingLeft": false, "pingObject": -1,
+    "animator": {"object": 0, "controller": 0, "keepState": false, "controllerObject": 0,
+                 "targets": [{"path": "Sprite", "object": 1, "local": [0, 0]}]},
+    "text": {"box": [-1, 0, 1, 1], "fontSize": 1, "lineAdvance": 0.4, "wordSpacing": 0, "charSpacing": 0,
+             "sortingLayerValue": 9, "order": 0}, "conds": []}],
+  "playerAction": {"carryPos": [0, 0.8125], "carryPath": "Holder", "boatDropBase": [0, 0]},)");
+    const std::string player = R"("player": {"body":)";
+    const size_t at = s.find(player);
+    if (at == std::string::npos) return "fixture: no player";
+    s.replace(at, player.size(), R"("player": {"animator": 0, "animatorTargets": {"targets": [{"path": "Holder", "object": -1, "local": [0, 0.8125]}]}, "body":)");
+    if (!from.empty()) {
+        const size_t f = s.find(from);
+        if (f == std::string::npos) return "fixture: pattern not found: " + from;
+        s.replace(f, from.size(), to);
+    }
+    return s;
+}
+
+TEST(area_animator_curves_resolve_per_animator) {
+    Area a;
+    std::string err;
+    check(loadFixture(animatorFixture(), a, err), "animator fixture loads: " + err);
+    CHECK(a.player.animator >= 0 && a.npcs.size() == 1 && a.npcs[0].animator >= 0);
+    const AnimatorStateDef& st = a.animatorControllers[0].states[0];
+    const AnimatorDef& player = a.animators[a.player.animator];
+    const AnimatorDef& npc = a.animators[a.npcs[0].animator];
+    CHECK(st.moves.size() == 2 && st.moves[0].path == "Holder" && st.moves[1].path == "Sprite");
+    CHECK(player.curveTarget[st.moves[0].id] == 0 && player.curveTarget[st.moves[1].id] == -1);
+    CHECK(npc.curveTarget[st.moves[0].id] == -1 && npc.curveTarget[st.moves[1].id] == 0);
+    CHECK(a.playerAction.carryTarget == 0);
+    // The loader's rules for the player's targets.
+    const char* cases[][3] = {
+        {R"({"targets": [{"path": "Holder", "object": -1, "local": [0, 0.8125]}]})", R"({"targets": []})",
+         "carryPath that isn't a target of the player's Animator"},
+        {R"("local": [0, 0.8125]}]})", R"("local": [0, 0.8125]}, {"path": "Hat", "object": -1, "local": [0, 1]}]})",
+         "a second target inside the player (the port moves only the item holder)"},
+    };
+    for (const auto& c : cases) {
+        Area bad;
+        const std::string json = animatorFixture(c[0], c[1]);
+        check(json.rfind("fixture:", 0) != 0, json);
+        check(!loadFixture(json, bad, err), std::string("rejects ") + c[2]);
+    }
+}
+
 // Pinned shape of the committed export. A re-export that changes these is a real content
 // change: check the previews, then update the numbers here on purpose.
 TEST(area_village_export_stats) {

@@ -11,6 +11,7 @@
 // At 2x the outer frame runs off the 320x240 screen; the buttons and the area art fit.
 #pragma once
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -47,10 +48,11 @@ private:
     void selectButton(Grid& grid, Artifact& artifact, int x, int y, bool dragged, int playerStile, bool autoMove);
     void deselect();
     void refreshOptions(const Grid& grid, const Artifact& artifact);
-    bool buttonPressed(const Grid& grid, const Artifact& artifact, int islandId) const;
+    bool buttonPressed(const Grid& grid, const Artifact& artifact, int islandId, int selected) const;
 
     int selectedId_ = 0;
     int artifactResets_ = -1; // Artifact::resets() last seen
+    std::string autoMoveFlag_; // "forceAutoMove<Area>" (UIArtifact.GetAutoMoveActive), read on taps
     std::vector<std::pair<int, int>> options_;
     // Stylus state.
     bool wasTouching_ = false, dragging_ = false;

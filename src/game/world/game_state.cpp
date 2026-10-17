@@ -10,7 +10,7 @@ void GameState::newProfile(const std::string& profileName) {
     setStr("CatUpper", upper);
 }
 
-bool GameState::flag(const std::string& name) const {
+bool GameState::flag(std::string_view name) const {
     return std::find(flags_.begin(), flags_.end(), name) != flags_.end();
 }
 

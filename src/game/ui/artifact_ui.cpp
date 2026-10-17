@@ -12,6 +12,8 @@ constexpr int IMAGE_HALF = 16;    // button images are 32x32, centered on the sl
 void ArtifactUI::init(const Area& area, const Artifact& artifact) {
     selectedId_ = 0;
     options_.clear();
+    artifactResets_ = artifact.resets();
+    autoMoveFlag_ = "forceAutoMove" + area.name;
     wasTouching_ = dragging_ = false;
     downSlotX_ = downSlotY_ = hoverX_ = hoverY_ = -1;
     int maxId = 0;
@@ -97,7 +99,7 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
         deselect();
     }
     // UIArtifact.GetAutoMoveActive: the save's "forceAutoMove<Area>" (the final puzzle sets it).
-    const bool autoMove = world.state.flag("forceAutoMove" + area.name);
+    auto autoMove = [&] { return world.state.flag(autoMoveFlag_); };
     const bool touching = in.touching;
     int sx = -1, sy = -1;
     const bool onSlot = touching && slotAtPixel(area, artifact, in.touchX, in.touchY, sx, sy);
@@ -118,7 +120,7 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
         dragging_ = true;
         deselect();
         if (grid.tileActive(artifact.buttonAt(downSlotX_, downSlotY_)))
-            selectButton(grid, artifact, downSlotX_, downSlotY_, true, playerStile, autoMove);
+            selectButton(grid, artifact, downSlotX_, downSlotY_, true, playerStile, autoMove());
     }
     hoverX_ = dragging_ && onSlot ? sx : -1;
     hoverY_ = dragging_ && onSlot ? sy : -1;
@@ -127,12 +129,12 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
         int ux = -1, uy = -1;
         bool upOnSlot = slotAtPixel(area, artifact, lastX_, lastY_, ux, uy);
         if (!dragging_) {
-            if (upOnSlot && ux == downSlotX_ && uy == downSlotY_) selectButton(grid, artifact, ux, uy, false, playerStile, autoMove);
+            if (upOnSlot && ux == downSlotX_ && uy == downSlotY_) selectButton(grid, artifact, ux, uy, false, playerStile, autoMove());
         } else if (grid.tileActive(artifact.buttonAt(downSlotX_, downSlotY_)) && selectedId_) {
             // ButtonDragEnd / DoButtonDrag: drop on an option moves there; back on the dragged tile
             // keeps it selected (like a tap); anywhere else cancels.
             const bool onItself = upOnSlot && ux == downSlotX_ && uy == downSlotY_;
-            if (upOnSlot && isOption(ux, uy)) selectButton(grid, artifact, ux, uy, true, playerStile, autoMove);
+            if (upOnSlot && isOption(ux, uy)) selectButton(grid, artifact, ux, uy, true, playerStile, autoMove());
             if (!onItself) deselect();
         }
         dragging_ = false;
@@ -161,9 +163,9 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
     }
 }
 
-bool ArtifactUI::buttonPressed(const Grid& grid, const Artifact& artifact, int islandId) const {
+bool ArtifactUI::buttonPressed(const Grid& grid, const Artifact& artifact, int islandId, int selected) const {
     // Selected, or forced down while its tile is in a running move (UpdatePushedDowns).
-    return islandId == selectedId_ || (grid.tileActive(islandId) && artifact.tileInActiveMove(islandId));
+    return islandId == selected || (grid.tileActive(islandId) && artifact.tileInActiveMove(islandId));
 }
 
 void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
@@ -176,6 +178,9 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
     auto drawPart = [&](int sprite, int x, int y, int h, float originX, float originY) {
         sheets.draw(area, sprite, originX + x * scale, originY - (y + h) * scale, 0, scale);
     };
+    // A setGrid since update() (World::update runs after it): the selection is already gone.
+    const bool stale = artifact.resets() != artifactResets_;
+    const int selected = stale ? 0 : selectedId_;
     drawPart(def.frame.sprite, def.frame.x, def.frame.y, def.frame.h, (float)centerX, (float)centerY);
     drawPart(def.background.sprite, def.background.x, def.background.y, def.background.h, (float)centerX,
              (float)centerY);
@@ -193,8 +198,9 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
             cy -= n.dy * (1 - k) * scale;
         }
         const bool active = grid.tileActive(b.islandId);
-        const bool pressed = buttonPressed(grid, artifact, b.islandId);
-        const bool hovered = bx == hoverX_ && by == hoverY_ && isOption(bx, by);
+        const bool pressed = buttonPressed(grid, artifact, b.islandId, selected);
+        const bool option = !stale && isOption(bx, by);
+        const bool hovered = bx == hoverX_ && by == hoverY_ && option;
         const float drop = pressed ? (float)(def.pressedDrop * scale) : 0.0f;
 
         const bool complete = world.artifactButtons.complete(b.islandId) && b.completed >= 0;
@@ -204,7 +210,7 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
             for (int i = 0; i < (int)b.icons.size(); i++)
                 if (world.artifactButtons.iconShown(b.islandId, i))
                     drawPart(b.icons[i].sprite, b.icons[i].x, b.icons[i].y, b.icons[i].h, cx, cy + drop);
-        if (isOption(bx, by) && !hovered)
+        if (option && !hovered)
             drawPart(def.highlight.sprite, def.highlight.x, def.highlight.y, def.highlight.h, cx, cy + drop);
         if (pressed) drawPart(def.pressed.sprite, def.pressed.x, def.pressed.y, def.pressed.h, cx, cy);
     }

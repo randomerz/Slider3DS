@@ -101,9 +101,6 @@ TEST(final_archeologist_takes_the_fragment_and_shuffles) {
     // riding its tile.
     World world = finaleWorld();
     const Area& area = world.area;
-    // (The authored grid is the solved one, for which he says something else: slide 8 out of place.)
-    CHECK(world.artifact.tryMove(world.grid, 0, 1, 1, 1, 0));
-    settle(world);
     const int arch = npcNamed(area, "/Archeologist");
     CHECK(arch >= 0);
     float ax, ay;
@@ -155,7 +152,7 @@ TEST(final_shuffle_keeps_unity_frames) {
     CHECK(shown(world) == "10000" && world.objects.fill(rs.symbols[0]) == rs.flashColor);
     frames(world, 1);
     CHECK(std::fabs(world.effects.shakeGain() - 0.25f * ScreenEffects::SHAKE_SETTING) < 1e-6f);
-    frames(world, framesFor(0.25f, false) - 2);
+    frames(world, framesFor(0.25f, true) - 2); // (FlashWhiteSprite's waits are chained WaitForSeconds)
     CHECK(world.objects.fill(rs.symbols[0]) == rs.flashColor);
     frames(world, 1);
     CHECK(world.objects.fill(rs.symbols[0]) == 0);
@@ -201,14 +198,19 @@ TEST(final_completions_and_slider_9) {
     CHECK(world.state.flag("villageCompletion"));
     // Nothing is in its target slot after the scramble.
     CHECK(!world.artifactButtons.complete(1) && !world.artifactButtons.complete(8));
-    // One slide from solved: every button in its target slot shows complete; not 7 (or 9, uncollected).
-    CHECK(world.setGrid("624_879_153"));
+    // SetGrid sends no grid event, so completions don't follow it; a slide's queueing does. Two slides
+    // from solved, then 3 down: every button in its target slot shows complete; not 7 (or 9, uncollected).
+    CHECK(world.setGrid("624_873_159"));
+    world.update(DT, 0, 0, false);
+    CHECK(!world.artifactButtons.complete(6));
+    CHECK(world.artifact.tryMove(world.grid, 2, 1, 2, 0, world.player.stile));
     world.update(DT, 0, 0, false);
     std::string complete;
     for (int id = 1; id <= 9; id++) complete += world.artifactButtons.complete(id) ? '1' : '0';
     check(complete == "111111010", "complete: " + complete);
     // Solving it stops Artifact movement (queued moves still run) and, once they're done, the final
     // Slider appears under the player, who picks it up; 1.2 s after it appeared button 9 shows complete.
+    settle(world);
     CHECK(world.artifact.tryMove(world.grid, 1, 1, 2, 1, world.player.stile));
     world.update(DT, 0, 0, false);
     CHECK(!world.artifact.canAddMoves && world.artifact.canQueue && world.finale.placingTile9());

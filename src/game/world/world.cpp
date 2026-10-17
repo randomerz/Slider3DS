@@ -64,6 +64,7 @@ void World::reloadObjects() {
     chad.reset(area);
     finale.reset(area);
     artifactButtons.reset(area);
+    artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
     starts.reset(area);
     runStarts();
     finale.start(*this); // VillageGrid.Start (after every Awake; CheckHole may hide the fragment)
@@ -87,6 +88,7 @@ bool World::setGrid(const std::string& ids) {
     const TileState* t = grid.tile(stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
     if (!artifact.setGrid(grid, ids)) return false;
+    finale.gridSet(*this);
     if (t) {
         player.x += (t->posX - ox) * grid.tileWidth();
         player.y += (t->posY - oy) * grid.tileWidth();
@@ -166,6 +168,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
     effects.update(area, dt); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
+    frame++;
 }
 
 void World::offer(const Interactable& it) {

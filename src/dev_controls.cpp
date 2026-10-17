@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <string>
 
+#include "game/village/village_grid.h"
+
 bool DevControls::update(const plat::Input& in, World& world) {
     const Area& area = world.area;
     if (in.pressed & plat::BTN_SELECT) showPerf = !showPerf;

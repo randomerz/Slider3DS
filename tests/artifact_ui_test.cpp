@@ -113,6 +113,18 @@ TEST(artifact_ui_respects_rules) {
     CHECK(f.ui.selected() == 1 && f.artifact.queueEmpty());
 }
 
+TEST(artifact_ui_set_grid_drops_the_selection) {
+    // SGrid.SetGrid deselects the selected button: a tap on one of its old options then does nothing.
+    Fixture f;
+    f.tap(0, 0);
+    CHECK(f.ui.selected() == 1 && f.ui.isOption(1, 0));
+    CHECK(f.world.setGrid("624_897_153")); // (the same layout: still a SetGrid)
+    f.frame(false);
+    CHECK(f.ui.selected() == 0 && !f.ui.isOption(1, 0));
+    f.tap(1, 0);
+    CHECK(f.ui.selected() == 0 && f.artifact.queueEmpty());
+}
+
 TEST(artifact_ui_auto_move) {
     // After the final shuffle a tile with a single option moves on tap (forceAutoMoveVillage).
     Fixture f(true); // all but 9 collected: the only empty slot is the middle

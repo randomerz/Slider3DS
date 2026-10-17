@@ -66,7 +66,10 @@ public:
     // components then Start).
     void setTileActive(int islandId, bool active);
     // SGrid.SetGrid: the tiles jump to `ids` (Grid::setGrid's format) and the Artifact resets to
-    // match; the player rides along with its tile (it's parented to it). False if malformed.
+    // match; the player rides along with its tile (it's parented to it). Use it, not
+    // Artifact::setGrid, whenever the player matters. Unlike Unity, queued and running moves are
+    // dropped (Unity keeps both, which would slide tiles from where they no longer are). False if
+    // malformed.
     bool setGrid(const std::string& ids);
     // Puts the player at a spawn point (SceneSpawns), in the boat if it says so.
     void placeAt(const Spawn& spawn);
@@ -120,6 +123,8 @@ public:
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
+    // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
+    uint32_t frame = 0;
 
 private:
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.

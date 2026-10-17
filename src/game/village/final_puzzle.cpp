@@ -30,6 +30,7 @@ constexpr ShuffleStep SHUFFLE_STEPS[] = {
     {0, 0, -1, true, 0.75f},      // UIEffects.FlashWhite, DoShuffle
     {2, 0.9f, -1, false, -1},
 };
+constexpr int SHUFFLE_STEP_COUNT = (int)(sizeof(SHUFFLE_STEPS) / sizeof(SHUFFLE_STEPS[0]));
 
 } // namespace
 
@@ -38,9 +39,7 @@ void FinalPuzzle::reset(const Area&) { *this = FinalPuzzle(); }
 void FinalPuzzle::start(World& world) {
     const Area& area = world.area;
     const bool complete = world.state.flag(VILLAGE_COMPLETION_FLAG);
-    // UIArtifact.Init, VillageGrid.Load: movement on, slides fast once completed.
-    world.artifact.canAddMoves = true;
-    world.grid.durationMultiplier = complete ? FAST_SLIDES : 1;
+    world.grid.durationMultiplier = complete ? FAST_SLIDES : 1; // VillageGrid.Load
     rememberButtons(world);
     if (complete) updateCompletions(world); // SGrid.Start
     // CheckHole (against villageCompletion, not a filled hole, to avoid a softlock).
@@ -55,10 +54,8 @@ void FinalPuzzle::start(World& world) {
             if (it.colliderSlot >= 0) world.objects.setColliderEnabled(it.colliderSlot, true);
         }
     }
-    if (world.state.flag(PENDING_COMPLETE_FLAG) && !world.state.hasCollectible(FINAL_SLIDER, area.name)) {
-        placing_ = true; // PlaceTile9
-        placingSince_ = frame_;
-    }
+    if (world.state.flag(PENDING_COMPLETE_FLAG) && !world.state.hasCollectible(FINAL_SLIDER, area.name))
+        placing_.start(world.frame); // PlaceTile9
 }
 
 void FinalPuzzle::activate(World& world) {
@@ -72,15 +69,19 @@ void FinalPuzzle::activate(World& world) {
 }
 
 void FinalPuzzle::setSymbols(World& world, bool shown) {
-    for (int s : world.area.areaGrid.ruinsSymbols.symbols) world.objects.setRendererEnabled(s, shown);
+    const RuinsSymbolsDef& rs = world.area.areaGrid.ruinsSymbols;
+    if (!rs.present) return;
+    for (int s : rs.symbols) world.objects.setRendererEnabled(s, shown);
 }
 
 void FinalPuzzle::flashSymbol(World& world, int symbol) {
     const RuinsSymbolsDef& rs = world.area.areaGrid.ruinsSymbols;
+    if (!rs.present) return;
     world.objects.setRendererEnabled(rs.symbols[symbol], true);
     // FlashWhiteSprite.Flash: white at once (StopAllCoroutines: a running flash starts over).
     world.objects.setFill(rs.symbols[symbol], rs.flashColor);
-    flashes_[symbol] = {0, frame_};
+    flashes_[symbol].half = 0;
+    flashes_[symbol].wait.start(rs.flashTime[symbol], world.frame);
 }
 
 void FinalPuzzle::fillInHole(World& world) {
@@ -88,14 +89,13 @@ void FinalPuzzle::fillInHole(World& world) {
     if (world.state.flag(VILLAGE_COMPLETION_FLAG)) return;
     const int item = world.items.removeCarried(); // PlayerInventory.RemoveItem
     if (item >= 0) world.objects.setActive(area, area.items[item].object, false);
-    world.objects.setRendererEnabled(area.areaGrid.ruinsSymbols.hole, false);
+    if (area.areaGrid.ruinsSymbols.present) world.objects.setRendererEnabled(area.areaGrid.ruinsSymbols.hole, false);
     setSymbols(world, false); // (and the "Puzzle Complete" sound, a SmokePoof)
 }
 
 void FinalPuzzle::shufflePuzzle(World& world) {
     if (shuffleStep_ >= 0) return; // shuffleBuildUpCoroutine is set
     shuffleStep_ = 0;
-    shuffleWait_ = 0;
     stepShuffle(world, 0); // StartCoroutine: the first step runs at once
 }
 
@@ -111,8 +111,6 @@ void FinalPuzzle::doShuffle(World& world) {
     world.grid.durationMultiplier = FAST_SLIDES;
     world.state.setFlag(AUTO_MOVE_FLAG, true);
     world.state.setFlag(VILLAGE_COMPLETION_FLAG, true); // checkCompletion
-    // Subscribed from now on, but nothing fires for the SetGrid itself.
-    rememberButtons(world);
 }
 
 void FinalPuzzle::rememberButtons(const World& world) {
@@ -123,7 +121,11 @@ void FinalPuzzle::rememberButtons(const World& world) {
 }
 
 void FinalPuzzle::checkButtons(World& world) {
-    if (!world.state.flag(VILLAGE_COMPLETION_FLAG)) return;
+    if (world.state.version() != stateVersion_) { // (a flag lookup only when the state changed)
+        stateVersion_ = world.state.version();
+        completionsOn_ = world.state.flag(VILLAGE_COMPLETION_FLAG);
+    }
+    if (!completionsOn_) return;
     const Artifact& a = world.artifact;
     bool moved = buttons_.size() != (size_t)(a.width() * a.height());
     for (int y = 0; y < a.height() && !moved; y++)
@@ -145,12 +147,11 @@ void FinalPuzzle::updateCompletions(World& world) {
         }
     // CheckFinalPlacements.
     const std::string& name = world.area.name;
-    if (!world.state.hasCollectible(FINAL_SLIDER, name) && a.gridString(world.grid) == SOLVED_GRID && !placing_) {
+    if (!world.state.hasCollectible(FINAL_SLIDER, name) && a.gridString(world.grid) == SOLVED_GRID && !placing_.active) {
         world.artifact.canAddMoves = false; // UIArtifact.DisableMovement(false): queued moves still run
         world.state.setFlag(AUTO_MOVE_FLAG, false);
         world.state.setFlag(PENDING_COMPLETE_FLAG, true);
-        placing_ = true; // PlaceTile9 (and the sound, achievements)
-        placingSince_ = frame_;
+        placing_.start(world.frame); // PlaceTile9 (and the sound, achievements)
     }
 }
 
@@ -169,12 +170,10 @@ void FinalPuzzle::giveFinalSlider(World& world) {
 }
 
 void FinalPuzzle::stepShuffle(World& world, float dt) {
-    while (shuffleStep_ >= 0 && shuffleStep_ < (int)(sizeof(SHUFFLE_STEPS) / sizeof(SHUFFLE_STEPS[0]))) {
-        if (shuffleWait_ > 0) {
-            if (shuffleSince_ == frame_) break;
-            shuffleWait_ -= dt;
-            if (shuffleWait_ > 0) break;
-        }
+    // A step runs when the wait before it is done (the first at once); each wait counts from the
+    // frame after its step.
+    while (shuffleStep_ >= 0 && shuffleStep_ < SHUFFLE_STEP_COUNT) {
+        if (shuffleStep_ > 0 && !shuffleWait_.done(world.frame, dt)) break;
         const ShuffleStep& s = SHUFFLE_STEPS[shuffleStep_++];
         if (s.shakeDuration > 0) world.effects.shake(s.shakeDuration, s.shakeAmount); // (and the rumbles)
         if (s.symbol >= 0) flashSymbol(world, s.symbol);
@@ -183,39 +182,30 @@ void FinalPuzzle::stepShuffle(World& world, float dt) {
             doShuffle(world);
         }
         if (s.wait < 0) break;
-        shuffleWait_ = s.wait;
-        shuffleSince_ = frame_;
+        shuffleWait_.start(s.wait, world.frame);
     }
 }
 
 void FinalPuzzle::coroutines(World& world, float dt) {
     stepShuffle(world, dt);
-    // FlashWhiteSprite._Flash: white for flashTime, normal for flashTime, FLASHES times.
+    // FlashWhiteSprite._Flash: white and normal for flashTime each, FLASHES times (chained waits).
     const RuinsSymbolsDef& rs = world.area.areaGrid.ruinsSymbols;
     for (int k = 0; k < RuinsSymbolsDef::SYMBOLS; k++) {
         Flash& f = flashes_[k];
-        if (f.t < 0 || f.since == frame_) continue;
-        f.t += dt;
-        const int half = rs.flashTime[k] > 0 ? (int)(f.t / rs.flashTime[k]) : 2 * FLASHES;
-        if (half >= 2 * FLASHES) f.t = -1;
-        world.objects.setFill(rs.symbols[k], f.t >= 0 && half % 2 == 0 ? rs.flashColor : 0);
-    }
-    // PlaceTile9: WaitUntil the move queue is empty.
-    if (placing_ && placingSince_ != frame_ && world.artifact.queueEmpty()) {
-        placing_ = false;
-        giveFinalSlider(world);
-        completionsDelay_ = COMPLETIONS_DELAY;
-        completionsSince_ = frame_;
-    }
-    // CheckCompletionsAfterDelay: the final button shows complete.
-    if (completionsDelay_ >= 0 && completionsSince_ != frame_) {
-        completionsDelay_ -= dt;
-        if (completionsDelay_ <= 0) {
-            completionsDelay_ = -1;
-            updateCompletions(world);
+        if (f.half < 0 || !f.wait.done(world.frame, dt)) continue;
+        if (++f.half >= 2 * FLASHES) {
+            f.half = -1;
+            world.objects.setFill(rs.symbols[k], 0);
+            continue;
         }
+        world.objects.setFill(rs.symbols[k], f.half % 2 == 0 ? rs.flashColor : 0);
+        f.wait.start(rs.flashTime[k], world.frame);
     }
-    frame_++;
+    if (placing_.done(world.frame, world.artifact.queueEmpty())) {
+        giveFinalSlider(world);
+        completionsDelay_.start(COMPLETIONS_DELAY, world.frame);
+    }
+    if (completionsDelay_.done(world.frame, dt)) updateCompletions(world); // the final button shows complete
 }
 
 } // namespace village

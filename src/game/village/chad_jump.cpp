@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "game/events/events.h"
+#include "game/village/village_grid.h"
 #include "game/world/world.h"
 
 namespace village {

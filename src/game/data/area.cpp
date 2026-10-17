@@ -697,8 +697,6 @@ static bool validate(const Area& a, std::string* error) {
                 return false;
             if (c.method == M::VillageExplode && (!objectOk(a.areaGrid.caveDoorEntrance) || !objectOk(a.areaGrid.caveDoorRocks)))
                 return false;
-            if ((c.method == M::VillageFillInHole || c.method == M::VillageShufflePuzzle) && !a.areaGrid.ruinsSymbols.present)
-                return false;
             if (c.method == M::SetColliderEnabled) {
                 const int nSolid = (int)a.objectColliders.size();
                 if (c.data < 0 || c.data >= nSolid + (int)a.triggerColliders.size()) return false;

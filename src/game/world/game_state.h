@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,7 @@ public:
     // SaveProfile's constructor: the profile name is the cat's ("Cat" / "CatUpper" in dialogue).
     void newProfile(const std::string& profileName);
 
-    bool flag(const std::string& name) const;
+    bool flag(std::string_view name) const; // (no string built for a literal)
     void setFlag(const std::string& name, bool value);
 
     // SaveProfile.GetString: an unset string reads as its name ("Cat" until a profile names the cat).

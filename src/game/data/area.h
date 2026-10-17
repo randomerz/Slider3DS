@@ -265,7 +265,7 @@ struct AnimatorStateDef {
     int anim = -1;        // Area::anims index, -1 = no clip (the sprite keeps its last frame)
     float speed = 1;
     std::vector<AnimatorTransitionDef> transitions;
-    float length = 0;          // its clip's (0 = no clip)
+    float length = 0;          // its clip's (0 = no clip, or a zero-length one)
     bool loop = true;
     bool writeDefaults = true; // what its clip doesn't move goes back to the default (authored) position
     std::vector<MoveCurveDef> moves;
