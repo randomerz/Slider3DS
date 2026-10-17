@@ -38,7 +38,7 @@ void CameraDollies::update(World& world, float dt, bool actionHeld) {
             fill_ = 0;
         } else if (held_ >= d.holdToSkip) {
             holding_ = false;
-            world.effects.fadeToBlack(FadeDone::DollyEnd, world.frame); // SkipToEndOfTrack: the camera stops where it is
+            world.effects.fadeToBlack(EffectDone::DollyEnd, world.frame); // SkipToEndOfTrack: the camera stops where it is
             rolling_ = false;
         }
     }
@@ -47,7 +47,7 @@ void CameraDollies::update(World& world, float dt, bool actionHeld) {
     t_ += dt;
     if (!fadingOut_ && t_ >= d.duration - END_FADE_LEAD) {
         fadingOut_ = true;
-        world.effects.fadeToBlack(FadeDone::DollyEnd, world.frame);
+        world.effects.fadeToBlack(EffectDone::DollyEnd, world.frame);
     }
     if (t_ < d.duration)
         camT_ = t_;

@@ -134,7 +134,7 @@ TEST(final_archeologist_takes_the_fragment_and_shuffles) {
         shuffled = world.artifact.gridString(world.grid) == "182_#43_765";
     }
     CHECK(shuffled && world.state.flag("villageCompletion") && world.state.flag("forceAutoMoveVillage"));
-    CHECK(world.grid.durationMultiplier == 0.5f && world.effects.whiteAlpha(area) < 0.1f);
+    CHECK(world.grid.durationMultiplier == 0.5f && world.effects.whiteAlpha(area) == 1); // (at the flash's peak)
     world.grid.ownerBase(stile, bx, by);
     CHECK(world.player.stile == stile && std::fabs(world.player.x - bx - relX) < 1e-3f && std::fabs(world.player.y - by - relY) < 1e-3f);
     frames(world, 120); // the last symbol's flashes end
@@ -166,7 +166,7 @@ TEST(final_shuffle_keeps_unity_frames) {
     frames(w2, 1);
     CHECK(w2.objects.rendererEnabled(rs.symbols[1]) && w2.objects.fill(rs.symbols[1]) == rs.flashColor);
     // Then 2 and 3 a second apart (each wait counts from the frame after the last step), and 0.25 s
-    // after 3 the white flash and the shuffle.
+    // after 3 the white flash; the shuffle comes at its peak (port choice: Unity's is at its start).
     frames(w2, one - 1);
     CHECK(w2.objects.rendererEnabled(rs.symbols[2]) && !w2.objects.rendererEnabled(rs.symbols[3]));
     frames(w2, one - 1);
@@ -175,12 +175,13 @@ TEST(final_shuffle_keeps_unity_frames) {
     frames(w2, quarter - 1);
     CHECK(w2.artifact.gridString(w2.grid) != "182_#43_765" && w2.effects.whiteAlpha(area) == 0);
     frames(w2, 1);
-    CHECK(w2.artifact.gridString(w2.grid) == "182_#43_765");
     CHECK(w2.effects.whiteAlpha(area) == 0); // FlashCoroutine: alpha 0 the frame it starts
     frames(w2, 1);
     CHECK(std::fabs(w2.effects.whiteAlpha(area) - DT / 0.5f) < 1e-5f);
-    frames(w2, 29);
-    CHECK(w2.effects.whiteAlpha(area) == 1);
+    frames(w2, 28);
+    CHECK(w2.artifact.gridString(w2.grid) != "182_#43_765" && w2.effects.whiteAlpha(area) < 1);
+    frames(w2, 1);
+    CHECK(w2.effects.whiteAlpha(area) == 1 && w2.artifact.gridString(w2.grid) == "182_#43_765"); // the peak
     frames(w2, 31);
     CHECK(w2.effects.whiteAlpha(area) == 0);
     // Once per scene: calling it again does nothing.

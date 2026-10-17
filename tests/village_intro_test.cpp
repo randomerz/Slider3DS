@@ -130,16 +130,16 @@ TEST(intro_fade_to_black_runs_its_callback_unless_replaced) {
     ScreenEffects fx;
     fx.reset();
     uint32_t frame = 0; // (World::frame: a fade counts from the frame after it starts)
-    fx.fadeToBlack(FadeDone::DollyEnd, frame);
+    fx.fadeToBlack(EffectDone::DollyEnd, frame);
     CHECK(fx.black() == 0);
-    CHECK(fx.update(area, DT, 0, frame++) == FadeDone::None && fx.black() == 0); // (its start frame)
-    FadeDone done = FadeDone::None;
+    CHECK(fx.update(area, DT, 0, frame++).fadeEnd == EffectDone::None && fx.black() == 0); // (its start frame)
+    EffectDone done = EffectDone::None;
     int n = 0;
-    for (; n < 600 && done == FadeDone::None; n++) done = fx.update(area, DT, 0, frame++);
-    CHECK(done == FadeDone::DollyEnd && std::abs(n - (int)std::lround(area.fadeDuration / DT)) <= 1);
+    for (; n < 600 && done == EffectDone::None; n++) done = fx.update(area, DT, 0, frame++).fadeEnd;
+    CHECK(done == EffectDone::DollyEnd && std::abs(n - (int)std::lround(area.fadeDuration / DT)) <= 1);
     CHECK(fx.black() == 0); // (the panel turns off at the end)
-    fx.fadeToBlack(FadeDone::DollyEnd, frame);
+    fx.fadeToBlack(EffectDone::DollyEnd, frame);
     fx.update(area, DT, 0, frame++);
     fx.fadeFromBlack(frame);
-    for (n = 0; n < 600; n++) check(fx.update(area, DT, 0, frame++) == FadeDone::None, "cancelled: no callback");
+    for (n = 0; n < 600; n++) check(fx.update(area, DT, 0, frame++).fadeEnd == EffectDone::None, "cancelled: no callback");
 }

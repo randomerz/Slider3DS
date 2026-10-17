@@ -27,7 +27,7 @@ constexpr ShuffleStep SHUFFLE_STEPS[] = {
     {0.25f, 0.25f, 1, false, 1},
     {0.75f, 0.5f, 2, false, 1},
     {1.5f, 2.5f, 3, false, 0.25f},
-    {0, 0, -1, true, 0.75f},      // UIEffects.FlashWhite, DoShuffle
+    {0, 0, -1, true, 0.75f},      // UIEffects.FlashWhite, DoShuffle at its peak (see stepShuffle)
     {2, 0.9f, -1, false, -1},
 };
 constexpr int SHUFFLE_STEP_COUNT = (int)(sizeof(SHUFFLE_STEPS) / sizeof(SHUFFLE_STEPS[0]));
@@ -177,10 +177,9 @@ void FinalPuzzle::stepShuffle(World& world, float dt) {
         const ShuffleStep& s = SHUFFLE_STEPS[shuffleStep_++];
         if (s.shakeDuration > 0) world.effects.shake(s.shakeDuration, s.shakeAmount); // (and the rumbles)
         if (s.symbol >= 0) flashSymbol(world, s.symbol);
-        if (s.shuffle) {
-            world.effects.flashWhite();
-            doShuffle(world);
-        }
+        // Port choice (the user's): the grid changes behind the flash at its peak (FlashWhite's
+        // callbackMiddle); Unity's DoShuffle runs as the flash starts, so the tiles jump in plain view.
+        if (s.shuffle) world.effects.flashWhite(EffectDone::VillageShuffle);
         if (s.wait < 0) break;
         shuffleWait_.start(s.wait, world.frame);
     }

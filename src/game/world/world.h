@@ -142,8 +142,8 @@ public:
     void placeObject(int object, int owner, float x, float y);
     // A script's item drop has landed: runs its callback (Items::drop's DropDone).
     void dropLanded(DropDone done, int arg);
-    // A fade to black ended: runs its callback (ScreenEffects::fadeToBlack's FadeDone).
-    void fadeDone(FadeDone done);
+    // A screen effect's callback is due (ScreenEffects: a fade to black ended, a flash peaked).
+    void effectDone(EffectDone done);
 
     const Area& area;
     Grid grid;

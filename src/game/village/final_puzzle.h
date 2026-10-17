@@ -38,6 +38,9 @@ public:
 
     void fillInHole(World& world);    // VillageGrid.FillInHole
     void shufflePuzzle(World& world); // VillageGrid.ShufflePuzzle (once per scene)
+    // DoShuffle: the scrambled grid, fast slides, auto-move and completions on (at the white flash's
+    // peak: EffectDone::VillageShuffle).
+    void doShuffle(World& world);
 
     // UpdateButtonCompletions on OnGridMove / OnButtonInteract (subscribed once completions are on):
     // here whenever the Artifact's buttons have moved since last time. World calls it after the
@@ -58,7 +61,6 @@ private:
     void flashSymbol(World& world, int symbol);   // RuinsSymbols.FlashSymbol
     void setSymbols(World& world, bool shown);     // RuinsSymbols.SetSprites
     void stepShuffle(World& world, float dt);      // ShuffleBuildUp: the steps due now
-    void doShuffle(World& world);
     void giveFinalSlider(World& world);            // GivePlayerTheCollectible("Slider 9")
     void rememberButtons(const World& world);
 

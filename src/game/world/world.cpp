@@ -33,10 +33,11 @@ void World::sendGridEvents() {
     runStarts(); // (the arrow may show the buried Slider)
 }
 
-void World::fadeDone(FadeDone done) {
+void World::effectDone(EffectDone done) {
     switch (done) {
-    case FadeDone::None: break;
-    case FadeDone::DollyEnd: dollies.end(*this); break; // (Unity's OnRollercoasterEnd: the cat abduction, not ported)
+    case EffectDone::None: break;
+    case EffectDone::DollyEnd: dollies.end(*this); break; // (Unity's OnRollercoasterEnd: the cat abduction, not ported)
+    case EffectDone::VillageShuffle: finale.doShuffle(*this); break;
     }
 }
 
@@ -191,7 +192,9 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     ruins.update(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
-    fadeDone(effects.update(area, dt, settings.screenShake, frame)); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
+    const EffectCallbacks due = effects.update(area, dt, settings.screenShake, frame);
+    effectDone(due.flashMiddle);
+    effectDone(due.fadeEnd); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
     frame++;
 }
 

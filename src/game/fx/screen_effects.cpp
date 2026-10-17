@@ -47,7 +47,7 @@ void ScreenEffects::reset() {
     offsetY_ = random() * 2000 - 1000;
 }
 
-void ScreenEffects::startBlack(float from, float to, FadeDone done, uint32_t frame) {
+void ScreenEffects::startBlack(float from, float to, EffectDone done, uint32_t frame) {
     blackOn_ = true; // (FadeCoroutine: the start alpha this frame)
     black_ = blackFrom_ = from;
     blackTo_ = to;
@@ -56,7 +56,8 @@ void ScreenEffects::startBlack(float from, float to, FadeDone done, uint32_t fra
     blackSince_ = frame;
 }
 
-void ScreenEffects::flashWhite() {
+void ScreenEffects::flashWhite(EffectDone middle) {
+    flashMiddle_ = middle;
     flash_ = Flash::Up; // (FlashCoroutine: alpha 0 this frame, t counts from the next)
     flashT_ = 0;
     flashFresh_ = true;
@@ -66,14 +67,14 @@ void ScreenEffects::shake(float duration, float amount) {
     shakes_.push_back({duration, amount, 0, 0});
 }
 
-FadeDone ScreenEffects::update(const Area& area, float dt, float screenShake, uint32_t frame) {
-    FadeDone done = FadeDone::None;
+EffectCallbacks ScreenEffects::update(const Area& area, float dt, float screenShake, uint32_t frame) {
+    EffectCallbacks done;
     if (blackOn_ && frame != blackSince_) {
         blackT_ += dt;
         if (area.fadeDuration <= 0 || blackT_ >= area.fadeDuration) {
             blackOn_ = false; // (disableAtEnd)
             black_ = 0;
-            done = std::exchange(blackDone_, FadeDone::None);
+            done.fadeEnd = std::exchange(blackDone_, EffectDone::None);
         } else {
             black_ = blackFrom_ + (blackTo_ - blackFrom_) * (blackT_ / area.fadeDuration);
         }
@@ -82,7 +83,10 @@ FadeDone ScreenEffects::update(const Area& area, float dt, float screenShake, ui
     if (flash_ != Flash::None && !std::exchange(flashFresh_, false)) {
         if (flash_ == Flash::Up) {
             flashT_ += dt;
-            if (flashT_ >= area.flashDuration / 2) flash_ = Flash::Down;
+            if (flashT_ >= area.flashDuration / 2) { // (the peak: callbackMiddle)
+                flash_ = Flash::Down;
+                done.flashMiddle = std::exchange(flashMiddle_, EffectDone::None);
+            }
         } else {
             flashT_ -= dt;
             if (flashT_ < 0) flash_ = Flash::None;

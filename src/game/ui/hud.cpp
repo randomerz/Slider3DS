@@ -11,7 +11,7 @@ namespace {
 constexpr uint32_t PROMPT_EDGE = plat::rgba(0x66, 0x66, 0x66); // Skip Prompt (dialogueHighContrastBG's outline)
 constexpr uint32_t PROMPT_BACK = plat::rgba(0x1a, 0x1a, 0x1a);
 constexpr uint32_t PROMPT_FILL = plat::rgba(0xe5, 0xe5, 0xe5);
-constexpr uint32_t PROMPT_TEXT = plat::rgba(0xff, 0xff, 0xff);
+constexpr uint32_t PROMPT_TEXT = plat::rgba(0xe6, 0xe6, 0xe6); // Slider's off-white (the white panel's too)
 
 } // namespace
 
@@ -39,5 +39,5 @@ void drawTopOverlays(const World& world, const Font& font) {
     if (const float black = world.effects.black(); black > 0)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(black * 255)));
     if (const float white = world.effects.whiteAlpha(world.area); white > 0)
-        plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0xff, 0xff, 0xff, (uint8_t)(white * 255)));
+        plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0xe6, 0xe6, 0xe6, (uint8_t)(white * 255)));
 }
