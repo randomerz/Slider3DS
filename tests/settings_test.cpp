@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
+#include <vector>
 
 #include "game/save/settings.h"
 #include "game/ui/pause_menu.h"
@@ -52,10 +53,20 @@ bool near(float a, float b) { return std::abs(a - b) < 1e-6f; }
 
 TEST(settings_round_trip) {
     Settings s;
-    CHECK(!s.autoMove && s.screenShake == 0.5f); // SettingsManager's defaults
+    CHECK(!s.autoMove && s.screenShake == 0.5f && s.screenEffects == 1.0f && !s.bigText); // SettingsManager's defaults
+    CHECK(s.masterVolume == 0.5f && s.sfxVolume == 0.5f && s.musicVolume == 0.5f && s.ambienceVolume == 0.5f);
     s.autoMove = true;
+    s.bigText = true;
     s.setScreenShake(0.3f);
-    CHECK(Settings::parse(s.serialize()) == s); // exactly: values sit on steps
+    s.screenEffects = Settings::snap(0.2f);
+    s.masterVolume = Settings::snap(0.9f);
+    s.sfxVolume = Settings::snap(0.1f);
+    s.musicVolume = Settings::snap(0.0f);
+    s.ambienceVolume = Settings::snap(1.0f);
+    CHECK(Settings::parse(s.serialize()) == s); // every setting, exactly: values sit on steps
+    Settings other = s;
+    other.ambienceVolume = Settings::snap(0.6f);
+    CHECK(other != s); // (== compares every setting)
 }
 
 TEST(settings_parse_keeps_defaults_for_bad_lines) {
@@ -99,20 +110,40 @@ TEST(pause_menu_buttons) {
     CHECK(menu.isOpen() && menu.page() == Menu::Page::Paused && menu.cursor() == Menu::RESUME);
     menu.update(press(plat::BTN_DOWN), s);
     CHECK(menu.cursor() == Menu::OPTIONS);
-    menu.update(press(plat::BTN_A), s); // into Options, on the slider
-    CHECK(menu.page() == Menu::Page::Options && menu.cursor() == Menu::SCREEN_SHAKE);
+    menu.update(press(plat::BTN_A), s); // into Options, on General
+    CHECK(menu.page() == Menu::Page::Options && menu.cursor() == Menu::GENERAL);
+    menu.update(press(plat::BTN_A), s); // into General, on the first slider
+    CHECK(menu.page() == Menu::Page::General && menu.cursor() == Menu::SCREEN_SHAKE);
     menu.update(press(plat::BTN_RIGHT), s);
     CHECK(near(s.screenShake, 0.6f));
     for (int i = 0; i < 6; i++) menu.update(press(plat::BTN_RIGHT), s);
     CHECK(s.screenShake == 1.0f); // stops at 100%
     menu.update(press(plat::BTN_A), s); // A does nothing on a slider
-    CHECK(s.screenShake == 1.0f && menu.page() == Menu::Page::Options);
+    CHECK(s.screenShake == 1.0f && menu.page() == Menu::Page::General);
+    menu.update(press(plat::BTN_DOWN), s);
+    menu.update(press(plat::BTN_LEFT), s); // each slider its own setting
+    CHECK(near(s.screenEffects, 0.9f) && s.screenShake == 1.0f);
     menu.update(press(plat::BTN_DOWN), s);
     CHECK(menu.cursor() == Menu::AUTO_MOVE);
     menu.update(press(plat::BTN_A), s);
     CHECK(s.autoMove);
     menu.update(press(plat::BTN_LEFT), s);
     CHECK(!s.autoMove);
+    menu.update(press(plat::BTN_B), s); // back to Options, on General
+    CHECK(menu.isOpen() && menu.page() == Menu::Page::Options && menu.cursor() == Menu::GENERAL);
+    menu.update(press(plat::BTN_DOWN), s);
+    menu.update(press(plat::BTN_A), s); // Sound
+    CHECK(menu.page() == Menu::Page::Sound && menu.cursor() == Menu::MASTER_VOLUME);
+    menu.update(press(plat::BTN_DOWN), s);
+    menu.update(press(plat::BTN_DOWN), s);
+    menu.update(press(plat::BTN_RIGHT), s); // Music
+    CHECK(near(s.musicVolume, 0.6f) && s.masterVolume == 0.5f && s.sfxVolume == 0.5f && s.ambienceVolume == 0.5f);
+    menu.update(press(plat::BTN_UP), s);
+    menu.update(press(plat::BTN_UP), s);
+    menu.update(press(plat::BTN_UP), s); // wraps to Back
+    CHECK(menu.cursor() == Menu::SOUND_BACK);
+    menu.update(press(plat::BTN_A), s); // back to Options, on Sound
+    CHECK(menu.page() == Menu::Page::Options && menu.cursor() == Menu::SOUND);
     menu.update(press(plat::BTN_B), s); // back to Paused, on Options
     CHECK(menu.isOpen() && menu.page() == Menu::Page::Paused && menu.cursor() == Menu::OPTIONS);
     menu.update(press(plat::BTN_A), s);
@@ -145,6 +176,7 @@ TEST(pause_menu_stylus) {
     Settings s;
     openMenu(menu, s);
     CHECK(tapItem(menu, s, Menu::OPTIONS) == Menu::Action::None && menu.page() == Menu::Page::Options);
+    CHECK(tapItem(menu, s, Menu::GENERAL) == Menu::Action::None && menu.page() == Menu::Page::General);
     CHECK(tapItem(menu, s, Menu::AUTO_MOVE) == Menu::Action::None && s.autoMove && menu.cursor() == Menu::AUTO_MOVE);
 
     // Dragging the slider sets the value under the stylus, on steps; releasing anywhere keeps it.
@@ -158,7 +190,7 @@ TEST(pause_menu_stylus) {
     CHECK(s.screenShake == 0.0f);
     menu.update(touch(slider.x + slider.w * 3 / 10, cy), s);
     menu.update(plat::Input{}, s);
-    CHECK(near(s.screenShake, 0.3f) && menu.page() == Menu::Page::Options);
+    CHECK(near(s.screenShake, 0.3f) && menu.page() == Menu::Page::General);
 
     // The label is just a label: a tap on it moves the cursor, not the value. A finger a little
     // above the slider still drags it.
@@ -172,10 +204,11 @@ TEST(pause_menu_stylus) {
     CHECK(s.screenShake == 1.0f);
 
     // A press on one item released on another does nothing.
-    const Menu::Box back = Menu::itemBox(Menu::OPTIONS_BACK), toggle = Menu::itemBox(Menu::AUTO_MOVE);
+    const Menu::Box back = Menu::itemBox(Menu::GENERAL_BACK), toggle = Menu::itemBox(Menu::AUTO_MOVE);
     menu.update(touch(back.x + 4, back.y + 4), s);
     menu.update(touch(toggle.x + 4, toggle.y + 4), s);
-    CHECK(menu.update(plat::Input{}, s) == Menu::Action::None && menu.page() == Menu::Page::Options && s.autoMove);
+    CHECK(menu.update(plat::Input{}, s) == Menu::Action::None && menu.page() == Menu::Page::General && s.autoMove);
+    CHECK(tapItem(menu, s, Menu::GENERAL_BACK) == Menu::Action::None && menu.page() == Menu::Page::Options);
     CHECK(tapItem(menu, s, Menu::OPTIONS_BACK) == Menu::Action::None && menu.page() == Menu::Page::Paused);
     CHECK(tapItem(menu, s, Menu::RESUME) == Menu::Action::Resume && !menu.isOpen());
 
@@ -187,12 +220,17 @@ TEST(pause_menu_stylus) {
 }
 
 TEST(pause_menu_boxes_fit_and_dont_overlap) {
-    const Menu::Item paused[] = {Menu::RESUME, Menu::OPTIONS, Menu::QUIT};
-    const Menu::Item options[] = {Menu::SCREEN_SHAKE, Menu::AUTO_MOVE, Menu::OPTIONS_BACK};
-    for (const auto* page : {paused, options})
-        for (int i = 0; i < 3; i++) {
+    const std::vector<std::vector<Menu::Item>> pages = {
+        {Menu::RESUME, Menu::OPTIONS, Menu::QUIT},
+        {Menu::GENERAL, Menu::SOUND, Menu::OPTIONS_BACK},
+        {Menu::SCREEN_SHAKE, Menu::SCREEN_EFFECTS, Menu::AUTO_MOVE, Menu::BIGGER_TEXT, Menu::GENERAL_BACK},
+        {Menu::MASTER_VOLUME, Menu::SFX_VOLUME, Menu::MUSIC_VOLUME, Menu::AMBIENCE_VOLUME, Menu::SOUND_BACK},
+    };
+    for (const auto& page : pages)
+        for (size_t i = 0; i < page.size(); i++) {
             const Menu::Box a = Menu::itemBox(page[i]);
-            CHECK(a.x >= 0 && a.y >= 0 && a.x + a.w <= plat::BOTTOM_W && a.y + a.h <= plat::BOTTOM_H);
+            check(a.x >= 0 && a.y >= 0 && a.x + a.w <= plat::BOTTOM_W && a.y + a.h <= plat::BOTTOM_H,
+                  "item " + std::to_string(page[i]) + " on screen: y " + std::to_string(a.y) + " h " + std::to_string(a.h));
             if (i > 0) {
                 const Menu::Box prev = Menu::itemBox(page[i - 1]);
                 CHECK(prev.y + prev.h <= a.y);
@@ -213,9 +251,9 @@ TEST(menu_skin_slider_touch_finds_the_drawn_handle) {
     std::string error;
     check(skin.load(&error), "menu skin loads " + error);
     constexpr int X = 20, Y = 30, W = 64, S = MenuSkin::UI_SCALE;
-    for (int step = 0; step <= Settings::SHAKE_STEPS; step++) {
+    for (int step = 0; step <= Settings::STEPS; step++) {
         Settings s;
-        s.setScreenShake(step / (float)Settings::SHAKE_STEPS);
+        s.setScreenShake(step / (float)Settings::STEPS);
         testResetDrawCalls();
         skin.drawSlider(X, Y, W, s.screenShake, false);
         const DrawCall* handle = nullptr;

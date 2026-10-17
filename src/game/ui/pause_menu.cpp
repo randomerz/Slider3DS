@@ -11,7 +11,7 @@ using Page = PauseMenu::Page;
 enum class Act { None, Resume, Quit, Open, Back };
 
 // An item: its kind and label; a button's action (and the page it opens); an option's setting (a
-// toggle's flag; a slider's value, its setter and how many steps left / right take across it).
+// toggle's flag, a slider's 0-1 value: Settings::snap keeps it on its steps).
 struct PauseMenu::ItemDef {
     Item item;
     Kind kind;
@@ -20,8 +20,6 @@ struct PauseMenu::ItemDef {
     Page opens = Page::Paused;
     bool Settings::*flag = nullptr;
     float Settings::*value = nullptr;
-    void (Settings::*setValue)(float) = nullptr;
-    int steps = 0;
 };
 
 namespace {
@@ -33,16 +31,18 @@ using ItemDef = PauseMenu::ItemDef;
 constexpr int S = MenuSkin::UI_SCALE;
 constexpr int UI_W = plat::BOTTOM_W / S;
 constexpr int CENTER_X = UI_W / 2;
-constexpr int TITLE_Y = 20;                              // the title's middle
-constexpr int BUTTON_W = 120, BUTTON_H = 18, PITCH = 24; // buttons 6 px apart
-constexpr int ROW_H = 20;                                // option rows
+constexpr int TITLE_Y = 20; // the title's middle
+// Items stack in slots from FIRST_TOP: a button's 24 px (18 px tall, 6 apart), an option row's 15
+// (compact, so a page of four options and Back fits under the title).
+constexpr int FIRST_TOP = 34;
+constexpr int BUTTON_W = 120, BUTTON_H = 18, BUTTON_SLOT = 24;
+constexpr int ROW_SLOT = 15;
 // The selected button's brackets bounce: at rest, then 1 px out, each half a second.
 constexpr float BOUNCE_PERIOD = 1.0f;
-constexpr int FIRST_Y = 46;                              // the first row's middle
 // Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the
 // row's ends): the slider at the right end, the toggle centered under it. Selected: a light label.
 constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X, ROW_PAD = 4;
-constexpr int SLIDER_W = 64, SLIDER_X = ROW_X + ROW_W - ROW_PAD - SLIDER_W;
+constexpr int SLIDER_W = 60, SLIDER_X = ROW_X + ROW_W - ROW_PAD - SLIDER_W;
 constexpr int CONTROL_CENTER_X = SLIDER_X + SLIDER_W / 2;
 
 // A page: its title, items, and parent (B and Back go there, selecting `returnTo`; none for the top).
@@ -62,14 +62,35 @@ constexpr ItemDef PAUSED_ITEMS[] = {
     {PauseMenu::QUIT, Kind::Button, "Quit", Act::Quit},
 };
 constexpr ItemDef OPTIONS_ITEMS[] = {
-    {PauseMenu::SCREEN_SHAKE, Kind::Slider, "Screen Shake", Act::None, Page::Paused, nullptr, &Settings::screenShake,
-     &Settings::setScreenShake, Settings::SHAKE_STEPS},
-    {PauseMenu::AUTO_MOVE, Kind::Toggle, "Auto Move", Act::None, Page::Paused, &Settings::autoMove},
+    {PauseMenu::GENERAL, Kind::Button, "General", Act::Open, Page::General},
+    {PauseMenu::SOUND, Kind::Button, "Sound", Act::Open, Page::Sound},
     {PauseMenu::OPTIONS_BACK, Kind::Button, "Back", Act::Back},
+};
+constexpr ItemDef slider(Item item, const char* label, float Settings::*value) {
+    return {item, Kind::Slider, label, Act::None, Page::Paused, nullptr, value};
+}
+constexpr ItemDef toggle(Item item, const char* label, bool Settings::*flag) {
+    return {item, Kind::Toggle, label, Act::None, Page::Paused, flag, nullptr};
+}
+constexpr ItemDef GENERAL_ITEMS[] = {
+    slider(PauseMenu::SCREEN_SHAKE, "Screen Shake", &Settings::screenShake),
+    slider(PauseMenu::SCREEN_EFFECTS, "Screen Effects", &Settings::screenEffects),
+    toggle(PauseMenu::AUTO_MOVE, "Auto Move", &Settings::autoMove),
+    toggle(PauseMenu::BIGGER_TEXT, "Bigger Text", &Settings::bigText),
+    {PauseMenu::GENERAL_BACK, Kind::Button, "Back", Act::Back},
+};
+constexpr ItemDef SOUND_ITEMS[] = {
+    slider(PauseMenu::MASTER_VOLUME, "Master", &Settings::masterVolume),
+    slider(PauseMenu::SFX_VOLUME, "Sound", &Settings::sfxVolume),
+    slider(PauseMenu::MUSIC_VOLUME, "Music", &Settings::musicVolume),
+    slider(PauseMenu::AMBIENCE_VOLUME, "Ambience", &Settings::ambienceVolume),
+    {PauseMenu::SOUND_BACK, Kind::Button, "Back", Act::Back},
 };
 constexpr PageDef PAGES[] = {
     {Page::Paused, "Paused", PAUSED_ITEMS, (int)std::size(PAUSED_ITEMS), false, Page::Paused, PauseMenu::RESUME},
     {Page::Options, "Options", OPTIONS_ITEMS, (int)std::size(OPTIONS_ITEMS), true, Page::Paused, PauseMenu::OPTIONS},
+    {Page::General, "General", GENERAL_ITEMS, (int)std::size(GENERAL_ITEMS), true, Page::Options, PauseMenu::GENERAL},
+    {Page::Sound, "Sound", SOUND_ITEMS, (int)std::size(SOUND_ITEMS), true, Page::Options, PauseMenu::SOUND},
 };
 
 // PAGES is indexed by Page; each Item is one row on one page (itemBox finds it by its Item).
@@ -93,28 +114,34 @@ static_assert(itemsUnique(), "an Item may be on one page only (give a second Bac
 
 const PageDef& pageDef(Page page) { return PAGES[(int)page]; }
 
-// Where `item` is: its def and its index on its page.
-const ItemDef& find(Item item, int& index) {
+// Where `item` is: its page and its index there.
+const PageDef& find(Item item, int& index) {
     for (const PageDef& p : PAGES)
         for (int i = 0; i < p.count; i++)
             if (p.items[i].item == item) {
                 index = i;
-                return p.items[i];
+                return p;
             }
     index = 0;
-    return PAGES[0].items[0]; // (every Item is on a page)
+    return PAGES[0]; // (every Item is on a page)
 }
 
-// An item's box (UI px): a button's, or an option's row.
-PauseMenu::Box uiBox(const ItemDef& def, int index) {
-    const int cy = FIRST_Y + index * PITCH;
+int slotHeight(const ItemDef& def) { return def.kind == Kind::Button ? BUTTON_SLOT : ROW_SLOT; }
+
+// Item `index`'s box on page `p` (UI px): a button's, or an option's row (its whole slot).
+PauseMenu::Box uiBox(const PageDef& p, int index) {
+    int top = FIRST_TOP;
+    for (int i = 0; i < index; i++) top += slotHeight(p.items[i]);
+    const ItemDef& def = p.items[index];
+    const int cy = top + slotHeight(def) / 2;
     if (def.kind == Kind::Button) return {CENTER_X - BUTTON_W / 2, cy - BUTTON_H / 2, BUTTON_W, BUTTON_H};
-    return {ROW_X, cy - ROW_H / 2, ROW_W, ROW_H};
+    return {ROW_X, top, ROW_W, ROW_SLOT};
 }
 
 // An option's slider / toggle (UI px); a button's box.
-PauseMenu::Box uiControl(const ItemDef& def, int index) {
-    const PauseMenu::Box row = uiBox(def, index);
+PauseMenu::Box uiControl(const PageDef& p, int index) {
+    const ItemDef& def = p.items[index];
+    const PauseMenu::Box row = uiBox(p, index);
     const int cy = row.y + row.h / 2;
     switch (def.kind) {
     case Kind::Slider: return {SLIDER_X, cy - MenuSkin::SLIDER_H / 2, SLIDER_W, MenuSkin::SLIDER_H};
@@ -132,14 +159,14 @@ PauseMenu::Box toScreen(const PauseMenu::Box& b) { return {b.x * S, b.y * S, b.w
 
 PauseMenu::Box PauseMenu::itemBox(Item item) {
     int index;
-    const ItemDef& def = find(item, index);
-    return toScreen(uiBox(def, index));
+    const PageDef& p = find(item, index);
+    return toScreen(uiBox(p, index));
 }
 
 PauseMenu::Box PauseMenu::controlBox(Item item) {
     int index;
-    const ItemDef& def = find(item, index);
-    return toScreen(uiControl(def, index));
+    const PageDef& p = find(item, index);
+    return toScreen(uiControl(p, index));
 }
 
 PauseMenu::Item PauseMenu::cursor() const { return pageDef(page_).items[cursor_].item; }
@@ -169,7 +196,7 @@ void PauseMenu::back() {
 int PauseMenu::itemAt(int x, int y) const {
     const PageDef& p = pageDef(page_);
     for (int i = 0; i < p.count; i++)
-        if (uiBox(p.items[i], i).contains(x, y)) return i;
+        if (uiBox(p, i).contains(x, y)) return i;
     return -1;
 }
 
@@ -196,7 +223,7 @@ PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
 
 void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
     if (def.kind == Kind::Toggle) settings.*def.flag = !(settings.*def.flag);
-    if (def.kind == Kind::Slider) (settings.*def.setValue)(settings.*def.value + dir / (float)def.steps); // (it snaps)
+    if (def.kind == Kind::Slider) settings.*def.value = Settings::snap(settings.*def.value + dir / (float)Settings::STEPS);
 }
 
 PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings, float dt) {
@@ -248,15 +275,14 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
                 if (def.act != Act::Quit) confirmQuit_ = false;
                 if (def.kind == Kind::Slider) {
                     // Only the slider drags, though a finger may land a little above or below it.
-                    const Box s = uiControl(def, pressed_), row = uiBox(def, pressed_);
+                    const Box s = uiControl(p, pressed_), row = uiBox(p, pressed_);
                     sliding_ = Box{s.x, row.y, s.w, row.h}.contains(lastX_, lastY_);
                 }
             }
         }
         if (sliding_) {
-            const ItemDef& def = p.items[pressed_];
-            const Box s = uiControl(def, pressed_);
-            (settings.*def.setValue)(MenuSkin::sliderValueAt(in.touchX / (float)S, s.x, s.w));
+            const Box s = uiControl(p, pressed_);
+            settings.*p.items[pressed_].value = Settings::snap(MenuSkin::sliderValueAt(in.touchX / (float)S, s.x, s.w));
         }
     } else if (wasTouching_) {
         if (pressed_ >= 0 && !sliding_ && itemAt(lastX_, lastY_) == pressed_) action = activate(p.items[pressed_], settings);
@@ -272,7 +298,7 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
     skin.drawTitle(p.title, CENTER_X, TITLE_Y);
     for (int i = 0; i < p.count; i++) {
         const ItemDef& def = p.items[i];
-        const Box b = uiBox(def, i), c = uiControl(def, i);
+        const Box b = uiBox(p, i), c = uiControl(p, i);
         const bool selected = i == cursor_;
         switch (def.kind) {
         case Kind::Button: {

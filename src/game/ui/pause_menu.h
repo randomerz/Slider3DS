@@ -1,8 +1,11 @@
 // The pause menu (START), in the original's look (game/ui/menu_skin): the game stops, as
 // PauseManager's timeScale 0 does, and the bottom screen shows its pages instead of the Artifact:
 //   Paused:  Resume / Options / Quit (UICanvas PausePanel's; its web guide button is left out)
-//   Options: Screen Shake (slider) / Auto Move (toggle; a port feature) / Back (GeneralOptionsPanel's
-//            widgets, laid out like the Paused page rather than its side-nav panel's list)
+//   Options: General / Sound / Back (the original's side-nav options menu, as pages)
+//   General: Screen Shake / Screen Effects (sliders) / Auto Move (a port feature) / Bigger Text
+//            (toggles) / Back (GeneralOptionsPanel's widgets; its PC-only ones left out)
+//   Sound:   Master / Sound / Music / Ambience (sliders) / Back (SoundPanel's)
+// Only Screen Shake and Auto Move do something yet; the rest are saved for when their systems land.
 // Laid out for the touch screen on MenuSkin's 2x grid, filling it (bigger than the original's).
 // D-pad up / down: pick an item (a button shows brackets at its ends, an option a light label)
 // A: use it   left / right: move the slider or flip the toggle   B: back a page (on Paused:
@@ -26,8 +29,13 @@
 class PauseMenu {
 public:
     enum class Action { None, Resume, Quit };
-    enum class Page { Paused, Options };
-    enum Item { RESUME, OPTIONS, QUIT, SCREEN_SHAKE, AUTO_MOVE, OPTIONS_BACK };
+    enum class Page { Paused, Options, General, Sound };
+    enum Item {
+        RESUME, OPTIONS, QUIT,                                                // Paused
+        GENERAL, SOUND, OPTIONS_BACK,                                         // Options
+        SCREEN_SHAKE, SCREEN_EFFECTS, AUTO_MOVE, BIGGER_TEXT, GENERAL_BACK,   // General
+        MASTER_VOLUME, SFX_VOLUME, MUSIC_VOLUME, AMBIENCE_VOLUME, SOUND_BACK, // Sound
+    };
     enum class Kind { Button, Slider, Toggle };
 
     // A widget's box on the bottom screen, px.

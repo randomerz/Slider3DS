@@ -7,10 +7,44 @@
 
 #include "platform/platform.h"
 
+namespace {
+
+// Every setting: its key in the file (SettingsManager's names) and its member.
+struct Field {
+    const char* key;
+    bool Settings::*flag;
+    float Settings::*value;
+};
+constexpr Field FIELDS[] = {
+    {"autoMove", &Settings::autoMove, nullptr},
+    {"screenShake", nullptr, &Settings::screenShake},
+    {"screenVisualEffects", nullptr, &Settings::screenEffects},
+    {"bigTextEnabled", &Settings::bigText, nullptr},
+    {"masterVolume", nullptr, &Settings::masterVolume},
+    {"sfxVolume", nullptr, &Settings::sfxVolume},
+    {"musicVolume", nullptr, &Settings::musicVolume},
+    {"ambienceVolume", nullptr, &Settings::ambienceVolume},
+};
+
+} // namespace
+
+float Settings::snap(float value) { return std::lround(std::clamp(value, 0.0f, 1.0f) * STEPS) / (float)STEPS; }
+
+bool Settings::operator==(const Settings& o) const {
+    for (const Field& f : FIELDS)
+        if (f.flag ? this->*f.flag != o.*f.flag : this->*f.value != o.*f.value) return false;
+    return true;
+}
+
 std::string Settings::serialize() const {
-    char buf[64];
-    snprintf(buf, sizeof buf, "autoMove=%d\nscreenShake=%.2f\n", autoMove ? 1 : 0, screenShake);
-    return buf;
+    std::string out;
+    char line[64];
+    for (const Field& f : FIELDS) {
+        if (f.flag) snprintf(line, sizeof line, "%s=%d\n", f.key, this->*f.flag ? 1 : 0);
+        else snprintf(line, sizeof line, "%s=%.2f\n", f.key, this->*f.value);
+        out += line;
+    }
+    return out;
 }
 
 Settings Settings::parse(std::string_view text) {
@@ -27,14 +61,13 @@ Settings Settings::parse(std::string_view text) {
         char* rest = nullptr;
         const float v = std::strtof(value.c_str(), &rest);
         if (value.empty() || *rest != '\0' || !std::isfinite(v)) continue;
-        if (key == "autoMove") s.autoMove = v != 0;
-        else if (key == "screenShake") s.setScreenShake(v);
+        for (const Field& f : FIELDS)
+            if (key == f.key) {
+                if (f.flag) s.*f.flag = v != 0;
+                else s.*f.value = snap(v);
+            }
     }
     return s;
-}
-
-void Settings::setScreenShake(float value) {
-    screenShake = std::lround(std::clamp(value, 0.0f, 1.0f) * SHAKE_STEPS) / (float)SHAKE_STEPS;
 }
 
 Settings Settings::load() {

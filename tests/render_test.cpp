@@ -445,13 +445,22 @@ TEST(render_pause_menu_goldens) {
     shoot("pause_menu_bounced");
     press(plat::BTN_DOWN);
     press(plat::BTN_A);
+    shoot("pause_menu_options"); // General / Sound / Back
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A);
+    shoot("pause_menu_sound");
+    press(plat::BTN_B);
+    press(plat::BTN_UP);
+    press(plat::BTN_A);
     s.autoMove = true;
-    shoot("pause_menu_options");
-    press(plat::BTN_DOWN); // the toggle selected (light label, its selected background), the slider not
+    shoot("pause_menu_general");
+    press(plat::BTN_DOWN);
+    press(plat::BTN_DOWN); // the toggle selected (light label, its selected background), the sliders not
     s.setScreenShake(0);
-    shoot("pause_menu_options_min");
+    shoot("pause_menu_general_min");
     s.setScreenShake(1);
-    shoot("pause_menu_options_max");
+    shoot("pause_menu_general_max");
+    press(plat::BTN_B);
     press(plat::BTN_B);
     press(plat::BTN_DOWN);
     press(plat::BTN_A); // Quit: asks again

@@ -8,7 +8,7 @@
 
 struct Settings {
     static constexpr const char* FILE_NAME = "settings.txt"; // a user file (plat::readUserFile)
-    static constexpr int SHAKE_STEPS = 10; // the options menu's screen shake slider: 0-100% in 10% steps
+    static constexpr int STEPS = 10; // every 0-1 setting moves in 10% steps (the options menu's sliders)
 
     // A port feature (the user's "solve mode"): a tap on an Artifact tile with a single move option
     // moves it, as the save's forceAutoMove<Area> does during the final puzzle. Unity registers
@@ -16,11 +16,17 @@ struct Settings {
     bool autoMove = false;
     // Settings.ScreenShake, 0-1: scales CameraShake's amounts.
     float screenShake = 0.5f;
+    // Not read yet (the options menu shows and saves them): Settings.ScreenVisualEffects (flashes),
+    // BigTextEnabled, and the volumes (Master, SFX "Sound", Music, Ambience) for when audio lands.
+    float screenEffects = 1.0f;
+    bool bigText = false;
+    float masterVolume = 0.5f, sfxVolume = 0.5f, musicVolume = 0.5f, ambienceVolume = 0.5f;
 
-    // screenShake = `value` clamped to 0-1, snapped to the nearest step (so it saves and reads back exactly).
-    void setScreenShake(float value);
+    // `value` clamped to 0-1 and snapped to the nearest step (so it saves and reads back exactly).
+    static float snap(float value);
+    void setScreenShake(float value) { screenShake = snap(value); }
 
-    bool operator==(const Settings& o) const { return autoMove == o.autoMove && screenShake == o.screenShake; }
+    bool operator==(const Settings& o) const;
     bool operator!=(const Settings& o) const { return !(*this == o); }
 
     // One "key=value" line per setting. Parsing keeps the defaults for missing, unknown or bad
