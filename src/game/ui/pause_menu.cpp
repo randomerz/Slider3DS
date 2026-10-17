@@ -261,8 +261,7 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
         case Kind::Button: {
             const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
             const char* label = def.act == Act::Quit && confirmQuit_ ? "Really quit?" : def.label;
-            skin.drawButton(b.x, b.y, b.w, b.h, label,
-                            held ? MenuSkin::Button::Pressed : selected ? MenuSkin::Button::Selected : MenuSkin::Button::Normal);
+            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, held);
             break;
         }
         case Kind::Slider:

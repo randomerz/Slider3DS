@@ -3,10 +3,11 @@
 The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   Menu Button (the main menu's; Image sliced, Button sprite swap): normal Button24_0 (a light face
       over a 2 px shaded bottom edge), pressed _1 (the face 1 px lower); 9-sliced, 4 px borders.
-      Selected: a port sprite (user's design), Button24_0 between two brackets in the dark gray of
-      the original's outlined selected _2: 2 px thick, 1 px outside the button's sides, the full
-      height (past the shaded edge), their ends turning inward. It's 2 px wider than Button24_0;
-      the skin draws it 1 px out on each side.
+      Selected (port sprites, user's design): the button outlined on its left and right only, in
+      the dark gray of the original's outlined selected _2: on each row, 2 px just outside the
+      button's own edge, so the brackets hug its rounded corners and run the full height past the
+      shaded edge. buttonSelected outlines Button24_0, buttonPressedSelected the sunk _1 (the
+      brackets sink with it). They're 4 px wider than Button24; the skin draws them 2 px out.
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
   UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
@@ -53,33 +54,32 @@ def unity_sprite(texture, name):
     return img.crop((x, top, x + w, top + h)), [bl, bt, br, bb]
 
 
-# The left bracket, by row: the columns it covers (x 0 = 1 px outside the button). The right one
-# mirrors it. Rows between the ends are the straight part.
-BRACKET_TOP = [(1, 2), (0, 2)]     # row 0, row 1: turning inward
-BRACKET_SIDE = (0, 1)              # rows 2 .. h-3
-BRACKET_BOTTOM = [(0, 2), (1, 2)]  # row h-2, row h-1
+BRACKET = 2  # px: the brackets' thickness, and how far outside the button they reach
 
 
-def selected_button():
-    """Button24_0, 1 px in from each side of a sprite 2 px wider, between dark brackets."""
-    face, border = unity_sprite("Sprites/UI/Button24.png", "Button24_0")
+def bracketed(sprite):
+    """Button24 sprite `sprite` with a BRACKET px outline on its left and right edges, row by row."""
+    face, border = unity_sprite("Sprites/UI/Button24.png", sprite)
     outline, _ = unity_sprite("Sprites/UI/Button24.png", "Button24_2")
     dark = outline.getpixel((0, outline.height // 2))  # the outline's gray (0.4)
-    w, h = face.width + 2, face.height
+    w, h = face.width + 2 * BRACKET, face.height
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    img.paste(face, (1, 0))
-    rows = BRACKET_TOP + [BRACKET_SIDE] * (h - 4) + BRACKET_BOTTOM
-    for y, (x0, x1) in enumerate(rows):
-        for x in range(x0, x1 + 1):
-            img.putpixel((x, y), dark)
-            img.putpixel((w - 1 - x, y), dark)
+    img.paste(face, (BRACKET, 0))
+    for y in range(h):
+        opaque = [x for x in range(face.width) if face.getpixel((x, y))[3] > 0]
+        if not opaque:
+            continue  # (above a sunk face)
+        for i in range(BRACKET):
+            img.putpixel((BRACKET + opaque[0] - 1 - i, y), dark)
+            img.putpixel((BRACKET + opaque[-1] + 1 + i, y), dark)
     left, top, right, bottom = border
-    return img, [left + 1, top, right + 1, bottom]
+    return img, [left + BRACKET, top, right + BRACKET, bottom]
 
 
 def main():
     cut = {name: unity_sprite(tex, sprite) for name, (tex, sprite) in SPRITES.items()}
-    cut["buttonSelected"] = selected_button()
+    cut["buttonSelected"] = bracketed("Button24_0")
+    cut["buttonPressedSelected"] = bracketed("Button24_1")
     # Shelf packing in table order, 1 px gaps.
     x = y = shelf = 0
     placed = {}
