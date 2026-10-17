@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "platform/platform.h"
+
 void ObjectStates::init(const Area& area) {
     const size_t n = area.objects.size();
     parent_.resize(n);
@@ -13,10 +15,12 @@ void ObjectStates::init(const Area& area) {
     selfDy_.assign(n, 0);
     offX_.assign(n, 0);
     offY_.assign(n, 0);
-    flipX_.assign(n, -1);
+    flipX_.assign(n, 0);
     rendererOn_.assign(n, 1);
-    for (const WorldSprite& ws : area.worldSprites)
+    for (const WorldSprite& ws : area.worldSprites) {
         if (!ws.enabled) rendererOn_[ws.object] = 0;
+        if (ws.place.flags & plat::FLIP_X) flipX_[ws.object] = 1;
+    }
     sprite_.assign(n, -1);
     fill_.assign(n, 0);
     sortingOrder_.assign(n, EXPORTED_ORDER);

@@ -116,7 +116,6 @@ void World::placeNear(float x, float y) {
 }
 
 void World::update(float dt, float moveX, float moveY, bool noclip) {
-    deltaTime = dt;
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;

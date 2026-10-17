@@ -334,7 +334,12 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
     const float duration = std::min(durationMultiplier * move.duration, 2.1f);
     for (const Movement& m : move.moves) {
         const int tid = idAt(m.sx, m.sy);
-        if (tileMut(tid)->active) events_.push_back(event(GridEvent::Kind::TileMoveStart, tid));
+        if (tileMut(tid)->active) {
+            GridEvent e; // (no snapshot: its listeners only ask which tile)
+            e.kind = GridEvent::Kind::TileMoveStart;
+            e.islandId = tid;
+            events_.push_back(std::move(e));
+        }
     }
     std::vector<int> next = slots_;
     for (const Movement& m : move.moves) {

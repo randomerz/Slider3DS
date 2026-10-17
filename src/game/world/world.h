@@ -144,7 +144,6 @@ public:
     const Settings& settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
-    float deltaTime = 0; // Time.deltaTime: this frame's dt (for code that runs from events)
 
 private:
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.

@@ -77,7 +77,7 @@ struct Wall { float x0, y0, x1, y1; };
 
 // Something that happened to the grid, for scripts listening to SGrid / SGridAnimator events:
 // TileMoveStart = SGridAnimator.OnSTileMoveStart (an active tile starts sliding: one per tile, before
-// the move's Move; the slots not yet changed), Move = SGrid.OnGridMove (a move started; the slots
+// the move's Move; it carries no slots or grid string), Move = SGrid.OnGridMove (a move started; the slots
 // already changed), TileMoveEnd =
 // SGridAnimator.OnSTileMoveEnd (an active tile arrived), TileEnabled = SGrid.OnSTileEnabled (a tile
 // was collected). Events are handed out later in the frame (World::sendGridEvents), by when the
@@ -88,7 +88,7 @@ struct Wall { float x0, y0, x1, y1; };
 // and other state are still as Unity's handlers would see them.
 struct GridEvent {
     enum class Kind : uint8_t { TileMoveStart, Move, TileMoveEnd, TileEnabled };
-    Kind kind;
+    Kind kind = Kind::Move;
     int islandId = 0;          // TileMoveStart / TileMoveEnd / TileEnabled: the tile
     std::vector<int> slots;    // idAt as of the event (y * width + x; Move: after it)
     std::string gridString;    // gridString() as of the event

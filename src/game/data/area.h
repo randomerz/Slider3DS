@@ -422,9 +422,7 @@ struct NpcEmoteDef {
     int object = -1;       // the NPCEmotes object, -1 = the NPC has none
     SpritePlacement place; // owner-relative, at its exported local x; sprite may be -1 (the clips key it)
     float localX = 0;      // its exported local x; it's mirrored to +-|localX| by the facing
-    bool facesRight = false; // npcDefaultFacesRight
-    int npcSprite = -1;      // object of the NPC's SpriteRenderer, whose flipX decides the side
-    bool npcSpriteFlipped = false; // that sprite's exported flipX
+    bool facesRight = false; // npcDefaultFacesRight (its side follows NpcDef::sprite's flipX)
     int animator = -1;       // Area::animators index of its Animator (on `object`)
     static const char* name(int emote); // the Animator state an emote plays ("" for None)
 };
@@ -437,8 +435,8 @@ struct NpcDef {
     std::string name;   // characterName
     bool facingLeft = false; // spriteDefaultFacingLeft: walks face the way they go
     float speed = 0;         // walking speed (units/s)
-    int sprite = -1;         // its SpriteRenderer's object (walks set its flipX), -1 = none
-    bool spriteFlipped = false; // that sprite's flipX as authored
+    int sprite = -1;         // its SpriteRenderer's object, a world sprite (walks set its flipX; the
+                             // emote's side follows it), -1 = none
     TextBoxDef text;
     int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
     NpcEmoteDef emote;

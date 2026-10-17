@@ -59,8 +59,7 @@ private:
         Points repeatPoints;      // the points it repeats
         std::vector<Stagger> staggers;
         int bobPixels = 0;
-        int exportedSprite = -1;  // the renderer's sprite and flip as exported
-        bool exportedFlip = false;
+        int exportedSprite = -1;  // the renderer's sprite as exported
     };
 
     // UpdateArrowGeneral with the grid as given.

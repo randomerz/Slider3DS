@@ -83,6 +83,8 @@ const char* NPC_AREA = R"json({
               {"path": "Npc/Ping", "parent": 0, "active": false, "owner": 1, "pos": [0, 1]},
               {"path": "Npc/Emotes", "parent": 0, "active": true, "owner": 1, "pos": [-0.5, 0.5]},
               {"path": "Here", "parent": -1, "active": true, "owner": 1, "pos": [0, 0]}],
+  "worldSprites": [{"object": 0, "owner": 1, "sprite": 0, "pos": [0, 0], "sortY": 0, "sortingLayerValue": 9,
+                    "order": 0, "flip": 0}],
   "sheets": [{"name": "s", "file": "s.png", "size": [32, 16]}],
   "sprites": [{"name": "ex0", "sheet": 0, "rect": [0, 0, 16, 16], "pivot": [8, 8], "ppu": 16},
               {"name": "exLoop", "sheet": 0, "rect": [16, 0, 16, 16], "pivot": [8, 8], "ppu": 16}],
@@ -104,10 +106,10 @@ const char* NPC_AREA = R"json({
   "triggerEvents": [{"object": 1, "onPlayerEnter": true,
                      "onEnter": [{"method": "NPC.OnDialogueTriggerEnter", "target": 0}],
                      "onExit": [{"method": "NPC.OnDialogueTriggerExit", "target": 0}]}],
-  "npcs": [{"object": 0, "name": "N", "facingLeft": false, "pingObject": 3,
+  "npcs": [{"object": 0, "name": "N", "facingLeft": false, "pingObject": 3, "sprite": 0,
     "animator": {"object": 0, "controller": 0, "keepState": false, "controllerObject": 0},
     "emote": {"object": 4, "pos": [-0.5, 0.5], "sortY": 0.5, "sortingLayerValue": 9, "order": 0, "localX": -0.5,
-              "facesRight": false, "npcSprite": 0, "npcSpriteFlipped": false, "controller": 2, "keepState": false},
+              "facesRight": false, "controller": 2, "keepState": false},
     "text": {"box": [-3.42, 0.55, 3.42, 2.7], "fontSize": 1, "lineAdvance": 0.4309, "wordSpacing": -0.1,
              "charSpacing": 0, "sortingLayerValue": 9, "order": 99},
     "conds": [
@@ -578,7 +580,7 @@ TEST(npcs_emote_hidden_with_its_npc) {
         return n;
     };
     standAt(world, 0, 0);
-    check(emoteDraws() == 1, "talking: the emote is drawn");
+    check(emoteDraws() == 2, "talking: the NPC and its emote are drawn");
     world.objects.setActive(world.area, 0, false);
     check(emoteDraws() == 0, "the NPC hidden: so is its emote");
 }

@@ -27,7 +27,8 @@ public:
     void startValid(World& world, int npc);
     // SGridAnimator.OnSTileMoveStart / OnSTileMoveEnd: breaks or resumes walks.
     void gridEvents(World& world, const std::vector<GridEvent>& events);
-    // The walk coroutines: a step each frame (from the frame after a walk starts or resumes).
+    // The walk coroutines: a step each frame, the first in the frame the walk starts or resumes
+    // (one started after this slot, e.g. by a Start, steps from the next frame).
     void coroutines(World& world, float dt);
 
     bool walking(int npc) const { return s_[npc].walking; } // NPC.IsWalking
@@ -48,7 +49,6 @@ private:
         int crossing = 0;          // remainingStileCrossings = crossings[crossing..]
         bool inSegment = false;    // between `from` and path[next]: t, rate
         float t = 0, rate = 0;     // lerp progress, and per second (speed / the segment's length; -1: one step)
-        uint32_t stepFrame = 0;    // World::frame of the last step (one per frame)
         int under = 0;             // CurrentSTileUnderneath (islandId, 0 = none)
         WaitUntil tilesStill;      // StartValidWalk's WaitForTilesToStopMoving
     };

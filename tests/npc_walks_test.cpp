@@ -97,7 +97,7 @@ TEST(walks_chad_walks_to_the_rocks_when_the_village_is_solved) {
     // At the rocks, parented to them, turned around (turnAroundAfterWalking), no longer walking.
     CHECK(near(world, n.object, w.path.back()) && world.objects.parent(n.object) == w.path.back());
     CHECK(world.objects.owner(n.object) == 0 && !walkingParam(world, chad));
-    CHECK(world.objects.flipX(n.sprite) == 1); // the last leg faces right (his default), then he turns
+    CHECK(world.objects.flipX(n.sprite)); // the last leg faces right (his default), then he turns
 }
 
 TEST(walks_face_the_way_they_go) {
@@ -109,9 +109,9 @@ TEST(walks_face_the_way_they_go) {
     // faces right by default). Reaching a point and stepping toward the next are one frame.
     world.update(DT, 0, 0, false);
     world.update(DT, 0, 0, false);
-    CHECK(world.walks.walking(chad) && world.objects.flipX(n.sprite) == (n.spriteFlipped ? 1 : 0));
+    CHECK(world.walks.walking(chad) && !world.objects.flipX(n.sprite)); // (authored unflipped)
     for (int f = 0; f < 600 && world.objects.parent(n.object) != w.path[1]; f++) world.update(DT, 0, 0, false);
-    CHECK(world.objects.flipX(n.sprite) == 1);
+    CHECK(world.objects.flipX(n.sprite));
 }
 
 TEST(walks_romeo_crosses_onto_tile_1) {
@@ -187,4 +187,45 @@ TEST(walks_valid_walk_waits_for_still_tiles) {
         world.update(DT, 0, 0, false);
     }
     CHECK(world.walks.walking(romeo) && near(world, n.object, n.conds[0].walks[0].path[0]));
+}
+
+TEST(walks_broken_walks_stop_and_resume) {
+    // No Village walk stops and resumes (Romeo's teleports), so on a copy whose walk doesn't: sliding
+    // tile 1 away stops him; it arriving back where the crossing holds resumes him from where he
+    // stood; sliding it again breaks the walk again (the port's fix: Unity's resume leaves
+    // isWalking off); then he finishes.
+    Area area = villageArea();
+    const int romeo = npcNamed(area, "Romeo");
+    area.npcs[romeo].conds[1].walks[0].teleportIfInterrupted = false;
+    World world(area, DEFAULT_SETTINGS);
+    const NpcDef& n = area.npcs[romeo];
+    CHECK(world.setGrid("641_892_753"));
+    for (int f = 0; f < 5; f++) world.update(DT, 0, 0, false);
+    CHECK(world.walks.walking(romeo) && world.objects.owner(n.object) == 0);
+
+    auto slide = [&](int fromX, int toX) {
+        check(world.artifact.tryMove(world.grid, fromX, 2, toX, 2, world.player.stile), "slide tile 1");
+        world.update(DT, 0, 0, false);
+    };
+    float x0, y0, x, y;
+    slide(2, 1); // away: broken
+    world.objectPosition(n.object, x0, y0);
+    CHECK(!world.walks.walking(romeo) && !walkingParam(world, romeo));
+    for (int f = 0; f < 600 && world.grid.moving(); f++) world.update(DT, 0, 0, false);
+    world.update(DT, 0, 0, false);
+    world.objectPosition(n.object, x, y);
+    CHECK(!world.walks.walking(romeo) && x == x0 && y == y0); // (tile 1 in the wrong slot: no resume)
+    slide(1, 2); // back
+    int f = 0;
+    for (; f < 600 && !world.walks.walking(romeo); f++) world.update(DT, 0, 0, false);
+    world.objectPosition(n.object, x, y);
+    CHECK(world.walks.walking(romeo) && walkingParam(world, romeo) && std::fabs(x - x0) < 1e-3f && std::fabs(y - y0) < 1e-3f);
+    slide(2, 1); // and away again, before he's on it: broken again
+    CHECK(!world.walks.walking(romeo) && world.objects.owner(n.object) == 0);
+    for (f = 0; f < 600 && world.grid.moving(); f++) world.update(DT, 0, 0, false);
+    slide(1, 2);
+    for (f = 0; f < 600 && !world.walks.walking(romeo); f++) world.update(DT, 0, 0, false);
+    CHECK(walkFrames(world, romeo) > 0);
+    CHECK(world.objects.parent(n.object) == n.conds[1].walks[0].path.back() &&
+          world.state.flag("villageRomeoAtDefaultPosition"));
 }

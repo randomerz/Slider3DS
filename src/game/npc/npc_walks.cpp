@@ -91,8 +91,7 @@ void NpcWalks::start(World& world, int npc, int walk) {
     world.objectPosition(n.object, x, y);
     st.under = world.grid.stileUnder(x, y, world.objects.owner(n.object));
     setWalking(world, npc, true);
-    runCalls(world, w.onStarted);
-    run(world, npc, world.deltaTime); // (StartCoroutine runs to its first yield)
+    runCalls(world, w.onStarted); // (its first step: this frame's coroutine slot)
 }
 
 void NpcWalks::startValid(World& world, int npc) {
@@ -122,7 +121,6 @@ void NpcWalks::startFirstValid(World& world, int npc) {
 
 void NpcWalks::run(World& world, int npc, float dt) {
     State& st = s_[npc];
-    st.stepFrame = world.frame;
     const NpcWalkDef& w = def(world.area, npc);
     const int object = world.area.npcs[npc].object;
     for (;;) {
@@ -170,9 +168,7 @@ void NpcWalks::step(World& world, int npc, float dt) {
     // keeps the facing).
     if (n.sprite >= 0) {
         const float dot = (bx - ax) * (n.facingLeft ? -1.0f : 1.0f);
-        const int set = world.objects.flipX(n.sprite);
-        const bool flipped = set >= 0 ? set == 1 : n.spriteFlipped;
-        world.objects.setFlipX(n.sprite, flipped ? dot <= 0 : dot < 0);
+        world.objects.setFlipX(n.sprite, world.objects.flipX(n.sprite) ? dot <= 0 : dot < 0);
     }
     // UpdateSTileCrossings: on the next crossing's tile, parented to it; the segment starts over from here.
     if (st.crossing < (int)w.crossings.size() && w.crossings[st.crossing].to == st.under) {
@@ -204,17 +200,13 @@ void NpcWalks::resume(World& world, int npc) {
     // the next tile arriving starts it a second time. (No Village walk resumes: Romeo's, the only
     // one with crossings, teleports instead.)
     setWalking(world, npc, true);
-    run(world, npc, world.deltaTime);
 }
 
 void NpcWalks::finish(World& world, int npc) {
     State& st = s_[npc];
     const NpcWalkDef& w = def(world.area, npc);
     const NpcDef& n = world.area.npcs[npc];
-    if (w.turnAround && n.sprite >= 0) {
-        const int set = world.objects.flipX(n.sprite);
-        world.objects.setFlipX(n.sprite, !(set >= 0 ? set == 1 : n.spriteFlipped));
-    }
+    if (w.turnAround && n.sprite >= 0) world.objects.setFlipX(n.sprite, !world.objects.flipX(n.sprite));
     st.cond = st.walk = -1;
     st.inSegment = false;
     setWalking(world, npc, false);
@@ -222,10 +214,12 @@ void NpcWalks::finish(World& world, int npc) {
 }
 
 void NpcWalks::gridEvents(World& world, const std::vector<GridEvent>& events) {
-    for (int i = 0; i < (int)s_.size(); i++) {
-        for (const GridEvent& e : events) {
+    // Event by event (as Unity delivers them): a walk started by an earlier event's handlers hears
+    // only what comes after.
+    for (const GridEvent& e : events) {
+        for (int i = 0; i < (int)s_.size(); i++) {
             State& st = s_[i];
-            if (st.walk < 0 || !world.objects.activeInHierarchy(world.area.npcs[i].object)) break; // (OnDisable unsubscribed)
+            if (st.walk < 0 || !world.objects.activeInHierarchy(world.area.npcs[i].object)) continue; // (OnDisable unsubscribed)
             const NpcWalkDef& w = def(world.area, i);
             if (e.kind == GridEvent::Kind::TileMoveStart && st.walking) {
                 // PathBrokenAfterSTileMoved: the tile is in a crossing still ahead.
@@ -247,6 +241,6 @@ void NpcWalks::coroutines(World& world, float dt) {
         State& st = s_[i];
         if (!world.objects.activeInHierarchy(world.area.npcs[i].object)) continue;
         if (st.tilesStill.done(world.frame, !world.grid.moving())) startFirstValid(world, i);
-        if (st.walking && st.stepFrame != world.frame) run(world, i, dt);
+        if (st.walking) run(world, i, dt);
     }
 }

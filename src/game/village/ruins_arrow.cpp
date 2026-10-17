@@ -40,7 +40,6 @@ void RuinsArrows::reset(const Area& area) {
         for (const WorldSprite& ws : area.worldSprites)
             if (ws.object == d.renderer) {
                 s.exportedSprite = ws.place.sprite;
-                s.exportedFlip = (ws.place.flags & plat::FLIP_X) != 0;
             }
     }
     time_ = 0;
@@ -138,7 +137,7 @@ void RuinsArrows::updateDirection(World& world, int a, const std::vector<int>& s
     }
     const int dx = x5 - x2, dy = y5 - y2;
     const int old = objects.sprite(d.renderer) != -1 ? objects.sprite(d.renderer) : s.exportedSprite;
-    const bool oldFlip = objects.flipX(d.renderer) != -1 ? objects.flipX(d.renderer) == 1 : s.exportedFlip;
+    const bool oldFlip = objects.flipX(d.renderer);
     int k = -1;
     if (dy == 2) k = (dx == 0 || dx == -1) ? 0 : (dx == 1 || dx == -2) ? 1 : -1; // NNE, NE
     else if (dy == 1) k = 2;                                                       // ENE

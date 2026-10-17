@@ -75,9 +75,8 @@ void Npcs::setEmote(World& world, int npc, int emote) {
     State& st = s_[npc];
     if (e.object < 0) return;
     // UpdateEmotePosition (even when the emote doesn't change): beside the face, by the NPC sprite's flip.
-    const int flip = e.npcSprite >= 0 ? world.objects.flipX(e.npcSprite) : -1;
-    const bool flipped = flip >= 0 ? flip == 1 : e.npcSpriteFlipped;
-    st.emoteLeft = e.facesRight == flipped;
+    const int sprite = world.area.npcs[npc].sprite;
+    st.emoteLeft = e.facesRight == (sprite >= 0 && world.objects.flipX(sprite));
     if (st.emote == emote) return;
     st.emote = emote;
     // Animator.Play(name); shown again after None it starts over.

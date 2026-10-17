@@ -50,9 +50,10 @@ public:
     float selfOffsetX(int object) const { return selfDx_[object]; }
     float selfOffsetY(int object) const { return selfDy_[object]; }
 
-    // SpriteRenderer.flipX of the sprite on `object` (not inherited): 1 / 0, or -1 = as exported.
+    // SpriteRenderer.flipX of the sprite on `object` (not inherited): as exported (world sprites'
+    // flip) until a script sets it.
     void setFlipX(int object, bool flip) { flipX_[object] = flip ? 1 : 0; }
-    int flipX(int object) const { return flipX_[object]; }
+    bool flipX(int object) const { return flipX_[object] != 0; }
     // SpriteRenderer.enabled of the sprite on `object` (not inherited; starts as exported).
     void setRendererEnabled(int object, bool on) { rendererOn_[object] = on ? 1 : 0; }
     bool rendererEnabled(int object) const { return rendererOn_[object] != 0; }
@@ -90,7 +91,7 @@ private:
     std::vector<uint8_t> self_, inHierarchy_; // active, per object
     std::vector<int> selfOwner_, owner_;   // owner set on the object (-1 = none) / effective
     std::vector<float> selfDx_, selfDy_, offX_, offY_; // offset set on the object / effective (sum)
-    std::vector<int8_t> flipX_;
+    std::vector<uint8_t> flipX_;
     std::vector<uint8_t> rendererOn_;      // per object (objects without a sprite: 1)
     std::vector<int> sprite_;
     std::vector<uint32_t> fill_;

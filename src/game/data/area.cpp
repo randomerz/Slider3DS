@@ -496,7 +496,6 @@ static NpcDef readNpc(const Json& j, Area& out) {
     n.facingLeft = j["facingLeft"].asBool();
     n.speed = j["speed"].asFloat();
     n.sprite = j["sprite"].asInt(-1);
-    n.spriteFlipped = j["spriteFlipped"].asBool();
     n.text = readTextBox(j["text"]);
     n.pingObject = j["pingObject"].asInt(-1);
     if (j.has("animator")) {
@@ -511,8 +510,6 @@ static NpcDef readNpc(const Json& j, Area& out) {
         n.emote.place = readPlacement(e);
         n.emote.localX = e["localX"].asFloat();
         n.emote.facesRight = e["facesRight"].asBool();
-        n.emote.npcSprite = e["npcSprite"].asInt(-1);
-        n.emote.npcSpriteFlipped = e["npcSpriteFlipped"].asBool();
         n.emote.animator = (int)out.animators.size();
         out.animators.push_back({n.emote.object, e["controller"].asInt(-1), e["keepState"].asBool(), -1, {}, {}});
     }
@@ -729,7 +726,9 @@ static bool validate(const Area& a, std::string* error) {
             if (targets[t].object == -1 && t != a.playerAction.carryTarget)
                 return fail(error, "player animator: target " + targets[t].path + " inside the player isn't moved by the port");
     }
-    std::vector<bool> isNpc(a.objects.size(), false);
+    std::vector<bool> isNpc(a.objects.size(), false), isWorldSprite(a.objects.size(), false);
+    for (const WorldSprite& ws : a.worldSprites)
+        if (objectOk(ws.object)) isWorldSprite[ws.object] = true;
     for (const NpcDef& n : a.npcs)
         if (objectOk(n.object)) isNpc[n.object] = true;
     auto callsOk = [&](const std::vector<CallDef>& calls) {
@@ -791,11 +790,11 @@ static bool validate(const Area& a, std::string* error) {
             return fail(error, "collectible " + c.name + ": bad object, sprite or call");
     for (const NpcDef& n : a.npcs) {
         bool ok = objectOk(n.object) && (n.pingObject == -1 || objectOk(n.pingObject)) &&
-                  n.text.minX < n.text.maxX && n.text.minY < n.text.maxY && (n.sprite == -1 || objectOk(n.sprite)) &&
+                  n.text.minX < n.text.maxX && n.text.minY < n.text.maxY && (n.sprite == -1 || isWorldSprite[n.sprite]) &&
                   n.speed >= 0;
         const NpcEmoteDef& e = n.emote;
         if (e.object != -1) {
-            ok = ok && objectOk(e.object) && (e.npcSprite == -1 || objectOk(e.npcSprite)) &&
+            ok = ok && objectOk(e.object) &&
                  (e.place.sprite == -1 || placementOk(e.place));
         }
         auto emoteOk = [&](uint8_t v) { return v < NpcEmoteDef::Count; };
