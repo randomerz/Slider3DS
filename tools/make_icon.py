@@ -1,10 +1,11 @@
-"""Makes the 3DS app icon (slider3ds.png, 48x48; the Makefile embeds it in the SMDH) from the
-original's SliderCat128 (Slider/production/misc: 16x16 pixel art at 8x).
+"""Makes the 3DS app icon (slider3ds.png, 48x48; the Makefile embeds it in the SMDH) from the PC
+build's icon: Player Settings' default icon, Assets/Sprites/Misc/Player240.png (the explorer on a
+dark tile; 16x16 pixel art at 15x).
 
 The art is reduced to its 16x16 pixels, scaled 3x (48 px, whole pixels) and laid on the menus'
-dark gray (#1a1a1a): SMDH icons are RGB565, with no transparency.
+dark gray (#1a1a1a): SMDH icons are RGB565, with no transparency (the tile's rounded corners).
 
-Usage: python tools/make_icon.py [path to SliderCat128.png]   (needs Pillow)
+Usage: python tools/make_icon.py [path to a 16x16-pixel-art PNG at a whole scale]   (needs Pillow)
 """
 import os
 import sys
@@ -13,7 +14,7 @@ from PIL import Image
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
-    REPO, "..", "Slider", "production", "misc", "SliderCat128.png")
+    REPO, "..", "Slider", "Slider", "Assets", "Sprites", "Misc", "Player240.png")
 ART = 16           # the source's pixel art size
 SIZE = 48          # the SMDH large icon
 BACKGROUND = (26, 26, 26, 255)
