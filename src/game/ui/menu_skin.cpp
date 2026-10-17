@@ -59,6 +59,13 @@ bool MenuSkin::load(std::string* error) {
     read("sliderHandleSelected", handleSelected_);
     // The widgets are their sprites' sizes (one grid: no scaling).
     auto is = [](const Sprite& s, int w, int h) { return s.w == w && s.h == h; };
+    // The selected button: the same height, equally wider on both sides.
+    selectedOutset_ = (buttonSelected_.w - button_.w) / 2;
+    if (ok && (buttonSelected_.h != button_.h || buttonPressed_.h != button_.h || buttonPressed_.w != button_.w ||
+               selectedOutset_ < 0 || buttonSelected_.w != button_.w + 2 * selectedOutset_)) {
+        ok = false;
+        if (error) *error = "ui/menu.json: the button sprites' sizes don't match";
+    }
     if (ok && !(is(handle_, HANDLE_W, SLIDER_H) && is(handleSelected_, HANDLE_W, SLIDER_H) &&
                 is(toggle_, TOGGLE_SIZE, TOGGLE_SIZE) && is(toggleSelected_, TOGGLE_SIZE, TOGGLE_SIZE) &&
                 is(toggleCheck_, TOGGLE_SIZE, TOGGLE_SIZE))) {
@@ -116,7 +123,10 @@ void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {
 }
 
 void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, Button state) const {
-    drawNineSlice(state == Button::Pressed ? buttonPressed_ : state == Button::Selected ? buttonSelected_ : button_, x, y, w, h);
+    if (state == Button::Selected)
+        drawNineSlice(buttonSelected_, x - selectedOutset_, y, w + 2 * selectedOutset_, h);
+    else
+        drawNineSlice(state == Button::Pressed ? buttonPressed_ : button_, x, y, w, h);
     const int drop = state == Button::Pressed ? PRESS_DROP : 0;
     drawText(label, x + (w - font_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop, TEXT_DARK);
 }

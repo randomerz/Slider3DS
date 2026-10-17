@@ -8,6 +8,6 @@
     "toggleCheck": {"rect":[9,25,8,8],"border":[0,0,0,0]},
     "sliderHandle": {"rect":[18,25,3,5],"border":[0,0,0,0]},
     "sliderHandleSelected": {"rect":[22,25,3,5],"border":[0,0,0,0]},
-    "buttonSelected": {"rect":[26,25,24,24],"border":[4,4,4,4]}
+    "buttonSelected": {"rect":[26,25,26,24],"border":[5,4,5,4]}
   }
 }

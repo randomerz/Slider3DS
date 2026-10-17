@@ -3,8 +3,10 @@
 The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   Menu Button (the main menu's; Image sliced, Button sprite swap): normal Button24_0 (a light face
       over a 2 px shaded bottom edge), pressed _1 (the face 1 px lower); 9-sliced, 4 px borders.
-      Selected: a port sprite (user's choice), Button24_0 with the side columns of the original's
-      selected _2 (its dark outline): a dark bracket at each end of the button.
+      Selected: a port sprite (user's design), Button24_0 between two brackets in the dark gray of
+      the original's outlined selected _2: 2 px thick, 1 px outside the button's sides, the full
+      height (past the shaded edge), their ends turning inward. It's 2 px wider than Button24_0;
+      the skin draws it 1 px out on each side.
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
   UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
@@ -51,18 +53,28 @@ def unity_sprite(texture, name):
     return img.crop((x, top, x + w, top + h)), [bl, bt, br, bb]
 
 
-BRACKET_COLUMNS = 3  # of Button24_2's outline kept at each side (the outline and its corner turns)
+# The left bracket, by row: the columns it covers (x 0 = 1 px outside the button). The right one
+# mirrors it. Rows between the ends are the straight part.
+BRACKET_TOP = [(1, 2), (0, 2)]     # row 0, row 1: turning inward
+BRACKET_SIDE = (0, 1)              # rows 2 .. h-3
+BRACKET_BOTTOM = [(0, 2), (1, 2)]  # row h-2, row h-1
 
 
 def selected_button():
-    """Button24_0 with Button24_2's left and right BRACKET_COLUMNS columns: its outline as brackets."""
+    """Button24_0, 1 px in from each side of a sprite 2 px wider, between dark brackets."""
     face, border = unity_sprite("Sprites/UI/Button24.png", "Button24_0")
     outline, _ = unity_sprite("Sprites/UI/Button24.png", "Button24_2")
-    img = face.copy()
-    w = img.width
-    for x0, x1 in ((0, BRACKET_COLUMNS), (w - BRACKET_COLUMNS, w)):
-        img.paste(outline.crop((x0, 0, x1, img.height)), (x0, 0))
-    return img, border
+    dark = outline.getpixel((0, outline.height // 2))  # the outline's gray (0.4)
+    w, h = face.width + 2, face.height
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    img.paste(face, (1, 0))
+    rows = BRACKET_TOP + [BRACKET_SIDE] * (h - 4) + BRACKET_BOTTOM
+    for y, (x0, x1) in enumerate(rows):
+        for x in range(x0, x1 + 1):
+            img.putpixel((x, y), dark)
+            img.putpixel((w - 1 - x, y), dark)
+    left, top, right, bottom = border
+    return img, [left + 1, top, right + 1, bottom]
 
 
 def main():

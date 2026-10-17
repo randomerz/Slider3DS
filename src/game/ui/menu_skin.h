@@ -1,5 +1,5 @@
 // The original's menu widgets, for the port's menus: its buttons (Menu Button: Button24, 9-sliced,
-// sprite swap; selected: dark brackets at its ends, from its outlined selected sprite), sliders
+// sprite swap; selected: dark brackets just outside its ends, the full height), sliders
 // (UI Slider) and toggles (UI Toggle), with TinyUnicode text (a port choice:
 // it reads better on the 3DS than the original's menu fonts). Sprites cut by tools/make_ui.py
 // (assets/ui/menu.json), fonts baked by tools/make_font.py.
@@ -34,9 +34,10 @@ public:
 
     // A page title (light), centered on (cx, cy).
     void drawTitle(std::string_view text, int cx, int cy) const;
-    // A button filling the box (its label dark, centered on its face): selected brackets its ends,
-    // pressed sinks its face.
+    // A button filling the box (its label dark, centered on its face): selected adds brackets
+    // selectedOutset() px outside its sides, pressed sinks its face.
     void drawButton(int x, int y, int w, int h, std::string_view label, Button state) const;
+    int selectedOutset() const { return selectedOutset_; }
     // An option's label, left-aligned at x, centered on cy: gray, light when selected.
     void drawLabel(std::string_view text, int x, int cy, bool selected) const;
     // A slider (w x SLIDER_H at (x, y)) at `value` 0-1; `selected` swaps its handle.
@@ -60,6 +61,7 @@ private:
     void drawText(std::string_view text, int x, int cy, uint32_t color) const;
 
     plat::Texture* sheet_ = nullptr;
+    int selectedOutset_ = 0; // how far the selected sprite reaches past the button's sides
     Sprite button_, buttonSelected_, buttonPressed_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
     Font font_;
 };
