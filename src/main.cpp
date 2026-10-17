@@ -45,7 +45,6 @@ void showLoadError() {
     }
 }
 
-// The new-game start (dev builds: outdoors on tile 1 instead of in the house).
 // Writes `settings` if they differ from what was last saved (one attempt per change).
 void saveIfChanged(const Settings& settings, Settings& saved) {
     if (settings == saved) return;
@@ -53,6 +52,7 @@ void saveIfChanged(const Settings& settings, Settings& saved) {
     saved = settings;
 }
 
+// The new-game start (dev builds: outdoors on tile 1 instead of in the house).
 void placeAtStart(World& world, DevControls& dev) {
     const Area& area = world.area;
     for (size_t i = 0; i < area.spawns.size(); i++)

@@ -5,7 +5,8 @@ The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
       selected _3; 9-sliced, 3 px borders. (Its highlighted _4 is mouse hover, disabled _2 unused:
       not cut.)
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
-  UI Slider: handle ui_slider_0, selected handle ui_slider_1.
+  UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
+      Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
 
   assets/sheets/ui_menu.png   the sheet (.fmt: la8, all gray)
   assets/ui/menu.json         {"sheet", "sprites": {name: {"rect": [x, y, w, h] (top-left origin),
@@ -30,8 +31,8 @@ SPRITES = {
     "toggle": ("Sprites/UI/ui_toggle.png", "ui_toggle_0"),
     "toggleSelected": ("Sprites/UI/ui_toggle.png", "ui_toggle_0_selected"),
     "toggleCheck": ("Sprites/UI/ui_toggle.png", "ui_toggle_1"),
-    "sliderHandle": ("Sprites/UI/menus/ui_slider.png", "ui_slider_0"),
-    "sliderHandleSelected": ("Sprites/UI/menus/ui_slider.png", "ui_slider_1"),
+    "sliderHandle": ("Sprites/UI/menus/ui_slider.png", "ui_slider_1"),
+    "sliderHandleSelected": ("Sprites/UI/menus/ui_slider.png", "ui_slider_0"),
 }
 SHEET_W = 64
 

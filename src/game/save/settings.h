@@ -19,7 +19,6 @@ struct Settings {
 
     // screenShake = `value` clamped to 0-1, snapped to the nearest step (so it saves and reads back exactly).
     void setScreenShake(float value);
-    int screenShakeStep() const; // 0..SHAKE_STEPS
 
     bool operator==(const Settings& o) const { return autoMove == o.autoMove && screenShake == o.screenShake; }
     bool operator!=(const Settings& o) const { return !(*this == o); }

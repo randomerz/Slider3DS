@@ -8,14 +8,12 @@
 namespace {
 
 // UI Slider: its bar (Background, 0.4 gray) and fill (0.6 gray) span the middle half of its height;
-// the fill reaches from the left end to the handle's middle; the handle (6 px wide, the slider's
-// height: its 3x5 sprite at 2x) slides between 2.5 px insets.
+// the fill reaches from the left end to 5 px past the value's point; the handle (its 3x5 sprite at
+// the slider's height) slides between 2.5 px insets. (UI px, times UI_SCALE.)
 constexpr uint32_t SLIDER_BAR = plat::rgba(0x66, 0x66, 0x66);
 constexpr uint32_t SLIDER_FILL = plat::rgba(0x99, 0x99, 0x99);
-constexpr float HANDLE_INSET = 2.5f, HANDLE_W = 6;
-constexpr float FILL_INSET = 5; // Fill Area's inset; the fill ends 5 px past the value's point in it
-// UI Toggle's 8x8 sprites, drawn 2x in its box (Unity stretches them to 20 px, 2.5x).
-constexpr int TOGGLE_SCALE = 2;
+constexpr float HANDLE_INSET = 2.5f * MenuSkin::UI_SCALE;
+constexpr float FILL_INSET = 5.0f * MenuSkin::UI_SCALE;
 
 } // namespace
 
@@ -47,41 +45,47 @@ bool MenuSkin::load(std::string* error) {
     read("toggleCheck", toggleCheck_);
     read("sliderHandle", handle_);
     read("sliderHandleSelected", handleSelected_);
+    // The handle fills the slider's height, the toggle's sprites its box: at whole-pixel scales.
+    if (ok && (handle_.h <= 0 || SLIDER_H % handle_.h != 0 || handleSelected_.h != handle_.h || toggle_.w <= 0 ||
+               TOGGLE_SIZE % toggle_.w != 0)) {
+        ok = false;
+        if (error) *error = "ui/menu.json: the slider handle / toggle sprites don't scale to their widgets";
+    }
     if (!ok) return false;
     sheet_ = plat::loadSheet(doc["sheet"].asString().c_str());
     if (!sheet_) {
         if (error) *error = "can't load the menu sheet " + doc["sheet"].asString();
         return false;
     }
-    return title_.load("fonts/menu_title.json", error) && buttonFont_.load("fonts/menu_button.json", error) &&
-           label_.load("fonts/menu_label.json", error);
+    return text_.load("fonts/menu_text.json", error) && label_.load("fonts/menu_label.json", error);
 }
 
 void MenuSkin::unload() {
     if (sheet_) plat::freeSheet(sheet_);
     sheet_ = nullptr;
-    title_.unload();
-    buttonFont_.unload();
+    text_.unload();
     label_.unload();
 }
 
-void MenuSkin::drawNineSlice(const Sprite& s, float x, float y, float w, float h) const {
+void MenuSkin::drawNineSlice(const Sprite& s, float x, float y, float w, float h, int scale) const {
     // Columns and rows: border, stretched middle, border.
     const int sxs[3] = {s.x, s.x + s.left, s.x + s.w - s.right};
     const int sws[3] = {s.left, s.w - s.left - s.right, s.right};
     const int sys[3] = {s.y, s.y + s.top, s.y + s.h - s.bottom};
     const int shs[3] = {s.top, s.h - s.top - s.bottom, s.bottom};
-    const float xs[3] = {x, x + s.left, x + w - s.right};
-    const float ws[3] = {(float)s.left, w - s.left - s.right, (float)s.right};
-    const float ys[3] = {y, y + s.top, y + h - s.bottom};
-    const float hs[3] = {(float)s.top, h - s.top - s.bottom, (float)s.bottom};
-    for (int r = 0; r < 3; r++)
-        for (int c = 0; c < 3; c++) {
-            if (sws[c] <= 0 || shs[r] <= 0 || ws[c] <= 0 || hs[r] <= 0) continue;
-            if (ws[c] == sws[c] && hs[r] == shs[r])
-                plat::drawSprite(sheet_, sxs[c], sys[r], sws[c], shs[r], xs[c], ys[r]);
+    const float l = (float)(s.left * scale), r = (float)(s.right * scale);
+    const float t = (float)(s.top * scale), b = (float)(s.bottom * scale);
+    const float xs[3] = {x, x + l, x + w - r};
+    const float ws[3] = {l, w - l - r, r};
+    const float ys[3] = {y, y + t, y + h - b};
+    const float hs[3] = {t, h - t - b, b};
+    for (int row = 0; row < 3; row++)
+        for (int col = 0; col < 3; col++) {
+            if (sws[col] <= 0 || shs[row] <= 0 || ws[col] <= 0 || hs[row] <= 0) continue;
+            if (ws[col] == sws[col] * scale && hs[row] == shs[row] * scale)
+                plat::drawSprite(sheet_, sxs[col], sys[row], sws[col], shs[row], xs[col], ys[row], 0, scale);
             else
-                plat::drawSpriteStretched(sheet_, sxs[c], sys[r], sws[c], shs[r], xs[c], ys[r], ws[c], hs[r]);
+                plat::drawSpriteStretched(sheet_, sxs[col], sys[row], sws[col], shs[row], xs[col], ys[row], ws[col], hs[row]);
         }
 }
 
@@ -89,22 +93,23 @@ void MenuSkin::drawScaled(const Sprite& s, float x, float y, int scale) const {
     plat::drawSprite(sheet_, s.x, s.y, s.w, s.h, x, y, 0, scale);
 }
 
-void MenuSkin::drawCentered(const Font& font, std::string_view text, float x, float cy) {
+void MenuSkin::drawCentered(const Font& font, std::string_view text, float x, float cy, int scale) {
     const GlyphRect& cap = font.def().glyph('A').text;
-    font.drawText(text, x, std::round(cy - (cap.oy + cap.h / 2.0f)));
+    font.drawText(text, x, std::round(cy - (cap.oy + cap.h / 2.0f) * scale), scale);
 }
 
 void MenuSkin::drawTitle(std::string_view text, float cx, float cy) const {
-    drawCentered(title_, text, std::round(cx - title_.textWidth(text) / 2.0f), cy);
+    drawCentered(text_, text, std::round(cx - text_.textWidth(text, TITLE_SCALE) / 2.0f), cy, TITLE_SCALE);
 }
 
 void MenuSkin::drawButton(float x, float y, float w, float h, std::string_view label, Button state) const {
-    drawNineSlice(state == Button::Normal ? button_ : buttonSelected_, x, y, w, h);
+    drawNineSlice(state == Button::Normal ? button_ : buttonSelected_, x, y, w, h, UI_SCALE);
     const float drop = state == Button::Pressed ? (float)PRESS_DROP : 0.0f;
-    drawCentered(buttonFont_, label, std::round(x + (w - buttonFont_.textWidth(label)) / 2.0f), y + h / 2.0f + drop);
+    drawCentered(text_, label, std::round(x + (w - text_.textWidth(label, TEXT_SCALE)) / 2.0f), y + h / 2.0f + drop,
+                 TEXT_SCALE);
 }
 
-void MenuSkin::drawLabel(std::string_view text, float x, float cy) const { drawCentered(label_, text, x, cy); }
+void MenuSkin::drawLabel(std::string_view text, float x, float cy) const { drawCentered(label_, text, x, cy, TEXT_SCALE); }
 
 void MenuSkin::drawSlider(float x, float y, float value, bool selected) const {
     value = std::clamp(value, 0.0f, 1.0f);
@@ -112,8 +117,9 @@ void MenuSkin::drawSlider(float x, float y, float value, bool selected) const {
     plat::drawRect(x, barY, SLIDER_W, barH, SLIDER_BAR);
     plat::drawRect(x, barY, std::round(FILL_INSET + (SLIDER_W - 2 * FILL_INSET) * value), barH, SLIDER_FILL);
     const Sprite& handle = selected ? handleSelected_ : handle_;
+    const int scale = SLIDER_H / handle.h;
     const float center = x + HANDLE_INSET + (SLIDER_W - 2 * HANDLE_INSET) * value;
-    drawScaled(handle, std::round(center - HANDLE_W / 2), y, SLIDER_H / handle.h);
+    drawScaled(handle, std::round(center - handle.w * scale / 2.0f), y, scale);
 }
 
 float MenuSkin::sliderValueAt(float px, float sliderX) {
@@ -121,7 +127,7 @@ float MenuSkin::sliderValueAt(float px, float sliderX) {
 }
 
 void MenuSkin::drawToggle(float x, float y, bool on, bool selected) const {
-    const float inset = (TOGGLE_SIZE - toggle_.w * TOGGLE_SCALE) / 2.0f;
-    drawScaled(selected ? toggleSelected_ : toggle_, x + inset, y + inset, TOGGLE_SCALE);
-    if (on) drawScaled(toggleCheck_, x + inset, y + inset, TOGGLE_SCALE);
+    const int scale = TOGGLE_SIZE / toggle_.w; // (8 px sprites)
+    drawScaled(selected ? toggleSelected_ : toggle_, x, y, scale);
+    if (on) drawScaled(toggleCheck_, x, y, scale);
 }

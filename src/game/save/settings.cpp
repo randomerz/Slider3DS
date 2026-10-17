@@ -37,8 +37,6 @@ void Settings::setScreenShake(float value) {
     screenShake = std::lround(std::clamp(value, 0.0f, 1.0f) * SHAKE_STEPS) / (float)SHAKE_STEPS;
 }
 
-int Settings::screenShakeStep() const { return (int)std::lround(screenShake * SHAKE_STEPS); }
-
 Settings Settings::load() {
     std::string text;
     return plat::readUserFile(FILE_NAME, text) ? parse(text) : Settings{};

@@ -67,13 +67,13 @@ TEST(settings_parse_keeps_defaults_for_bad_lines) {
 TEST(settings_screen_shake_steps) {
     Settings s;
     s.setScreenShake(0.04f);
-    CHECK(s.screenShake == 0.0f && s.screenShakeStep() == 0);
+    CHECK(s.screenShake == 0.0f);
     s.setScreenShake(0.96f);
-    CHECK(s.screenShake == 1.0f && s.screenShakeStep() == Settings::SHAKE_STEPS);
+    CHECK(s.screenShake == 1.0f);
     s.setScreenShake(-3);
     CHECK(s.screenShake == 0.0f);
-    s.setScreenShake(0.7f);
-    CHECK(s.screenShakeStep() == 7);
+    s.setScreenShake(0.68f);
+    CHECK(near(s.screenShake, 0.7f));
 }
 
 TEST(settings_load_and_save_through_user_files) {
@@ -145,7 +145,7 @@ TEST(pause_menu_stylus) {
     CHECK(tapItem(menu, s, Menu::AUTO_MOVE) == Menu::Action::None && s.autoMove && menu.cursor() == Menu::AUTO_MOVE);
 
     // Dragging the slider sets the value under the stylus, on steps; releasing anywhere keeps it.
-    const Menu::Box slider = Menu::sliderBox();
+    const Menu::Box slider = Menu::controlBox(Menu::SCREEN_SHAKE);
     const int cy = slider.y + slider.h / 2;
     menu.update(touch(slider.x + slider.w / 2, cy), s);
     CHECK(near(s.screenShake, 0.5f) && menu.cursor() == Menu::SCREEN_SHAKE);
@@ -156,6 +156,17 @@ TEST(pause_menu_stylus) {
     menu.update(touch(slider.x + slider.w * 3 / 10, cy), s);
     menu.update(plat::Input{}, s);
     CHECK(near(s.screenShake, 0.3f) && menu.page() == Menu::Page::Options);
+
+    // The label is just a label: a tap on it moves the cursor, not the value. A finger a little
+    // above the slider still drags it.
+    const Menu::Box row = Menu::itemBox(Menu::SCREEN_SHAKE);
+    menu.update(press(plat::BTN_DOWN), s);
+    CHECK(tap(menu, s, row.x + 4, row.y + row.h / 2) == Menu::Action::None);
+    CHECK(near(s.screenShake, 0.3f) && menu.cursor() == Menu::SCREEN_SHAKE);
+    CHECK(tap(menu, s, row.x + row.w - 2, row.y + row.h / 2) == Menu::Action::None && near(s.screenShake, 0.3f));
+    menu.update(touch(slider.x + slider.w - 1, row.y), s);
+    menu.update(plat::Input{}, s);
+    CHECK(s.screenShake == 1.0f);
 
     // A press on one item released on another does nothing.
     const Menu::Box back = Menu::itemBox(Menu::BACK), toggle = Menu::itemBox(Menu::AUTO_MOVE);
@@ -185,8 +196,10 @@ TEST(pause_menu_boxes_fit_and_dont_overlap) {
             }
         }
     // Each option's control sits inside its row.
-    const Menu::Box shake = Menu::itemBox(Menu::SCREEN_SHAKE), slider = Menu::sliderBox();
-    const Menu::Box autoRow = Menu::itemBox(Menu::AUTO_MOVE), toggle = Menu::toggleBox();
+    const Menu::Box shake = Menu::itemBox(Menu::SCREEN_SHAKE), slider = Menu::controlBox(Menu::SCREEN_SHAKE);
+    const Menu::Box autoRow = Menu::itemBox(Menu::AUTO_MOVE), toggle = Menu::controlBox(Menu::AUTO_MOVE);
     CHECK(shake.contains(slider.x, slider.y) && shake.contains(slider.x + slider.w - 1, slider.y + slider.h - 1));
     CHECK(autoRow.contains(toggle.x, toggle.y) && autoRow.contains(toggle.x + toggle.w - 1, toggle.y + toggle.h - 1));
+    // The toggle is centered under the slider (Label Toggle Pair: x 165 = the slider's middle).
+    CHECK(toggle.x * 2 + toggle.w == slider.x * 2 + slider.w);
 }

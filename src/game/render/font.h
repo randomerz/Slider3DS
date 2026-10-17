@@ -1,5 +1,6 @@
-// The dialogue font: TinyUnicode letters over a PixelUnicodeFill backing, baked at the game's
-// 16 px per em by tools/make_font.py (assets/fonts/<name>.json + its sheet).
+// The game's bitmap fonts, baked from the original TTFs by tools/make_font.py (assets/fonts/<name>.json
+// + its sheet): the dialogue (TinyUnicode letters over a PixelUnicodeFill backing, 16 px per em) and
+// the menus' (PixelTitanZero, PixelUnicode).
 #pragma once
 
 #include <string>
@@ -21,7 +22,7 @@ struct Glyph {
 
 struct FontDef {
     std::string sheet;  // sprite sheet name (plat::loadSheet)
-    int ppem = 16;      // px per em (= per world unit at TMP fontSize 1)
+    int ppem = 16;      // px per em (dialogue: = per world unit at TMP fontSize 1; menus: the TMP font size)
     int descent = 0;    // px below the baseline
     std::vector<Glyph> glyphs; // by character code (ASCII)
 
