@@ -876,8 +876,7 @@ static bool validate(const Area& a, std::string* error) {
         bool ok = objectOk(c.object) && objectOk(c.textObjects[0]) && objectOk(c.textObjects[1]) &&
                   c.zoneMinX < c.zoneMaxX && c.zoneMinY < c.zoneMaxY;
         for (int cat : c.cats) // (the zone tests each cat's collider)
-            ok = ok && cat >= 0 && cat < (int)a.items.size() && a.items[cat].colliderSlot >= 0 &&
-                 a.items[cat].colliderSlot < (int)a.objectColliders.size();
+            ok = ok && cat >= 0 && cat < (int)a.items.size() && a.solidCollider(a.items[cat].colliderSlot);
         if (!ok) return fail(error, "cat trick: bad object, zone, cat or text object");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))

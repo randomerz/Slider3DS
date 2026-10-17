@@ -166,6 +166,39 @@ TEST(area_validation_rejects_bad_indices) {
     }
 }
 
+TEST(area_validation_rejects_bad_cat_tricks) {
+    // The fixture plus an item (collider 0: solid) and a CatTrick whose cats are it.
+    const std::string item = R"json("items": [{"object": 2, "type": "Item", "name": "Cat", "radius": 0.5, "spriteObject": 1,
+               "collider": 0, "pickUpDuration": 0.5, "xCurve": [0, 1], "yCurve": [0, 1], "enableOnDrop": [],
+               "onPickUp": [], "onDrop": []}],
+  "catTricks": [{"object": 0, "zone": [-1, -1, 1, 1], "cats": [0, 0, 0], "textObjects": [1, 1],
+                 "text": {"box": [0, 0, 2, 1], "lineAdvance": 0.43, "sortingLayerValue": 9, "order": 0}}],
+  "fadeDuration": 0.5,)json";
+    const std::string good = fixture(R"("fadeDuration": 0.5,)", item);
+    Area a;
+    std::string err;
+    check(loadFixture(good, a, err), "a good cat trick loads: " + err);
+    CHECK(a.catTricks.size() == 1 && a.catTricks[0].cats[2] == 0);
+    const char* cases[][3] = {
+        {R"("cats": [0, 0, 0])", R"("cats": [0, 3, 0])", "cat -> missing item"},
+        {R"("collider": 0, "pickUpDuration")", R"("collider": -1, "pickUpDuration")", "cat without a collider"},
+        {R"("collider": 0, "pickUpDuration")", R"("collider": 0, "colliderTrigger": true, "pickUpDuration")",
+         "cat with a trigger collider"},
+        {R"("zone": [-1, -1, 1, 1])", R"("zone": [1, -1, -1, 1])", "empty zone"},
+        {R"("textObjects": [1, 1])", R"("textObjects": [1, 9])", "text object -> missing object"},
+        {R"("catTricks": [{"object": 0)", R"("catTricks": [{"object": 7)", "cat trick -> missing object"},
+    };
+    for (const auto& c : cases) {
+        Area bad;
+        const size_t at = good.find(c[0]);
+        check(at != std::string::npos, std::string("pattern for ") + c[2]);
+        if (at == std::string::npos) continue;
+        std::string json = good;
+        json.replace(at, std::string(c[0]).size(), c[1]);
+        check(!loadFixture(json, bad, err), std::string("rejects ") + c[2]);
+    }
+}
+
 // Animator transform curves: one controller shared by the player's Animator (its item holder) and an
 // NPC's (its sprite); each curve resolves to the target its own Animator has, -1 on the other.
 std::string animatorFixture(const std::string& from = "", const std::string& to = "") {

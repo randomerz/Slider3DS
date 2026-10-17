@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cmath>
 
-#include "game/village/cat_trick.h"
 #include "platform/platform.h"
 
 void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
@@ -115,17 +114,16 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         it.sprite.sortY = y;
         items_.push_back(it);
     }
-    // CatTrick's count: a world-space canvas like the dialogue's, while UpdateText has it on.
-    for (int i = 0; i < (int)area.catTricks.size(); i++) {
-        const CatTrickDef& c = area.catTricks[i];
-        if (!font_ || !inRange(c.text.sortLayer) || !objects.activeInHierarchy(c.textObjects[0]) ||
-            !ownerShown(objects.owner(c.object)))
-            continue;
+    // Other world-space text (CatTrick's count): canvases like the dialogue's.
+    world.worldTexts(texts_);
+    for (int i = 0; i < (int)texts_.size(); i++) {
+        const WorldText& t = texts_[i];
+        if (!font_ || !inRange(t.box->sortLayer) || !ownerShown(objects.owner(t.object))) continue;
         float x, y;
-        world.objectPosition(c.textObjects[0], x, y);
+        world.objectPosition(t.sortObject, x, y);
         Item it{ItemKind::Text, i, {}};
-        it.sprite.sortLayer = c.text.sortLayer;
-        it.sprite.order = c.text.order;
+        it.sprite.sortLayer = t.box->sortLayer;
+        it.sprite.order = t.box->order;
         it.sprite.sortY = y;
         items_.push_back(it);
     }
@@ -194,7 +192,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     for (const Item& it : items_) {
         if (it.kind == ItemKind::Layer) drawLayer(area, grid, area.layers[it.index]);
         else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
-        else if (it.kind == ItemKind::Text) drawCatCount(world, it.index);
+        else if (it.kind == ItemKind::Text) drawWorldText(world, it.index);
         else if (it.kind == ItemKind::Line) drawLine(lines_[it.index]);
         else if (it.kind == ItemKind::Particle) drawParticle(particles[it.index]);
         else drawSprite(area, it.sprite);
@@ -241,20 +239,20 @@ void AreaView::drawDialogue(const World& world, int npc) {
     drawGlyphs(text, layout.glyphs, sx, sy, &typer);
 }
 
-void AreaView::drawCatCount(const World& world, int catTrick) {
-    const CatTrickDef& c = world.area.catTricks[catTrick];
-    if (countLayouts_.size() != world.area.catTricks.size()) countLayouts_.assign(world.area.catTricks.size(), CountLayout());
-    CountLayout& layout = countLayouts_[catTrick];
-    const int count = village::CatTricks::count(world);
-    if (layout.count != count) {
-        layout.text = parseDialogue(village::CatTricks::text(count), world.state);
-        layoutDialogue(font_->def(), layout.text, c.text, ppu_, layout.glyphs);
-        layout.count = count;
+void AreaView::drawWorldText(const World& world, int i) {
+    const WorldText& t = texts_[i];
+    if (textLayouts_.size() < texts_.size()) textLayouts_.resize(texts_.size());
+    TextLayout& layout = textLayouts_[i];
+    if (layout.box != t.box || layout.text != t.text) {
+        layout.parsed = parseDialogue(t.text, world.state);
+        layoutDialogue(font_->def(), layout.parsed, *t.box, ppu_, layout.glyphs);
+        layout.box = t.box;
+        layout.text = t.text;
     }
     float bx, by, sx, sy;
-    world.objectBase(c.object, bx, by);
-    worldToScreen(bx + c.text.minX, by + c.text.minY, sx, sy);
-    drawGlyphs(layout.text, layout.glyphs, sx, sy, nullptr);
+    world.objectBase(t.object, bx, by);
+    worldToScreen(bx + t.box->minX, by + t.box->minY, sx, sy);
+    drawGlyphs(layout.parsed, layout.glyphs, sx, sy, nullptr);
 }
 
 void AreaView::drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace>& glyphs, float sx, float sy,

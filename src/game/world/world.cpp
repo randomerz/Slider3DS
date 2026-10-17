@@ -235,6 +235,11 @@ bool World::promptShown() const {
     return std::any_of(interactables.begin(), interactables.end(), [&](const Interactable& it) { return showsPrompt(it); });
 }
 
+void World::worldTexts(std::vector<WorldText>& out) const {
+    out.clear();
+    cats.texts(*this, out);
+}
+
 void World::objectPosition(int object, float& x, float& y) const {
     objectBase(object, x, y);
     x += area.objects[object].x;

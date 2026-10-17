@@ -681,6 +681,12 @@ struct STileDef {
 
 // Loaded, read-only area data. Runtime state (tile slots, slides, fences) is in Grid.
 struct Area {
+    // The solid object collider in collider slot `slot` (ObjectCollider::slot numbering), null for a
+    // trigger's slot or none.
+    const ObjectCollider* solidCollider(int slot) const {
+        return slot >= 0 && slot < (int)objectColliders.size() ? &objectColliders[slot] : nullptr;
+    }
+
     std::string name;  // e.g. "Village" (Area enum name: collectibles' area)
     int ppu = 16;
     int gridW = 0, gridH = 0;

@@ -14,8 +14,8 @@ void CatTricks::update(World& world) {
         const Box zone = {bx + c.zoneMinX, by + c.zoneMinY, bx + c.zoneMaxX, by + c.zoneMaxY};
         for (int i = 0; i < CatTrickDef::CATS; i++) {
             if (world.state.flag(CAT_FLAGS[i])) continue; // (once back, for good)
-            const ObjectCollider& collider = area.objectColliders[area.items[c.cats[i]].colliderSlot];
-            if (colliderOverlaps(world, collider, zone)) world.state.setFlag(CAT_FLAGS[i], true);
+            const ObjectCollider* collider = area.solidCollider(area.items[c.cats[i]].colliderSlot);
+            if (collider && colliderOverlaps(world, *collider, zone)) world.state.setFlag(CAT_FLAGS[i], true);
         }
         const int n = count(world);
         for (int object : c.textObjects) world.objects.setActive(area, object, n > 0 && n < CatTrickDef::CATS);
@@ -26,6 +26,12 @@ int CatTricks::count(const World& world) {
     int n = 0;
     for (const char* flag : CAT_FLAGS) n += world.state.flag(flag) ? 1 : 0;
     return n;
+}
+
+void CatTricks::texts(const World& world, std::vector<WorldText>& out) const {
+    for (const CatTrickDef& c : world.area.catTricks)
+        if (world.objects.activeInHierarchy(c.textObjects[0]))
+            out.push_back({&c.text, c.object, c.textObjects[0], text(count(world))});
 }
 
 const char* CatTricks::text(int count) {

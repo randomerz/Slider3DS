@@ -21,8 +21,8 @@ struct Settings {
     float screenEffects = 1.0f;
     bool bigText = false;
     float masterVolume = 0.5f, sfxVolume = 0.5f, musicVolume = 0.5f, ambienceVolume = 0.5f;
-    // (A new setting: add it to FIELDS in settings.cpp too, or it's neither saved nor compared;
-    // a size check there catches a forgotten one.)
+    // (A new setting: add it to FIELDS in settings.cpp too, or it's neither saved nor compared; a
+    // member count there stops the build until it is.)
 
     // `value` clamped to 0-1 and snapped to the nearest step (so it saves and reads back exactly).
     static float snap(float value);

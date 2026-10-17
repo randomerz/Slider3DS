@@ -1,6 +1,7 @@
 // CatTrick (Cathy's cats): cats dropped in the detection zone count as returned, for good; specs and
 // the "n/3" text follow.
 #include <string>
+#include <vector>
 
 #include "game/events/conditions.h"
 #include "game/village/cat_trick.h"
@@ -28,9 +29,26 @@ void zoneCenter(const World& w, float& x, float& y) {
     y = by + (c.zoneMinY + c.zoneMaxY) / 2;
 }
 
+// The count is shown: its text objects on, and World offers its text (what AreaView draws).
 bool textOn(const World& w) {
     const CatTrickDef& c = w.area.catTricks[0];
-    return w.objects.activeInHierarchy(c.textObjects[0]) && w.objects.activeInHierarchy(c.textObjects[1]);
+    std::vector<WorldText> texts;
+    w.worldTexts(texts);
+    const bool objectsOn = w.objects.activeInHierarchy(c.textObjects[0]) && w.objects.activeInHierarchy(c.textObjects[1]);
+    check(objectsOn == (texts.size() == 1), "the text objects and the world text agree");
+    return objectsOn && texts.size() == 1 &&
+           std::string(texts[0].text) == village::CatTricks::text(village::CatTricks::count(w));
+}
+
+// Cathy's current conditional, by its first line's start ("" = none).
+std::string cathySays(const World& w) {
+    for (int i = 0; i < (int)w.area.npcs.size(); i++) {
+        if (w.area.npcs[i].name != "Cathy") continue;
+        const int cond = w.npcs.currentCond(i);
+        if (cond < 0 || w.area.npcs[i].conds[cond].dialogue.empty()) return "";
+        return w.area.npcs[i].conds[cond].dialogue[0].text.substr(0, 24);
+    }
+    return "(no Cathy)";
 }
 
 void frames(World& w, int n) {
@@ -63,6 +81,7 @@ TEST(cat_trick_counts_cats_dropped_in_the_zone) {
     World w = catWorld();
     const CatTrickDef& c = w.area.catTricks[0];
     frames(w, 2);
+    // None back: "0/3" stays hidden (its objects are authored on; UpdateText turns them off).
     CHECK(village::CatTricks::count(w) == 0 && !textOn(w) && !spec(w, ConditionDef::Spec::CatMittens));
     float x, y;
     zoneCenter(w, x, y);
@@ -119,4 +138,23 @@ TEST(cat_trick_needs_its_tile) {
     w.items.drop(w, c.cats[1], x, y);
     frames(w, 40);
     CHECK(village::CatTricks::count(w) == 0);
+}
+
+TEST(cat_trick_moves_cathy_along) {
+    // Cathy's conditionals (the only readers of the specs) follow the cats home.
+    World w = catWorld();
+    const CatTrickDef& c = w.area.catTricks[0];
+    frames(w, 2);
+    check(cathySays(w).rfind("Goodness, hello!", 0) == 0, "none back: " + cathySays(w));
+    float x, y;
+    zoneCenter(w, x, y);
+    w.items.drop(w, c.cats[0], x, y); // Mittens
+    frames(w, 40);
+    check(cathySays(w).rfind("Autumn and Tofu should", 0) == 0, "Mittens back: " + cathySays(w));
+    w.items.drop(w, c.cats[2], x + 1, y); // Tofu
+    frames(w, 40);
+    check(cathySays(w).rfind("Autumn likes to hang out", 0) == 0, "Mittens and Tofu back: " + cathySays(w));
+    w.items.drop(w, c.cats[1], x - 1, y); // Autumn
+    frames(w, 40);
+    check(cathySays(w).rfind("All the cats are back!", 0) == 0, "all back: " + cathySays(w));
 }

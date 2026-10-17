@@ -53,6 +53,14 @@ struct Interactable {
 
 inline const Settings DEFAULT_SETTINGS{}; // SettingsManager's defaults
 
+// World-space text in the dialogue style that isn't an NPC's typed line (CatTrick's count): drawn
+// fully shown in `box`, placed with objectBase(object), sorted like its canvas by `sortObject`'s y.
+struct WorldText {
+    const TextBoxDef* box;
+    int object, sortObject;
+    const char* text; // (static strings: AreaView caches layouts by pointer)
+};
+
 class World {
 public:
     static constexpr float MOVE_SPEED = 5.0f; // world units per second (Player.moveSpeed)
@@ -104,6 +112,8 @@ public:
     void objectBase(int object, float& x, float& y) const;
     // Where `object` itself is now (its transform position).
     void objectPosition(int object, float& x, float& y) const;
+    // The world texts showing now (`out` is cleared first).
+    void worldTexts(std::vector<WorldText>& out) const;
     // Moves `object` (and what's under it) so it sits at world (x, y), on STile `owner` (0 = the world).
     void placeObject(int object, int owner, float x, float y);
     // A script's item drop has landed: runs its callback (Items::drop's DropDone).

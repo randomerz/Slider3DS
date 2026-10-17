@@ -26,9 +26,14 @@ constexpr Field FIELDS[] = {
     {"musicVolume", nullptr, &Settings::musicVolume},
     {"ambienceVolume", nullptr, &Settings::ambienceVolume},
 };
-// Every member is in FIELDS: a member added to Settings changes its size (2 bools + 6 floats, the
-// bools padded: 32 bytes on both targets). Add it to FIELDS, then update this.
-static_assert(sizeof(Settings) == 32 && std::size(FIELDS) == 8, "a Settings member missing from FIELDS?");
+// Every member is in FIELDS: binding Settings' members stops compiling when one is added (add it to
+// FIELDS, then a name here).
+constexpr size_t memberCount() {
+    Settings s;
+    [[maybe_unused]] auto& [a, b, c, d, e, f, g, h] = s;
+    return 8;
+}
+static_assert(memberCount() == std::size(FIELDS), "a Settings member missing from FIELDS");
 
 } // namespace
 
