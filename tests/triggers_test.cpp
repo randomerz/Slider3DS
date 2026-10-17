@@ -299,7 +299,6 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
     const std::set<std::string> expected = {
         "ArtifactScreenHider.AddScreensAndShow",
         "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "Breadge.Pickup",
-        "CatAbductionController.SetPickedUp",
         "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
         "ParticleSystem.Play",
         "PlaySound.PlayString",

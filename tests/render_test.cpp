@@ -578,6 +578,25 @@ TEST(render_npc_walk_goldens) {
     }
 }
 
+TEST(render_cat_abduction_golden) {
+    // The cat in its bubble over the water, riding the sine wave east (the camera on it).
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    GoldenSet goldens("abduction.txt");
+    World world = sceneWorld();
+    world.abduction.introFinished();
+    for (int i = 0; i < 60 * 14; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.abduction.started() && world.objects.rendererEnabled(area.areaGrid.catAbduction.bubble), "floating");
+    float x, y;
+    world.objectPosition(area.items[area.areaGrid.catAbduction.item].object, x, y);
+    testResetDrawCalls();
+    view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
+    view.draw(world);
+    goldens.compare("cat_in_bubble", 20);
+}
+
 TEST(render_intro_goldens) {
     // The intro's camera dolly mid-roll (Romeo walking in, the player held in the house) with the
     // skip prompt half held, as main draws them: the view at World::camera, the prompt at 1x over it.

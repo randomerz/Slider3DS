@@ -116,6 +116,9 @@ void runCall(World& world, const CallDef& c) {
     case M::VillageHouseExit:
         village::houseExit(world);
         break;
+    case M::CatPickedUp:
+        world.abduction.pickedUp();
+        break;
     case M::VillageFillInHole:
         world.finale.fillInHole(world);
         break;

@@ -36,7 +36,12 @@ void World::sendGridEvents() {
 void World::effectDone(EffectDone done) {
     switch (done) {
     case EffectDone::None: break;
-    case EffectDone::DollyEnd: dollies.end(*this); break; // (Unity's OnRollercoasterEnd: the cat abduction, not ported)
+    case EffectDone::DollyEnd: {
+        const bool wasIntro = dollies.current() == area.areaGrid.introDolly;
+        dollies.end(*this);
+        if (wasIntro) abduction.introFinished(); // (OnRollercoasterEnd: VillageGrid.OnVillageCutsceneEnd)
+        break;
+    }
     case EffectDone::VillageShuffle: finale.doShuffle(*this); break;
     }
 }
@@ -80,6 +85,7 @@ void World::reloadObjects() {
     chad.reset(area);
     finale.reset(area);
     intro.reset();
+    abduction.reset();
     dollies.reset();
     player.locks = 0; // (what held the player is reset)
     artifactButtons.reset(area);
@@ -87,6 +93,7 @@ void World::reloadObjects() {
     starts.reset(area);
     runStarts();
     finale.start(*this); // VillageGrid.Start (after every Awake; CheckHole may hide the fragment)
+    abduction.start(*this); // CatAbductionController.Start
     runStarts();
     knots.update(*this);
 }
@@ -173,6 +180,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
     items.update(*this, dt); // (PlayerAction.Update: the carried item follows, the drop spot)
     cats.update(*this);      // (CatTrick.Update: a cat dropped in the zone is back)
+    abduction.update(*this, dt); // (CatAbductionController.Update + its sine wave's)
 
     // Start runs before an object's first update (here: before triggers can touch it), and again
     // for what calls activated. Each skips when nothing became active.
@@ -185,6 +193,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     chad.coroutines(*this, dt);
     finale.coroutines(*this, dt);
     intro.coroutines(*this, dt);
+    abduction.coroutines(*this, dt);
     dollies.update(*this, dt, in.actionHeld);
     runStarts(); // (the final Slider may have appeared)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)

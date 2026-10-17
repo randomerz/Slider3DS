@@ -69,6 +69,8 @@ void Animators::update(World& world, float dt) {
         for (const AnimatorTransitionDef& t : s.transitions)
             if (!taken && fires(t)) taken = &t;
         if (taken) {
+            for (const auto& k : taken->conds)
+                if (c.paramTriggers[k.first]) st.params[k.first] = 0; // (a trigger is used up)
             st.state = taken->to;
             st.time = 0;
         }

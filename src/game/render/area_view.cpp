@@ -81,7 +81,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         sp.fill = objects.fill(ws.object);
         if (objects.sortingOrder(ws.object) != ObjectStates::EXPORTED_ORDER) sp.order = objects.sortingOrder(ws.object);
         const int animator = area.animatorOn(ws.object);
-        if (animator >= 0 && world.animators.sprite(animator) >= 0) sp.sprite = world.animators.sprite(animator);
+        if (animator >= 0 && world.animators.sprite(animator) != Animators::NOT_YET) sp.sprite = world.animators.sprite(animator);
         sp.flags = (sp.flags & ~(uint32_t)plat::FLIP_X) | (objects.flipX(ws.object) ? (uint32_t)plat::FLIP_X : 0u);
         float px, py;
         if (!spriteRect(area, sp, px, py)) continue;
@@ -175,7 +175,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         const uint32_t flip = p == &area.player.body ? facing : 0u;
         SortedSprite sp = placeSprite(area, *p, pl.x, pl.y, time_, flip);
         const int animator = area.player.animator;
-        if (p == &area.player.body && animator >= 0 && world.animators.sprite(animator) >= 0)
+        if (p == &area.player.body && animator >= 0 && world.animators.sprite(animator) != Animators::NOT_YET)
             sp.sprite = world.animators.sprite(animator); // its Animator's state (idle, run, boat)
         items_.push_back({ItemKind::Player, (int)items_.size(), sp});
     }
@@ -306,6 +306,7 @@ void AreaView::drawLayer(const Area& area, const Grid& grid, const TileLayer& L)
 }
 
 bool AreaView::spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const {
+    if (sp.sprite < 0) return false; // (NULL_SPRITE: a clip's null key)
     const SpriteDef& S = area.sprites[sp.sprite];
     // The pivot sits on (x, y). A flipped sprite mirrors around its pivot, like Unity's flipX/flipY.
     const float left = (sp.flags & plat::FLIP_X) ? sp.x - (S.w - S.pivotX) / S.ppu : sp.x - S.pivotX / S.ppu;

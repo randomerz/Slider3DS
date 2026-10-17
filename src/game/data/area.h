@@ -64,9 +64,12 @@ struct Spawn {
 };
 
 // A sprite animation (an AnimationClip's sprite keys): frame i shows from times[i] until the next key.
+// A null sprite (a clip's null key, SpriteRenderer.sprite = null): draws nothing.
+constexpr int NULL_SPRITE = -2;
+
 struct Anim {
     std::string name;
-    std::vector<int> frames;  // Area::sprites indices
+    std::vector<int> frames;  // Area::sprites indices, or NULL_SPRITE
     std::vector<float> times; // seconds, ascending, parallel to frames
     float length = 0;         // clip length (s)
     bool loop = true;
@@ -229,7 +232,8 @@ struct ConditionDef {
     X(KnotCheckParticles, "KnotBox.CheckParticles")                    \
     X(KnotSetToCorrect, "KnotBox.SetToCorrectPositions")              \
     X(ChadJumpStarter, "ChadJump.JumpStarter")                         \
-    X(ChadSetIsOnRock, "VillageChadJump.SetIsOnRock")
+    X(ChadSetIsOnRock, "VillageChadJump.SetIsOnRock")                  \
+    X(CatPickedUp, "CatAbductionController.SetPickedUp")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.
@@ -279,8 +283,9 @@ struct AnimatorStateDef {
 };
 struct AnimatorControllerDef {
     std::string name;
-    std::vector<std::string> params; // bools
+    std::vector<std::string> params; // bools and triggers
     std::vector<uint8_t> paramDefaults;
+    std::vector<uint8_t> paramTriggers; // per param: a trigger (the transition it fires resets it)
     int defaultState = 0;
     std::vector<AnimatorStateDef> states;
     std::vector<AnimatorTransitionDef> anyState;
@@ -616,6 +621,21 @@ struct RuinsSymbolsDef {
 };
 
 // The area's SGrid subclass and the objects its methods act on.
+// CatAbductionController (VillageGrid's): the cat item, its Animator, the bubble that carries it off
+// (CatBubbleController), the sine wave it rides (SinWaveAnimation) and where it lands.
+struct CatAbductionDef {
+    bool present = false;
+    int item = -1;           // catItem: Area::items index
+    int animator = -1;       // catAnimator: Area::animators index (on the item's sprite object)
+    int bubble = -1;         // bubbleSpriteRenderer's object (a world sprite, authored off)
+    int electricity = -1;    // electricitySpriteRenderer's object (likewise)
+    int bubbleAnimator = -1; // bubbleAnimator: Area::animators index (on `bubble`)
+    float sinX = 0, sinY = 0; // catSinWave's world position (its parent never moves)
+    float sinA = 1, sinB = 1, sinC = 0, sinD = 0; // A sin(B t + C) + D
+    float landingX = 0, landingY = 0; // catBeachLandingSpot (world)
+    SampledCurve lerpCurve;
+};
+
 struct AreaGridDef {
     std::string type;          // e.g. "VillageGrid"
     int caveDoorEntrance = -1;  // VillageGrid.Explode shows it
@@ -625,6 +645,7 @@ struct AreaGridDef {
     int slider8Floor = -1;      // slider8FloorTransform: where CheckHole puts it
     int introDolly = -1;        // introCameraDolly: Area::cameraDollies index (OnHouseExit's intro), -1 = none
     int romeo = -1;             // romeoNPC: Area::npcs index (the intro turns him and walks him in), -1 = none
+    CatAbductionDef catAbduction; // after the intro, the cat floats off to the beach
 };
 
 // CameraDolly: a cutscene camera rolling along a Cinemachine path, given as where the camera is over

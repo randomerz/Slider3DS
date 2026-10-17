@@ -1,7 +1,8 @@
-// Runtime state of the Area's Animators (Area::animators: the NPCs' and the player's): Unity's Animator for
-// sprite clips, as far as the exported controllers use it. Each has a current state (playing its
-// clip at the state's speed), bool parameters and the controller's transitions: once a frame the
-// first transition whose conditions hold (and exit time has passed) switches state, instantly.
+// Runtime state of the Area's Animators (Area::animators: the NPCs', the player's, the abducted cat's
+// and its bubble's): Unity's Animator for sprite clips, as far as the exported controllers use it.
+// Each has a current state (playing its clip at the state's speed), bool and trigger parameters and
+// the controller's transitions: once a frame the first transition whose conditions hold (and exit
+// time has passed) switches state, instantly, resetting the triggers it used.
 // Play(state) jumps to a state; switching the controller starts over in the new one's default.
 // An Animator only runs while its object is active; re-enabling one rebinds it (default state and
 // parameters) unless keepAnimatorStateOnDisable. Clips' transform curves move their targets
@@ -37,10 +38,14 @@ public:
     void play(const World& world, int animator, const std::string& state, bool restart = false);
     // Animator.SetBool (no-op if the controller has no such parameter).
     void setBool(const World& world, int animator, const std::string& param, bool value);
+    // Animator.SetTrigger: set until a transition uses it (no-op if the controller has no such parameter).
+    void setTrigger(const World& world, int animator, const std::string& param) { setBool(world, animator, param, true); }
     // Animator.runtimeAnimatorController = Area::animatorControllers[controller].
     void setController(const World& world, int animator, int controller);
 
-    // The sprite (Area::sprites index) the Animator's object shows, -1 = none yet (use the exported one).
+    // The sprite the Animator's object shows: an Area::sprites index, NULL_SPRITE (a null key: nothing),
+    // or NOT_YET (no frame yet: use the exported one).
+    static constexpr int NOT_YET = -1;
     int sprite(int animator) const { return s_[animator].sprite; }
     int controller(int animator) const { return s_[animator].controller; } // Area::animatorControllers index
     // Where AnimatorDef::targets[target] is now (its localPosition).
@@ -57,7 +62,7 @@ private:
         int state = 0;
         float time = 0;           // seconds into the state (times its speed)
         std::vector<uint8_t> params;
-        int sprite = -1;          // last frame shown (a state without a clip keeps it)
+        int sprite = NOT_YET;     // last frame shown (a state without a clip keeps it)
         bool enabled = false;     // its object was active at the last update
         std::vector<float> targetX, targetY; // per AnimatorDef::targets entry: its localPosition now
     };

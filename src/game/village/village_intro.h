@@ -1,8 +1,8 @@
 // The Village's intro (VillageGrid.OnHouseExit + StartVillageCutscene): the first time the player
 // leaves the starting house, the intro camera dolly rolls (game/cutscene/camera_dolly) while Romeo,
 // his message ping hidden, looks right, left and right again, walks (his walk 0) and gets his ping
-// back 5 s in. Its save key (villageIntroCutscene) is set as it starts.
-// Not yet: the dolly's end starting the cat abduction (CatAbductionController).
+// back 5 s in. Its save key (villageIntroCutscene) is set as it starts. The dolly's end starts the
+// cat abduction's countdown (game/village/cat_abduction).
 #pragma once
 
 #include "game/world/wait.h"

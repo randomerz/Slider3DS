@@ -580,6 +580,7 @@ static AnimatorControllerDef readController(const Json& j) {
     for (const Json& p : j["params"].items()) {
         c.params.push_back(p["name"].asString());
         c.paramDefaults.push_back(p["default"].asBool() ? 1 : 0);
+        c.paramTriggers.push_back(p["trigger"].asBool() ? 1 : 0);
     }
     c.defaultState = j["default"].asInt();
     for (const Json& s : j["states"].items()) {
@@ -682,7 +683,8 @@ static bool validate(const Area& a, std::string* error) {
         if (an.frames.empty() || an.frames.size() != an.times.size())
             return fail(error, "anim " + an.name + ": frames/times mismatch");
         for (int f : an.frames)
-            if (!spriteIndexOk(f) || a.sprites[f].ppu != (float)a.ppu) return fail(error, "anim " + an.name + ": bad sprite");
+            if (f != NULL_SPRITE && (!spriteIndexOk(f) || a.sprites[f].ppu != (float)a.ppu))
+                return fail(error, "anim " + an.name + ": bad sprite");
     }
     for (const WorldSprite& ws : a.worldSprites) {
         if (!objectOk(ws.object)) return fail(error, "world sprite: bad object index");
@@ -698,7 +700,7 @@ static bool validate(const Area& a, std::string* error) {
     }
     for (const AnimatorControllerDef& c : a.animatorControllers) {
         const int n = (int)c.states.size(), params = (int)c.params.size();
-        bool ok = c.paramDefaults.size() == c.params.size() && (n == 0 || (c.defaultState >= 0 && c.defaultState < n));
+        bool ok = c.paramDefaults.size() == c.params.size() && c.paramTriggers.size() == c.params.size() && (n == 0 || (c.defaultState >= 0 && c.defaultState < n));
         auto transitionsOk = [&](const std::vector<AnimatorTransitionDef>& ts) {
             for (const AnimatorTransitionDef& t : ts) {
                 if (t.to < 0 || t.to >= n) return false;
@@ -899,6 +901,17 @@ static bool validate(const Area& a, std::string* error) {
     if (a.areaGrid.introDolly < -1 || a.areaGrid.introDolly >= (int)a.cameraDollies.size())
         return fail(error, "area grid: bad introDolly");
     if (a.areaGrid.romeo < -1 || a.areaGrid.romeo >= (int)a.npcs.size()) return fail(error, "area grid: romeo isn't an NPC");
+    if (const CatAbductionDef& ca = a.areaGrid.catAbduction; ca.present) {
+        const bool itemOk = ca.item >= 0 && ca.item < (int)a.items.size() && a.items[ca.item].spriteObject >= 0 &&
+                            a.items[ca.item].colliderSlot >= 0;
+        auto animatorOn = [&](int animator, int object) {
+            return animator >= 0 && animator < (int)a.animators.size() && a.animators[animator].object == object;
+        };
+        if (!itemOk || !animatorOn(ca.animator, a.items[ca.item].spriteObject) || !objectOk(ca.bubble) ||
+            !worldSpriteOn[ca.bubble] || !objectOk(ca.electricity) || !worldSpriteOn[ca.electricity] ||
+            !animatorOn(ca.bubbleAnimator, ca.bubble))
+            return fail(error, "cat abduction: bad item, animator or bubble");
+    }
     for (const ChadJumpDef& c : a.chadJumps) {
         const bool ok = objectOk(c.object) && objectOk(c.renderer) && worldSpriteOn[c.renderer] && c.animator >= 0 &&
                         c.animator < (int)a.animators.size() && c.collider >= 0 && c.collider < (int)a.objectColliders.size() &&
@@ -1001,7 +1014,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& a : doc["anims"].items()) {
         Anim an;
         an.name = a["name"].asString();
-        for (const Json& f : a["frames"].items()) an.frames.push_back(f.asInt());
+        for (const Json& f : a["frames"].items()) an.frames.push_back(f.asInt() == -1 ? NULL_SPRITE : f.asInt());
         for (const Json& t : a["times"].items()) an.times.push_back(t.asFloat());
         an.length = a["length"].asFloat();
         an.loop = a["loop"].asBool(true);
@@ -1093,6 +1106,29 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.areaGrid.slider8Floor = doc["areaGrid"]["slider8Floor"].asInt(-1);
     out.areaGrid.introDolly = doc["areaGrid"]["introDolly"].asInt(-1);
     out.areaGrid.romeo = doc["areaGrid"]["romeo"].asInt(-1);
+    if (const Json& ca = doc["areaGrid"]["catAbduction"]; !ca.isNull()) {
+        CatAbductionDef& d = out.areaGrid.catAbduction;
+        d.present = true;
+        d.item = ca["item"].asInt(-1);
+        auto animator = [&](const Json& j) {
+            out.animators.push_back({j["object"].asInt(-1), j["controller"].asInt(-1), j["keepState"].asBool(), -1, {}, {}});
+            return (int)out.animators.size() - 1;
+        };
+        d.animator = animator(ca["animator"]);
+        d.bubble = ca["bubble"]["sprite"].asInt(-1);
+        d.electricity = ca["bubble"]["electricity"].asInt(-1);
+        d.bubbleAnimator = animator(ca["bubble"]["animator"]);
+        const Json& sin = ca["sinWave"];
+        d.sinX = sin["pos"].at(0).asFloat();
+        d.sinY = sin["pos"].at(1).asFloat();
+        d.sinA = sin["a"].asFloat(1);
+        d.sinB = sin["b"].asFloat(1);
+        d.sinC = sin["c"].asFloat();
+        d.sinD = sin["d"].asFloat();
+        d.landingX = ca["landing"].at(0).asFloat();
+        d.landingY = ca["landing"].at(1).asFloat();
+        d.lerpCurve = readCurve(ca["lerpCurve"]);
+    }
     for (const Json& d : doc["cameraDollies"].items()) {
         CameraDollyDef c;
         c.object = d["object"].asInt(-1);

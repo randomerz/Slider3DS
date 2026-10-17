@@ -1,14 +1,14 @@
 # Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
 start_tile1 885:b23d60f1e5c1bc18
 start_tile1_inactive_shown 1063:d90d466e6ef2343d
-default_house 730:421239170053407f
-all_grid_center 385:6936bb6ebbd001ea
+default_house 730:c721ef558855b0cf
+all_grid_center 385:28293738c3c20f0f
 all_grid_center_animated 385:15ea34503066eaf8
 all_beach 599:03b85d99c19cd9f0
-all_top_left 1081:f7c9df3729365047
-mid_slide 532:b14fd0087542bc1a
-shuffled 820:c88793e7089d87b3
-knot_sparkles 905:a3d612e0e8005e48
-knot_sparkles_fading 905:c4a9a6529cfb21a6
+all_top_left 1081:ae1bc8dd78365699
+mid_slide 532:7d29163da1b1e99e
+shuffled 820:4339248967f5af8c
+knot_sparkles 905:59b7cddbb56df6b9
+knot_sparkles_fading 905:914528ec917e70ff
 ruins_lit_flash 1078:68129ec29f093b11
 ruins_lit 1114:5aee0e204a714dfb

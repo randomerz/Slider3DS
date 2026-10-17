@@ -28,6 +28,7 @@
 #include "game/village/chad_jump.h"
 #include "game/village/final_puzzle.h"
 #include "game/village/ruins_arrow.h"
+#include "game/village/cat_abduction.h"
 #include "game/village/village_intro.h"
 
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
@@ -163,6 +164,7 @@ public:
     village::CatTricks cats;    // Cathy's cats returned (Village)
     village::FinalPuzzle finale; // the fragment in the hole, the shuffle, the final 8-puzzle (Village)
     village::VillageIntro intro; // the first house exit's cutscene (Village)
+    village::CatAbduction abduction; // the cat floating off to the beach after the intro (Village)
     CameraDollies dollies;       // cutscene cameras on a path
     GameState state;
     Player player;

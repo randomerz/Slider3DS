@@ -26,6 +26,7 @@ public:
     void end(World& world);
 
     bool running() const { return dolly_ >= 0; } // (it holds the player: LOCK_DOLLY)
+    int current() const { return dolly_; }        // Area::cameraDollies index, -1 = none
     // Where the camera is while a dolly holds it.
     bool camera(const Area& area, float& x, float& y) const;
     // The skip prompt: shown once a hold started, its bar 0..1.

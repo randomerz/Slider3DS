@@ -59,7 +59,7 @@ public:
     bool rendererEnabled(int object) const { return rendererOn_[object] != 0; }
     // SpriteRenderer.sprite set by a script: an Area::sprites index, NO_SPRITE (null: draws nothing),
     // or -1 = as exported (or animated).
-    static constexpr int NO_SPRITE = -2;
+    static constexpr int NO_SPRITE = NULL_SPRITE;
     void setSprite(int object, int sprite) { sprite_[object] = sprite; }
     int sprite(int object) const { return sprite_[object]; }
     // A solid color over the sprite's shape (FlashWhiteSprite's white material), RGBA; 0 = none.
