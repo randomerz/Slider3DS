@@ -165,6 +165,19 @@ TEST(artifact_ui_auto_move_setting) {
     CHECK(f.ui.selected() == 5 && f.artifact.queueEmpty());
 }
 
+TEST(artifact_ui_auto_move_drag_back_onto_itself) {
+    // A short drag released on its own tile is a tap too (Unity: the click, then ButtonDragEnd's
+    // SelectButton): tile 5's single option auto-moves.
+    Fixture f(true);
+    f.settings.autoMove = true;
+    float x, y;
+    f.ui.slotCenter(villageArea(), 1, 0, x, y);
+    for (int i = 0; i <= 4; i++) f.frame(true, x + (i <= 2 ? i : 4 - i) * 3, y); // out 6 px and back
+    f.frame(false);
+    CHECK(f.ui.selected() == 0);
+    check(f.artifact.gridString(f.grid) == "624_857_1#3", "auto-moved: " + f.artifact.gridString(f.grid));
+}
+
 TEST(artifact_ui_auto_move) {
     // After the final shuffle a tile with a single option moves on tap (forceAutoMoveVillage).
     Fixture f(true); // all but 9 collected: the only empty slot is the middle
