@@ -6,10 +6,11 @@ prefab's color; pixel fonts at those sizes come out as in the game:
   dialogue       NPC dialogue: TinyUnicode (light text) over PixelUnicodeFill (a dark backing behind
                  each letter), 1 em = 1 world unit = 16 px (NPC.prefab: "Dialogue" and "Dialogue BG
                  Font").
-  menu_text      the pause menu's titles and buttons: TinyUnicode, light (a port choice: the
-                 original's PixelTitanZero reads worse on the 3DS; drawn at 3-4x).
-  menu_label     its option labels: TinyUnicode in the labels' gray (UI Slider / Label Toggle Pair
-                 "Label": m_fontColor 0.6).
+  The pause menu's, all TinyUnicode (a port choice: the original's PixelTitanZero / PixelUnicode
+  read worse on the 3DS), drawn at the menu's 2x like its sprites:
+  menu_dark      button labels (Menu Button's "Text": m_fontColor 0.102, on its light face).
+  menu_light     titles and the selected option's label (0.902).
+  menu_label     option labels (UI Slider / Label Toggle Pair "Label": 0.6).
 
 For each <name>:
   assets/sheets/font_<name>.png   the atlas (converted for the 3DS like the exported sheets; .fmt: la8)
@@ -41,7 +42,8 @@ ATLAS_W = 128
 # name: (ppem, (ttf, color) of the letters, (ttf, color) of the backing or None)
 FONTS = {
     "dialogue": (16, ("TinyUnicode.ttf", LIGHT), ("PixelUnicodeFill.ttf", DARK)),
-    "menu_text": (16, ("TinyUnicode.ttf", LIGHT), None),
+    "menu_dark": (16, ("TinyUnicode.ttf", DARK), None),
+    "menu_light": (16, ("TinyUnicode.ttf", LIGHT), None),
     "menu_label": (16, ("TinyUnicode.ttf", GRAY), None),
 }
 

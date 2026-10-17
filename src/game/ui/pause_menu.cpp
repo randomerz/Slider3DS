@@ -8,17 +8,19 @@ using Item = PauseMenu::Item;
 using Kind = PauseMenu::Kind;
 using Page = PauseMenu::Page;
 
-// Screen px, filling the touch screen (the original's PausePanel arrangement at the skin's 2x: a
-// title over a column of buttons 120x20 UI px, here 240x40, 48 apart).
-constexpr int CENTER_X = plat::BOTTOM_W / 2;
-constexpr int TITLE_Y = 36;                              // the title's middle
-constexpr int BUTTON_W = 240, BUTTON_H = 40, PITCH = 48; // rows 8 px apart
-constexpr int FIRST_Y = 88;                              // the first row's middle
-// Option rows (GeneralOptionsPanel's: label at the left, control at the right): as wide as the
-// screen allows, the slider at the right end, the toggle centered under the slider's middle.
-constexpr int ROW_X = 16, ROW_W = plat::BOTTOM_W - 2 * ROW_X;
-constexpr int SLIDER_DX = ROW_W - 4 - MenuSkin::SLIDER_W;
-constexpr int CONTROL_CENTER_DX = SLIDER_DX + MenuSkin::SLIDER_W / 2;
+// The layout, in UI px (MenuSkin's grid: the bottom screen is 160x120 of them): the original's
+// PausePanel arrangement, a title over a column of buttons, sized to fill the touch screen.
+constexpr int S = MenuSkin::UI_SCALE;
+constexpr int UI_W = plat::BOTTOM_W / S;
+constexpr int CENTER_X = UI_W / 2;
+constexpr int TITLE_Y = 20;                              // the title's middle
+constexpr int BUTTON_W = 120, BUTTON_H = 20, PITCH = 24; // rows 4 px apart
+constexpr int FIRST_Y = 46;                              // the first row's middle
+// Option rows (GeneralOptionsPanel's: label at the left, control at the right), the slider at the
+// right end, the toggle centered under the slider's middle.
+constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X;
+constexpr int SLIDER_W = 64, SLIDER_X = ROW_X + ROW_W - SLIDER_W;
+constexpr int CONTROL_CENTER_X = SLIDER_X + SLIDER_W / 2;
 
 // An item: its kind, label, and for an option the setting it shows and changes (a toggle's flag; a
 // slider's value, its setter and how many steps left / right take across it).
@@ -67,33 +69,41 @@ const ItemDef& find(Item item, int& index) {
     return PAGES[0].items[0]; // (every Item is on a page)
 }
 
-PauseMenu::Box boxAt(const ItemDef& def, int index) {
+// An item's box (UI px): a button's, or an option's row.
+PauseMenu::Box uiBox(const ItemDef& def, int index) {
     const int cy = FIRST_Y + index * PITCH;
     if (def.kind == Kind::Button) return {CENTER_X - BUTTON_W / 2, cy - BUTTON_H / 2, BUTTON_W, BUTTON_H};
     return {ROW_X, cy - BUTTON_H / 2, ROW_W, BUTTON_H};
 }
+
+// An option's slider / toggle (UI px); a button's box.
+PauseMenu::Box uiControl(const ItemDef& def, int index) {
+    const PauseMenu::Box row = uiBox(def, index);
+    const int cy = row.y + row.h / 2;
+    switch (def.kind) {
+    case Kind::Slider: return {SLIDER_X, cy - MenuSkin::SLIDER_H / 2, SLIDER_W, MenuSkin::SLIDER_H};
+    case Kind::Toggle:
+        return {CONTROL_CENTER_X - MenuSkin::TOGGLE_SIZE / 2, cy - MenuSkin::TOGGLE_SIZE / 2, MenuSkin::TOGGLE_SIZE,
+                MenuSkin::TOGGLE_SIZE};
+    case Kind::Button: break;
+    }
+    return row;
+}
+
+PauseMenu::Box toScreen(const PauseMenu::Box& b) { return {b.x * S, b.y * S, b.w * S, b.h * S}; }
 
 } // namespace
 
 PauseMenu::Box PauseMenu::itemBox(Item item) {
     int index;
     const ItemDef& def = find(item, index);
-    return boxAt(def, index);
+    return toScreen(uiBox(def, index));
 }
 
 PauseMenu::Box PauseMenu::controlBox(Item item) {
     int index;
     const ItemDef& def = find(item, index);
-    const Box row = boxAt(def, index);
-    const int cy = row.y + row.h / 2;
-    switch (def.kind) {
-    case Kind::Slider: return {ROW_X + SLIDER_DX, cy - MenuSkin::SLIDER_H / 2, MenuSkin::SLIDER_W, MenuSkin::SLIDER_H};
-    case Kind::Toggle:
-        return {ROW_X + CONTROL_CENTER_DX - MenuSkin::TOGGLE_SIZE / 2, cy - MenuSkin::TOGGLE_SIZE / 2,
-                MenuSkin::TOGGLE_SIZE, MenuSkin::TOGGLE_SIZE};
-    case Kind::Button: break;
-    }
-    return row;
+    return toScreen(uiControl(def, index));
 }
 
 PauseMenu::Item PauseMenu::cursor() const { return pageDef(page_).items[cursor_].item; }
@@ -118,7 +128,7 @@ void PauseMenu::go(Page page, Item select) {
 int PauseMenu::itemAt(int px, int py) const {
     const PageDef& p = pageDef(page_);
     for (int i = 0; i < p.count; i++)
-        if (boxAt(p.items[i], i).contains(px, py)) return i;
+        if (toScreen(uiBox(p.items[i], i)).contains(px, py)) return i;
     return -1;
 }
 
@@ -189,14 +199,15 @@ PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
                 if (def.item != QUIT) confirmQuit_ = false;
                 if (def.kind == Kind::Slider) {
                     // Only the slider drags, though a finger may land a little above or below it.
-                    const Box s = controlBox(def.item), row = boxAt(def, pressed_);
+                    const Box s = controlBox(def.item), row = itemBox(def.item);
                     sliding_ = Box{s.x, row.y, s.w, row.h}.contains(in.touchX, in.touchY);
                 }
             }
         }
         if (sliding_) {
             const ItemDef& def = p.items[pressed_];
-            (settings.*def.setValue)(MenuSkin::sliderValueAt((float)in.touchX, (float)controlBox(def.item).x));
+            const Box s = uiControl(def, pressed_);
+            (settings.*def.setValue)(MenuSkin::sliderValueAt((float)in.touchX, s.x, s.w));
         }
     } else if (wasTouching_) {
         if (pressed_ >= 0 && !sliding_ && itemAt(lastX_, lastY_) == pressed_) action = activate(p.items[pressed_].item, settings);
@@ -212,29 +223,24 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
     skin.drawTitle(p.title, CENTER_X, TITLE_Y);
     for (int i = 0; i < p.count; i++) {
         const ItemDef& def = p.items[i];
-        const Box b = boxAt(def, i);
+        const Box b = uiBox(def, i), c = uiControl(def, i);
         const bool selected = i == cursor_;
-        const float cy = b.y + b.h / 2.0f;
         switch (def.kind) {
         case Kind::Button: {
             const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
             const char* label = def.item == QUIT && confirmQuit_ ? "Really quit?" : def.label;
-            skin.drawButton((float)b.x, (float)b.y, (float)b.w, (float)b.h, label,
+            skin.drawButton(b.x, b.y, b.w, b.h, label,
                             held ? MenuSkin::Button::Pressed : selected ? MenuSkin::Button::Selected : MenuSkin::Button::Normal);
             break;
         }
-        case Kind::Slider: {
-            skin.drawLabel(def.label, (float)b.x, cy);
-            const Box s = controlBox(def.item);
-            skin.drawSlider((float)s.x, (float)s.y, settings.*def.value, selected);
+        case Kind::Slider:
+            skin.drawLabel(def.label, b.x, b.y + b.h / 2, selected);
+            skin.drawSlider(c.x, c.y, c.w, settings.*def.value, selected);
             break;
-        }
-        case Kind::Toggle: {
-            skin.drawLabel(def.label, (float)b.x, cy);
-            const Box t = controlBox(def.item);
-            skin.drawToggle((float)t.x, (float)t.y, settings.*def.flag, selected);
+        case Kind::Toggle:
+            skin.drawLabel(def.label, b.x, b.y + b.h / 2, selected);
+            skin.drawToggle(c.x, c.y, settings.*def.flag, selected);
             break;
-        }
         }
     }
 }

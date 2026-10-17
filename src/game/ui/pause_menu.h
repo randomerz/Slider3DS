@@ -3,7 +3,7 @@
 //   Paused:  Resume / Options / Quit (UICanvas PausePanel's; its web guide button is left out)
 //   Options: Screen Shake (slider) / Auto Move (toggle; a port feature) / Back (GeneralOptionsPanel's
 //            widgets, laid out like the Paused page rather than its side-nav panel's list)
-// Laid out for the touch screen: bigger than the original's (MenuSkin's scales), filling it.
+// Laid out for the touch screen on MenuSkin's 2x grid, filling it (bigger than the original's).
 // D-pad up / down: pick an item (it shows selected)   A: use it   left / right: move the slider or
 // flip the toggle   B: back a page (on Paused: resume)   START: resume
 // Stylus: tap a button or the toggle's row (a button shows pressed while held), drag the slider
@@ -27,7 +27,7 @@ public:
     enum Item { RESUME, OPTIONS, QUIT, SCREEN_SHAKE, AUTO_MOVE, BACK };
     enum class Kind { Button, Slider, Toggle };
 
-    // A widget's box on the bottom screen, px.
+    // A widget's box on the bottom screen, px (internally: UI px).
     struct Box {
         int x, y, w, h;
         bool contains(int px, int py) const { return px >= x && px < x + w && py >= y && py < y + h; }

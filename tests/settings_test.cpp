@@ -163,7 +163,7 @@ TEST(pause_menu_stylus) {
     menu.update(press(plat::BTN_DOWN), s);
     CHECK(tap(menu, s, row.x + 4, row.y + row.h / 2) == Menu::Action::None);
     CHECK(near(s.screenShake, 0.3f) && menu.cursor() == Menu::SCREEN_SHAKE);
-    CHECK(tap(menu, s, row.x + row.w - 2, row.y + row.h / 2) == Menu::Action::None && near(s.screenShake, 0.3f));
+    CHECK(tap(menu, s, slider.x - 4, row.y + row.h / 2) == Menu::Action::None && near(s.screenShake, 0.3f));
     menu.update(touch(slider.x + slider.w - 1, row.y), s);
     menu.update(plat::Input{}, s);
     CHECK(s.screenShake == 1.0f);

@@ -1,9 +1,11 @@
 """Cuts the original's menu UI sprites into a sheet for the port's pause menu (game/ui/menu_skin).
 
 The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
-  MainMenu Button Variant (Image sliced, Button sprite swap): normal MainMenuButton20_1, pressed /
-      selected _3; 9-sliced, 3 px borders. (Its highlighted _4 is mouse hover, disabled _2 unused:
-      not cut.)
+  Menu Button (the main menu's; Image sliced, Button sprite swap): normal Button24_0 (a light face
+      over a 2 px shaded bottom edge), pressed _1 (the face 1 px lower), selected _2 (outlined);
+      9-sliced, 4 px borders. (The pause panel's MainMenu Button Variant overrides these with
+      bracket outlines, MainMenuButton20; the port keeps the filled ones: they suit the 3DS's
+      bigger layout.)
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
   UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
@@ -26,8 +28,9 @@ ASSETS = sys.argv[1] if len(sys.argv) > 1 else os.path.join(REPO, "..", "Slider"
 
 # port name: (texture under Assets, Unity sprite name)
 SPRITES = {
-    "button": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_1"),
-    "buttonSelected": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_3"),
+    "button": ("Sprites/UI/Button24.png", "Button24_0"),
+    "buttonPressed": ("Sprites/UI/Button24.png", "Button24_1"),
+    "buttonSelected": ("Sprites/UI/Button24.png", "Button24_2"),
     "toggle": ("Sprites/UI/ui_toggle.png", "ui_toggle_0"),
     "toggleSelected": ("Sprites/UI/ui_toggle.png", "ui_toggle_0_selected"),
     "toggleCheck": ("Sprites/UI/ui_toggle.png", "ui_toggle_1"),
