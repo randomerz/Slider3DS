@@ -7,12 +7,7 @@
 
 bool DevControls::update(const plat::Input& in, World& world) {
     const Area& area = world.area;
-    if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_SELECT)) {
-        world.settings.autoMove = !world.settings.autoMove; // (until an options menu)
-        printf("Auto move: %s\n", world.settings.autoMove ? "on" : "off");
-    } else if (in.pressed & plat::BTN_SELECT) {
-        showPerf = !showPerf;
-    }
+    if (in.pressed & plat::BTN_SELECT) showPerf = !showPerf;
     if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_X)) {
         // Chad: Sliders 2-8 collected (9's slot, in the middle, empty), next to him. Talk to him to
         // make him jump; then slide another tile to tip him, or his tile 8 to make him fall.

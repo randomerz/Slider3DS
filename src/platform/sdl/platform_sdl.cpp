@@ -12,6 +12,7 @@
 #include <SDL_image.h>
 
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 
 #ifndef ASSET_ROOT
@@ -128,6 +129,50 @@ Input pollInput() {
         }
     }
     return in;
+}
+
+namespace {
+
+// SDL's pref path for the player's files (created on first use), "" if unavailable.
+const std::string& userDir() {
+    static const std::string dir = [] {
+        char* p = SDL_GetPrefPath("boomo", "Slider3DS");
+        std::string s = p ? p : "";
+        SDL_free(p);
+        return s;
+    }();
+    return dir;
+}
+
+bool readWhole(const std::string& path, std::string& out) {
+    size_t size = 0;
+    void* data = SDL_LoadFile(path.c_str(), &size);
+    if (!data) return false;
+    out.assign(static_cast<const char*>(data), size);
+    SDL_free(data);
+    return true;
+}
+
+} // namespace
+
+bool readUserFile(const char* name, std::string& out) {
+    if (userDir().empty()) return false;
+    const std::string path = userDir() + name;
+    return readWhole(path, out) || readWhole(path + ".tmp", out); // (a write cut off before its rename)
+}
+
+bool writeUserFile(const char* name, const std::string& data) {
+    if (userDir().empty()) return false;
+    const std::string path = userDir() + name, tmp = path + ".tmp";
+    FILE* f = fopen(tmp.c_str(), "wb");
+    if (!f) return false;
+    const bool written = fwrite(data.data(), 1, data.size(), f) == data.size();
+    if (fclose(f) != 0 || !written) {
+        remove(tmp.c_str());
+        return false;
+    }
+    remove(path.c_str()); // (Windows' rename won't replace a file)
+    return rename(tmp.c_str(), path.c_str()) == 0;
 }
 
 bool readFile(const char* path, std::string& out) {

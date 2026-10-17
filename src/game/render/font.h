@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace plat { struct Texture; }
@@ -42,8 +43,12 @@ public:
     void unload();
 
     const FontDef& def() const { return def_; }
-    // Draws `r` with its top-left at screen pixel (x, y), rounded.
-    void draw(const GlyphRect& r, float x, float y) const;
+    // Draws `r` with its top-left at screen pixel (x, y), rounded, `scale`x.
+    void draw(const GlyphRect& r, float x, float y, int scale = 1) const;
+    // One line of plain text (no markup or wrapping) at `scale`x: its pen starts at x, its baseline
+    // at y; backings under letters, like the dialogue. textWidth = its advance, px.
+    void drawText(std::string_view text, float x, float baseline, int scale = 1) const;
+    int textWidth(std::string_view text, int scale = 1) const;
 
 private:
     FontDef def_;

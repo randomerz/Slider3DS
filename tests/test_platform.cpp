@@ -16,11 +16,13 @@ struct Texture {
 
 namespace {
 std::map<std::string, std::string> g_files;
+std::map<std::string, std::string> g_userFiles;
 std::vector<DrawCall> g_draws;
 } // namespace
 
 void testSetFile(const std::string& path, const std::string& contents) { g_files[path] = contents; }
 void testClearFiles() { g_files.clear(); }
+std::map<std::string, std::string>& testUserFiles() { return g_userFiles; }
 const std::vector<DrawCall>& testDrawCalls() { return g_draws; }
 void testResetDrawCalls() { g_draws.clear(); }
 
@@ -46,6 +48,17 @@ bool readFile(const char* path, std::string& out) {
     size_t got = fread(&out[0], 1, out.size(), f);
     fclose(f);
     return got == out.size();
+}
+
+bool readUserFile(const char* name, std::string& out) {
+    auto it = g_userFiles.find(name);
+    if (it == g_userFiles.end()) return false;
+    out = it->second;
+    return true;
+}
+bool writeUserFile(const char* name, const std::string& data) {
+    g_userFiles[name] = data;
+    return true;
 }
 
 Texture* loadSheet(const char* name) { return new Texture{name}; }

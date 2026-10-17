@@ -2,12 +2,15 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <string>
 #include <vector>
 
 // In-memory files that readFile() serves before the asset root (for synthetic fixtures).
 void testSetFile(const std::string& path, const std::string& contents);
 void testClearFiles();
+// The player's files (readUserFile / writeUserFile), in memory, by name.
+std::map<std::string, std::string>& testUserFiles();
 
 // Every drawSprite/drawRect/drawLine since the last reset, in call order.
 struct DrawCall {

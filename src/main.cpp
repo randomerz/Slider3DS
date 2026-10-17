@@ -1,21 +1,25 @@
 // Village walkabout: the player walks the exported Village with the original's collision; the
 // camera follows. The new-game start is the Default spawn inside tile 1's house.
-//   D-pad / circle pad: walk          A: action (pick up / drop items, doors, NPC dialogue)  START: quit
+//   D-pad / circle pad: walk          A: action (pick up / drop items, doors, NPC dialogue)
+//   START: pause (the options menu, game/ui/pause_menu: auto move, screen shake, quit)
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) start outdoors on tile 1 and add:
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
 //   L + D-pad: slide the tile you stand on          SELECT: toggle the perf overlay
 //   L + B: tiles 2-4 only, next to Kevin's unsolved knot (Slider 5)
 //   L + Y: tiles 2-6 only, the ruins one slide from assembled (slide 2 left; Slider 7)
-// Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there). Dev builds
-// add a perf overlay (game/dev/dev_overlay).
+// Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there), or the pause
+// menu. Dev builds add a perf overlay (game/dev/dev_overlay). The player's Settings live here,
+// loaded at start and saved when the pause menu closes with them changed.
 #include <cstdio>
 #include <string>
 
 #include "dev_controls.h"
 #include "game/data/area.h"
 #include "game/render/area_view.h"
+#include "game/save/settings.h"
 #include "game/ui/artifact_ui.h"
+#include "game/ui/pause_menu.h"
 #include "game/dev/dev_overlay.h"
 #include "game/render/font.h"
 #include "game/render/sprite_sheets.h"
@@ -71,7 +75,9 @@ int main(int, char**) {
         return 1;
     }
 
-    World world(area);
+    Settings settings = Settings::load();
+    Settings savedSettings = settings;
+    World world(area, settings);
     AreaView view;
     view.setFont(&font);
     ArtifactUI artifactUI;
@@ -79,25 +85,37 @@ int main(int, char**) {
     DevControls dev;
     dev.showPerf = DEV;
     DevOverlay overlay;
+    PauseMenu pauseMenu;
     placeAtStart(world, dev);
     int frame = 0;
 
     while (plat::mainLoop()) {
         const double updateStart = plat::nowMs();
         const plat::Input in = plat::pollInput();
-        if (in.pressed & plat::BTN_START) break;
-
-        const bool devSliding = DEV && dev.update(in, world);
-        artifactUI.update(in, world, FRAME_DT);
-        float moveX = 0, moveY = 0;
-        if (!devSliding) {
-            if (in.held & plat::BTN_LEFT) moveX -= 1;
-            if (in.held & plat::BTN_RIGHT) moveX += 1;
-            if (in.held & plat::BTN_UP) moveY += 1;
-            if (in.held & plat::BTN_DOWN) moveY -= 1;
+        const bool paused = pauseMenu.isOpen();
+        if (paused) {
+            const PauseMenu::Action action = pauseMenu.update(in, settings);
+            if (action == PauseMenu::Action::Quit) break;
+            if (action == PauseMenu::Action::Resume && settings != savedSettings) {
+                if (!settings.save()) printf("Couldn't save the settings\n");
+                savedSettings = settings; // (no retry each resume)
+            }
+        } else if (in.pressed & plat::BTN_START) {
+            pauseMenu.open();
+            artifactUI.releaseStylus();
+        } else {
+            const bool devSliding = DEV && dev.update(in, world);
+            artifactUI.update(in, world, FRAME_DT);
+            float moveX = 0, moveY = 0;
+            if (!devSliding) {
+                if (in.held & plat::BTN_LEFT) moveX -= 1;
+                if (in.held & plat::BTN_RIGHT) moveX += 1;
+                if (in.held & plat::BTN_UP) moveY += 1;
+                if (in.held & plat::BTN_DOWN) moveY -= 1;
+            }
+            if (in.pressed & plat::BTN_A) world.action();
+            world.update(FRAME_DT, moveX, moveY, DEV && dev.noclip);
         }
-        if (in.pressed & plat::BTN_A) world.action();
-        world.update(FRAME_DT, moveX, moveY, DEV && dev.noclip);
         const float updateMs = (float)(plat::nowMs() - updateStart);
 
         plat::beginFrame();
@@ -111,15 +129,17 @@ int main(int, char**) {
             plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(world.effects.fade * 255)));
         if (const float white = world.effects.whiteAlpha(area); white > 0) // FlashWhite (UIEffects' white panel)
             plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0xff, 0xff, 0xff, (uint8_t)(white * 255)));
+        if (pauseMenu.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
 
         plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));
-        artifactUI.draw(world, sheets);
+        if (pauseMenu.isOpen()) pauseMenu.draw(settings, font);
+        else artifactUI.draw(world, sheets);
         if (DEV) {
             overlay.record(plat::lastFrameStats(), updateMs, view.lastSpriteCount());
             if (dev.showPerf) overlay.draw();
         }
         plat::endFrame();
-        frame++;
+        if (!paused) frame++; // (animations stop while paused)
     }
 
     font.unload();

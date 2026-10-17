@@ -39,7 +39,7 @@ void World::dropLanded(DropDone done, int arg) {
     }
 }
 
-World::World(const Area& a) : area(a) {
+World::World(const Area& a, const Settings& s) : area(a), settings(s) {
     state.newProfile("Cat"); // (until a new-game screen names the profile)
     effects.reset();
     grid.init(area);

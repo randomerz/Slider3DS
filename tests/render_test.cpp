@@ -18,6 +18,7 @@
 
 #include "game/render/area_view.h"
 #include "game/ui/artifact_ui.h"
+#include "game/ui/pause_menu.h"
 #include "game/village/knot_box.h"
 #include "game/grid/artifact.h"
 #include "game/grid/grid.h"
@@ -410,6 +411,29 @@ TEST(render_action_indicator_while_an_interaction_is_offered) {
     standOnTrigger(world, area.findObject("Map/Village 8Puzzle/STile (1)/All Tile Maps/House Tile Maps/Decorations/HouseTPAction"));
     check(!world.interactables.empty(), "on tile 1's house exit: it's on offer");
     check(indicatorDrawn(world), "the indicator shows");
+}
+
+TEST(render_pause_menu_goldens) {
+    Font font;
+    std::string error;
+    check(font.load("fonts/dialogue.json", &error), "font loads " + error);
+    GoldenSet goldens("menu.txt");
+    PauseMenu menu;
+    Settings s;
+    menu.open();
+    testResetDrawCalls();
+    menu.draw(s, font);
+    goldens.compare("pause_menu_open", 20);
+    plat::Input down;
+    down.pressed = plat::BTN_UP; // to Quit, asking again
+    menu.update(down, s);
+    down.pressed = plat::BTN_A;
+    menu.update(down, s);
+    s.autoMove = true;
+    s.screenShake = 1;
+    testResetDrawCalls();
+    menu.draw(s, font);
+    goldens.compare("pause_menu_quit_confirm", 20);
 }
 
 TEST(render_npc_dialogue_goldens) {

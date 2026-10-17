@@ -55,6 +55,24 @@ void Font::unload() {
     texture_ = nullptr;
 }
 
-void Font::draw(const GlyphRect& r, float x, float y) const {
-    if (r.w > 0) plat::drawSprite(texture_, r.x, r.y, r.w, r.h, std::round(x), std::round(y));
+void Font::draw(const GlyphRect& r, float x, float y, int scale) const {
+    if (r.w > 0) plat::drawSprite(texture_, r.x, r.y, r.w, r.h, std::round(x), std::round(y), 0, scale);
+}
+
+void Font::drawText(std::string_view text, float x, float baseline, int scale) const {
+    for (bool letters : {false, true}) {
+        float pen = x;
+        for (char c : text) {
+            const Glyph& g = def_.glyph(c);
+            const GlyphRect& r = letters ? g.text : g.fill;
+            draw(r, pen + r.ox * scale, baseline + r.oy * scale, scale);
+            pen += g.advance * scale;
+        }
+    }
+}
+
+int Font::textWidth(std::string_view text, int scale) const {
+    int w = 0;
+    for (char c : text) w += def_.glyph(c).advance;
+    return w * scale;
 }

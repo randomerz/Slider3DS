@@ -5,6 +5,8 @@
 #include <3ds.h>
 #include <citro2d.h>
 
+#include <sys/stat.h>
+
 #include <cmath>
 #include <cstdio>
 
@@ -25,6 +27,19 @@ C3D_RenderTarget* g_bottom = nullptr;
 
 u32 toC2D(uint32_t c) {
     return C2D_Color32(c >> 24, (c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff);
+}
+
+constexpr const char* USER_DIR = "sdmc:/3ds/slider3ds/";
+
+bool readWhole(const std::string& path, std::string& out) {
+    FILE* f = fopen(path.c_str(), "rb");
+    if (!f) return false;
+    fseek(f, 0, SEEK_END);
+    out.resize(ftell(f));
+    fseek(f, 0, SEEK_SET);
+    size_t got = fread(&out[0], 1, out.size(), f);
+    fclose(f);
+    return got == out.size();
 }
 
 uint32_t mapKeys(u32 k) {
@@ -88,16 +103,26 @@ Input pollInput() {
     return in;
 }
 
-bool readFile(const char* path, std::string& out) {
-    std::string full = std::string("romfs:/") + path;
-    FILE* f = fopen(full.c_str(), "rb");
+bool readFile(const char* path, std::string& out) { return readWhole(std::string("romfs:/") + path, out); }
+
+bool readUserFile(const char* name, std::string& out) {
+    const std::string path = std::string(USER_DIR) + name;
+    return readWhole(path, out) || readWhole(path + ".tmp", out); // (a write cut off before its rename)
+}
+
+bool writeUserFile(const char* name, const std::string& data) {
+    mkdir("sdmc:/3ds", 0777); // (usually there already)
+    mkdir("sdmc:/3ds/slider3ds", 0777);
+    const std::string path = std::string(USER_DIR) + name, tmp = path + ".tmp";
+    FILE* f = fopen(tmp.c_str(), "wb");
     if (!f) return false;
-    fseek(f, 0, SEEK_END);
-    out.resize(ftell(f));
-    fseek(f, 0, SEEK_SET);
-    size_t got = fread(&out[0], 1, out.size(), f);
-    fclose(f);
-    return got == out.size();
+    const bool written = fwrite(data.data(), 1, data.size(), f) == data.size();
+    if (fclose(f) != 0 || !written) {
+        remove(tmp.c_str());
+        return false;
+    }
+    remove(path.c_str()); // (FAT's rename won't replace a file)
+    return rename(tmp.c_str(), path.c_str()) == 0;
 }
 
 Texture* loadSheet(const char* name) {

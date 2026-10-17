@@ -11,7 +11,8 @@ constexpr float DT = 1.0f / 60.0f;
 
 // A world with no player on a tile (stile 0), so no move keeps walls for it.
 struct Fixture {
-    World world{villageArea()};
+    Settings settings;
+    World world{villageArea(), settings};
     Grid& grid = world.grid;
     Artifact& artifact = world.artifact;
     ArtifactUI ui;
@@ -88,6 +89,19 @@ TEST(artifact_ui_drag) {
     CHECK(f.artifact.queueEmpty() && f.grid.gridString() == "1##_###_###" && f.ui.selected() == 0);
 }
 
+TEST(artifact_ui_release_stylus_drops_a_drag) {
+    // The pause menu opening mid-drag: the release that follows doesn't drop the tile.
+    Fixture f;
+    float x0, y0, x1, y1;
+    f.ui.slotCenter(villageArea(), 0, 0, x0, y0);
+    f.ui.slotCenter(villageArea(), 0, 2, x1, y1);
+    for (int i = 0; i <= 10; i++) f.frame(true, x0 + (x1 - x0) * i / 10, y0 + (y1 - y0) * i / 10);
+    CHECK(f.ui.selected() == 1);
+    f.ui.releaseStylus();
+    f.frame(false);
+    CHECK(f.artifact.queueEmpty() && f.ui.selected() == 1);
+}
+
 TEST(artifact_ui_drag_back_onto_itself_selects) {
     Fixture f;
     float x, y;
@@ -128,7 +142,7 @@ TEST(artifact_ui_set_grid_drops_the_selection) {
 TEST(artifact_ui_auto_move_setting) {
     // Settings.AutoMove does the same at any time: tile 5's single option, on a tap.
     Fixture f(true);
-    f.world.settings.autoMove = true;
+    f.settings.autoMove = true;
     f.tap(1, 0);
     CHECK(f.ui.selected() == 0);
     check(f.artifact.gridString(f.grid) == "624_857_1#3", "auto-moved: " + f.artifact.gridString(f.grid));
@@ -136,7 +150,7 @@ TEST(artifact_ui_auto_move_setting) {
     f.drag(1, 1, 1, 0); // a drag still picks its own target (here: back down)
     f.settle();
     check(f.artifact.gridString(f.grid) == "624_8#7_153", "dragged back: " + f.artifact.gridString(f.grid));
-    f.world.settings.autoMove = false;
+    f.settings.autoMove = false;
     f.tap(1, 0); // off: a tap only selects
     CHECK(f.ui.selected() == 5 && f.artifact.queueEmpty());
 }

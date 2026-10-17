@@ -72,6 +72,12 @@ Input pollInput();
 // Reads a data file relative to the asset root (PC: <repo>/assets/, 3DS: romfs:/).
 bool readFile(const char* path, std::string& out);
 
+// The player's own files (settings; later the save profile), by plain name. PC: SDL's pref path
+// (%APPDATA%/boomo/Slider3DS/), 3DS: sdmc:/3ds/slider3ds/. writeUserFile replaces the whole file
+// through a temporary, so a failed write keeps the old one.
+bool readUserFile(const char* name, std::string& out);
+bool writeUserFile(const char* name, const std::string& data);
+
 // Loads sprite sheet `name` (PC: assets/sheets/<name>.png, 3DS: romfs:/gfx/<name>.t3x).
 // Returns nullptr on failure.
 Texture* loadSheet(const char* name);

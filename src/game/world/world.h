@@ -18,7 +18,7 @@
 #include "game/items/items.h"
 #include "game/npc/npcs.h"
 #include "game/world/object_states.h"
-#include "game/world/settings.h"
+#include "game/save/settings.h"
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
 #include "game/village/knot_box.h"
@@ -50,13 +50,16 @@ struct Interactable {
     bool operator==(const Interactable& o) const { return kind == o.kind && index == o.index; }
 };
 
+inline const Settings DEFAULT_SETTINGS{};
+
 class World {
 public:
     static constexpr float MOVE_SPEED = 5.0f; // world units per second (Player.moveSpeed)
 
     // A new game in `area`: tiles as authored, no flags or collectibles, Starts run. The player is
-    // at the origin until placed.
-    explicit World(const Area& area);
+    // at the origin until placed. `settings` (the player's, owned by main) must outlive the World;
+    // the default is SettingsManager's defaults.
+    explicit World(const Area& area, const Settings& settings = DEFAULT_SETTINGS);
 
     // Scene objects as a fresh load with the current state would have them (e.g. after changing
     // the state in a dev control): authored, uncollected tiles' objects off (STile.Awake), then
@@ -124,7 +127,7 @@ public:
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
-    Settings settings; // the player's preferences (not the save profile)
+    const Settings& settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
 

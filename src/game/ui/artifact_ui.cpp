@@ -14,8 +14,7 @@ void ArtifactUI::init(const Area& area, const Artifact& artifact) {
     options_.clear();
     artifactResets_ = artifact.resets();
     autoMoveFlag_ = "forceAutoMove" + area.name;
-    wasTouching_ = dragging_ = false;
-    downSlotX_ = downSlotY_ = hoverX_ = hoverY_ = -1;
+    releaseStylus();
     int maxId = 0;
     for (const STileDef& s : area.stiles) maxId = std::max(maxId, s.islandId);
     lastSlot_.assign(maxId + 1, {-1, -1});
@@ -45,6 +44,11 @@ bool ArtifactUI::slotAtPixel(const Area& area, const Artifact& artifact, int px,
 
 bool ArtifactUI::isOption(int x, int y) const {
     return std::find(options_.begin(), options_.end(), std::make_pair(x, y)) != options_.end();
+}
+
+void ArtifactUI::releaseStylus() {
+    wasTouching_ = dragging_ = false;
+    downSlotX_ = downSlotY_ = hoverX_ = hoverY_ = -1;
 }
 
 void ArtifactUI::deselect() {
