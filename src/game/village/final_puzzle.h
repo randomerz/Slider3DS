@@ -50,13 +50,14 @@ public:
     void coroutines(World& world, float dt);
 
     bool placingTile9() const { return placing_.active; } // PlaceTile9 is waiting for the move queue
+    // UpdateButtonCompletionsHelper (+ CheckFinalPlacements) now, e.g. after a dev setGrid.
+    void updateCompletions(World& world);
 
 private:
     void flashSymbol(World& world, int symbol);   // RuinsSymbols.FlashSymbol
     void setSymbols(World& world, bool shown);     // RuinsSymbols.SetSprites
     void stepShuffle(World& world, float dt);      // ShuffleBuildUp: the steps due now
     void doShuffle(World& world);
-    void updateCompletions(World& world);          // UpdateButtonCompletionsHelper (+ CheckFinalPlacements)
     void giveFinalSlider(World& world);            // GivePlayerTheCollectible("Slider 9")
     void rememberButtons(const World& world);
 

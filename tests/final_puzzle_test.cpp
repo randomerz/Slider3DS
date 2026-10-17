@@ -232,6 +232,10 @@ TEST(final_completions_and_slider_9) {
     CHECK(!world.artifactButtons.complete(9));
     frames(world, 1);
     CHECK(world.artifactButtons.complete(9));
+    // Movement stays off until the scene loads again (UIArtifact.Init).
+    CHECK(!world.artifact.canAddMoves);
+    world.reloadObjects();
+    CHECK(world.artifact.canAddMoves);
 }
 
 TEST(final_start_reads_the_save) {

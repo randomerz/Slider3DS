@@ -242,6 +242,21 @@ TEST(render_artifact_goldens) {
         goldens.compare("artifact_moving", 11);
     }
     {
+        // A SetGrid during World::update (after the UI's update, before its draw) already hides the
+        // selection: the draw matches an untouched Artifact's.
+        Setup idle(false);
+        idle.render(sheets);
+        const std::string untouched = drawListText(testDrawCalls());
+        Setup s(false);
+        s.touch(true, 0, 0);
+        s.touch(false, 0, 0);
+        s.render(sheets);
+        check(drawListText(testDrawCalls()) != untouched, "the selection shows");
+        check(s.world.setGrid("624_897_153"), "setGrid");
+        s.render(sheets);
+        check(drawListText(testDrawCalls()) == untouched, "no stale selection drawn after a setGrid");
+    }
+    {
         Setup s(true);
         s.touch(true, 1, 0, 6); // drag tile 5 ...
         s.touch(true, 1, 1, 2); // ... hovering over the empty middle

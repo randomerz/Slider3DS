@@ -33,6 +33,7 @@ bool DevControls::update(const plat::Input& in, World& world) {
         // slide from solved (7 right).
         if (world.state.flag(village::VILLAGE_COMPLETION_FLAG)) {
             world.setGrid("624_879_153");
+            world.finale.updateCompletions(world); // (a SetGrid doesn't: show the new layout's)
             printf("Slider 9 setup: slide 7 right to finish; grid %s\n", world.artifact.gridString(world.grid).c_str());
         } else {
             collected = true;
@@ -66,7 +67,7 @@ bool DevControls::update(const plat::Input& in, World& world) {
             world.setTileActive(id, id <= 6);
             world.state.setCollectible("Slider " + std::to_string(id), "Village", id <= 6);
         }
-        world.artifact.setGrid(world.grid, "314_692_578");
+        world.setGrid("314_692_578");
         world.reloadObjects();
         if (!area.ruinsArrows.empty()) {
             float x, y;
