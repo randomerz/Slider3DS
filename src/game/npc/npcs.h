@@ -12,7 +12,7 @@
 // played by the same three moments: animationOnEnter, animationOnStart, animationOnLeave.
 // Hiding an NPC stops its clocks (Unity stops a disabled object's coroutines).
 // Conditionals are re-checked only when the game state or the grid changed.
-// Not yet: walks, cutscene state.
+// Walks: game/npc/npc_walks. Not yet: cutscene state.
 #pragma once
 
 #include <cstdint>
@@ -36,6 +36,8 @@ public:
     void triggerExit(World& world, int npc);  // NPC.OnDialogueTriggerExit
     void interact(World& world, int npc);     // the action button while it's on offer
     void typeCurrent(World& world, int npc);  // NPC.TypeCurrentDialogue
+    // NPC.Teleport: onto `target` (an object), parented to it; nothing if it's already there.
+    void teleport(World& world, int npc, int target);
     bool showsPrompt(const Area& area, int npc) const; // DisplayInteractionPrompt
 
     // For drawing and tests.

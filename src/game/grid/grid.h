@@ -76,7 +76,9 @@ struct TileState {
 struct Wall { float x0, y0, x1, y1; };
 
 // Something that happened to the grid, for scripts listening to SGrid / SGridAnimator events:
-// Move = SGrid.OnGridMove (a move started; the slots already changed), TileMoveEnd =
+// TileMoveStart = SGridAnimator.OnSTileMoveStart (an active tile starts sliding: one per tile, before
+// the move's Move; the slots not yet changed), Move = SGrid.OnGridMove (a move started; the slots
+// already changed), TileMoveEnd =
 // SGridAnimator.OnSTileMoveEnd (an active tile arrived), TileEnabled = SGrid.OnSTileEnabled (a tile
 // was collected). Events are handed out later in the frame (World::sendGridEvents), by when the
 // grid may have changed again (the Artifact starts its next queued move right after one ends), so
@@ -85,9 +87,9 @@ struct Wall { float x0, y0, x1, y1; };
 // for moves started between frames, right after Artifact::update for the rest), so tile positions
 // and other state are still as Unity's handlers would see them.
 struct GridEvent {
-    enum class Kind : uint8_t { Move, TileMoveEnd, TileEnabled };
+    enum class Kind : uint8_t { TileMoveStart, Move, TileMoveEnd, TileEnabled };
     Kind kind;
-    int islandId = 0;          // TileMoveEnd / TileEnabled: the tile
+    int islandId = 0;          // TileMoveStart / TileMoveEnd / TileEnabled: the tile
     std::vector<int> slots;    // idAt as of the event (y * width + x; Move: after it)
     std::string gridString;    // gridString() as of the event
     std::vector<int> oldSlots; // Move: before it

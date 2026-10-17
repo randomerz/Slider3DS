@@ -16,6 +16,7 @@
 #include "game/world/game_state.h"
 #include "game/grid/grid.h"
 #include "game/items/items.h"
+#include "game/npc/npc_walks.h"
 #include "game/npc/npcs.h"
 #include "game/world/object_states.h"
 #include "game/save/settings.h"
@@ -127,6 +128,7 @@ public:
     Starts starts;
     TriggerTracker triggers;
     Npcs npcs;
+    NpcWalks walks; // NPCs walking their paths
     Items items;
     Animators animators;
     Particles particles;
@@ -142,6 +144,7 @@ public:
     const Settings& settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
+    float deltaTime = 0; // Time.deltaTime: this frame's dt (for code that runs from events)
 
 private:
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.

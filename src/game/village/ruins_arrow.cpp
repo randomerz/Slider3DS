@@ -71,6 +71,7 @@ void RuinsArrows::gridEvents(World& world, const std::vector<GridEvent>& events)
         for (const GridEvent& e : events) {
             if (!world.objects.activeInHierarchy(world.area.ruinsArrows[a].object)) break; // (OnDisable unsubscribed)
             switch (e.kind) {
+            case GridEvent::Kind::TileMoveStart: break;
             case GridEvent::Kind::Move: // UpdateArrowOnStart
                 setArrowActive(world, a, assembled(e.oldGridString) && assembled(e.gridString), e.oldSlots);
                 updateMap(world, a, e.gridString);

@@ -536,3 +536,42 @@ TEST(render_cat_count_golden) {
     view.draw(world);
     goldens.compare("cat_count_1_of_3", 50);
 }
+
+TEST(render_npc_walk_goldens) {
+    // NPCs mid-walk, the camera on them: Chad on his way to the rocks (the Village solved), Romeo
+    // coming down onto tile 1 (his sprite, ping and dialogue trigger follow the NPC).
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    Font font;
+    AreaView view;
+    std::string error;
+    check(sheets.load(area) && font.load("fonts/dialogue.json", &error), "sheets and font load " + error);
+    view.setFont(&font);
+    GoldenSet goldens("walks.txt");
+    auto shoot = [&](World& world, const char* npcName, const char* name) {
+        int npc = -1;
+        for (int i = 0; i < (int)area.npcs.size(); i++)
+            if (area.npcs[i].name == npcName) npc = i;
+        check(npc >= 0 && world.walks.walking(npc), std::string(npcName) + " walking");
+        if (npc < 0) return;
+        float x, y;
+        world.objectPosition(area.npcs[npc].object, x, y);
+        testResetDrawCalls();
+        view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        goldens.compare(name, 50);
+    };
+    {
+        World world = sceneWorld();
+        for (int id = 2; id <= 9; id++) world.setTileActive(id, true);
+        check(world.setGrid("624_897_153"), "solved grid");
+        for (int i = 0; i < 150; i++) world.update(1.0f / 60.0f, 0, 0, false);
+        shoot(world, "Chad", "chad_walking");
+    }
+    {
+        World world = sceneWorld();
+        check(world.setGrid("641_892_753"), "tile 1 top-right");
+        for (int i = 0; i < 40; i++) world.update(1.0f / 60.0f, 0, 0, false);
+        shoot(world, "Romeo", "romeo_walking");
+    }
+}

@@ -177,6 +177,8 @@ struct ConditionDef {
 //   NpcTriggerEnter/Exit    NPC.OnDialogueTriggerEnter / Exit on the target's NPC
 //   NpcTypeCurrent          NPC.TypeCurrentDialogue: (re)types its current line
 //   NpcTeleport             NPC.Teleport(objectArg): the NPC moves onto that object (and is parented to it)
+//   NpcStartWalk            NPC.StartWalkAtIndex(intArg): its current conditional's walk (game/npc/npc_walks)
+//   NpcStartValidWalk       NPC.StartValidWalk: once no tile moves, its current conditional's first walk whose crossings hold
 //   SetFlipX                SpriteRenderer.set_flipX(boolArg) on the target's sprite
 //   AnimSetBoolTrue/False   NPCAnimatorController.SetBoolToTrue/False(stringArg): the target drives an Animator
 //   SetAnimatorController   Animator.set_runtimeAnimatorController(animatorControllers[data]) on the target
@@ -207,6 +209,8 @@ struct ConditionDef {
     X(NpcTriggerExit, "NPC.OnDialogueTriggerExit")                     \
     X(NpcTypeCurrent, "NPC.TypeCurrentDialogue")                       \
     X(NpcTeleport, "NPC.Teleport")                                     \
+    X(NpcStartWalk, "NPC.StartWalkAtIndex")                            \
+    X(NpcStartValidWalk, "NPC.StartValidWalk")                         \
     X(SetFlipX, "SpriteRenderer.set_flipX")                            \
     X(AnimSetBoolTrue, "NPCAnimatorController.SetBoolToTrue")          \
     X(AnimSetBoolFalse, "NPCAnimatorController.SetBoolToFalse")        \
@@ -369,6 +373,25 @@ struct DialogueDef {
     std::vector<CallDef> onStart, onEnd;
 };
 
+// STileCrossing: where a walk passes from STile `from` to `to` (islandIds; 0 = off the grid, whose
+// slot is then fromX / fromY or toX / toY). It holds while to's slot minus from's is one of `dirs`.
+struct NpcCrossingDef {
+    int from = 0, to = 0;
+    int fromX = 0, fromY = 0, toX = 0, toY = 0;
+    std::vector<std::pair<int, int>> dirs;
+};
+
+// NPCWalkData: the NPC walks from point to point of `path` (objects; it's parented to each it
+// reaches). Moving a tile of a crossing still ahead breaks the walk (the NPC stops, or with
+// teleportIfInterrupted jumps to the end); it resumes when a tile arrives and the crossings hold.
+struct NpcWalkDef {
+    std::vector<int> path; // at least one point
+    std::vector<NpcCrossingDef> crossings; // in the order they're crossed
+    bool turnAround = false;               // turnAroundAfterWalking: flipX toggles at the end
+    bool teleportIfInterrupted = false;    // teleportToEndIfInterrupted
+    std::vector<CallDef> onStarted, onFinished, onBroken, onResumed;
+};
+
 // NPCConditionals: when its conditions hold (all, or any with anyOf) it can be the NPC's current
 // one; the highest in the list wins.
 struct NpcCondDef {
@@ -379,6 +402,7 @@ struct NpcCondDef {
     std::string animationOnEnter;               // NPCAnimatorController.Play state, "" = none
     std::vector<DialogueDef> dialogue;          // the dialogue chain
     std::vector<CallDef> onEnter, onExhausted;  // onConditionalEnter, onDialogueChainExhausted
+    std::vector<NpcWalkDef> walks;              // started by NPC.StartWalkAtIndex / StartValidWalk
 };
 
 // Where and how world-space TMP text in the dialogue style shows (an NPC's DialogueDisplay types
@@ -411,7 +435,10 @@ struct NpcEmoteDef {
 struct NpcDef {
     int object = 0;
     std::string name;   // characterName
-    bool facingLeft = false; // spriteDefaultFacingLeft (for walks: not read yet)
+    bool facingLeft = false; // spriteDefaultFacingLeft: walks face the way they go
+    float speed = 0;         // walking speed (units/s)
+    int sprite = -1;         // its SpriteRenderer's object (walks set its flipX), -1 = none
+    bool spriteFlipped = false; // that sprite's flipX as authored
     TextBoxDef text;
     int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
     NpcEmoteDef emote;

@@ -494,6 +494,9 @@ static NpcDef readNpc(const Json& j, Area& out) {
     n.object = j["object"].asInt(-1);
     n.name = j["name"].asString();
     n.facingLeft = j["facingLeft"].asBool();
+    n.speed = j["speed"].asFloat();
+    n.sprite = j["sprite"].asInt(-1);
+    n.spriteFlipped = j["spriteFlipped"].asBool();
     n.text = readTextBox(j["text"]);
     n.pingObject = j["pingObject"].asInt(-1);
     if (j.has("animator")) {
@@ -522,6 +525,28 @@ static NpcDef readNpc(const Json& j, Area& out) {
         d.animationOnEnter = c["animationOnEnter"].asString();
         d.onEnter = readCalls(c["onConditionalEnter"], out);
         d.onExhausted = readCalls(c["onDialogueChainExhausted"], out);
+        for (const Json& w : c["walks"].items()) {
+            NpcWalkDef walk;
+            for (const Json& p : w["path"].items()) walk.path.push_back(p.asInt(-1));
+            for (const Json& x : w["crossings"].items()) {
+                NpcCrossingDef cross;
+                cross.from = x["from"].asInt();
+                cross.to = x["to"].asInt();
+                cross.fromX = x["fromPos"].at(0).asInt();
+                cross.fromY = x["fromPos"].at(1).asInt();
+                cross.toX = x["toPos"].at(0).asInt();
+                cross.toY = x["toPos"].at(1).asInt();
+                for (const Json& dir : x["dirs"].items()) cross.dirs.push_back({dir.at(0).asInt(), dir.at(1).asInt()});
+                walk.crossings.push_back(std::move(cross));
+            }
+            walk.turnAround = w["turnAround"].asBool();
+            walk.teleportIfInterrupted = w["teleportIfInterrupted"].asBool();
+            walk.onStarted = readCalls(w["onStarted"], out);
+            walk.onFinished = readCalls(w["onFinished"], out);
+            walk.onBroken = readCalls(w["onBroken"], out);
+            walk.onResumed = readCalls(w["onResumed"], out);
+            d.walks.push_back(std::move(walk));
+        }
         for (const Json& l : c["dialogue"].items())
             d.dialogue.push_back({l["text"].asString(), l["delay"].asFloat(0.5f), l["waitForAction"].asBool(),
                                   l["manual"].asBool(), l["noRepeatEvents"].asBool(), l["dontInterrupt"].asBool(),
@@ -713,7 +738,7 @@ static bool validate(const Area& a, std::string* error) {
             if ((c.target != -1 && !objectOk(c.target)) || (c.objectArg != -1 && !objectOk(c.objectArg))) return false;
             if ((c.method == M::SetActive || c.method == M::SetFlipX) && c.target == -1) return false;
             if ((c.method == M::NpcTriggerEnter || c.method == M::NpcTriggerExit || c.method == M::NpcTypeCurrent ||
-                 c.method == M::NpcTeleport) &&
+                 c.method == M::NpcTeleport || c.method == M::NpcStartWalk || c.method == M::NpcStartValidWalk) &&
                 (c.target == -1 || !isNpc[c.target]))
                 return false;
             if (c.method == M::NpcTeleport && c.objectArg == -1) return false;
@@ -766,7 +791,8 @@ static bool validate(const Area& a, std::string* error) {
             return fail(error, "collectible " + c.name + ": bad object, sprite or call");
     for (const NpcDef& n : a.npcs) {
         bool ok = objectOk(n.object) && (n.pingObject == -1 || objectOk(n.pingObject)) &&
-                  n.text.minX < n.text.maxX && n.text.minY < n.text.maxY;
+                  n.text.minX < n.text.maxX && n.text.minY < n.text.maxY && (n.sprite == -1 || objectOk(n.sprite)) &&
+                  n.speed >= 0;
         const NpcEmoteDef& e = n.emote;
         if (e.object != -1) {
             ok = ok && objectOk(e.object) && (e.npcSprite == -1 || objectOk(e.npcSprite)) &&
@@ -777,8 +803,15 @@ static bool validate(const Area& a, std::string* error) {
             ok = ok && callsOk(c.onEnter) && callsOk(c.onExhausted) && emoteOk(c.emote);
             for (const DialogueDef& d : c.dialogue)
                 ok = ok && callsOk(d.onStart) && callsOk(d.onEnd) && emoteOk(d.emoteOnStart) && emoteOk(d.emoteOnLeave);
+            for (const NpcWalkDef& w : c.walks) {
+                ok = ok && !w.path.empty() && callsOk(w.onStarted) && callsOk(w.onFinished) && callsOk(w.onBroken) &&
+                     callsOk(w.onResumed);
+                for (int p : w.path) ok = ok && objectOk(p);
+                for (const NpcCrossingDef& x : w.crossings)
+                    ok = ok && (x.from == 0 || a.stile(x.from)) && (x.to == 0 || a.stile(x.to));
+            }
         }
-        if (!ok) return fail(error, "npc " + n.name + ": bad object, ping, emote, text box or call");
+        if (!ok) return fail(error, "npc " + n.name + ": bad object, ping, emote, text box, sprite, walk or call");
     }
     const int colliderSlots = (int)(a.objectColliders.size() + a.triggerColliders.size());
     for (const ItemDef& it : a.items) {

@@ -29,6 +29,7 @@ void World::sendGridEvents() {
     grid.clearEvents(); // (a moved-from vector is valid but unspecified)
     ruins.gridEvents(*this, events);
     chad.gridEvents(*this, events);
+    walks.gridEvents(*this, events);
     runStarts(); // (the arrow may show the buried Slider)
 }
 
@@ -57,6 +58,7 @@ void World::reloadObjects() {
     triggers.reset(area);
     interactables.clear();
     npcs.reset(area);
+    walks.reset(area);
     items.reset(area);
     animators.reset(area);
     particles.reset();
@@ -114,6 +116,7 @@ void World::placeNear(float x, float y) {
 }
 
 void World::update(float dt, float moveX, float moveY, bool noclip) {
+    deltaTime = dt;
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
@@ -160,7 +163,8 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     runStarts();
     npcs.update(*this, dt);
     runStarts();
-    chad.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
+    walks.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
+    chad.coroutines(*this, dt);
     finale.coroutines(*this, dt);
     runStarts(); // (the final Slider may have appeared)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)

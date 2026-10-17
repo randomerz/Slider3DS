@@ -542,7 +542,8 @@ TEST(physics_scripted_walk_is_pinned) {
     // now and then: pick-ups, drops, the raft) hashed frame by frame. It pins the player's movement
     // across physics refactors: the broadphase and CollisionNear must move the player exactly as a
     // test of every shape does. (It caught a touch-only segment counting as a hit before the cull,
-    // which left the raft stuck on the east edge.) An intended movement change re-pins the hash.
+    // which left the raft stuck on the east edge.) An intended movement change re-pins the hash (as
+    // NPC walks did: walking NPCs' colliders move).
     const Area& area = villageArea();
     World world(area, DEFAULT_SETTINGS);
     for (int t = 2; t <= 9; t++) world.setTileActive(t, true);
@@ -565,5 +566,5 @@ TEST(physics_scripted_walk_is_pinned) {
     }
     char hex[17];
     std::snprintf(hex, sizeof hex, "%016llx", h);
-    check(std::string(hex) == "04e31336a4c74580", std::string("walk hash ") + hex);
+    check(std::string(hex) == "7ba099e76c59be07", std::string("walk hash ") + hex);
 }

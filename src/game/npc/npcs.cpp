@@ -1,5 +1,7 @@
 #include "game/npc/npcs.h"
 
+#include <cmath>
+
 #include "game/events/conditions.h"
 #include "game/events/events.h"
 #include "game/world/world.h"
@@ -123,6 +125,14 @@ void Npcs::start(World& world, int npc) {
     if (st.cond == 0 && !world.area.npcs[npc].conds.empty()) changeCond(world, npc, 0);
     st.started = true;
     st.wasActive = true;
+}
+
+void Npcs::teleport(World& world, int npc, int target) {
+    const int object = world.area.npcs[npc].object;
+    float ax, ay, bx, by;
+    world.objectPosition(object, ax, ay);
+    world.objectPosition(target, bx, by);
+    if (std::fabs(ax - bx) > 1e-4f || std::fabs(ay - by) > 1e-4f) world.objects.moveOnto(world.area, object, target);
 }
 
 void Npcs::poll(World& world, int npc) {

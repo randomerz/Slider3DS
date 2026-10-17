@@ -301,7 +301,7 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "Breadge.Pickup",
         "CatAbductionController.SetPickedUp",
         "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
-        "NPC.StartValidWalk", "NPC.StartWalkAtIndex", "ParticleSystem.Play",
+        "ParticleSystem.Play",
         "PlaySound.PlayString",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
         "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.PlayDigSound",

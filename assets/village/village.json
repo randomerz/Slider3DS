@@ -7270,6 +7270,9 @@
       "object": 146,
       "name": "Romeo",
       "facingLeft": false,
+      "speed": 3,
+      "sprite": 147,
+      "spriteFlipped": false,
       "text": {
         "box": [3.33,0.55,10.17,2.7],
         "fontSize": 1,
@@ -7319,6 +7322,27 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+            {
+              "path": [
+                479,
+                480,
+                481
+              ],
+              "crossings": [
+              ],
+              "turnAround": false,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            }
+          ],
           "dialogue": [
             {
               "text": "Juliet, my love, where hast though disappeared to?!",
@@ -7358,6 +7382,41 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+            {
+              "path": [
+                481,
+                482,
+                483
+              ],
+              "crossings": [
+                {
+                  "from": 0,
+                  "to": 1,
+                  "fromPos": [2,3],
+                  "toPos": [0,0],
+                  "dirs": [
+                    [0,-1]
+                  ]
+                }
+              ],
+              "turnAround": false,
+              "teleportIfInterrupted": true,
+              "onStarted": [
+              ],
+              "onFinished": [
+                {
+                  "method": "VarManager.SetBoolOn",
+                  "target": 475,
+                  "string": "villageRomeoAtDefaultPosition"
+                }
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            }
+          ],
           "dialogue": [
             {
               "text": "Juliet, my love, wherefore art thou?!",
@@ -7392,10 +7451,12 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 480
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -7448,7 +7509,7 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 480
+              "objectArg": 483
             },
             {
               "method": "VarManager.SetBoolOn",
@@ -7457,6 +7518,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -7492,6 +7555,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -7544,10 +7609,12 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 480
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -7594,10 +7661,12 @@
             {
               "method": "NPC.Teleport",
               "target": 146,
-              "objectArg": 480
+              "objectArg": 483
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -7639,6 +7708,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -7664,6 +7735,9 @@
       "object": 169,
       "name": "Exploresse",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 170,
+      "spriteFlipped": true,
       "text": {
         "box": [-4.17,-144.45,2.67,-142.3],
         "fontSize": 1,
@@ -7675,7 +7749,7 @@
       },
       "pingObject": 171,
       "emote": {
-        "object": 481,
+        "object": 484,
         "sprite": 213,
         "pos": [-1.25,-144.5],
         "sortY": -144.5,
@@ -7707,6 +7781,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -7764,6 +7840,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Can you check on <var>Cat</var> outside?",
@@ -7798,7 +7876,7 @@
             {
               "method": "NPC.Teleport",
               "target": 169,
-              "objectArg": 483
+              "objectArg": 486
             },
             {
               "method": "NPC.TypeCurrentDialogue",
@@ -7806,6 +7884,62 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
+            {
+              "path": [
+                486,
+                487
+              ],
+              "crossings": [
+              ],
+              "turnAround": false,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            },
+            {
+              "path": [
+                487,
+                488
+              ],
+              "crossings": [
+              ],
+              "turnAround": false,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            },
+            {
+              "path": [
+                488,
+                489
+              ],
+              "crossings": [
+              ],
+              "turnAround": true,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            }
           ],
           "dialogue": [
             {
@@ -7930,10 +8064,12 @@
             {
               "method": "NPC.Teleport",
               "target": 169,
-              "objectArg": 484
+              "objectArg": 489
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -7991,10 +8127,12 @@
             {
               "method": "NPC.Teleport",
               "target": 169,
-              "objectArg": 485
+              "objectArg": 490
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -8147,6 +8285,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Isn't this ol' Cathy's cat? She has a ton of cats.",
@@ -8217,6 +8357,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -8310,6 +8452,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Isn't this ol' Cathy's cat? I think her three cats are out again.",
@@ -8382,6 +8526,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "I just realized.",
@@ -8437,6 +8583,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -8526,6 +8674,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -8551,6 +8701,9 @@
       "object": 177,
       "name": "Archeologist",
       "facingLeft": true,
+      "speed": 4,
+      "sprite": 178,
+      "spriteFlipped": false,
       "text": {
         "box": [-8.42,3.55,-1.58,5.7],
         "fontSize": 1,
@@ -8562,7 +8715,7 @@
       },
       "pingObject": 179,
       "emote": {
-        "object": 486,
+        "object": 491,
         "sprite": 213,
         "pos": [-5.5,3.5],
         "sortY": 3.5,
@@ -8599,6 +8752,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -8703,6 +8858,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "omg... its back in the world again! how did you do that??",
@@ -8770,10 +8927,12 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 488
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -8816,10 +8975,12 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 488
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -8855,6 +9016,44 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
+            {
+              "path": [
+                493,
+                494
+              ],
+              "crossings": [
+              ],
+              "turnAround": false,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            },
+            {
+              "path": [
+                494,
+                493
+              ],
+              "crossings": [
+              ],
+              "turnAround": false,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            }
           ],
           "dialogue": [
             {
@@ -8986,7 +9185,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 489
+              "objectArg": 495
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -8995,6 +9194,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9046,7 +9247,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 489
+              "objectArg": 495
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9055,6 +9256,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9090,7 +9293,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 489
+              "objectArg": 495
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9099,6 +9302,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9158,7 +9363,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 489
+              "objectArg": 495
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9167,6 +9372,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9235,10 +9442,31 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 489
+              "objectArg": 495
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
+            {
+              "path": [
+                495,
+                496,
+                497
+              ],
+              "crossings": [
+              ],
+              "turnAround": false,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            }
           ],
           "dialogue": [
             {
@@ -9349,7 +9577,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 490
+              "objectArg": 497
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9358,6 +9586,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9434,7 +9664,7 @@
             {
               "method": "NPC.Teleport",
               "target": 177,
-              "objectArg": 490
+              "objectArg": 497
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -9443,6 +9673,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9500,6 +9732,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -9525,6 +9759,9 @@
       "object": 201,
       "name": "Archibald",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 202,
+      "spriteFlipped": false,
       "text": {
         "box": [-1.92,6.55,4.92,8.7],
         "fontSize": 1,
@@ -9536,7 +9773,7 @@
       },
       "pingObject": 203,
       "emote": {
-        "object": 491,
+        "object": 498,
         "sprite": 213,
         "pos": [1,6.5],
         "sortY": 6.5,
@@ -9568,6 +9805,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9639,6 +9878,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9748,6 +9989,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Finally my damn coffee… Took you long enough.",
@@ -9816,10 +10059,12 @@
             {
               "method": "NPC.Teleport",
               "target": 201,
-              "objectArg": 492
+              "objectArg": 499
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9846,6 +10091,9 @@
       "object": 239,
       "name": "Kevin",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 240,
+      "spriteFlipped": true,
       "text": {
         "box": [-9.42,4.55,-2.58,6.7],
         "fontSize": 1,
@@ -9857,7 +10105,7 @@
       },
       "pingObject": 241,
       "emote": {
-        "object": 493,
+        "object": 500,
         "sprite": 213,
         "pos": [-5.5,4.5],
         "sortY": 4.5,
@@ -9889,6 +10137,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -9931,6 +10181,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Thanks a bundle! I don't have much, but you can have this strange junk I fished up.",
@@ -9971,6 +10223,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "I'm heading to the beach soon. Rumor is there are new fish in the water.",
@@ -10006,10 +10260,12 @@
             {
               "method": "NPC.Teleport",
               "target": 239,
-              "objectArg": 494
+              "objectArg": 501
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10046,10 +10302,12 @@
             {
               "method": "NPC.Teleport",
               "target": 239,
-              "objectArg": 494
+              "objectArg": 501
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10091,6 +10349,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -10116,6 +10376,9 @@
       "object": 248,
       "name": "TutorialSign",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 249,
+      "spriteFlipped": false,
       "text": {
         "box": [-10.17,0.55,-3.33,2.7],
         "fontSize": 1,
@@ -10127,7 +10390,7 @@
       },
       "pingObject": 250,
       "emote": {
-        "object": 495,
+        "object": 502,
         "sprite": 213,
         "pos": [-7.25,0.5],
         "sortY": 0.5,
@@ -10159,6 +10422,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10195,6 +10460,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Romeo? Wherefore art thou Romeo?",
@@ -10229,6 +10496,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10275,6 +10544,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Yes, oh\u000amy God, yes!",
@@ -10315,6 +10586,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -10340,6 +10613,9 @@
       "object": 282,
       "name": "TutorialSign",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 283,
+      "spriteFlipped": false,
       "text": {
         "box": [-0.42,-144.45,6.42,-142.3],
         "fontSize": 1,
@@ -10351,7 +10627,7 @@
       },
       "pingObject": 284,
       "emote": {
-        "object": 496,
+        "object": 503,
         "sprite": 213,
         "pos": [2.5,-144.5],
         "sortY": -144.5,
@@ -10375,6 +10651,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10465,6 +10743,9 @@
       "object": 285,
       "name": "Pierre",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 286,
+      "spriteFlipped": true,
       "text": {
         "box": [-5.42,-2.45,1.42,-0.3],
         "fontSize": 1,
@@ -10476,7 +10757,7 @@
       },
       "pingObject": 287,
       "emote": {
-        "object": 497,
+        "object": 504,
         "sprite": 213,
         "pos": [-2.5,-2.5],
         "sortY": -2.5,
@@ -10508,6 +10789,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10569,6 +10852,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Ah, the ocean! If only I knew how to fish the open seas.",
@@ -10619,6 +10904,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10671,6 +10958,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "The fish are coming back! Time to whip out the old pole.",
@@ -10711,10 +11000,12 @@
             {
               "method": "NPC.Teleport",
               "target": 285,
-              "objectArg": 498
+              "objectArg": 505
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10756,10 +11047,12 @@
             {
               "method": "NPC.Teleport",
               "target": 285,
-              "objectArg": 498
+              "objectArg": 505
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10822,6 +11115,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -10847,6 +11142,9 @@
       "object": 306,
       "name": "Nemsy",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 307,
+      "spriteFlipped": true,
       "text": {
         "box": [-9.92,2.05,-3.08,4.2],
         "fontSize": 1,
@@ -10858,7 +11156,7 @@
       },
       "pingObject": 308,
       "emote": {
-        "object": 499,
+        "object": 506,
         "sprite": 213,
         "pos": [-7,2],
         "sortY": 2,
@@ -10890,6 +11188,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -10973,6 +11273,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Oh! Where'd you find that? That Archeologist was looking all over for that fragment.",
@@ -10990,7 +11292,7 @@
               "onEnd": [
                 {
                   "method": "UIArtifactWorldMap.SetAreaStatusSilhouette",
-                  "target": 502,
+                  "target": 509,
                   "string": "Military"
                 }
               ]
@@ -11012,6 +11314,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11080,6 +11384,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Did you hear? There's fighting at the Flats down east apparently.",
@@ -11097,7 +11403,7 @@
               "onEnd": [
                 {
                   "method": "UIArtifactWorldMap.SetAreaStatusSilhouette",
-                  "target": 502,
+                  "target": 509,
                   "string": "Military"
                 }
               ]
@@ -11142,6 +11448,9 @@
       "object": 326,
       "name": "Chad",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 327,
+      "spriteFlipped": false,
       "text": {
         "box": [0.08,3.55,6.92,5.7],
         "fontSize": 1,
@@ -11153,7 +11462,7 @@
       },
       "pingObject": 328,
       "emote": {
-        "object": 503,
+        "object": 510,
         "pos": [4,3.5],
         "sortY": 3.5,
         "sortingLayerValue": 9,
@@ -11194,6 +11503,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11305,6 +11616,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Woah, what's shaking?",
@@ -11340,6 +11653,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11391,6 +11706,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "What? How dare you take my credit?!",
@@ -11441,6 +11758,32 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+            {
+              "path": [
+                511,
+                512,
+                513,
+                514,
+                515,
+                516,
+                516,
+                517
+              ],
+              "crossings": [
+              ],
+              "turnAround": true,
+              "teleportIfInterrupted": false,
+              "onStarted": [
+              ],
+              "onFinished": [
+              ],
+              "onBroken": [
+              ],
+              "onResumed": [
+              ]
+            }
+          ],
           "dialogue": [
             {
               "text": "You won't beat me again, explorer. Chad never loses twice in a row!",
@@ -11480,7 +11823,7 @@
             {
               "method": "NPC.Teleport",
               "target": 326,
-              "objectArg": 504
+              "objectArg": 517
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -11494,6 +11837,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11535,6 +11880,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -11560,6 +11907,9 @@
       "object": 367,
       "name": "Mike",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 368,
+      "spriteFlipped": false,
       "text": {
         "box": [-3.42,-3.95,3.42,-1.8],
         "fontSize": 1,
@@ -11571,7 +11921,7 @@
       },
       "pingObject": 369,
       "emote": {
-        "object": 505,
+        "object": 518,
         "sprite": 213,
         "pos": [-0.5,-4],
         "sortY": -4,
@@ -11603,6 +11953,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11639,6 +11991,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Heard the fishermen east and archeologist up north are still lookin' for help.",
@@ -11673,6 +12027,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11709,6 +12065,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "You've done a good thing, partner.",
@@ -11734,6 +12092,9 @@
       "object": 399,
       "name": "Cathy",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 400,
+      "spriteFlipped": true,
       "text": {
         "box": [-6.42,-144.45,0.42,-142.3],
         "fontSize": 1,
@@ -11745,7 +12106,7 @@
       },
       "pingObject": 401,
       "emote": {
-        "object": 506,
+        "object": 519,
         "sprite": 213,
         "pos": [-3.5,-144.5],
         "sortY": -144.5,
@@ -11777,6 +12138,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11930,7 +12293,7 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             }
           ],
@@ -11941,6 +12304,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -11966,7 +12331,7 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             }
           ],
@@ -11977,6 +12342,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12002,7 +12369,7 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             }
           ],
@@ -12013,6 +12380,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12038,13 +12407,13 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             }
           ],
@@ -12055,6 +12424,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12080,13 +12451,13 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             }
           ],
@@ -12097,6 +12468,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12122,13 +12495,13 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             }
           ],
@@ -12139,6 +12512,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12174,6 +12549,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Mittens! Thank you for returning him!",
@@ -12207,6 +12584,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12242,6 +12621,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Tofu! Thank you for returning him!",
@@ -12266,19 +12647,19 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507,
+              "specTarget": 520,
               "catTrick": 0
             }
           ],
@@ -12289,6 +12670,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12330,6 +12713,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "Good luck finding <var>Cat</var> and thanks for the help.",
@@ -12355,6 +12740,9 @@
       "object": 436,
       "name": "Carlton",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 437,
+      "spriteFlipped": false,
       "text": {
         "box": [1.6425,-143.3875,8.4825,-141.2375],
         "fontSize": 1,
@@ -12366,7 +12754,7 @@
       },
       "pingObject": 438,
       "emote": {
-        "object": 508,
+        "object": 521,
         "sprite": 213,
         "pos": [4.5625,-143.4375],
         "sortY": -143.4375,
@@ -12398,6 +12786,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12465,6 +12855,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12573,6 +12965,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "WoAH! ALL NINE PIECES!!",
@@ -12614,6 +13008,9 @@
       "object": 41,
       "name": "Alien Log Sign",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 42,
+      "spriteFlipped": false,
       "text": {
         "box": [52.08,3.05,58.92,5.2],
         "fontSize": 1,
@@ -12625,7 +13022,7 @@
       },
       "pingObject": 43,
       "emote": {
-        "object": 509,
+        "object": 522,
         "sprite": 213,
         "pos": [55,3],
         "sortY": 3,
@@ -12649,6 +13046,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12691,6 +13090,9 @@
       "object": 44,
       "name": "Salmon",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 45,
+      "spriteFlipped": false,
       "text": {
         "box": [43.08,17.55,49.92,19.7],
         "fontSize": 1,
@@ -12702,7 +13104,7 @@
       },
       "pingObject": 46,
       "emote": {
-        "object": 510,
+        "object": 523,
         "sprite": 213,
         "pos": [46,17.5],
         "sortY": 17.5,
@@ -12734,6 +13136,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12769,6 +13173,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12821,10 +13227,12 @@
             {
               "method": "NPC.Teleport",
               "target": 44,
-              "objectArg": 511
+              "objectArg": 524
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12877,6 +13285,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "No time to lose, gotta blast!",
@@ -12917,11 +13327,11 @@
                 },
                 {
                   "method": "ParticleSystem.Play",
-                  "target": 513
+                  "target": 526
                 },
                 {
                   "method": "ParticleSystem.Play",
-                  "target": 514
+                  "target": 527
                 }
               ],
               "onEnd": [
@@ -12945,10 +13355,12 @@
             {
               "method": "NPC.Teleport",
               "target": 44,
-              "objectArg": 511
+              "objectArg": 524
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -12975,6 +13387,9 @@
       "object": 51,
       "name": "TutorialSign",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 52,
+      "spriteFlipped": false,
       "text": {
         "box": [34.58,48.55,41.42,50.7],
         "fontSize": 1,
@@ -12986,7 +13401,7 @@
       },
       "pingObject": 53,
       "emote": {
-        "object": 515,
+        "object": 528,
         "sprite": 213,
         "pos": [37.5,48.5],
         "sortY": 48.5,
@@ -13010,6 +13425,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13036,6 +13453,9 @@
       "object": 128,
       "name": "Fezziwig",
       "facingLeft": true,
+      "speed": 4,
+      "sprite": 129,
+      "spriteFlipped": true,
       "text": {
         "box": [66.08,70.05,72.92,72.2],
         "fontSize": 1,
@@ -13047,7 +13467,7 @@
       },
       "pingObject": 130,
       "emote": {
-        "object": 516,
+        "object": 529,
         "sprite": 213,
         "pos": [69,70],
         "sortY": 70,
@@ -13090,6 +13510,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -13125,10 +13547,12 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 488
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13187,10 +13611,12 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 488
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13232,10 +13658,12 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 488
+              "objectArg": 493
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13277,7 +13705,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 489
+              "objectArg": 495
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -13286,6 +13714,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13326,7 +13756,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 489
+              "objectArg": 495
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -13335,6 +13765,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13351,7 +13783,7 @@
               "onStart": [
                 {
                   "method": "AudioManager.Play",
-                  "target": 517,
+                  "target": 530,
                   "string": "Puzzle Complete"
                 },
                 {
@@ -13420,7 +13852,7 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 489
+              "objectArg": 495
             },
             {
               "method": "SpriteRenderer.set_flipX",
@@ -13429,6 +13861,8 @@
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13470,10 +13904,12 @@
             {
               "method": "NPC.Teleport",
               "target": 128,
-              "objectArg": 489
+              "objectArg": 495
             }
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13544,6 +13980,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -13588,6 +14026,8 @@
           ],
           "onDialogueChainExhausted": [
           ],
+          "walks": [
+          ],
           "dialogue": [
             {
               "text": "...",
@@ -13613,6 +14053,9 @@
       "object": 138,
       "name": "Dock Sign",
       "facingLeft": false,
+      "speed": 4,
+      "sprite": 139,
+      "spriteFlipped": false,
       "text": {
         "box": [45.58,9.3625,52.42,11.5125],
         "fontSize": 1,
@@ -13624,7 +14067,7 @@
       },
       "pingObject": 140,
       "emote": {
-        "object": 518,
+        "object": 531,
         "sprite": 213,
         "pos": [48.5,9.3125],
         "sortY": 9.3125,
@@ -13648,6 +14091,8 @@
           "onConditionalEnter": [
           ],
           "onDialogueChainExhausted": [
+          ],
+          "walks": [
           ],
           "dialogue": [
             {
@@ -13688,7 +14133,7 @@
       "onPickUp": [
         {
           "method": "CatAbductionController.SetPickedUp",
-          "target": 519
+          "target": 532
         }
       ],
       "onDrop": [
@@ -14023,43 +14468,43 @@
       "nodes": [226,228,230,232,234,236,238],
       "lines": [
         {
-          "object": 520,
+          "object": 533,
           "width": 0.1075,
           "sortingLayerValue": 0,
           "order": 10
         },
         {
-          "object": 521,
+          "object": 534,
           "width": 0.1075,
           "sortingLayerValue": 0,
           "order": 10
         },
         {
-          "object": 522,
+          "object": 535,
           "width": 0.1075,
           "sortingLayerValue": 0,
           "order": 10
         },
         {
-          "object": 523,
+          "object": 536,
           "width": 0.1075,
           "sortingLayerValue": 0,
           "order": 10
         },
         {
-          "object": 524,
+          "object": 537,
           "width": 0.1075,
           "sortingLayerValue": 0,
           "order": 10
         },
         {
-          "object": 525,
+          "object": 538,
           "width": 0.1075,
           "sortingLayerValue": 0,
           "order": 10
         },
         {
-          "object": 526,
+          "object": 539,
           "width": 0.1075,
           "sortingLayerValue": 0,
           "order": 10
@@ -14277,7 +14722,7 @@
   ],
   "catTricks": [
     {
-      "object": 507,
+      "object": 520,
       "zone": [-7.5,-147.5,-2.5,-139.5],
       "cats": [
         10,
@@ -14285,8 +14730,8 @@
         14
       ],
       "textObjects": [
-        540,
-        541
+        553,
+        554
       ],
       "text": {
         "box": [-5.42,-144.7,1.42,-142.55],
@@ -14301,7 +14746,7 @@
   ],
   "particles": [
     {
-      "object": 527,
+      "object": 540,
       "playOnAwake": false,
       "loop": false,
       "duration": 3,
@@ -14339,7 +14784,7 @@
       "order": 0
     },
     {
-      "object": 528,
+      "object": 541,
       "playOnAwake": false,
       "loop": false,
       "duration": 3,
@@ -14377,7 +14822,7 @@
       "order": 0
     },
     {
-      "object": 529,
+      "object": 542,
       "playOnAwake": false,
       "loop": false,
       "duration": 3,
@@ -14415,7 +14860,7 @@
       "order": 0
     },
     {
-      "object": 530,
+      "object": 543,
       "playOnAwake": false,
       "loop": false,
       "duration": 3,
@@ -14453,7 +14898,7 @@
       "order": 0
     },
     {
-      "object": 531,
+      "object": 544,
       "playOnAwake": false,
       "loop": false,
       "duration": 3,
@@ -14491,7 +14936,7 @@
       "order": 0
     },
     {
-      "object": 532,
+      "object": 545,
       "playOnAwake": false,
       "loop": false,
       "duration": 3,
@@ -14529,7 +14974,7 @@
       "order": 0
     },
     {
-      "object": 533,
+      "object": 546,
       "playOnAwake": false,
       "loop": false,
       "duration": 3,
@@ -14567,7 +15012,7 @@
       "order": 0
     },
     {
-      "object": 534,
+      "object": 547,
       "playOnAwake": false,
       "loop": true,
       "duration": 6000,
@@ -14606,7 +15051,7 @@
       "order": 0
     },
     {
-      "object": 535,
+      "object": 548,
       "playOnAwake": false,
       "loop": true,
       "duration": 6000,
@@ -14645,7 +15090,7 @@
       "order": 0
     },
     {
-      "object": 536,
+      "object": 549,
       "playOnAwake": false,
       "loop": true,
       "duration": 6000,
@@ -14684,7 +15129,7 @@
       "order": 0
     },
     {
-      "object": 537,
+      "object": 550,
       "playOnAwake": false,
       "loop": true,
       "duration": 6000,
@@ -14723,7 +15168,7 @@
       "order": 0
     },
     {
-      "object": 538,
+      "object": 551,
       "playOnAwake": false,
       "loop": true,
       "duration": 6000,
@@ -14802,7 +15247,7 @@
       "order": 0
     },
     {
-      "object": 542,
+      "object": 555,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -14837,7 +15282,7 @@
       "order": 0
     },
     {
-      "object": 543,
+      "object": 556,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -14870,7 +15315,7 @@
       "order": 0
     },
     {
-      "object": 544,
+      "object": 557,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -14903,7 +15348,7 @@
       "order": 0
     },
     {
-      "object": 545,
+      "object": 558,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -14936,7 +15381,7 @@
       "order": 0
     },
     {
-      "object": 546,
+      "object": 559,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -14969,7 +15414,7 @@
       "order": 0
     },
     {
-      "object": 547,
+      "object": 560,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15008,7 +15453,7 @@
       "order": 0
     },
     {
-      "object": 548,
+      "object": 561,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15041,7 +15486,7 @@
       "order": 0
     },
     {
-      "object": 549,
+      "object": 562,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15074,7 +15519,7 @@
       "order": 0
     },
     {
-      "object": 550,
+      "object": 563,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15107,7 +15552,7 @@
       "order": 0
     },
     {
-      "object": 551,
+      "object": 564,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15140,7 +15585,7 @@
       "order": 0
     },
     {
-      "object": 552,
+      "object": 565,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15173,7 +15618,7 @@
       "order": 0
     },
     {
-      "object": 553,
+      "object": 566,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15206,7 +15651,7 @@
       "order": 0
     },
     {
-      "object": 554,
+      "object": 567,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15239,7 +15684,7 @@
       "order": 0
     },
     {
-      "object": 555,
+      "object": 568,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15272,7 +15717,7 @@
       "order": 0
     },
     {
-      "object": 556,
+      "object": 569,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -15327,7 +15772,7 @@
       "hole": 186
     },
     "ruinsFragment": 9,
-    "slider8Floor": 557
+    "slider8Floor": 511
   },
   "objects": [
     {
@@ -18691,6 +19136,27 @@
       "pos": [30.75,49.25]
     },
     {
+      "path": "Map/World Grid/Objects/RomeoStart/RomeoStart (2)",
+      "parent": 478,
+      "active": true,
+      "owner": 0,
+      "pos": [30.5,46]
+    },
+    {
+      "path": "Map/World Grid/Objects/RomeoStart/RomeoStart (3)",
+      "parent": 478,
+      "active": true,
+      "owner": 0,
+      "pos": [36,43]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/RomeoWalk1",
+      "parent": 3,
+      "active": true,
+      "owner": 1,
+      "pos": [6.75,5.25]
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/RomeoEnd",
       "parent": 3,
       "active": true,
@@ -18713,14 +19179,28 @@
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (1)",
-      "parent": 482,
+      "parent": 485,
       "active": true,
       "owner": 1,
       "pos": [1.625,0.75]
     },
     {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (2)",
+      "parent": 485,
+      "active": true,
+      "owner": 1,
+      "pos": [6.5,0.75]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (3)",
+      "parent": 485,
+      "active": true,
+      "owner": 1,
+      "pos": [7.68,3.6]
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Exploresse Walk/Exploresse Walk (4)",
-      "parent": 482,
+      "parent": 485,
       "active": true,
       "owner": 1,
       "pos": [3,0.75]
@@ -18748,17 +19228,31 @@
     },
     {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/FezziwigStart",
-      "parent": 487,
+      "parent": 492,
       "active": true,
       "owner": 2,
       "pos": [-7,4]
     },
     {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/ArcheologistPacingSpot",
+      "parent": 492,
+      "active": true,
+      "owner": 2,
+      "pos": [-1,4]
+    },
+    {
       "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/ArcheologistTexts",
-      "parent": 487,
+      "parent": 492,
       "active": true,
       "owner": 2,
       "pos": [-1,5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (4)/Objects/ArcheologistWalk_Tile4",
+      "parent": 12,
+      "active": true,
+      "owner": 4,
+      "pos": [-5,5]
     },
     {
       "path": "Map/World Grid/Objects/ArcheologistRocks",
@@ -18839,14 +19333,14 @@
     },
     {
       "path": "ArtifactCanvas/ArtifactFrame/ScreenMask",
-      "parent": 500,
+      "parent": 507,
       "active": true,
       "owner": 0,
       "pos": [320,240]
     },
     {
       "path": "ArtifactCanvas/ArtifactFrame/ScreenMask/WorldMapPanel",
-      "parent": 501,
+      "parent": 508,
       "active": false,
       "owner": 0,
       "pos": [320,240]
@@ -18857,6 +19351,48 @@
       "active": true,
       "owner": 8,
       "pos": [4,3.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/ChadWalk0",
+      "parent": 24,
+      "active": true,
+      "owner": 8,
+      "pos": [6.5,3]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/ChadWalk1",
+      "parent": 24,
+      "active": true,
+      "owner": 8,
+      "pos": [6.5,4.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/Objects/ChadWalk2",
+      "parent": 24,
+      "active": true,
+      "owner": 8,
+      "pos": [5,7]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/Objects/ChadWalk3",
+      "parent": 18,
+      "active": true,
+      "owner": 6,
+      "pos": [5,-5.5]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/ChadWalk4",
+      "parent": 492,
+      "active": true,
+      "owner": 2,
+      "pos": [3.5,-3]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/Objects/Transforms/ChadWalk5",
+      "parent": 492,
+      "active": true,
+      "owner": 2,
+      "pos": [3.5,0]
     },
     {
       "path": "Map/World Grid/Objects/ChadRocks",
@@ -18923,14 +19459,14 @@
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle",
-      "parent": 512,
+      "parent": 525,
       "active": true,
       "owner": 7,
       "pos": [8,3.5]
     },
     {
       "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle (2)",
-      "parent": 512,
+      "parent": 525,
       "active": true,
       "owner": 7,
       "pos": [5,3]
@@ -19105,21 +19641,21 @@
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/CatTrick/Canvas",
-      "parent": 507,
+      "parent": 520,
       "active": true,
       "owner": 9,
       "pos": [-2,-145.25]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/CatTrick/Canvas/Dialogue",
-      "parent": 539,
+      "parent": 552,
       "active": true,
       "owner": 9,
       "pos": [-2,-143.75]
     },
     {
       "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/CatTrick/Canvas/Dialogue BG Font",
-      "parent": 539,
+      "parent": 552,
       "active": true,
       "owner": 9,
       "pos": [-2,-143.87]
@@ -19228,13 +19764,6 @@
       "active": true,
       "owner": 0,
       "pos": [45,5]
-    },
-    {
-      "path": "Map/Village 8Puzzle/STile (8)/Objects/ChadWalk0",
-      "parent": 24,
-      "active": true,
-      "owner": 8,
-      "pos": [6.5,3]
     }
   ],
   "player": {
