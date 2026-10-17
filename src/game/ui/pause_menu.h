@@ -19,7 +19,8 @@
 // and which item to select there) and its items, top to bottom; each item a kind, a label, and a
 // button's action (resume, quit, open a page, back) or the setting an option shows and changes.
 // A new option or button: an Item and a table row; a new submenu: a Page, its table, and an Open
-// button. Each Item is one row on one page (checked at compile time).
+// button. Each Item is one row on one page, and each row's kind has its payload (checked at
+// compile time).
 #pragma once
 
 #include "game/save/settings.h"
@@ -35,6 +36,7 @@ public:
         GENERAL, SOUND, OPTIONS_BACK,                                         // Options
         SCREEN_SHAKE, SCREEN_EFFECTS, AUTO_MOVE, BIGGER_TEXT, GENERAL_BACK,   // General
         MASTER_VOLUME, SFX_VOLUME, MUSIC_VOLUME, AMBIENCE_VOLUME, SOUND_BACK, // Sound
+        ITEM_COUNT
     };
     enum class Kind { Button, Slider, Toggle };
 
@@ -47,9 +49,9 @@ public:
     bool isOpen() const { return open_; }
     void open(); // on Paused, Resume selected
 
-    // One frame of input while open (`dt` s: the 3DS steps 60 fps). Resume / Quit: the menu just
+    // One frame (the game steps a fixed 60 fps) of input while open. Resume / Quit: the menu just
     // closed.
-    Action update(const plat::Input& in, Settings& settings, float dt = 1.0f / 60);
+    Action update(const plat::Input& in, Settings& settings);
     void draw(const Settings& settings, const MenuSkin& skin) const;
 
     Page page() const { return page_; }
@@ -80,8 +82,8 @@ private:
     bool wasTouching_ = false, sliding_ = false;
     int pressed_ = -1; // item index touched down on
     int lastX_ = 0, lastY_ = 0;
-    // The selected button's bracket bounce: seconds into its period, for the item it started on.
-    float bounceTime_ = 0;
+    // The selected button's bracket bounce: frames into its period, for the item it started on.
+    int bounceFrame_ = 0;
     Page bouncePage_ = Page::Paused;
     int bounceCursor_ = -1;
 };

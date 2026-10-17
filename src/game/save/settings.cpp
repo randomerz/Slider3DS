@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <iterator>
 
 #include "platform/platform.h"
 
@@ -25,6 +26,9 @@ constexpr Field FIELDS[] = {
     {"musicVolume", nullptr, &Settings::musicVolume},
     {"ambienceVolume", nullptr, &Settings::ambienceVolume},
 };
+// Every member is in FIELDS: a member added to Settings changes its size (2 bools + 6 floats, the
+// bools padded: 32 bytes on both targets). Add it to FIELDS, then update this.
+static_assert(sizeof(Settings) == 32 && std::size(FIELDS) == 8, "a Settings member missing from FIELDS?");
 
 } // namespace
 

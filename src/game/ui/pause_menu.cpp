@@ -1,6 +1,5 @@
 #include "game/ui/pause_menu.h"
 
-#include <cmath>
 #include <iterator>
 
 using Item = PauseMenu::Item;
@@ -37,8 +36,8 @@ constexpr int TITLE_Y = 20; // the title's middle
 constexpr int FIRST_TOP = 34;
 constexpr int BUTTON_W = 120, BUTTON_H = 18, BUTTON_SLOT = 24;
 constexpr int ROW_SLOT = 15;
-// The selected button's brackets bounce: at rest, then 1 px out, each half a second.
-constexpr float BOUNCE_PERIOD = 1.0f;
+// The selected button's brackets bounce: at rest, then 1 px out, each half a second (frames at 60 fps).
+constexpr int BOUNCE_FRAMES = 60;
 // Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the
 // row's ends): the slider at the right end, the toggle centered under it. Selected: a light label.
 constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X, ROW_PAD = 4;
@@ -99,18 +98,33 @@ constexpr bool pagesInOrder() {
         if ((int)PAGES[i].page != i) return false;
     return true;
 }
-constexpr bool itemsUnique() {
-    int seen = 0;
+// Every Item on exactly one page: no Item twice, and as many rows as Items.
+constexpr bool itemsOnePageEach() {
+    static_assert(PauseMenu::ITEM_COUNT <= 32, "itemsOnePageEach's bitmask");
+    unsigned seen = 0;
+    int rows = 0;
     for (const PageDef& p : PAGES)
-        for (int i = 0; i < p.count; i++) {
-            const int bit = 1 << p.items[i].item;
+        for (int i = 0; i < p.count; i++, rows++) {
+            const unsigned bit = 1u << p.items[i].item;
             if (seen & bit) return false;
             seen |= bit;
+        }
+    return rows == PauseMenu::ITEM_COUNT;
+}
+// Each row has what its kind needs: a button an action, a slider a value, a toggle a flag.
+constexpr bool itemsConsistent() {
+    for (const PageDef& p : PAGES)
+        for (int i = 0; i < p.count; i++) {
+            const ItemDef& d = p.items[i];
+            if (d.kind == Kind::Button ? d.act == Act::None
+                                       : d.kind == Kind::Slider ? d.value == nullptr : d.flag == nullptr)
+                return false;
         }
     return true;
 }
 static_assert(pagesInOrder(), "PAGES must be in Page order");
-static_assert(itemsUnique(), "an Item may be on one page only (give a second Back its own Item)");
+static_assert(itemsOnePageEach(), "each Item must be on one page (give a second Back its own Item)");
+static_assert(itemsConsistent(), "a row lacks its kind's action / value / flag");
 
 const PageDef& pageDef(Page page) { return PAGES[(int)page]; }
 
@@ -226,16 +240,16 @@ void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
     if (def.kind == Kind::Slider) settings.*def.value = Settings::snap(settings.*def.value + dir / (float)Settings::STEPS);
 }
 
-PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings, float dt) {
+PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
     if (!open_) return Action::None;
     const Action action = handleInput(in, settings);
     // The bounce restarts on each newly selected item.
     if (page_ != bouncePage_ || cursor_ != bounceCursor_) {
         bouncePage_ = page_;
         bounceCursor_ = cursor_;
-        bounceTime_ = 0;
+        bounceFrame_ = 0;
     } else {
-        bounceTime_ = std::fmod(bounceTime_ + dt, BOUNCE_PERIOD);
+        bounceFrame_ = (bounceFrame_ + 1) % BOUNCE_FRAMES;
     }
     return action;
 }
@@ -304,9 +318,7 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
         case Kind::Button: {
             const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
             const char* label = def.act == Act::Quit && confirmQuit_ ? "Really quit?" : def.label;
-            // (A frame's worth of float error mustn't shift the halves: 30 x 1/60 s is just under 0.5.)
-            const bool out = std::fmod(bounceTime_ + 1e-4f, BOUNCE_PERIOD) >= BOUNCE_PERIOD / 2;
-            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, held, out ? 1 : 0);
+            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, held, bounceFrame_ >= BOUNCE_FRAMES / 2 ? 1 : 0);
             break;
         }
         case Kind::Slider:
