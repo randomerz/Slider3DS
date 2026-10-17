@@ -36,7 +36,7 @@ constexpr int CENTER_X = UI_W / 2;
 constexpr int TITLE_Y = 20;                              // the title's middle
 constexpr int BUTTON_W = 120, BUTTON_H = 18, PITCH = 24; // buttons 6 px apart
 constexpr int ROW_H = 20;                                // option rows
-// The selected button's brackets bounce: resting against it, then 1 px out, each half a second.
+// The selected button's brackets bounce: at rest, then 1 px out, each half a second.
 constexpr float BOUNCE_PERIOD = 1.0f;
 constexpr int FIRST_Y = 46;                              // the first row's middle
 // Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the

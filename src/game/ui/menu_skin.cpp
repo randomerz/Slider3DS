@@ -21,6 +21,7 @@ constexpr uint32_t TEXT_GRAY = plat::rgba(0x99, 0x99, 0x99);
 // Button24's bottom 2 px are its shaded edge: labels center on the face above it.
 constexpr int BUTTON_EDGE = 2;
 constexpr int HANDLE_W = 3; // ui_slider's handles
+constexpr int BRACKET_GAP = 1; // px between a selected button's sides and its brackets at rest
 
 void rect(int x, int y, int w, int h, uint32_t color) {
     plat::drawRect((float)(x * S), (float)(y * S), (float)(w * S), (float)(h * S), color);
@@ -128,13 +129,13 @@ void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bo
                           int bracketOut) const {
     drawNineSlice(pressed ? buttonPressed_ : button_, x, y, w, h);
     if (selected) {
-        // Resting against the sides, 1 px past the face's top and bottom (a pressed face starts
-        // 1 px lower).
+        // At rest BRACKET_GAP px from the sides, 1 px past the face's top and bottom (a pressed
+        // face starts 1 px lower).
         const Sprite& l = pressed ? bracketPressedLeft_ : bracketLeft_;
         const Sprite& r = pressed ? bracketPressedRight_ : bracketRight_;
         const int top = pressed ? y : y - 1, height = pressed ? h + 1 : h + 2;
-        drawNineSlice(l, x - l.w - bracketOut, top, l.w, height);
-        drawNineSlice(r, x + w + bracketOut, top, r.w, height);
+        drawNineSlice(l, x - l.w - BRACKET_GAP - bracketOut, top, l.w, height);
+        drawNineSlice(r, x + w + BRACKET_GAP + bracketOut, top, r.w, height);
     }
     const int drop = pressed ? PRESS_DROP : 0;
     drawText(label, x + (w - font_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop, TEXT_DARK);

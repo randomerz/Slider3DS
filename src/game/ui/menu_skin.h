@@ -33,8 +33,8 @@ public:
     // A page title (light), centered on (cx, cy).
     void drawTitle(std::string_view text, int cx, int cy) const;
     // A button filling the box (its label dark, centered on its face): `pressed` sinks its face;
-    // `selected` (the menu's cursor) brackets its sides, `bracketOut` px further out than resting
-    // against it (the bounce), a pressed one's brackets sunk with the face.
+    // `selected` (the menu's cursor) brackets its sides, `bracketOut` px further out than at rest
+    // (the bounce), a pressed one's brackets sunk with the face.
     void drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed,
                     int bracketOut = 0) const;
     // An option's label, left-aligned at x, centered on cy: gray, light when selected.
