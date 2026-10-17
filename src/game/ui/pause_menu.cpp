@@ -2,11 +2,30 @@
 
 #include <iterator>
 
-namespace {
-
 using Item = PauseMenu::Item;
 using Kind = PauseMenu::Kind;
 using Page = PauseMenu::Page;
+
+// What a button does.
+enum class Act { None, Resume, Quit, Open, Back };
+
+// An item: its kind and label; a button's action (and the page it opens); an option's setting (a
+// toggle's flag; a slider's value, its setter and how many steps left / right take across it).
+struct PauseMenu::ItemDef {
+    Item item;
+    Kind kind;
+    const char* label;
+    Act act = Act::None;
+    Page opens = Page::Paused;
+    bool Settings::*flag = nullptr;
+    float Settings::*value = nullptr;
+    void (Settings::*setValue)(float) = nullptr;
+    int steps = 0;
+};
+
+namespace {
+
+using ItemDef = PauseMenu::ItemDef;
 
 // The layout, in UI px (MenuSkin's grid: the bottom screen is 160x120 of them): the original's
 // PausePanel arrangement, a title over a column of buttons, sized to fill the touch screen.
@@ -16,44 +35,57 @@ constexpr int CENTER_X = UI_W / 2;
 constexpr int TITLE_Y = 20;                              // the title's middle
 constexpr int BUTTON_W = 120, BUTTON_H = 20, PITCH = 24; // rows 4 px apart
 constexpr int FIRST_Y = 46;                              // the first row's middle
-// Option rows (GeneralOptionsPanel's: label at the left, control at the right), their content
-// padded clear of the cursor's brackets: the slider at the right end, the toggle centered under it.
+// Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the
+// row's ends): the slider at the right end, the toggle centered under it. Selected: a light label.
 constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X, ROW_PAD = 4;
 constexpr int SLIDER_W = 64, SLIDER_X = ROW_X + ROW_W - ROW_PAD - SLIDER_W;
 constexpr int CONTROL_CENTER_X = SLIDER_X + SLIDER_W / 2;
 
-// An item: its kind, label, and for an option the setting it shows and changes (a toggle's flag; a
-// slider's value, its setter and how many steps left / right take across it).
-struct ItemDef {
-    Item item;
-    Kind kind;
-    const char* label;
-    bool Settings::*flag = nullptr;
-    float Settings::*value = nullptr;
-    void (Settings::*setValue)(float) = nullptr;
-    int steps = 0;
-};
+// A page: its title, items, and parent (B and Back go there, selecting `returnTo`; none for the top).
 struct PageDef {
+    Page page;
     const char* title;
     const ItemDef* items;
     int count;
+    bool hasParent;
+    Page parent;
+    Item returnTo;
 };
 
 constexpr ItemDef PAUSED_ITEMS[] = {
-    {PauseMenu::RESUME, Kind::Button, "Resume"},
-    {PauseMenu::OPTIONS, Kind::Button, "Options"},
-    {PauseMenu::QUIT, Kind::Button, "Quit"},
+    {PauseMenu::RESUME, Kind::Button, "Resume", Act::Resume},
+    {PauseMenu::OPTIONS, Kind::Button, "Options", Act::Open, Page::Options},
+    {PauseMenu::QUIT, Kind::Button, "Quit", Act::Quit},
 };
 constexpr ItemDef OPTIONS_ITEMS[] = {
-    {PauseMenu::SCREEN_SHAKE, Kind::Slider, "Screen Shake", nullptr, &Settings::screenShake, &Settings::setScreenShake,
-     Settings::SHAKE_STEPS},
-    {PauseMenu::AUTO_MOVE, Kind::Toggle, "Auto Move", &Settings::autoMove},
-    {PauseMenu::BACK, Kind::Button, "Back"},
+    {PauseMenu::SCREEN_SHAKE, Kind::Slider, "Screen Shake", Act::None, Page::Paused, nullptr, &Settings::screenShake,
+     &Settings::setScreenShake, Settings::SHAKE_STEPS},
+    {PauseMenu::AUTO_MOVE, Kind::Toggle, "Auto Move", Act::None, Page::Paused, &Settings::autoMove},
+    {PauseMenu::OPTIONS_BACK, Kind::Button, "Back", Act::Back},
 };
 constexpr PageDef PAGES[] = {
-    {"Paused", PAUSED_ITEMS, (int)std::size(PAUSED_ITEMS)},
-    {"Options", OPTIONS_ITEMS, (int)std::size(OPTIONS_ITEMS)},
+    {Page::Paused, "Paused", PAUSED_ITEMS, (int)std::size(PAUSED_ITEMS), false, Page::Paused, PauseMenu::RESUME},
+    {Page::Options, "Options", OPTIONS_ITEMS, (int)std::size(OPTIONS_ITEMS), true, Page::Paused, PauseMenu::OPTIONS},
 };
+
+// PAGES is indexed by Page; each Item is one row on one page (itemBox finds it by its Item).
+constexpr bool pagesInOrder() {
+    for (int i = 0; i < (int)std::size(PAGES); i++)
+        if ((int)PAGES[i].page != i) return false;
+    return true;
+}
+constexpr bool itemsUnique() {
+    int seen = 0;
+    for (const PageDef& p : PAGES)
+        for (int i = 0; i < p.count; i++) {
+            const int bit = 1 << p.items[i].item;
+            if (seen & bit) return false;
+            seen |= bit;
+        }
+    return true;
+}
+static_assert(pagesInOrder(), "PAGES must be in Page order");
+static_assert(itemsUnique(), "an Item may be on one page only (give a second Back its own Item)");
 
 const PageDef& pageDef(Page page) { return PAGES[(int)page]; }
 
@@ -125,40 +157,40 @@ void PauseMenu::go(Page page, Item select) {
         if (p.items[i].item == select) cursor_ = i;
 }
 
-int PauseMenu::itemAt(int px, int py) const {
+void PauseMenu::back() {
+    const PageDef& p = pageDef(page_);
+    go(p.parent, p.returnTo);
+}
+
+int PauseMenu::itemAt(int x, int y) const {
     const PageDef& p = pageDef(page_);
     for (int i = 0; i < p.count; i++)
-        if (toScreen(uiBox(p.items[i], i)).contains(px, py)) return i;
+        if (uiBox(p.items[i], i).contains(x, y)) return i;
     return -1;
 }
 
-PauseMenu::Action PauseMenu::activate(Item item, Settings& settings) {
-    if (item != QUIT) confirmQuit_ = false;
-    int index;
-    const ItemDef& def = find(item, index);
+PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
+    if (def.act != Act::Quit) confirmQuit_ = false;
     if (def.kind == Kind::Toggle) settings.*def.flag = !(settings.*def.flag);
-    if (def.kind != Kind::Button) return Action::None; // (a slider: left / right or the stylus)
-    switch (item) {
-    case RESUME:
+    switch (def.act) {
+    case Act::None: break; // (an option; a slider moves with left / right or the stylus)
+    case Act::Resume:
         open_ = false;
         return Action::Resume;
-    case OPTIONS: go(Page::Options, SCREEN_SHAKE); break;
-    case QUIT:
+    case Act::Quit:
         if (confirmQuit_) {
             open_ = false;
             return Action::Quit;
         }
         confirmQuit_ = true;
         break;
-    case BACK: go(Page::Paused, OPTIONS); break;
-    case SCREEN_SHAKE: case AUTO_MOVE: break; // (options)
+    case Act::Open: go(def.opens, pageDef(def.opens).items[0].item); break;
+    case Act::Back: back(); break;
     }
     return Action::None;
 }
 
-void PauseMenu::step(Item item, int dir, Settings& settings) {
-    int index;
-    const ItemDef& def = find(item, index);
+void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
     if (def.kind == Kind::Toggle) settings.*def.flag = !(settings.*def.flag);
     if (def.kind == Kind::Slider) (settings.*def.setValue)(settings.*def.value + dir / (float)def.steps); // (it snaps)
 }
@@ -170,8 +202,8 @@ PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
         return Action::Resume;
     }
     if (in.pressed & plat::BTN_B) {
-        if (page_ == Page::Options) {
-            go(Page::Paused, OPTIONS);
+        if (pageDef(page_).hasParent) {
+            back();
             return Action::None;
         }
         open_ = false;
@@ -183,34 +215,34 @@ PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
         cursor_ = (cursor_ + move + p.count) % p.count;
         confirmQuit_ = false;
     }
-    if (in.pressed & plat::BTN_A) return activate(p.items[cursor_].item, settings);
-    if (in.pressed & plat::BTN_LEFT) step(p.items[cursor_].item, -1, settings);
-    if (in.pressed & plat::BTN_RIGHT) step(p.items[cursor_].item, 1, settings);
+    if (in.pressed & plat::BTN_A) return activate(p.items[cursor_], settings);
+    if (in.pressed & plat::BTN_LEFT) step(p.items[cursor_], -1, settings);
+    if (in.pressed & plat::BTN_RIGHT) step(p.items[cursor_], 1, settings);
 
     Action action = Action::None;
     if (in.touching) {
-        lastX_ = in.touchX;
-        lastY_ = in.touchY;
+        lastX_ = in.touchX / S;
+        lastY_ = in.touchY / S;
         if (!wasTouching_) {
-            pressed_ = itemAt(in.touchX, in.touchY);
+            pressed_ = itemAt(lastX_, lastY_);
             if (pressed_ >= 0) {
                 const ItemDef& def = p.items[pressed_];
                 cursor_ = pressed_;
-                if (def.item != QUIT) confirmQuit_ = false;
+                if (def.act != Act::Quit) confirmQuit_ = false;
                 if (def.kind == Kind::Slider) {
                     // Only the slider drags, though a finger may land a little above or below it.
-                    const Box s = controlBox(def.item), row = itemBox(def.item);
-                    sliding_ = Box{s.x, row.y, s.w, row.h}.contains(in.touchX, in.touchY);
+                    const Box s = uiControl(def, pressed_), row = uiBox(def, pressed_);
+                    sliding_ = Box{s.x, row.y, s.w, row.h}.contains(lastX_, lastY_);
                 }
             }
         }
         if (sliding_) {
             const ItemDef& def = p.items[pressed_];
             const Box s = uiControl(def, pressed_);
-            (settings.*def.setValue)(MenuSkin::sliderValueAt((float)in.touchX, s.x, s.w));
+            (settings.*def.setValue)(MenuSkin::sliderValueAt(in.touchX / (float)S, s.x, s.w));
         }
     } else if (wasTouching_) {
-        if (pressed_ >= 0 && !sliding_ && itemAt(lastX_, lastY_) == pressed_) action = activate(p.items[pressed_].item, settings);
+        if (pressed_ >= 0 && !sliding_ && itemAt(lastX_, lastY_) == pressed_) action = activate(p.items[pressed_], settings);
         pressed_ = -1;
         sliding_ = false;
     }
@@ -225,12 +257,12 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
         const ItemDef& def = p.items[i];
         const Box b = uiBox(def, i), c = uiControl(def, i);
         const bool selected = i == cursor_;
-        if (selected) skin.drawCursor(b.x, b.y, b.w, b.h);
         switch (def.kind) {
         case Kind::Button: {
             const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
-            const char* label = def.item == QUIT && confirmQuit_ ? "Really quit?" : def.label;
-            skin.drawButton(b.x, b.y, b.w, b.h, label, held);
+            const char* label = def.act == Act::Quit && confirmQuit_ ? "Really quit?" : def.label;
+            skin.drawButton(b.x, b.y, b.w, b.h, label,
+                            held ? MenuSkin::Button::Pressed : selected ? MenuSkin::Button::Selected : MenuSkin::Button::Normal);
             break;
         }
         case Kind::Slider:

@@ -1,16 +1,14 @@
 """Bakes the original's TextMeshPro pixel fonts into bitmap atlases for the port.
 
-Each font is rendered once per glyph at its TMP font size (px per em) without antialiasing, in the
-prefab's color; pixel fonts at those sizes come out as in the game:
+Each font is rendered once per glyph at its px per em without antialiasing; pixel fonts at their
+native sizes come out as in the game:
 
   dialogue       NPC dialogue: TinyUnicode (light text) over PixelUnicodeFill (a dark backing behind
                  each letter), 1 em = 1 world unit = 16 px (NPC.prefab: "Dialogue" and "Dialogue BG
                  Font").
-  The pause menu's, all TinyUnicode (a port choice: the original's PixelTitanZero / PixelUnicode
-  read worse on the 3DS), drawn at the menu's 2x like its sprites:
-  menu_dark      button labels (Menu Button's "Text": m_fontColor 0.102, on its light face).
-  menu_light     titles and the selected option's label (0.902).
-  menu_label     option labels (UI Slider / Label Toggle Pair "Label": 0.6).
+  menu           the menus' text: TinyUnicode (a port choice: the original's PixelTitanZero /
+                 PixelUnicode read worse on the 3DS), drawn at the menu's 2x like its sprites, in
+                 the color each use needs (game/ui/menu_skin; baked light).
 
 For each <name>:
   assets/sheets/font_<name>.png   the atlas (converted for the 3DS like the exported sheets; .fmt: la8)
@@ -34,17 +32,14 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_DIR = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
     REPO, "..", "Slider", "Slider", "Assets", "Fonts", "originalFonts")
 CHARS = [chr(c) for c in range(32, 127)]  # the port's text is ASCII (dialogue: once ' and ... are replaced)
-LIGHT = (230, 230, 230, 255)  # m_fontColor 0.902 (dialogue, titles, buttons)
+LIGHT = (230, 230, 230, 255)  # Dialogue m_fontColor 0.902
 DARK = (26, 26, 26, 255)      # Dialogue BG Font m_fontColor 0.102
-GRAY = (153, 153, 153, 255)   # option labels' m_fontColor 0.6
 ATLAS_W = 128
 
 # name: (ppem, (ttf, color) of the letters, (ttf, color) of the backing or None)
 FONTS = {
     "dialogue": (16, ("TinyUnicode.ttf", LIGHT), ("PixelUnicodeFill.ttf", DARK)),
-    "menu_dark": (16, ("TinyUnicode.ttf", DARK), None),
-    "menu_light": (16, ("TinyUnicode.ttf", LIGHT), None),
-    "menu_label": (16, ("TinyUnicode.ttf", GRAY), None),
+    "menu": (16, ("TinyUnicode.ttf", LIGHT), None),
 }
 
 

@@ -3,9 +3,8 @@
 The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   Menu Button (the main menu's; Image sliced, Button sprite swap): normal Button24_0 (a light face
       over a 2 px shaded bottom edge), pressed _1 (the face 1 px lower); 9-sliced, 4 px borders.
-      (Its selected _2, an outline, isn't used.)
-  The cursor: the pause panel's MainMenu Button Variant selected sprite, MainMenuButton20_3 (thick
-      light side brackets; 9-sliced, 3 px borders), drawn around the selected item (user's choice).
+      Selected: a port sprite (user's choice), Button24_0 with the side columns of the original's
+      selected _2 (its dark outline): a dark bracket at each end of the button.
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
   UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
@@ -30,7 +29,6 @@ ASSETS = sys.argv[1] if len(sys.argv) > 1 else os.path.join(REPO, "..", "Slider"
 SPRITES = {
     "button": ("Sprites/UI/Button24.png", "Button24_0"),
     "buttonPressed": ("Sprites/UI/Button24.png", "Button24_1"),
-    "cursor": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_3"),
     "toggle": ("Sprites/UI/ui_toggle.png", "ui_toggle_0"),
     "toggleSelected": ("Sprites/UI/ui_toggle.png", "ui_toggle_0_selected"),
     "toggleCheck": ("Sprites/UI/ui_toggle.png", "ui_toggle_1"),
@@ -53,8 +51,23 @@ def unity_sprite(texture, name):
     return img.crop((x, top, x + w, top + h)), [bl, bt, br, bb]
 
 
+BRACKET_COLUMNS = 3  # of Button24_2's outline kept at each side (the outline and its corner turns)
+
+
+def selected_button():
+    """Button24_0 with Button24_2's left and right BRACKET_COLUMNS columns: its outline as brackets."""
+    face, border = unity_sprite("Sprites/UI/Button24.png", "Button24_0")
+    outline, _ = unity_sprite("Sprites/UI/Button24.png", "Button24_2")
+    img = face.copy()
+    w = img.width
+    for x0, x1 in ((0, BRACKET_COLUMNS), (w - BRACKET_COLUMNS, w)):
+        img.paste(outline.crop((x0, 0, x1, img.height)), (x0, 0))
+    return img, border
+
+
 def main():
     cut = {name: unity_sprite(tex, sprite) for name, (tex, sprite) in SPRITES.items()}
+    cut["buttonSelected"] = selected_button()
     # Shelf packing in table order, 1 px gaps.
     x = y = shelf = 0
     placed = {}

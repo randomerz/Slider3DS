@@ -445,6 +445,11 @@ TEST(render_pause_menu_goldens) {
     press(plat::BTN_A);
     s.autoMove = true;
     shoot("pause_menu_options");
+    press(plat::BTN_DOWN); // the toggle selected (light label, its selected background), the slider not
+    s.setScreenShake(0);
+    shoot("pause_menu_options_min");
+    s.setScreenShake(1);
+    shoot("pause_menu_options_max");
     press(plat::BTN_B);
     press(plat::BTN_DOWN);
     press(plat::BTN_A); // Quit: asks again

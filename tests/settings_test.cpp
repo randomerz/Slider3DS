@@ -7,6 +7,8 @@
 #include "test.h"
 #include "test_platform.h"
 
+#include "game/ui/menu_skin.h"
+
 namespace {
 
 using Menu = PauseMenu;
@@ -114,7 +116,7 @@ TEST(pause_menu_buttons) {
     CHECK(menu.isOpen() && menu.page() == Menu::Page::Paused && menu.cursor() == Menu::OPTIONS);
     menu.update(press(plat::BTN_A), s);
     menu.update(press(plat::BTN_UP), s); // wraps to Back
-    CHECK(menu.cursor() == Menu::BACK);
+    CHECK(menu.cursor() == Menu::OPTIONS_BACK);
     menu.update(press(plat::BTN_A), s);
     CHECK(menu.page() == Menu::Page::Paused && menu.cursor() == Menu::OPTIONS);
 
@@ -169,11 +171,11 @@ TEST(pause_menu_stylus) {
     CHECK(s.screenShake == 1.0f);
 
     // A press on one item released on another does nothing.
-    const Menu::Box back = Menu::itemBox(Menu::BACK), toggle = Menu::itemBox(Menu::AUTO_MOVE);
+    const Menu::Box back = Menu::itemBox(Menu::OPTIONS_BACK), toggle = Menu::itemBox(Menu::AUTO_MOVE);
     menu.update(touch(back.x + 4, back.y + 4), s);
     menu.update(touch(toggle.x + 4, toggle.y + 4), s);
     CHECK(menu.update(plat::Input{}, s) == Menu::Action::None && menu.page() == Menu::Page::Options && s.autoMove);
-    CHECK(tapItem(menu, s, Menu::BACK) == Menu::Action::None && menu.page() == Menu::Page::Paused);
+    CHECK(tapItem(menu, s, Menu::OPTIONS_BACK) == Menu::Action::None && menu.page() == Menu::Page::Paused);
     CHECK(tapItem(menu, s, Menu::RESUME) == Menu::Action::Resume && !menu.isOpen());
 
     // A touch already held when the menu opens isn't a tap.
@@ -185,13 +187,11 @@ TEST(pause_menu_stylus) {
 
 TEST(pause_menu_boxes_fit_and_dont_overlap) {
     const Menu::Item paused[] = {Menu::RESUME, Menu::OPTIONS, Menu::QUIT};
-    const Menu::Item options[] = {Menu::SCREEN_SHAKE, Menu::AUTO_MOVE, Menu::BACK};
+    const Menu::Item options[] = {Menu::SCREEN_SHAKE, Menu::AUTO_MOVE, Menu::OPTIONS_BACK};
     for (const auto* page : {paused, options})
         for (int i = 0; i < 3; i++) {
             const Menu::Box a = Menu::itemBox(page[i]);
             CHECK(a.x >= 0 && a.y >= 0 && a.x + a.w <= plat::BOTTOM_W && a.y + a.h <= plat::BOTTOM_H);
-            const int outset = MenuSkin::CURSOR_OUTSET * MenuSkin::UI_SCALE; // the cursor's brackets fit too
-            CHECK(a.x - outset >= 0 && a.x + a.w + outset <= plat::BOTTOM_W);
             if (i > 0) {
                 const Menu::Box prev = Menu::itemBox(page[i - 1]);
                 CHECK(prev.y + prev.h <= a.y);
@@ -204,4 +204,47 @@ TEST(pause_menu_boxes_fit_and_dont_overlap) {
     CHECK(autoRow.contains(toggle.x, toggle.y) && autoRow.contains(toggle.x + toggle.w - 1, toggle.y + toggle.h - 1));
     // The toggle is centered under the slider (Label Toggle Pair: x 165 = the slider's middle).
     CHECK(toggle.x * 2 + toggle.w == slider.x * 2 + slider.w);
+}
+
+TEST(menu_skin_slider_touch_finds_the_drawn_handle) {
+    // A touch on the drawn handle's middle pixel sets the value it was drawn at, at every step.
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "menu skin loads " + error);
+    constexpr int X = 20, Y = 30, W = 64, S = MenuSkin::UI_SCALE;
+    for (int step = 0; step <= Settings::SHAKE_STEPS; step++) {
+        Settings s;
+        s.setScreenShake(step / (float)Settings::SHAKE_STEPS);
+        testResetDrawCalls();
+        skin.drawSlider(X, Y, W, s.screenShake, false);
+        const DrawCall* handle = nullptr;
+        for (const DrawCall& c : testDrawCalls())
+            if (!c.sheet.empty()) handle = &c; // (the handle is the slider's only sprite)
+        CHECK(handle != nullptr);
+        if (!handle) return;
+        Settings touched;
+        touched.setScreenShake(MenuSkin::sliderValueAt((handle->x + handle->w / 2) / S, X, W));
+        check(touched.screenShake == s.screenShake, "step " + std::to_string(step) + ": touched " +
+                                                       std::to_string(touched.screenShake));
+    }
+}
+
+TEST(menu_skin_rejects_sprites_that_dont_fit_their_widgets) {
+    // A re-cut whose slider handle isn't 3x5 (here 4x5) fails to load rather than drawing off-grid.
+    std::string good;
+    CHECK(plat::readFile("ui/menu.json", good));
+    std::string bad = good;
+    const std::string handle = "\"sliderHandle\": {\"rect\":[";
+    const size_t at = bad.find(handle);
+    CHECK(at != std::string::npos);
+    if (at == std::string::npos) return;
+    const size_t w = bad.find(',', bad.find(',', at + handle.size()) + 1) + 1; // the rect's third number
+    bad.replace(w, bad.find(',', w) - w, "4");
+    testSetFile("ui/menu.json", bad);
+    MenuSkin skin;
+    std::string error;
+    CHECK(!skin.load(&error));
+    check(error.find("sizes") != std::string::npos, "error: " + error);
+    testClearFiles();
+    CHECK(skin.load(&error)); // (the real one)
 }

@@ -13,6 +13,11 @@ constexpr int S = MenuSkin::UI_SCALE;
 // bar is the slider's middle 3 px; the handle covers its full height.
 constexpr uint32_t SLIDER_BAR = plat::rgba(0x66, 0x66, 0x66);
 constexpr uint32_t SLIDER_FILL = plat::rgba(0x99, 0x99, 0x99);
+// Text colors: Menu Button's label (m_fontColor 0.102, on its light face), titles and the selected
+// option (0.902), option labels (UI Slider / Label Toggle Pair "Label": 0.6).
+constexpr uint32_t TEXT_DARK = plat::rgba(0x1a, 0x1a, 0x1a);
+constexpr uint32_t TEXT_LIGHT = plat::rgba(0xe6, 0xe6, 0xe6);
+constexpr uint32_t TEXT_GRAY = plat::rgba(0x99, 0x99, 0x99);
 // Button24's bottom 2 px are its shaded edge: labels center on the face above it.
 constexpr int BUTTON_EDGE = 2;
 constexpr int HANDLE_W = 3; // ui_slider's handles
@@ -46,15 +51,17 @@ bool MenuSkin::load(std::string* error) {
     };
     read("button", button_);
     read("buttonPressed", buttonPressed_);
-    read("cursor", cursor_);
+    read("buttonSelected", buttonSelected_);
     read("toggle", toggle_);
     read("toggleSelected", toggleSelected_);
     read("toggleCheck", toggleCheck_);
     read("sliderHandle", handle_);
     read("sliderHandleSelected", handleSelected_);
     // The widgets are their sprites' sizes (one grid: no scaling).
-    if (ok && (handle_.h != SLIDER_H || handleSelected_.h != SLIDER_H || handle_.w != HANDLE_W ||
-               handleSelected_.w != HANDLE_W || toggle_.w != TOGGLE_SIZE)) {
+    auto is = [](const Sprite& s, int w, int h) { return s.w == w && s.h == h; };
+    if (ok && !(is(handle_, HANDLE_W, SLIDER_H) && is(handleSelected_, HANDLE_W, SLIDER_H) &&
+                is(toggle_, TOGGLE_SIZE, TOGGLE_SIZE) && is(toggleSelected_, TOGGLE_SIZE, TOGGLE_SIZE) &&
+                is(toggleCheck_, TOGGLE_SIZE, TOGGLE_SIZE))) {
         ok = false;
         if (error) *error = "ui/menu.json: the slider handle / toggle sprites aren't their widgets' sizes";
     }
@@ -64,16 +71,13 @@ bool MenuSkin::load(std::string* error) {
         if (error) *error = "can't load the menu sheet " + doc["sheet"].asString();
         return false;
     }
-    return dark_.load("fonts/menu_dark.json", error) && light_.load("fonts/menu_light.json", error) &&
-           label_.load("fonts/menu_label.json", error);
+    return font_.load("fonts/menu.json", error);
 }
 
 void MenuSkin::unload() {
     if (sheet_) plat::freeSheet(sheet_);
     sheet_ = nullptr;
-    dark_.unload();
-    light_.unload();
-    label_.unload();
+    font_.unload();
 }
 
 void MenuSkin::draw(const Sprite& s, int x, int y) const {
@@ -101,28 +105,24 @@ void MenuSkin::drawNineSlice(const Sprite& s, int x, int y, int w, int h) const 
         }
 }
 
-void MenuSkin::drawText(const Font& font, std::string_view text, int x, int cy) {
-    const GlyphRect& cap = font.def().glyph('A').text;
+void MenuSkin::drawText(std::string_view text, int x, int cy, uint32_t color) const {
+    const GlyphRect& cap = font_.def().glyph('A').text;
     const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
-    font.drawText(text, (float)(x * S), (float)(baseline * S), S);
+    font_.drawText(text, (float)(x * S), (float)(baseline * S), S, color);
 }
 
 void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {
-    drawText(light_, text, cx - light_.textWidth(text) / 2, cy);
+    drawText(text, cx - font_.textWidth(text) / 2, cy, TEXT_LIGHT);
 }
 
-void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bool pressed) const {
-    drawNineSlice(pressed ? buttonPressed_ : button_, x, y, w, h);
-    const int drop = pressed ? PRESS_DROP : 0;
-    drawText(dark_, label, x + (w - dark_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop);
-}
-
-void MenuSkin::drawCursor(int x, int y, int w, int h) const {
-    drawNineSlice(cursor_, x - CURSOR_OUTSET, y, w + 2 * CURSOR_OUTSET, h);
+void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, Button state) const {
+    drawNineSlice(state == Button::Pressed ? buttonPressed_ : state == Button::Selected ? buttonSelected_ : button_, x, y, w, h);
+    const int drop = state == Button::Pressed ? PRESS_DROP : 0;
+    drawText(label, x + (w - font_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop, TEXT_DARK);
 }
 
 void MenuSkin::drawLabel(std::string_view text, int x, int cy, bool selected) const {
-    drawText(selected ? light_ : label_, text, x, cy);
+    drawText(text, x, cy, selected ? TEXT_LIGHT : TEXT_GRAY);
 }
 
 void MenuSkin::drawSlider(int x, int y, int w, float value, bool selected) const {
@@ -133,9 +133,8 @@ void MenuSkin::drawSlider(int x, int y, int w, float value, bool selected) const
     draw(handle, handleX, y);
 }
 
-float MenuSkin::sliderValueAt(float screenX, int x, int w) {
-    // The handle's middle follows the stylus.
-    return std::clamp((screenX / S - x - HANDLE_W / 2.0f) / (w - HANDLE_W), 0.0f, 1.0f);
+float MenuSkin::sliderValueAt(float touchX, int x, int w) {
+    return std::clamp((touchX - x - HANDLE_W / 2.0f) / (w - HANDLE_W), 0.0f, 1.0f);
 }
 
 void MenuSkin::drawToggle(int x, int y, bool on, bool selected) const {
