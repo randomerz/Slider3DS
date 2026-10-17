@@ -138,7 +138,10 @@ struct ObjectCollider {
     X(KnotPartlySolved, "KnotBox.CheckPuzzlePartial") \
     X(RuinsRodsOn, "RuinsArrow.CheckActiveRods")      \
     X(ChadFell, "ChadJump.ChadFell")                  \
-    X(ChadTipped, "VillageChadJump.DidSlideAfterJumping")
+    X(ChadTipped, "VillageChadJump.DidSlideAfterJumping") \
+    X(CatMittens, "CatTrick.CheckMittens")            \
+    X(CatAutumn, "CatTrick.CheckAutumn")              \
+    X(CatTofu, "CatTrick.CheckTofu")
 
 // One Condition (Condition.cs) as exported. Spec conditions the port doesn't check load as Unsupported.
 struct ConditionDef {
@@ -156,7 +159,7 @@ struct ConditionDef {
     Spec spec = Spec(0);              // Spec: which check (name: its exported method)
     int specTarget = -1;              // Spec: the object its check runs on (e.g. the KnotBox)
     int data = -1;                    // KnotSolved / KnotPartlySolved: Area::knotBoxes index; RuinsRodsOn: Area::ruinsArrows;
-                                      // ChadFell / ChadTipped: Area::chadJumps
+                                      // ChadFell / ChadTipped: Area::chadJumps; CatMittens / CatAutumn / CatTofu: Area::catTricks
 };
 
 // The UnityEvent methods the port runs, as X(enum name, exported "<TargetType>.<Method>"):
@@ -378,9 +381,10 @@ struct NpcCondDef {
     std::vector<CallDef> onEnter, onExhausted;  // onConditionalEnter, onDialogueChainExhausted
 };
 
-// Where and how an NPC's DialogueDisplay types: TMP text in a box (owner-relative world units,
-// inside its margins), centered, bottom-aligned, word-wrapped, in the dialogue font.
-struct NpcTextDef {
+// Where and how world-space TMP text in the dialogue style shows (an NPC's DialogueDisplay types
+// there; CatTrick's count): in a box (owner-relative world units, inside its margins), centered,
+// bottom-aligned, word-wrapped, in the dialogue font.
+struct TextBoxDef {
     float minX = 0, minY = 0, maxX = 0, maxY = 0;
     float lineAdvance = 0.43f, wordSpacing = 0, charSpacing = 0; // world units
     int sortLayer = 0, order = 0; // its canvas
@@ -408,7 +412,7 @@ struct NpcDef {
     int object = 0;
     std::string name;   // characterName
     bool facingLeft = false; // spriteDefaultFacingLeft (for walks: not read yet)
-    NpcTextDef text;
+    TextBoxDef text;
     int pingObject = -1; // the message ping (a world sprite; shown while the chain isn't exhausted), -1 = none
     NpcEmoteDef emote;
     int animator = -1; // Area::animators index of its NPCAnimatorController's Animator, -1 = none
@@ -545,6 +549,17 @@ struct RuinsArrowDef {
 // ChadJump, with the VillageChadJump on the same object (Chad, holding the Ruins Fragment): JumpStarter
 // moves him onto a rock along two curves; once up, a slide of his own STile makes him tip, fall
 // off and drop the item, and (VillageChadJump) other slides make him tip for a while.
+// CatTrick (Cathy's cats): a cat item whose collider (on: not carried) overlaps the detection zone
+// counts as returned for good (game/village/cat_trick); while 1 or 2 are back, "n/3" shows.
+struct CatTrickDef {
+    static constexpr int CATS = 3;
+    int object = -1;                             // the CatTrick (its zone is placed with it)
+    float zoneMinX = 0, zoneMinY = 0, zoneMaxX = 0, zoneMaxY = 0; // detectionZone, owner-relative
+    int cats[CATS] = {-1, -1, -1};               // Area::items: mittens, autumn, tofu
+    int textObjects[2] = {-1, -1};               // text and backgroundText (UpdateText switches them)
+    TextBoxDef text;                             // where the count shows
+};
+
 struct ChadJumpDef {
     int object = -1;              // the ChadJump (its transform moves: start -> jump -> fall)
     int renderer = -1;            // npcRenderer's object (sorting order 1 from the jump until he lands)
@@ -694,6 +709,7 @@ struct Area {
     std::vector<KnotBoxDef> knotBoxes;
     std::vector<RuinsArrowDef> ruinsArrows;
     std::vector<ChadJumpDef> chadJumps;
+    std::vector<CatTrickDef> catTricks;
     std::vector<ParticlesDef> particles;
     PlayerActionDef playerAction;
     std::vector<AnimatorControllerDef> animatorControllers;

@@ -53,11 +53,11 @@ public:
     int lastSpriteCount() const { return spriteCount_; } // sprites drawn since begin()
 
 private:
-    enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue, Line, Particle }; // tie order at equal sort keys
+    enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue, Text, Line, Particle }; // tie order at equal sort keys
     struct Item {
         ItemKind kind;
         // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order; Emote, Dialogue:
-        // Area::npcs; Line: lines_; Particle: World::particles
+        // Area::npcs; Text: Area::catTricks; Line: lines_; Particle: World::particles
         int index;
         SortedSprite sprite; // sort keys (all kinds) and what to draw (sprites)
     };
@@ -69,6 +69,11 @@ private:
     void drawLayer(const Area& area, const Grid& grid, const TileLayer& L);
     void drawSprite(const Area& area, const SortedSprite& sp); // if on screen
     void drawDialogue(const World& world, int npc);
+    void drawCatCount(const World& world, int catTrick); // CatTrick's "n/3"
+    // `text` laid out as `glyphs` in a box whose bottom-left is at screen (sx, sy): every backing,
+    // then the letters; `typer` (null = all shown, still) reveals and waves them.
+    void drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace>& glyphs, float sx, float sy,
+                    const Typer* typer);
     void drawLine(const LineDraw& l);
     void drawParticle(const Particles::Particle& p);
     // Screen top-left of `sp`; false if it is off screen.
@@ -87,4 +92,10 @@ private:
         std::vector<GlyphPlace> glyphs;
     };
     std::vector<Layout> layouts_; // per NPC: its line's layout, redone when the line changes
+    struct CountLayout {
+        int count = -1; // the count it was laid out for
+        DialogueText text;
+        std::vector<GlyphPlace> glyphs;
+    };
+    std::vector<CountLayout> countLayouts_; // per CatTrick
 };

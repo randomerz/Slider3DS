@@ -11930,7 +11930,8 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             }
           ],
           "anyOf": false,
@@ -11965,7 +11966,8 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             }
           ],
           "anyOf": false,
@@ -12000,7 +12002,8 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             }
           ],
           "anyOf": false,
@@ -12035,12 +12038,14 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             }
           ],
           "anyOf": false,
@@ -12075,12 +12080,14 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             }
           ],
           "anyOf": false,
@@ -12115,12 +12122,14 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             }
           ],
           "anyOf": false,
@@ -12257,17 +12266,20 @@
             {
               "type": "spec",
               "spec": "CatTrick.CheckAutumn",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckMittens",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             },
             {
               "type": "spec",
               "spec": "CatTrick.CheckTofu",
-              "specTarget": 507
+              "specTarget": 507,
+              "catTrick": 0
             }
           ],
           "anyOf": false,
@@ -14263,6 +14275,30 @@
       }
     }
   ],
+  "catTricks": [
+    {
+      "object": 507,
+      "zone": [-7.5,-147.5,-2.5,-139.5],
+      "cats": [
+        10,
+        8,
+        14
+      ],
+      "textObjects": [
+        540,
+        541
+      ],
+      "text": {
+        "box": [-5.42,-144.7,1.42,-142.55],
+        "fontSize": 1,
+        "lineAdvance": 0.4309,
+        "wordSpacing": -0.1,
+        "charSpacing": 0,
+        "sortingLayerValue": 9,
+        "order": 0
+      }
+    }
+  ],
   "particles": [
     {
       "object": 527,
@@ -14766,7 +14802,7 @@
       "order": 0
     },
     {
-      "object": 539,
+      "object": 542,
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
@@ -14780,105 +14816,6 @@
         [192,96,192,255]
       ],
       "colorsFixed": true,
-      "shapeRadius": 0.1,
-      "rate": [2,3],
-      "bursts": [
-      ],
-      "force": [0,1],
-      "limitVelocity": {
-        "limit": 0.05,
-        "dampen": 0.05,
-        "drag": 50,
-        "dragBySize": true,
-        "dragByVelocity": true
-      },
-      "alpha": [
-        [0,1],
-        [0.75,1],
-        [1,0]
-      ],
-      "sortingLayerValue": 9,
-      "order": 0
-    },
-    {
-      "object": 540,
-      "playOnAwake": true,
-      "loop": true,
-      "duration": 6000,
-      "lifetime": [1.5,2],
-      "speed": [0.5,1],
-      "size": 0.0625,
-      "colorTimes": [0],
-      "colors": [
-        [230,230,230,255]
-      ],
-      "colorsFixed": false,
-      "shapeRadius": 0.1,
-      "rate": [2,3],
-      "bursts": [
-      ],
-      "force": [0,1],
-      "limitVelocity": {
-        "limit": 0.05,
-        "dampen": 0.05,
-        "drag": 50,
-        "dragBySize": true,
-        "dragByVelocity": true
-      },
-      "alpha": [
-        [0,1],
-        [0.75,1],
-        [1,0]
-      ],
-      "sortingLayerValue": 9,
-      "order": 0
-    },
-    {
-      "object": 541,
-      "playOnAwake": true,
-      "loop": true,
-      "duration": 6000,
-      "lifetime": [1.5,2],
-      "speed": [0.5,1],
-      "size": 0.0625,
-      "colorTimes": [0],
-      "colors": [
-        [230,230,230,255]
-      ],
-      "colorsFixed": false,
-      "shapeRadius": 0.1,
-      "rate": [2,3],
-      "bursts": [
-      ],
-      "force": [0,1],
-      "limitVelocity": {
-        "limit": 0.05,
-        "dampen": 0.05,
-        "drag": 50,
-        "dragBySize": true,
-        "dragByVelocity": true
-      },
-      "alpha": [
-        [0,1],
-        [0.75,1],
-        [1,0]
-      ],
-      "sortingLayerValue": 9,
-      "order": 0
-    },
-    {
-      "object": 542,
-      "playOnAwake": true,
-      "loop": true,
-      "duration": 6000,
-      "lifetime": [1.5,2],
-      "speed": [0.5,1],
-      "size": 0.0625,
-      "colorTimes": [0],
-      "colors": [
-        [230,230,230,255]
-      ],
-      "colorsFixed": false,
       "shapeRadius": 0.1,
       "rate": [2,3],
       "bursts": [
@@ -14937,8 +14874,8 @@
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
-      "lifetime": [2,2.5],
-      "speed": [1,2],
+      "lifetime": [1.5,2],
+      "speed": [0.5,1],
       "size": 0.0625,
       "colorTimes": [0],
       "colors": [
@@ -14946,20 +14883,14 @@
       ],
       "colorsFixed": false,
       "shapeRadius": 0.1,
-      "rate": [3,5],
+      "rate": [2,3],
       "bursts": [
-        {
-          "time": 0,
-          "count": [10,10],
-          "cycles": 1,
-          "interval": 0.01
-        }
       ],
       "force": [0,1],
       "limitVelocity": {
         "limit": 0.05,
         "dampen": 0.05,
-        "drag": 30,
+        "drag": 50,
         "dragBySize": true,
         "dragByVelocity": true
       },
@@ -15042,8 +14973,8 @@
       "playOnAwake": true,
       "loop": true,
       "duration": 6000,
-      "lifetime": [1.5,2],
-      "speed": [0.5,1],
+      "lifetime": [2,2.5],
+      "speed": [1,2],
       "size": 0.0625,
       "colorTimes": [0],
       "colors": [
@@ -15051,14 +14982,20 @@
       ],
       "colorsFixed": false,
       "shapeRadius": 0.1,
-      "rate": [2,3],
+      "rate": [3,5],
       "bursts": [
+        {
+          "time": 0,
+          "count": [10,10],
+          "cycles": 1,
+          "interval": 0.01
+        }
       ],
       "force": [0,1],
       "limitVelocity": {
         "limit": 0.05,
         "dampen": 0.05,
-        "drag": 50,
+        "drag": 30,
         "dragBySize": true,
         "dragByVelocity": true
       },
@@ -15267,6 +15204,105 @@
       ],
       "sortingLayerValue": 9,
       "order": 0
+    },
+    {
+      "object": 554,
+      "playOnAwake": true,
+      "loop": true,
+      "duration": 6000,
+      "lifetime": [1.5,2],
+      "speed": [0.5,1],
+      "size": 0.0625,
+      "colorTimes": [0],
+      "colors": [
+        [230,230,230,255]
+      ],
+      "colorsFixed": false,
+      "shapeRadius": 0.1,
+      "rate": [2,3],
+      "bursts": [
+      ],
+      "force": [0,1],
+      "limitVelocity": {
+        "limit": 0.05,
+        "dampen": 0.05,
+        "drag": 50,
+        "dragBySize": true,
+        "dragByVelocity": true
+      },
+      "alpha": [
+        [0,1],
+        [0.75,1],
+        [1,0]
+      ],
+      "sortingLayerValue": 9,
+      "order": 0
+    },
+    {
+      "object": 555,
+      "playOnAwake": true,
+      "loop": true,
+      "duration": 6000,
+      "lifetime": [1.5,2],
+      "speed": [0.5,1],
+      "size": 0.0625,
+      "colorTimes": [0],
+      "colors": [
+        [230,230,230,255]
+      ],
+      "colorsFixed": false,
+      "shapeRadius": 0.1,
+      "rate": [2,3],
+      "bursts": [
+      ],
+      "force": [0,1],
+      "limitVelocity": {
+        "limit": 0.05,
+        "dampen": 0.05,
+        "drag": 50,
+        "dragBySize": true,
+        "dragByVelocity": true
+      },
+      "alpha": [
+        [0,1],
+        [0.75,1],
+        [1,0]
+      ],
+      "sortingLayerValue": 9,
+      "order": 0
+    },
+    {
+      "object": 556,
+      "playOnAwake": true,
+      "loop": true,
+      "duration": 6000,
+      "lifetime": [1.5,2],
+      "speed": [0.5,1],
+      "size": 0.0625,
+      "colorTimes": [0],
+      "colors": [
+        [230,230,230,255]
+      ],
+      "colorsFixed": false,
+      "shapeRadius": 0.1,
+      "rate": [2,3],
+      "bursts": [
+      ],
+      "force": [0,1],
+      "limitVelocity": {
+        "limit": 0.05,
+        "dampen": 0.05,
+        "drag": 50,
+        "dragBySize": true,
+        "dragByVelocity": true
+      },
+      "alpha": [
+        [0,1],
+        [0.75,1],
+        [1,0]
+      ],
+      "sortingLayerValue": 9,
+      "order": 0
     }
   ],
   "fadeDuration": 1,
@@ -15291,7 +15327,7 @@
       "hole": 186
     },
     "ruinsFragment": 9,
-    "slider8Floor": 554
+    "slider8Floor": 557
   },
   "objects": [
     {
@@ -19066,6 +19102,27 @@
       "active": true,
       "owner": 2,
       "pos": [-8.5,10]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/CatTrick/Canvas",
+      "parent": 507,
+      "active": true,
+      "owner": 9,
+      "pos": [-2,-145.25]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/CatTrick/Canvas/Dialogue",
+      "parent": 539,
+      "active": true,
+      "owner": 9,
+      "pos": [-2,-143.75]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/House Tile Maps/Decorations/Small House/CatTrick/Canvas/Dialogue BG Font",
+      "parent": 539,
+      "active": true,
+      "owner": 9,
+      "pos": [-2,-143.87]
     },
     {
       "path": "Map/Village 8Puzzle/STile (1)/Objects/Boomo/Sprite/MagiTechSparklesConstant Variant",

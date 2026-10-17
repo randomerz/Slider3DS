@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "game/village/cat_trick.h"
 #include "platform/platform.h"
 
 void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
@@ -114,6 +115,20 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         it.sprite.sortY = y;
         items_.push_back(it);
     }
+    // CatTrick's count: a world-space canvas like the dialogue's, while UpdateText has it on.
+    for (int i = 0; i < (int)area.catTricks.size(); i++) {
+        const CatTrickDef& c = area.catTricks[i];
+        if (!font_ || !inRange(c.text.sortLayer) || !objects.activeInHierarchy(c.textObjects[0]) ||
+            !ownerShown(objects.owner(c.object)))
+            continue;
+        float x, y;
+        world.objectPosition(c.textObjects[0], x, y);
+        Item it{ItemKind::Text, i, {}};
+        it.sprite.sortLayer = c.text.sortLayer;
+        it.sprite.order = c.text.order;
+        it.sprite.sortY = y;
+        items_.push_back(it);
+    }
     // Knot lines (LineRenderers, as KnotBox left them this frame): sorted by their bounds' center.
     lines_.clear();
     for (int b = 0; b < (int)area.knotBoxes.size(); b++) {
@@ -179,6 +194,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     for (const Item& it : items_) {
         if (it.kind == ItemKind::Layer) drawLayer(area, grid, area.layers[it.index]);
         else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
+        else if (it.kind == ItemKind::Text) drawCatCount(world, it.index);
         else if (it.kind == ItemKind::Line) drawLine(lines_[it.index]);
         else if (it.kind == ItemKind::Particle) drawParticle(particles[it.index]);
         else drawSprite(area, it.sprite);
@@ -219,17 +235,37 @@ void AreaView::drawDialogue(const World& world, int npc) {
         layoutDialogue(font_->def(), text, n.text, ppu_, layout.glyphs);
         layout.textVersion = world.npcs.textVersion(npc);
     }
-    const std::vector<GlyphPlace>& glyphs = layout.glyphs;
     float bx, by, sx, sy;
     world.objectBase(n.object, bx, by);
     worldToScreen(bx + n.text.minX, by + n.text.minY, sx, sy); // the box's bottom-left
+    drawGlyphs(text, layout.glyphs, sx, sy, &typer);
+}
+
+void AreaView::drawCatCount(const World& world, int catTrick) {
+    const CatTrickDef& c = world.area.catTricks[catTrick];
+    if (countLayouts_.size() != world.area.catTricks.size()) countLayouts_.assign(world.area.catTricks.size(), CountLayout());
+    CountLayout& layout = countLayouts_[catTrick];
+    const int count = village::CatTricks::count(world);
+    if (layout.count != count) {
+        layout.text = parseDialogue(village::CatTricks::text(count), world.state);
+        layoutDialogue(font_->def(), layout.text, c.text, ppu_, layout.glyphs);
+        layout.count = count;
+    }
+    float bx, by, sx, sy;
+    world.objectBase(c.object, bx, by);
+    worldToScreen(bx + c.text.minX, by + c.text.minY, sx, sy);
+    drawGlyphs(layout.text, layout.glyphs, sx, sy, nullptr);
+}
+
+void AreaView::drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace>& glyphs, float sx, float sy,
+                          const Typer* typer) {
     // Every backing first, then the letters (the BG font's text renders under the text's).
     for (int pass = 0; pass < 2; pass++) {
         for (int i = 0; i < (int)text.chars.size(); i++) {
-            if (!glyphVisible(text.chars[i]) || !typer.shown(i)) continue;
+            if (!glyphVisible(text.chars[i]) || (typer && !typer->shown(i))) continue;
             const Glyph& g = font_->def().glyph(text.chars[i]);
             const GlyphRect& r = pass == 0 ? g.fill : g.text;
-            const float y = sy - glyphs[i].y - typer.waveOffset(i) * ppu_;
+            const float y = sy - glyphs[i].y - (typer ? typer->waveOffset(i) * ppu_ : 0);
             font_->draw(r, sx + glyphs[i].x + r.ox, y + r.oy);
             spriteCount_++;
         }

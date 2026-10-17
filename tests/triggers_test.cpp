@@ -339,8 +339,7 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         const size_t end = report.find(ss, at);
         if (end != std::string::npos) reportedSpecs.insert(report.substr(at + sp.size(), end - at - sp.size()));
     }
-    const std::set<std::string> expectedSpecs = {"CatTrick.CheckAutumn", "CatTrick.CheckMittens", "CatTrick.CheckTofu",
-                                                 "Player.GetIsOnWater"};
+    const std::set<std::string> expectedSpecs = {"Player.GetIsOnWater"};
     std::string got2;
     for (const std::string& n : specs) got2 += n + ", ";
     check(specs == expectedSpecs, "unsupported spec conditions: " + got2);

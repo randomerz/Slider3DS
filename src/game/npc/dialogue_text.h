@@ -33,7 +33,7 @@ struct GlyphPlace {
 // words wrap at the box width (a word wider than it gets its own line), lines are centered, and
 // the last line's descender sits on the box bottom (text grows upward). A trailing line break adds
 // no empty line (TMP aligns by the characters' descenders).
-void layoutDialogue(const FontDef& font, const DialogueText& text, const NpcTextDef& box, float ppu,
+void layoutDialogue(const FontDef& font, const DialogueText& text, const TextBoxDef& box, float ppu,
                     std::vector<GlyphPlace>& out);
 
 // TMPTextTyper with fadeTextIn (the NPC prefab's), and the TMPSpecialText effect clocks:

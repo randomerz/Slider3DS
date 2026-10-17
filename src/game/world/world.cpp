@@ -151,6 +151,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     }
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
     items.update(*this, dt); // (PlayerAction.Update: the carried item follows, the drop spot)
+    cats.update(*this);      // (CatTrick.Update: a cat dropped in the zone is back)
 
     // Start runs before an object's first update (here: before triggers can touch it), and again
     // for what calls activated. Each skips when nothing became active.

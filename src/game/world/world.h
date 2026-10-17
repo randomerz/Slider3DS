@@ -22,6 +22,7 @@
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
 #include "game/village/knot_box.h"
+#include "game/village/cat_trick.h"
 #include "game/village/chad_jump.h"
 #include "game/village/final_puzzle.h"
 #include "game/village/ruins_arrow.h"
@@ -122,6 +123,7 @@ public:
     village::KnotBoxes knots; // the knot puzzle's lines (Village)
     village::RuinsArrows ruins; // the ruins arrow, its rods and trail (Village)
     village::ChadJumps chad;    // Chad's jump onto the rock and fall (Village)
+    village::CatTricks cats;    // Cathy's cats returned (Village)
     village::FinalPuzzle finale; // the fragment in the hole, the shuffle, the final 8-puzzle (Village)
     GameState state;
     Player player;

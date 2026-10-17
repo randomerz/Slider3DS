@@ -33,8 +33,8 @@ const FontDef& dialogueFont() {
 }
 
 // The NPC prefab's text box (7 x 1.9 units less margins, 0.55 above the NPC).
-NpcTextDef prefabBox() {
-    NpcTextDef box;
+TextBoxDef prefabBox() {
+    TextBoxDef box;
     box.minX = -3.42f;
     box.maxX = 3.42f;
     box.minY = 0.55f;
@@ -230,7 +230,7 @@ TEST(dialogue_parse_replaces_vars_and_marks_effects) {
 
 TEST(dialogue_layout_wraps_centers_and_bottom_aligns) {
     const FontDef& font = dialogueFont();
-    const NpcTextDef box = prefabBox();
+    const TextBoxDef box = prefabBox();
     const float ppu = 16, width = (box.maxX - box.minX) * ppu;
     GameState state;
     const DialogueText t = parseDialogue("Please bring my beloved back, lest I drink this poison! Oh woe is me.", state);

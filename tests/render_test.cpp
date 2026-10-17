@@ -510,3 +510,29 @@ TEST(render_npc_dialogue_goldens) {
     world.update(1.0f / 60.0f, 0, 0, false);
     shoot("exploresse_typed");
 }
+
+TEST(render_cat_count_golden) {
+    // Cathy's house with Mittens returned: CatTrick's "1/3" in the dialogue font.
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    Font font;
+    AreaView view;
+    std::string error;
+    check(sheets.load(area) && font.load("fonts/dialogue.json", &error), "sheets and font load " + error);
+    view.setFont(&font);
+    GoldenSet goldens("cats.txt");
+    World world(area, DEFAULT_SETTINGS);
+    world.setTileActive(9, true);
+    world.reloadObjects();
+    const CatTrickDef& c = area.catTricks[0];
+    float bx, by;
+    world.objectBase(c.object, bx, by);
+    const float x = bx + (c.zoneMinX + c.zoneMaxX) / 2, y = by + (c.zoneMinY + c.zoneMaxY) / 2;
+    world.items.drop(world, c.cats[0], x, y);
+    for (int i = 0; i < 40; i++) world.update(1.0f / 60.0f, 0, 0, true);
+    check(world.objects.activeInHierarchy(c.textObjects[0]), "the count shows");
+    testResetDrawCalls();
+    view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
+    view.draw(world);
+    goldens.compare("cat_count_1_of_3", 50);
+}

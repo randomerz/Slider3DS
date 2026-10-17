@@ -71,7 +71,7 @@ DialogueText parseDialogue(const std::string& raw, const GameState& state) {
     return out;
 }
 
-void layoutDialogue(const FontDef& font, const DialogueText& text, const NpcTextDef& box, float ppu,
+void layoutDialogue(const FontDef& font, const DialogueText& text, const TextBoxDef& box, float ppu,
                     std::vector<GlyphPlace>& out) {
     const std::string& s = text.chars;
     out.assign(s.size(), GlyphPlace());

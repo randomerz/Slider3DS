@@ -263,6 +263,11 @@ static ConditionDef readCondition(const Json& c) {
             d.data = c["chadJump"].asInt(-1);
             if (!c.has("chadJump")) d.type = T::Unsupported;
         }
+        if (d.type == T::Spec && (d.spec == ConditionDef::Spec::CatMittens || d.spec == ConditionDef::Spec::CatAutumn ||
+                                  d.spec == ConditionDef::Spec::CatTofu)) {
+            d.data = c["catTrick"].asInt(-1);
+            if (!c.has("catTrick")) d.type = T::Unsupported;
+        }
     }
     return d;
 }
@@ -456,21 +461,40 @@ static void readObjectCollider(const Json& j, ObjectCollider& c) {
     }
 }
 
+static TextBoxDef readTextBox(const Json& t) {
+    TextBoxDef b;
+    b.minX = t["box"].at(0).asFloat();
+    b.minY = t["box"].at(1).asFloat();
+    b.maxX = t["box"].at(2).asFloat();
+    b.maxY = t["box"].at(3).asFloat();
+    b.lineAdvance = t["lineAdvance"].asFloat(0.43f);
+    b.wordSpacing = t["wordSpacing"].asFloat();
+    b.charSpacing = t["charSpacing"].asFloat();
+    b.sortLayer = t["sortingLayerValue"].asInt();
+    b.order = t["order"].asInt();
+    return b;
+}
+
+static CatTrickDef readCatTrick(const Json& j) {
+    CatTrickDef d;
+    d.object = j["object"].asInt(-1);
+    const Json& z = j["zone"];
+    d.zoneMinX = z.at(0).asFloat();
+    d.zoneMinY = z.at(1).asFloat();
+    d.zoneMaxX = z.at(2).asFloat();
+    d.zoneMaxY = z.at(3).asFloat();
+    for (int i = 0; i < CatTrickDef::CATS; i++) d.cats[i] = j["cats"].at(i).asInt(-1);
+    for (int i = 0; i < 2; i++) d.textObjects[i] = j["textObjects"].at(i).asInt(-1);
+    d.text = readTextBox(j["text"]);
+    return d;
+}
+
 static NpcDef readNpc(const Json& j, Area& out) {
     NpcDef n;
     n.object = j["object"].asInt(-1);
     n.name = j["name"].asString();
     n.facingLeft = j["facingLeft"].asBool();
-    const Json& t = j["text"];
-    n.text.minX = t["box"].at(0).asFloat();
-    n.text.minY = t["box"].at(1).asFloat();
-    n.text.maxX = t["box"].at(2).asFloat();
-    n.text.maxY = t["box"].at(3).asFloat();
-    n.text.lineAdvance = t["lineAdvance"].asFloat(0.43f);
-    n.text.wordSpacing = t["wordSpacing"].asFloat();
-    n.text.charSpacing = t["charSpacing"].asFloat();
-    n.text.sortLayer = t["sortingLayerValue"].asInt();
-    n.text.order = t["order"].asInt();
+    n.text = readTextBox(j["text"]);
     n.pingObject = j["pingObject"].asInt(-1);
     if (j.has("animator")) {
         const Json& a = j["animator"];
@@ -778,6 +802,9 @@ static bool validate(const Area& a, std::string* error) {
                 (d.data < 0 || d.data >= (int)a.chadJumps.size() || a.chadJumps[d.data].object != d.specTarget ||
                  (d.spec == S::ChadTipped && !a.chadJumps[d.data].tips)))
                 return false;
+            if ((d.spec == S::CatMittens || d.spec == S::CatAutumn || d.spec == S::CatTofu) &&
+                (d.data < 0 || d.data >= (int)a.catTricks.size() || a.catTricks[d.data].object != d.specTarget))
+                return false;
         }
         return true;
     };
@@ -844,6 +871,14 @@ static bool validate(const Area& a, std::string* error) {
                         (!c.tips || (c.timeTipped >= 0 && c.tipNpc >= 0 && c.tipNpc < (int)a.npcs.size() && c.tipAnimator >= 0 &&
                                      c.tipAnimator < (int)a.animators.size()));
         if (!ok) return fail(error, "chad jump: bad object, renderer, animator, collider, item, island, owner or call");
+    }
+    for (const CatTrickDef& c : a.catTricks) {
+        bool ok = objectOk(c.object) && objectOk(c.textObjects[0]) && objectOk(c.textObjects[1]) &&
+                  c.zoneMinX < c.zoneMaxX && c.zoneMinY < c.zoneMaxY;
+        for (int cat : c.cats) // (the zone tests each cat's collider)
+            ok = ok && cat >= 0 && cat < (int)a.items.size() && a.items[cat].colliderSlot >= 0 &&
+                 a.items[cat].colliderSlot < (int)a.objectColliders.size();
+        if (!ok) return fail(error, "cat trick: bad object, zone, cat or text object");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");
@@ -988,6 +1023,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& j : doc["knotBoxes"].items()) out.knotBoxes.push_back(readKnotBox(j));
     for (const Json& j : doc["ruinsArrows"].items()) out.ruinsArrows.push_back(readRuinsArrow(j));
     for (const Json& j : doc["chadJumps"].items()) out.chadJumps.push_back(readChadJump(j, out));
+    for (const Json& j : doc["catTricks"].items()) out.catTricks.push_back(readCatTrick(j));
     for (const Json& j : doc["particles"].items()) out.particles.push_back(readParticles(j));
     if (doc.has("playerAction")) {
         const Json& pa = doc["playerAction"];

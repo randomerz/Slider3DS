@@ -1,5 +1,6 @@
 #include "game/village/village_grid.h"
 
+#include "game/village/cat_trick.h"
 #include "game/village/knot_box.h"
 #include "game/world/world.h"
 
@@ -41,6 +42,9 @@ bool checkSpec(const World& world, const ConditionDef& c) {
     case ConditionDef::Spec::RuinsRodsOn: return world.ruins.rodsOn(c.data);              // RuinsArrow.CheckActiveRods
     case ConditionDef::Spec::ChadFell: return world.chad.fell(c.data);                   // ChadJump.ChadFell
     case ConditionDef::Spec::ChadTipped: return world.chad.slidAfterJumping(c.data);     // DidSlideAfterJumping
+    case ConditionDef::Spec::CatMittens: return world.state.flag(CAT_FLAGS[0]);          // CatTrick.CheckMittens
+    case ConditionDef::Spec::CatAutumn: return world.state.flag(CAT_FLAGS[1]);           // CheckAutumn
+    case ConditionDef::Spec::CatTofu: return world.state.flag(CAT_FLAGS[2]);             // CheckTofu
     }
     return false;
 }
@@ -53,6 +57,9 @@ bool specReadsOnlyStateAndGrid(ConditionDef::Spec spec) {
     case ConditionDef::Spec::RuinsRodsOn: return false;      // the rods as of the last tile arrival
     case ConditionDef::Spec::ChadFell:
     case ConditionDef::Spec::ChadTipped: return false;       // Chad's state
+    case ConditionDef::Spec::CatMittens:
+    case ConditionDef::Spec::CatAutumn:
+    case ConditionDef::Spec::CatTofu: return true;           // GameState flags (CatTrick's save keys)
     }
     return false;
 }
