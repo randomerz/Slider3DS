@@ -18,6 +18,7 @@
 #include "game/items/items.h"
 #include "game/npc/npcs.h"
 #include "game/world/object_states.h"
+#include "game/world/settings.h"
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
 #include "game/village/knot_box.h"
@@ -123,6 +124,7 @@ public:
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
+    Settings settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
 

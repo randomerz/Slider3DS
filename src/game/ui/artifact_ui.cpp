@@ -98,8 +98,9 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
         artifactResets_ = artifact.resets();
         deselect();
     }
-    // UIArtifact.GetAutoMoveActive: the save's "forceAutoMove<Area>" (the final puzzle sets it).
-    auto autoMove = [&] { return world.state.flag(autoMoveFlag_); };
+    // UIArtifact.GetAutoMoveActive: the save's "forceAutoMove<Area>" (the final puzzle sets it), or
+    // the player's autoMove setting.
+    auto autoMove = [&] { return world.settings.autoMove || world.state.flag(autoMoveFlag_); };
     const bool touching = in.touching;
     int sx = -1, sy = -1;
     const bool onSlot = touching && slotAtPixel(area, artifact, in.touchX, in.touchY, sx, sy);

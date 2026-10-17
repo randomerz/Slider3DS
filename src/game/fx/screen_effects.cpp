@@ -54,10 +54,10 @@ void ScreenEffects::flashWhite() {
 }
 
 void ScreenEffects::shake(float duration, float amount) {
-    shakes_.push_back({duration, amount * SHAKE_SETTING, 0, 0});
+    shakes_.push_back({duration, amount, 0, 0});
 }
 
-void ScreenEffects::update(const Area& area, float dt) {
+void ScreenEffects::update(const Area& area, float dt, float screenShake) {
     if (fade > 0) fade = area.fadeDuration > 0 ? std::max(0.0f, fade - dt / area.fadeDuration) : 0;
     // FlashCoroutine: t climbs to flashDuration / 2, then falls back below 0.
     if (flash_ != Flash::None && !std::exchange(flashFresh_, false)) {
@@ -77,7 +77,7 @@ void ScreenEffects::update(const Area& area, float dt) {
             shakes_.erase(shakes_.begin() + (long)i);
             continue;
         }
-        gain_ = std::max(gain_, mathf::lerp(s.start, s.end, s.duration > 0 ? s.elapsed / s.duration : 1));
+        gain_ = std::max(gain_, screenShake * mathf::lerp(s.start, s.end, s.duration > 0 ? s.elapsed / s.duration : 1));
         s.elapsed += dt;
         i++;
     }

@@ -151,7 +151,7 @@ TEST(final_shuffle_keeps_unity_frames) {
     // FlashSymbol(0) at once: shown, white, for flashTime from the next frame; a 0.25 shake.
     CHECK(shown(world) == "10000" && world.objects.fill(rs.symbols[0]) == rs.flashColor);
     frames(world, 1);
-    CHECK(std::fabs(world.effects.shakeGain() - 0.25f * ScreenEffects::SHAKE_SETTING) < 1e-6f);
+    CHECK(std::fabs(world.effects.shakeGain() - 0.25f * Settings().screenShake) < 1e-6f);
     frames(world, framesFor(0.25f, true) - 2); // (FlashWhiteSprite's waits are chained WaitForSeconds)
     CHECK(world.objects.fill(rs.symbols[0]) == rs.flashColor);
     frames(world, 1);
@@ -170,7 +170,7 @@ TEST(final_shuffle_keeps_unity_frames) {
     frames(w2, one - 1);
     CHECK(w2.objects.rendererEnabled(rs.symbols[2]) && !w2.objects.rendererEnabled(rs.symbols[3]));
     frames(w2, one - 1);
-    CHECK(w2.objects.rendererEnabled(rs.symbols[3]) && std::fabs(w2.effects.shakeGain() - 2.5f * ScreenEffects::SHAKE_SETTING) < 1e-6f);
+    CHECK(w2.objects.rendererEnabled(rs.symbols[3]) && std::fabs(w2.effects.shakeGain() - 2.5f * Settings().screenShake) < 1e-6f);
     const int quarter = framesFor(0.25f, true) - 1;
     frames(w2, quarter - 1);
     CHECK(w2.artifact.gridString(w2.grid) != "182_#43_765" && w2.effects.whiteAlpha(area) == 0);
@@ -282,28 +282,28 @@ TEST(screen_effects_shake_and_flash) {
     const Area& area = villageArea();
     ScreenEffects fx;
     fx.reset();
-    fx.update(area, DT);
+    fx.update(area, DT, Settings().screenShake);
     CHECK(fx.shakeGain() == 0 && fx.shakeX() == 0 && fx.shakeY() == 0);
     // CameraShake.Shake(1, 2): gain 2 * setting falling linearly to 0 over 1 s, then gone.
     fx.shake(1, 2);
-    fx.update(area, DT);
-    CHECK(fx.shakeGain() == 2 * ScreenEffects::SHAKE_SETTING);
+    fx.update(area, DT, Settings().screenShake);
+    CHECK(fx.shakeGain() == 2 * Settings().screenShake);
     float most = 0;
     bool moved = false;
     for (int f = 1; f < 30; f++) {
-        fx.update(area, DT);
+        fx.update(area, DT, Settings().screenShake);
         most = std::max(most, std::max(std::fabs(fx.shakeX()), std::fabs(fx.shakeY())));
         moved |= fx.shakeX() != 0;
     }
-    CHECK(std::fabs(fx.shakeGain() - (1 - 29 * DT) * 2 * ScreenEffects::SHAKE_SETTING) < 1e-4f);
+    CHECK(std::fabs(fx.shakeGain() - (1 - 29 * DT) * 2 * Settings().screenShake) < 1e-4f);
     float bound = 0; // the channels' amplitudes (a cosine's half, Perlin's half at most)
     for (const CameraShakeDef::Channel& ch : area.cameraShake.position) bound += std::max(ch.amplitude[0], ch.amplitude[1]);
-    CHECK(moved && most > 0 && most <= bound * 2 * ScreenEffects::SHAKE_SETTING);
-    for (int f = 0; f < 40; f++) fx.update(area, DT);
+    CHECK(moved && most > 0 && most <= bound * 2 * Settings().screenShake);
+    for (int f = 0; f < 40; f++) fx.update(area, DT, Settings().screenShake);
     CHECK(fx.shakeGain() == 0 && fx.shakeX() == 0);
     // A stronger shake wins while both run.
     fx.shake(1, 1);
     fx.shake(1, 3);
-    fx.update(area, DT);
-    CHECK(fx.shakeGain() == 3 * ScreenEffects::SHAKE_SETTING);
+    fx.update(area, DT, Settings().screenShake);
+    CHECK(fx.shakeGain() == 3 * Settings().screenShake);
 }

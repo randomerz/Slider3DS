@@ -125,6 +125,22 @@ TEST(artifact_ui_set_grid_drops_the_selection) {
     CHECK(f.ui.selected() == 0 && f.artifact.queueEmpty());
 }
 
+TEST(artifact_ui_auto_move_setting) {
+    // Settings.AutoMove does the same at any time: tile 5's single option, on a tap.
+    Fixture f(true);
+    f.world.settings.autoMove = true;
+    f.tap(1, 0);
+    CHECK(f.ui.selected() == 0);
+    check(f.artifact.gridString(f.grid) == "624_857_1#3", "auto-moved: " + f.artifact.gridString(f.grid));
+    f.settle();
+    f.drag(1, 1, 1, 0); // a drag still picks its own target (here: back down)
+    f.settle();
+    check(f.artifact.gridString(f.grid) == "624_8#7_153", "dragged back: " + f.artifact.gridString(f.grid));
+    f.world.settings.autoMove = false;
+    f.tap(1, 0); // off: a tap only selects
+    CHECK(f.ui.selected() == 5 && f.artifact.queueEmpty());
+}
+
 TEST(artifact_ui_auto_move) {
     // After the final shuffle a tile with a single option moves on tap (forceAutoMoveVillage).
     Fixture f(true); // all but 9 collected: the only empty slot is the middle

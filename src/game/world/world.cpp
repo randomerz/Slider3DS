@@ -167,7 +167,7 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     ruins.update(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
-    effects.update(area, dt); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
+    effects.update(area, dt, settings.screenShake); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
     frame++;
 }
 

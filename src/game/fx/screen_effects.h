@@ -10,17 +10,15 @@
 
 class ScreenEffects {
 public:
-    static constexpr float SHAKE_SETTING = 0.5f; // Settings.ScreenShake's default (SettingsManager)
-
     void reset(); // nothing showing; the noise from its start
 
     void fadeFromBlack() { fade = 1; } // UIEffectApplier.FadeFromBlack
     void flashWhite();                 // UIEffects.FlashWhite: white up over flashDuration / 2, then back
-    // CameraShake.Shake: `amount` (times the setting) falling to 0 over `duration` s.
+    // CameraShake.Shake: `amount` falling to 0 over `duration` s.
     void shake(float duration, float amount);
-    // One frame: the fade and flash advance; CameraShake.Update picks the strongest shake, then the
-    // camera's noise (CinemachineBasicMultiChannelPerlin) moves by it.
-    void update(const Area& area, float dt);
+    // One frame: the fade and flash advance; CameraShake.Update picks the strongest shake (times the
+    // screenShake setting), then the camera's noise (CinemachineBasicMultiChannelPerlin) moves by it.
+    void update(const Area& area, float dt, float screenShake);
 
     float whiteAlpha(const Area& area) const; // the white panel's alpha
     float shakeGain() const { return gain_; } // the noise's amplitude gain this frame
