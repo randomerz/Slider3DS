@@ -1,7 +1,7 @@
 // Village walkabout: the player walks the exported Village with the original's collision; the
 // camera follows. The new-game start is the Default spawn inside tile 1's house.
 //   D-pad / circle pad: walk          A: action (pick up / drop items, doors, NPC dialogue)
-//   START: pause (the options menu, game/ui/pause_menu: auto move, screen shake, quit)
+//   START: pause (game/ui/pause_menu: Resume, Options (screen shake, auto move), Quit)
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) start outdoors on tile 1 and add:
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
@@ -19,6 +19,7 @@
 #include "game/render/area_view.h"
 #include "game/save/settings.h"
 #include "game/ui/artifact_ui.h"
+#include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/dev/dev_overlay.h"
 #include "game/render/font.h"
@@ -74,8 +75,10 @@ int main(int, char**) {
     Area area;
     SpriteSheets sheets;
     Font font;
+    MenuSkin menuSkin;
     std::string error;
-    if (!loadArea("village/village.json", area, &error) || !sheets.load(area) || !font.load("fonts/dialogue.json", &error)) {
+    if (!loadArea("village/village.json", area, &error) || !sheets.load(area) || !font.load("fonts/dialogue.json", &error) ||
+        !menuSkin.load(&error)) {
         printf("Failed to load village: %s\n", error.c_str());
         showLoadError();
         plat::shutdown();
@@ -135,7 +138,7 @@ int main(int, char**) {
         if (pauseMenu.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
 
         plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));
-        if (pauseMenu.isOpen()) pauseMenu.draw(settings, font);
+        if (pauseMenu.isOpen()) pauseMenu.draw(settings, menuSkin);
         else artifactUI.draw(world, sheets);
         if (DEV) {
             overlay.record(plat::lastFrameStats(), updateMs, view.lastSpriteCount());
@@ -145,6 +148,7 @@ int main(int, char**) {
     }
     saveIfChanged(settings, savedSettings); // (closed while paused: HOME > Close, the PC window)
 
+    menuSkin.unload();
     font.unload();
     sheets.unload();
     plat::shutdown();

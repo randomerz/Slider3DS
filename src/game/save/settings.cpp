@@ -28,10 +28,16 @@ Settings Settings::parse(std::string_view text) {
         const float v = std::strtof(value.c_str(), &rest);
         if (value.empty() || *rest != '\0' || !std::isfinite(v)) continue;
         if (key == "autoMove") s.autoMove = v != 0;
-        else if (key == "screenShake") s.screenShake = std::clamp(v, 0.0f, 1.0f);
+        else if (key == "screenShake") s.setScreenShake(v);
     }
     return s;
 }
+
+void Settings::setScreenShake(float value) {
+    screenShake = std::lround(std::clamp(value, 0.0f, 1.0f) * SHAKE_STEPS) / (float)SHAKE_STEPS;
+}
+
+int Settings::screenShakeStep() const { return (int)std::lround(screenShake * SHAKE_STEPS); }
 
 Settings Settings::load() {
     std::string text;

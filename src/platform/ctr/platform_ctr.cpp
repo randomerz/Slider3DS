@@ -198,6 +198,16 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
     C2D_DrawImage(img, &p, nullptr);
 }
 
+void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, float w, float h) {
+    Tex3DS_SubTexture sub = {(u16)sw, (u16)sh, sx * tex->invW, 1.0f - sy * tex->invH,
+                             (sx + sw) * tex->invW, 1.0f - (sy + sh) * tex->invH};
+    C2D_Image img = {tex->image.tex, &sub};
+    C2D_DrawParams p = {};
+    p.pos = {x, y, w, h};
+    p.depth = 0.5f;
+    C2D_DrawImage(img, &p, nullptr);
+}
+
 void endFrame() { C3D_FrameEnd(0); }
 
 double nowMs() { return svcGetSystemTick() * 1000.0 / SYSCLOCK_ARM11; }

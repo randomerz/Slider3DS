@@ -8,7 +8,7 @@
 
 struct Settings {
     static constexpr const char* FILE_NAME = "settings.txt"; // a user file (plat::readUserFile)
-    static constexpr float SHAKE_STEP = 0.1f; // the options menu's screen shake steps
+    static constexpr int SHAKE_STEPS = 10; // the options menu's screen shake slider: 0-100% in 10% steps
 
     // A port feature (the user's "solve mode"): a tap on an Artifact tile with a single move option
     // moves it, as the save's forceAutoMove<Area> does during the final puzzle. Unity registers
@@ -17,11 +17,15 @@ struct Settings {
     // Settings.ScreenShake, 0-1: scales CameraShake's amounts.
     float screenShake = 0.5f;
 
+    // screenShake = `value` clamped to 0-1, snapped to the nearest step (so it saves and reads back exactly).
+    void setScreenShake(float value);
+    int screenShakeStep() const; // 0..SHAKE_STEPS
+
     bool operator==(const Settings& o) const { return autoMove == o.autoMove && screenShake == o.screenShake; }
     bool operator!=(const Settings& o) const { return !(*this == o); }
 
     // One "key=value" line per setting. Parsing keeps the defaults for missing, unknown or bad
-    // lines (an older or hand-edited file still loads) and clamps values into range.
+    // lines (an older or hand-edited file still loads) and clamps values into range (and onto steps).
     std::string serialize() const;
     static Settings parse(std::string_view text);
 

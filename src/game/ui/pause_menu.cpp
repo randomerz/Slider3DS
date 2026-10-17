@@ -1,137 +1,175 @@
 #include "game/ui/pause_menu.h"
 
-#include <algorithm>
-#include <cmath>
-#include <cstdio>
+#include <iterator>
 
 namespace {
 
-constexpr int ROW_X = 40, ROW_W = plat::BOTTOM_W - 2 * ROW_X, ROW_H = 32;
-constexpr int FIRST_ROW_Y = 64, ROW_PITCH = 40;
-constexpr int TEXT_SCALE = 2, TITLE_SCALE = 3;
-constexpr int PAD = 10; // text inset from a row's sides
+using Item = PauseMenu::Item;
 
-constexpr uint32_t ROW_COLOR = plat::rgba(0x2e, 0x2a, 0x26);
-constexpr uint32_t CURSOR_COLOR = plat::rgba(0x6a, 0x55, 0x3c);
-constexpr uint32_t CURSOR_EDGE = plat::rgba(0xe8, 0xd8, 0xb0);
+// UICanvas is 320x180 around the screen's center; the bottom screen is 240 tall, so a UI y (up from
+// the center) is at 120 - y.
+constexpr int CENTER_X = plat::BOTTOM_W / 2, CENTER_Y = plat::BOTTOM_H / 2;
+constexpr int TITLE_Y = CENTER_Y - 55;                  // "Paused Text" at y 55
+constexpr int BUTTON_W = 160, BUTTON_H = 20, PITCH = 22; // the pause buttons: 160x20, 22 apart
+constexpr int FIRST_Y = CENTER_Y - 22;                   // Resume at y 22
+// GeneralOptionsPanel's rows: 230 wide, the label at the left, the slider 125 px in, the toggle 150.
+constexpr int ROW_W = 230, ROW_X = CENTER_X - ROW_W / 2, SLIDER_DX = 125, TOGGLE_DX = 150;
+
+constexpr Item PAUSED_ITEMS[] = {PauseMenu::RESUME, PauseMenu::OPTIONS, PauseMenu::QUIT};
+constexpr Item OPTIONS_ITEMS[] = {PauseMenu::SCREEN_SHAKE, PauseMenu::AUTO_MOVE, PauseMenu::BACK};
+
+int rowCenter(Item item) {
+    switch (item) {
+    case PauseMenu::RESUME: case PauseMenu::SCREEN_SHAKE: return FIRST_Y;
+    case PauseMenu::OPTIONS: case PauseMenu::AUTO_MOVE: return FIRST_Y + PITCH;
+    case PauseMenu::QUIT: case PauseMenu::BACK: return FIRST_Y + 2 * PITCH;
+    }
+    return FIRST_Y;
+}
+
+bool isButton(Item item) { return item != PauseMenu::SCREEN_SHAKE && item != PauseMenu::AUTO_MOVE; }
 
 } // namespace
 
-void PauseMenu::rowRect(int row, int& x, int& y, int& w, int& h) {
-    x = ROW_X;
-    y = FIRST_ROW_Y + row * ROW_PITCH;
-    w = ROW_W;
-    h = ROW_H;
+PauseMenu::Box PauseMenu::itemBox(Item item) {
+    const int cy = rowCenter(item);
+    if (isButton(item)) return {CENTER_X - BUTTON_W / 2, cy - BUTTON_H / 2, BUTTON_W, BUTTON_H};
+    return {ROW_X, cy - MenuSkin::TOGGLE_SIZE / 2, ROW_W, MenuSkin::TOGGLE_SIZE};
+}
+
+PauseMenu::Box PauseMenu::sliderBox() {
+    return {ROW_X + SLIDER_DX, rowCenter(SCREEN_SHAKE) - MenuSkin::SLIDER_H / 2, MenuSkin::SLIDER_W, MenuSkin::SLIDER_H};
+}
+
+PauseMenu::Box PauseMenu::toggleBox() {
+    return {ROW_X + TOGGLE_DX, rowCenter(AUTO_MOVE) - MenuSkin::TOGGLE_SIZE / 2, MenuSkin::TOGGLE_SIZE,
+            MenuSkin::TOGGLE_SIZE};
+}
+
+PauseMenu::ItemList PauseMenu::items() const {
+    if (page_ == Page::Options) return {OPTIONS_ITEMS, (int)std::size(OPTIONS_ITEMS)};
+    return {PAUSED_ITEMS, (int)std::size(PAUSED_ITEMS)};
 }
 
 void PauseMenu::open() {
     open_ = true;
-    cursor_ = RESUME;
-    confirmQuit_ = false;
+    go(Page::Paused, RESUME);
     wasTouching_ = true; // (a touch held when the menu opens isn't a tap on it)
-    downRow_ = -1;
 }
 
-int PauseMenu::rowAt(int px, int py) const {
-    for (int row = 0; row < ROW_COUNT; row++) {
-        int x, y, w, h;
-        rowRect(row, x, y, w, h);
-        if (px >= x && px < x + w && py >= y && py < y + h) return row;
-    }
+void PauseMenu::go(Page page, Item select) {
+    page_ = page;
+    confirmQuit_ = false;
+    pressed_ = -1;
+    sliding_ = false;
+    cursor_ = 0;
+    const ItemList list = items();
+    for (int i = 0; i < list.count; i++)
+        if (list[i] == select) cursor_ = i;
+}
+
+int PauseMenu::itemAt(int px, int py) const {
+    const ItemList list = items();
+    for (int i = 0; i < list.count; i++)
+        if (itemBox(list[i]).contains(px, py)) return i;
     return -1;
 }
 
-PauseMenu::Action PauseMenu::use(int row, int step, Settings& settings) {
-    if (row != QUIT) confirmQuit_ = false;
-    switch (row) {
+PauseMenu::Action PauseMenu::activate(Item item, Settings& settings) {
+    if (item != QUIT) confirmQuit_ = false;
+    switch (item) {
     case RESUME:
-        if (step != 0) return Action::None;
         open_ = false;
         return Action::Resume;
-    case AUTO_MOVE:
-        settings.autoMove = !settings.autoMove;
-        return Action::None;
-    case SCREEN_SHAKE: {
-        // A steps up, wrapping past 100% to 0; left / right stop at the ends. Whole steps, so a
-        // saved value reads back the same.
-        const int steps = (int)std::lround(1.0f / Settings::SHAKE_STEP);
-        int s = (int)std::lround(settings.screenShake / Settings::SHAKE_STEP);
-        s = step == 0 ? (s + 1) % (steps + 1) : std::clamp(s + step, 0, steps);
-        settings.screenShake = s * Settings::SHAKE_STEP;
-        return Action::None;
-    }
+    case OPTIONS: go(Page::Options, SCREEN_SHAKE); break;
     case QUIT:
-        if (step != 0) return Action::None;
-        if (!confirmQuit_) {
-            confirmQuit_ = true;
-            return Action::None;
+        if (confirmQuit_) {
+            open_ = false;
+            return Action::Quit;
         }
-        open_ = false;
-        return Action::Quit;
+        confirmQuit_ = true;
+        break;
+    case AUTO_MOVE: settings.autoMove = !settings.autoMove; break;
+    case SCREEN_SHAKE: break; // (a slider: left / right or the stylus)
+    case BACK: go(Page::Paused, OPTIONS); break;
     }
     return Action::None;
 }
 
+void PauseMenu::step(Item item, int dir, Settings& settings) {
+    if (item == SCREEN_SHAKE) settings.setScreenShake((settings.screenShakeStep() + dir) / (float)Settings::SHAKE_STEPS);
+    else if (item == AUTO_MOVE) settings.autoMove = !settings.autoMove;
+}
+
 PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
     if (!open_) return Action::None;
-    if (in.pressed & (plat::BTN_B | plat::BTN_START)) {
+    if (in.pressed & plat::BTN_START) {
         open_ = false;
         return Action::Resume;
     }
+    if (in.pressed & plat::BTN_B) {
+        if (page_ == Page::Options) {
+            go(Page::Paused, OPTIONS);
+            return Action::None;
+        }
+        open_ = false;
+        return Action::Resume;
+    }
+    const ItemList list = items();
     const int move = ((in.pressed & plat::BTN_DOWN) ? 1 : 0) - ((in.pressed & plat::BTN_UP) ? 1 : 0);
     if (move != 0) {
-        cursor_ = (cursor_ + move + ROW_COUNT) % ROW_COUNT;
+        cursor_ = (cursor_ + move + list.count) % list.count;
         confirmQuit_ = false;
     }
-    if (in.pressed & plat::BTN_A) return use(cursor_, 0, settings);
-    if (in.pressed & plat::BTN_LEFT) return use(cursor_, -1, settings);
-    if (in.pressed & plat::BTN_RIGHT) return use(cursor_, 1, settings);
+    if (in.pressed & plat::BTN_A) return activate(list[cursor_], settings);
+    if (in.pressed & plat::BTN_LEFT) step(list[cursor_], -1, settings);
+    if (in.pressed & plat::BTN_RIGHT) step(list[cursor_], 1, settings);
 
     Action action = Action::None;
     if (in.touching) {
         lastX_ = in.touchX;
         lastY_ = in.touchY;
-        if (!wasTouching_) downRow_ = rowAt(in.touchX, in.touchY);
-    } else if (wasTouching_ && downRow_ >= 0 && rowAt(lastX_, lastY_) == downRow_) {
-        cursor_ = downRow_;
-        int x, y, w, h;
-        rowRect(downRow_, x, y, w, h);
-        const int step = downRow_ == SCREEN_SHAKE ? (lastX_ < x + w / 2 ? -1 : 1) : 0;
-        action = use(downRow_, step, settings);
-        downRow_ = -1;
+        if (!wasTouching_) {
+            pressed_ = itemAt(in.touchX, in.touchY);
+            if (pressed_ >= 0) {
+                cursor_ = pressed_;
+                if (list[pressed_] != QUIT) confirmQuit_ = false;
+                sliding_ = list[pressed_] == SCREEN_SHAKE;
+            }
+        }
+        if (sliding_) settings.setScreenShake(MenuSkin::sliderValueAt((float)in.touchX, (float)sliderBox().x));
+    } else if (wasTouching_) {
+        if (pressed_ >= 0 && !sliding_ && itemAt(lastX_, lastY_) == pressed_) action = activate(list[pressed_], settings);
+        pressed_ = -1;
+        sliding_ = false;
     }
     wasTouching_ = in.touching;
     return action;
 }
 
-void PauseMenu::draw(const Settings& settings, const Font& font) const {
-    const char* title = "Paused";
-    font.drawText(title, (plat::BOTTOM_W - font.textWidth(title, TITLE_SCALE)) / 2.0f, 40, TITLE_SCALE);
-    for (int row = 0; row < ROW_COUNT; row++) {
-        int x, y, w, h;
-        rowRect(row, x, y, w, h);
-        if (row == cursor_) {
-            plat::drawRect((float)x - 1, (float)y - 1, (float)w + 2, (float)h + 2, CURSOR_EDGE);
-            plat::drawRect((float)x, (float)y, (float)w, (float)h, CURSOR_COLOR);
+void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
+    skin.drawTitle(page_ == Page::Paused ? "Paused" : "Options", CENTER_X, TITLE_Y);
+    const ItemList list = items();
+    for (int i = 0; i < list.count; i++) {
+        const Item item = list[i];
+        const Box b = itemBox(item);
+        const bool selected = i == cursor_;
+        if (isButton(item)) {
+            const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
+            const char* label = item == RESUME ? "Resume"
+                                : item == OPTIONS ? "Options"
+                                : item == BACK ? "Back"
+                                : confirmQuit_ ? "Really quit?" : "Quit";
+            skin.drawButton((float)b.x, (float)b.y, (float)b.w, (float)b.h, label,
+                            held ? MenuSkin::Button::Pressed : selected ? MenuSkin::Button::Selected : MenuSkin::Button::Normal);
+        } else if (item == SCREEN_SHAKE) {
+            skin.drawLabel("Screen Shake", (float)b.x, b.y + b.h / 2.0f);
+            const Box s = sliderBox();
+            skin.drawSlider((float)s.x, (float)s.y, settings.screenShake, selected);
         } else {
-            plat::drawRect((float)x, (float)y, (float)w, (float)h, ROW_COLOR);
+            skin.drawLabel("Auto Move", (float)b.x, b.y + b.h / 2.0f);
+            const Box t = toggleBox();
+            skin.drawToggle((float)t.x, (float)t.y, settings.autoMove, selected);
         }
-        const char* label = "";
-        char value[16] = "";
-        switch (row) {
-        case RESUME: label = "Resume"; break;
-        case AUTO_MOVE:
-            label = "Auto move";
-            snprintf(value, sizeof value, "%s", settings.autoMove ? "On" : "Off");
-            break;
-        case SCREEN_SHAKE:
-            label = "Screen shake";
-            snprintf(value, sizeof value, "< %d%% >", (int)std::lround(settings.screenShake * 100));
-            break;
-        case QUIT: label = confirmQuit_ ? "Quit? Press again" : "Quit"; break;
-        }
-        const float baseline = (float)(y + h / 2 + 5);
-        font.drawText(label, (float)(x + PAD), baseline, TEXT_SCALE);
-        if (value[0]) font.drawText(value, (float)(x + w - PAD - font.textWidth(value, TEXT_SCALE)), baseline, TEXT_SCALE);
     }
 }

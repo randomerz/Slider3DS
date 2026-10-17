@@ -18,6 +18,7 @@
 
 #include "game/render/area_view.h"
 #include "game/ui/artifact_ui.h"
+#include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/village/knot_box.h"
 #include "game/grid/artifact.h"
@@ -35,7 +36,13 @@ std::string drawListText(const std::vector<DrawCall>& calls) {
     for (const DrawCall& c : calls) {
         out << c.sheet << ' ' << c.sx << ' ' << c.sy << ' ' << c.sw << ' ' << c.sh << ' ' << c.x << ' ' << c.y << ' '
             << c.flags;
-        if (!c.sheet.empty() && c.w != (float)c.sw) out << " x" << (int)(c.w / c.sw); // sprite scale, if not 1
+        if (!c.sheet.empty() && c.w != (float)c.sw) { // sprite scale, if not 1; stretched: its size
+            const int k = (int)(c.w / c.sw);
+            if (c.w == (float)(c.sw * k) && c.h == (float)(c.sh * k)) out << " x" << k;
+            else out << " s" << c.w << 'x' << c.h;
+        } else if (!c.sheet.empty() && c.h != (float)c.sh) {
+            out << " s" << c.w << 'x' << c.h;
+        }
         if (c.fill) out << " f" << c.fill;                                                // solid fill, if any
         out << '\n';
     }
@@ -414,26 +421,44 @@ TEST(render_action_indicator_while_an_interaction_is_offered) {
 }
 
 TEST(render_pause_menu_goldens) {
-    Font font;
+    // The Paused page as it opens; the Options page (slider selected, toggle on); Quit asking again;
+    // Resume held down by the stylus (pressed: its label 2 px lower; the question is dropped).
+    MenuSkin skin;
     std::string error;
-    check(font.load("fonts/dialogue.json", &error), "font loads " + error);
+    check(skin.load(&error), "menu skin loads " + error);
     GoldenSet goldens("menu.txt");
     PauseMenu menu;
     Settings s;
+    auto shoot = [&](const char* name) {
+        testResetDrawCalls();
+        menu.draw(s, skin);
+        goldens.compare(name, 20);
+    };
+    auto press = [&](uint32_t button) {
+        plat::Input in;
+        in.pressed = button;
+        menu.update(in, s);
+    };
     menu.open();
-    testResetDrawCalls();
-    menu.draw(s, font);
-    goldens.compare("pause_menu_open", 20);
-    plat::Input down;
-    down.pressed = plat::BTN_UP; // to Quit, asking again
-    menu.update(down, s);
-    down.pressed = plat::BTN_A;
-    menu.update(down, s);
+    shoot("pause_menu_paused");
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A);
     s.autoMove = true;
-    s.screenShake = 1;
-    testResetDrawCalls();
-    menu.draw(s, font);
-    goldens.compare("pause_menu_quit_confirm", 20);
+    shoot("pause_menu_options");
+    press(plat::BTN_B);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A); // Quit: asks again
+    CHECK(menu.confirmingQuit());
+    shoot("pause_menu_quit_confirm");
+    menu.update(plat::Input{}, s);
+    plat::Input in;
+    in.touching = true;
+    const PauseMenu::Box resume = PauseMenu::itemBox(PauseMenu::RESUME);
+    in.touchX = resume.x + 8;
+    in.touchY = resume.y + 8;
+    menu.update(in, s);
+    CHECK(menu.isOpen() && menu.cursor() == PauseMenu::RESUME);
+    shoot("pause_menu_pressed");
 }
 
 TEST(render_npc_dialogue_goldens) {

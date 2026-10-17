@@ -78,6 +78,9 @@ void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t colo
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale, uint32_t fill) {
     g_draws.push_back({tex->name, sx, sy, sw, sh, x, y, (float)(sw * scale), (float)(sh * scale), flags, fill});
 }
+void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, float w, float h) {
+    g_draws.push_back({tex->name, sx, sy, sw, sh, x, y, w, h, 0});
+}
 void endFrame() {}
 FrameStats lastFrameStats() { return {}; }
 double nowMs() { return 0; }

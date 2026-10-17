@@ -282,6 +282,12 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
     SDL_RenderCopyExF(g_renderer, t, &src, &dst, angle, nullptr, (SDL_RendererFlip)flip);
 }
 
+void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, float w, float h) {
+    SDL_Rect src{sx, sy, sw, sh};
+    SDL_FRect dst{x, y, w, h};
+    SDL_RenderCopyF(g_renderer, tex->tex, &src, &dst);
+}
+
 FrameStats lastFrameStats() { return g_stats; }
 
 double nowMs() { return SDL_GetPerformanceCounter() * 1000.0 / SDL_GetPerformanceFrequency(); }

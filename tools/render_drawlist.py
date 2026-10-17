@@ -3,7 +3,7 @@ mismatch) to a PNG using the sheet images in assets/sheets, to see what a golden
 
     python tools/render_drawlist.py build-pc/test-out/artifact_selected.txt [out.png] [--size 320x240] [--scale 3]
 
-Each line: sheet sx sy sw sh x y flags [xN] [fC]  (xN = scale, fC = a solid fill (RGBA) over the sprite's shape; an empty sheet name = a rect, whose flags
+Each line: sheet sx sy sw sh x y flags [sWxH] [xN] [fC]  (sWxH = stretched to that size, xN = scale, fC = a solid fill (RGBA) over the sprite's shape; an empty sheet name = a rect, whose flags
 is its RGBA color; sheet "line" = a line from (x, y) to (sx, sy), sw = its width in 1/100 px).
 """
 import argparse
@@ -50,6 +50,7 @@ def main():
                 continue
             fill = int(parts.pop()[1:]) if parts[-1].startswith("f") else 0
             scale = int(parts.pop()[1:]) if parts[-1].startswith("x") else 1
+            size = [round(float(v)) for v in parts.pop()[1:].split("x")] if parts[-1].startswith("s") else None
             name, sx, sy, sw, sh, x, y, flags = parts
             if name not in sheets:
                 sheets[name] = Image.open(os.path.join(ROOT, "assets", "sheets", name + ".png")).convert("RGBA")
@@ -57,6 +58,8 @@ def main():
             img = sheets[name].crop((sx, sy, sx + sw, sy + sh))
             if scale != 1:
                 img = img.resize((sw * scale, sh * scale), Image.NEAREST)
+            if size:  # stretched (drawSpriteStretched)
+                img = img.resize((max(size[0], 1), max(size[1], 1)), Image.NEAREST)
             if fill:
                 solid = Image.new("RGBA", img.size, (fill >> 24, (fill >> 16) & 255, (fill >> 8) & 255, 255))
                 solid.putalpha(img.getchannel("A").point(lambda a: a * (fill & 255) // 255))

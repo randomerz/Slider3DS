@@ -95,6 +95,9 @@ void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t colo
 // (RGBA) draws the sprite's shape in that solid color instead (a white flash).
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags = 0, int scale = 1,
                 uint32_t fill = 0);
+// Draws the sw x sh pixel rect at (sx, sy) of `tex` stretched to w x h at (x, y), point-sampled
+// (a 9-slice's edges and middle).
+void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, float w, float h);
 void endFrame();
 FrameStats lastFrameStats();
 
