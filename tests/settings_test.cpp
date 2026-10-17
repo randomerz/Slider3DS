@@ -1,4 +1,5 @@
 // The player's Settings (game/save/settings) and the pause menu that changes them (game/ui/pause_menu).
+#include <algorithm>
 #include <cmath>
 #include <string>
 
@@ -247,4 +248,34 @@ TEST(menu_skin_rejects_sprites_that_dont_fit_their_widgets) {
     check(error.find("sizes") != std::string::npos, "error: " + error);
     testClearFiles();
     CHECK(skin.load(&error)); // (the real one)
+}
+
+TEST(pause_menu_selected_brackets_bounce) {
+    // The selected button's brackets rest against it for half a second, then sit 1 px out for the
+    // other half; selecting another item starts over at rest.
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "menu skin loads " + error);
+    Menu menu;
+    Settings s;
+    menu.open();
+    auto leftmost = [&] { // the left bracket is the leftmost thing drawn
+        testResetDrawCalls();
+        menu.draw(s, skin);
+        float x = 1e9f;
+        for (const DrawCall& c : testDrawCalls()) x = std::min(x, c.x);
+        return x;
+    };
+    menu.update(plat::Input{}, s);
+    const float rest = leftmost();
+    for (int i = 0; i < 29; i++) menu.update(plat::Input{}, s);
+    CHECK(leftmost() == rest);
+    menu.update(plat::Input{}, s); // half a second
+    CHECK(leftmost() == rest - MenuSkin::UI_SCALE);
+    for (int i = 0; i < 30; i++) menu.update(plat::Input{}, s);
+    CHECK(leftmost() == rest); // back in
+    for (int i = 0; i < 30; i++) menu.update(plat::Input{}, s);
+    CHECK(leftmost() == rest - MenuSkin::UI_SCALE);
+    menu.update(press(plat::BTN_DOWN), s); // Options: at rest again
+    CHECK(leftmost() == rest);
 }

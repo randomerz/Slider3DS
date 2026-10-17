@@ -102,7 +102,7 @@ int main(int, char**) {
         const double updateStart = plat::nowMs();
         const plat::Input in = plat::pollInput();
         if (pauseMenu.isOpen()) {
-            const PauseMenu::Action action = pauseMenu.update(in, settings);
+            const PauseMenu::Action action = pauseMenu.update(in, settings, FRAME_DT);
             if (action != PauseMenu::Action::None) saveIfChanged(settings, savedSettings);
             if (action == PauseMenu::Action::Quit) break;
             if (action == PauseMenu::Action::Resume) artifactUI.releaseStylus();

@@ -1,5 +1,5 @@
 // The original's menu widgets, for the port's menus: its buttons (Menu Button: Button24, 9-sliced,
-// sprite swap; selected: outlined left and right by dark brackets, pressed or not), sliders
+// sprite swap; selected: brackets beside it, the user's art), sliders
 // (UI Slider) and toggles (UI Toggle), with TinyUnicode text (a port choice:
 // it reads better on the 3DS than the original's menu fonts). Sprites cut by tools/make_ui.py
 // (assets/ui/menu.json), fonts baked by tools/make_font.py.
@@ -32,11 +32,11 @@ public:
 
     // A page title (light), centered on (cx, cy).
     void drawTitle(std::string_view text, int cx, int cy) const;
-    // A button filling the box (its label dark, centered on its face): `selected` (the menu's
-    // cursor) outlines its sides with brackets selectedOutset() px outside them, `pressed` sinks
-    // its face (and the brackets with it).
-    void drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed) const;
-    int selectedOutset() const { return selectedOutset_; }
+    // A button filling the box (its label dark, centered on its face): `pressed` sinks its face;
+    // `selected` (the menu's cursor) brackets its sides, `bracketOut` px further out than resting
+    // against it (the bounce), a pressed one's brackets sunk with the face.
+    void drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed,
+                    int bracketOut = 0) const;
     // An option's label, left-aligned at x, centered on cy: gray, light when selected.
     void drawLabel(std::string_view text, int x, int cy, bool selected) const;
     // A slider (w x SLIDER_H at (x, y)) at `value` 0-1; `selected` swaps its handle.
@@ -60,7 +60,6 @@ private:
     void drawText(std::string_view text, int x, int cy, uint32_t color) const;
 
     plat::Texture* sheet_ = nullptr;
-    int selectedOutset_ = 0; // how far the selected sprite reaches past the button's sides
-    Sprite button_, buttonSelected_, buttonPressed_, buttonPressedSelected_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
+    Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
     Font font_;
 };

@@ -4,11 +4,13 @@
     "button": {"rect":[0,0,24,24],"border":[4,4,4,4]},
     "buttonPressed": {"rect":[25,0,24,24],"border":[4,4,4,4]},
     "toggle": {"rect":[50,0,8,8],"border":[0,0,0,0]},
-    "toggleSelected": {"rect":[0,25,8,8],"border":[0,0,0,0]},
-    "toggleCheck": {"rect":[9,25,8,8],"border":[0,0,0,0]},
-    "sliderHandle": {"rect":[18,25,3,5],"border":[0,0,0,0]},
-    "sliderHandleSelected": {"rect":[22,25,3,5],"border":[0,0,0,0]},
-    "buttonSelected": {"rect":[26,25,28,24],"border":[6,4,6,4]},
-    "buttonPressedSelected": {"rect":[0,50,28,24],"border":[6,4,6,4]}
+    "toggleSelected": {"rect":[59,0,8,8],"border":[0,0,0,0]},
+    "toggleCheck": {"rect":[68,0,8,8],"border":[0,0,0,0]},
+    "sliderHandle": {"rect":[77,0,3,5],"border":[0,0,0,0]},
+    "sliderHandleSelected": {"rect":[81,0,3,5],"border":[0,0,0,0]},
+    "bracketLeft": {"rect":[85,0,3,20],"border":[0,3,0,3]},
+    "bracketRight": {"rect":[89,0,3,20],"border":[0,3,0,3]},
+    "bracketPressedLeft": {"rect":[93,0,3,19],"border":[0,3,0,3]},
+    "bracketPressedRight": {"rect":[97,0,3,19],"border":[0,3,0,3]}
   }
 }

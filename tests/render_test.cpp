@@ -441,6 +441,8 @@ TEST(render_pause_menu_goldens) {
     };
     menu.open();
     shoot("pause_menu_paused");
+    for (int i = 0; i < 31; i++) menu.update(plat::Input{}, s); // the brackets bounced 1 px out
+    shoot("pause_menu_bounced");
     press(plat::BTN_DOWN);
     press(plat::BTN_A);
     s.autoMove = true;

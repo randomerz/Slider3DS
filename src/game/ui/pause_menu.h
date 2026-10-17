@@ -39,8 +39,9 @@ public:
     bool isOpen() const { return open_; }
     void open(); // on Paused, Resume selected
 
-    // One frame of input while open. Resume / Quit: the menu just closed.
-    Action update(const plat::Input& in, Settings& settings);
+    // One frame of input while open (`dt` s: the 3DS steps 60 fps). Resume / Quit: the menu just
+    // closed.
+    Action update(const plat::Input& in, Settings& settings, float dt = 1.0f / 60);
     void draw(const Settings& settings, const MenuSkin& skin) const;
 
     Page page() const { return page_; }
@@ -55,6 +56,7 @@ public:
     struct ItemDef; // (pause_menu.cpp)
 
 private:
+    Action handleInput(const plat::Input& in, Settings& settings);
     Action activate(const ItemDef& def, Settings& settings);
     void step(const ItemDef& def, int dir, Settings& settings); // left / right on an option
     void go(Page page, Item select);
@@ -70,4 +72,8 @@ private:
     bool wasTouching_ = false, sliding_ = false;
     int pressed_ = -1; // item index touched down on
     int lastX_ = 0, lastY_ = 0;
+    // The selected button's bracket bounce: seconds into its period, for the item it started on.
+    float bounceTime_ = 0;
+    Page bouncePage_ = Page::Paused;
+    int bounceCursor_ = -1;
 };

@@ -1,5 +1,6 @@
 #include "game/ui/pause_menu.h"
 
+#include <cmath>
 #include <iterator>
 
 using Item = PauseMenu::Item;
@@ -33,7 +34,10 @@ constexpr int S = MenuSkin::UI_SCALE;
 constexpr int UI_W = plat::BOTTOM_W / S;
 constexpr int CENTER_X = UI_W / 2;
 constexpr int TITLE_Y = 20;                              // the title's middle
-constexpr int BUTTON_W = 120, BUTTON_H = 20, PITCH = 24; // rows 4 px apart
+constexpr int BUTTON_W = 120, BUTTON_H = 18, PITCH = 24; // buttons 6 px apart
+constexpr int ROW_H = 20;                                // option rows
+// The selected button's brackets bounce: resting against it, then 1 px out, each half a second.
+constexpr float BOUNCE_PERIOD = 1.0f;
 constexpr int FIRST_Y = 46;                              // the first row's middle
 // Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the
 // row's ends): the slider at the right end, the toggle centered under it. Selected: a light label.
@@ -105,7 +109,7 @@ const ItemDef& find(Item item, int& index) {
 PauseMenu::Box uiBox(const ItemDef& def, int index) {
     const int cy = FIRST_Y + index * PITCH;
     if (def.kind == Kind::Button) return {CENTER_X - BUTTON_W / 2, cy - BUTTON_H / 2, BUTTON_W, BUTTON_H};
-    return {ROW_X, cy - BUTTON_H / 2, ROW_W, BUTTON_H};
+    return {ROW_X, cy - ROW_H / 2, ROW_W, ROW_H};
 }
 
 // An option's slider / toggle (UI px); a button's box.
@@ -195,8 +199,21 @@ void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
     if (def.kind == Kind::Slider) (settings.*def.setValue)(settings.*def.value + dir / (float)def.steps); // (it snaps)
 }
 
-PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
+PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings, float dt) {
     if (!open_) return Action::None;
+    const Action action = handleInput(in, settings);
+    // The bounce restarts on each newly selected item.
+    if (page_ != bouncePage_ || cursor_ != bounceCursor_) {
+        bouncePage_ = page_;
+        bounceCursor_ = cursor_;
+        bounceTime_ = 0;
+    } else {
+        bounceTime_ = std::fmod(bounceTime_ + dt, BOUNCE_PERIOD);
+    }
+    return action;
+}
+
+PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settings) {
     if (in.pressed & plat::BTN_START) {
         open_ = false;
         return Action::Resume;
@@ -261,7 +278,9 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
         case Kind::Button: {
             const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
             const char* label = def.act == Act::Quit && confirmQuit_ ? "Really quit?" : def.label;
-            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, held);
+            // (A frame's worth of float error mustn't shift the halves: 30 x 1/60 s is just under 0.5.)
+            const bool out = std::fmod(bounceTime_ + 1e-4f, BOUNCE_PERIOD) >= BOUNCE_PERIOD / 2;
+            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, held, out ? 1 : 0);
             break;
         }
         case Kind::Slider:

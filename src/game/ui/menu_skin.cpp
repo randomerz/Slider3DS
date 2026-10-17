@@ -51,8 +51,10 @@ bool MenuSkin::load(std::string* error) {
     };
     read("button", button_);
     read("buttonPressed", buttonPressed_);
-    read("buttonSelected", buttonSelected_);
-    read("buttonPressedSelected", buttonPressedSelected_);
+    read("bracketLeft", bracketLeft_);
+    read("bracketRight", bracketRight_);
+    read("bracketPressedLeft", bracketPressedLeft_);
+    read("bracketPressedRight", bracketPressedRight_);
     read("toggle", toggle_);
     read("toggleSelected", toggleSelected_);
     read("toggleCheck", toggleCheck_);
@@ -60,11 +62,9 @@ bool MenuSkin::load(std::string* error) {
     read("sliderHandleSelected", handleSelected_);
     // The widgets are their sprites' sizes (one grid: no scaling).
     auto is = [](const Sprite& s, int w, int h) { return s.w == w && s.h == h; };
-    // The selected buttons: the same height, equally wider on both sides.
-    selectedOutset_ = (buttonSelected_.w - button_.w) / 2;
-    if (ok && (!is(buttonPressed_, button_.w, button_.h) || selectedOutset_ < 0 ||
-               !is(buttonSelected_, button_.w + 2 * selectedOutset_, button_.h) ||
-               !is(buttonPressedSelected_, buttonSelected_.w, button_.h))) {
+    // The buttons alike; each pair of brackets mirror images of one size.
+    if (ok && (!is(buttonPressed_, button_.w, button_.h) || !is(bracketRight_, bracketLeft_.w, bracketLeft_.h) ||
+               !is(bracketPressedRight_, bracketPressedLeft_.w, bracketPressedLeft_.h))) {
         ok = false;
         if (error) *error = "ui/menu.json: the button sprites' sizes don't match";
     }
@@ -124,11 +124,18 @@ void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {
     drawText(text, cx - font_.textWidth(text) / 2, cy, TEXT_LIGHT);
 }
 
-void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed) const {
-    if (selected)
-        drawNineSlice(pressed ? buttonPressedSelected_ : buttonSelected_, x - selectedOutset_, y, w + 2 * selectedOutset_, h);
-    else
-        drawNineSlice(pressed ? buttonPressed_ : button_, x, y, w, h);
+void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed,
+                          int bracketOut) const {
+    drawNineSlice(pressed ? buttonPressed_ : button_, x, y, w, h);
+    if (selected) {
+        // Resting against the sides, 1 px past the face's top and bottom (a pressed face starts
+        // 1 px lower).
+        const Sprite& l = pressed ? bracketPressedLeft_ : bracketLeft_;
+        const Sprite& r = pressed ? bracketPressedRight_ : bracketRight_;
+        const int top = pressed ? y : y - 1, height = pressed ? h + 1 : h + 2;
+        drawNineSlice(l, x - l.w - bracketOut, top, l.w, height);
+        drawNineSlice(r, x + w + bracketOut, top, r.w, height);
+    }
     const int drop = pressed ? PRESS_DROP : 0;
     drawText(label, x + (w - font_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop, TEXT_DARK);
 }

@@ -3,11 +3,9 @@
 The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   Menu Button (the main menu's; Image sliced, Button sprite swap): normal Button24_0 (a light face
       over a 2 px shaded bottom edge), pressed _1 (the face 1 px lower); 9-sliced, 4 px borders.
-      Selected (port sprites, user's design): the button outlined on its left and right only, in
-      the dark gray of the original's outlined selected _2: on each row, 2 px just outside the
-      button's own edge, so the brackets hug its rounded corners and run the full height past the
-      shaded edge. buttonSelected outlines Button24_0, buttonPressedSelected the sunk _1 (the
-      brackets sink with it). They're 4 px wider than Button24; the skin draws them 2 px out.
+  Selected: brackets beside the button (the user's art, tools/ui_art/: bracket.png for a button,
+      bracket_pressed.png for a pressed one, 1 px shorter like its sunk face), cut as the left
+      one and its mirror; 9-sliced vertically, 3 px ends.
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
   UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
@@ -38,7 +36,7 @@ SPRITES = {
     "sliderHandle": ("Sprites/UI/menus/ui_slider.png", "ui_slider_1"),
     "sliderHandleSelected": ("Sprites/UI/menus/ui_slider.png", "ui_slider_0"),
 }
-SHEET_W = 64
+SHEET_W = 128
 
 
 def unity_sprite(texture, name):
@@ -54,32 +52,27 @@ def unity_sprite(texture, name):
     return img.crop((x, top, x + w, top + h)), [bl, bt, br, bb]
 
 
-BRACKET = 2  # px: the brackets' thickness, and how far outside the button they reach
+ART = os.path.join(REPO, "tools", "ui_art")
+BRACKET_ENDS = 3  # px at each end of a bracket that don't stretch
 
 
-def bracketed(sprite):
-    """Button24 sprite `sprite` with a BRACKET px outline on its left and right edges, row by row."""
-    face, border = unity_sprite("Sprites/UI/Button24.png", sprite)
-    outline, _ = unity_sprite("Sprites/UI/Button24.png", "Button24_2")
-    dark = outline.getpixel((0, outline.height // 2))  # the outline's gray (0.4)
-    w, h = face.width + 2 * BRACKET, face.height
-    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    img.paste(face, (BRACKET, 0))
-    for y in range(h):
-        opaque = [x for x in range(face.width) if face.getpixel((x, y))[3] > 0]
-        if not opaque:
-            continue  # (above a sunk face)
-        for i in range(BRACKET):
-            img.putpixel((BRACKET + opaque[0] - 1 - i, y), dark)
-            img.putpixel((BRACKET + opaque[-1] + 1 + i, y), dark)
+def port_art(name):
+    """A sprite drawn for the port (tools/ui_art/<name>.png), with its 9-slice border."""
+    img = Image.open(os.path.join(ART, name + ".png")).convert("RGBA")
+    return img, [0, BRACKET_ENDS, 0, BRACKET_ENDS]
+
+
+def mirrored(sprite):
+    img, border = sprite
     left, top, right, bottom = border
-    return img, [left + BRACKET, top, right + BRACKET, bottom]
+    return img.transpose(Image.Transpose.FLIP_LEFT_RIGHT), [right, top, left, bottom]
 
 
 def main():
     cut = {name: unity_sprite(tex, sprite) for name, (tex, sprite) in SPRITES.items()}
-    cut["buttonSelected"] = bracketed("Button24_0")
-    cut["buttonPressedSelected"] = bracketed("Button24_1")
+    for name, art in (("bracket", "bracket"), ("bracketPressed", "bracket_pressed")):
+        cut[name + "Left"] = port_art(art)
+        cut[name + "Right"] = mirrored(cut[name + "Left"])
     # Shelf packing in table order, 1 px gaps.
     x = y = shelf = 0
     placed = {}
