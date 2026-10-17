@@ -4,6 +4,7 @@
 
 #include "game/data/area.h"
 #include "game/physics/physics.h"
+#include "game/village/village_grid.h"
 #include "game/world/world.h"
 #include "test.h"
 
@@ -64,6 +65,13 @@ TEST(events_house_door_round_trip) {
         check(world.interactables.size() == 1 && world.interactables[0].index == interactionOn(area, HOUSE1_DOOR),
               "outside, the house door is on offer instead of the exit (" + offered + ")");
     }
+    // The first exit plays the intro (VillageGrid.OnHouseExit): the camera dolly holds the player
+    // until it ends, fading in on it.
+    check(world.state.flag(village::INTRO_CUTSCENE_FLAG) && world.dollies.running() && world.playerLocked(),
+          "the intro plays");
+    for (int i = 0; i < 600 && world.dollies.running(); i++) world.update(DT, 0, 0, false);
+    check(!world.playerLocked() && world.effects.black() == 1, "the intro over, fading back in");
+    world.update(DT, 0, 0, false);
     check(world.effects.black() < 1 && world.effects.black() > 0.9f, "fading back in");
     for (int i = 0; i < 120; i++) world.update(DT, 0, 0, false);
     check(world.effects.black() == 0, "faded in within the fade duration");

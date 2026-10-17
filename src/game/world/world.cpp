@@ -80,6 +80,7 @@ void World::reloadObjects() {
     finale.reset(area);
     intro.reset();
     dollies.reset();
+    player.locks = 0; // (what held the player is reset)
     artifactButtons.reset(area);
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
     starts.reset(area);
@@ -130,8 +131,9 @@ void World::placeNear(float x, float y) {
     player.stile = grid.stileUnder(x, y);
 }
 
-void World::update(float dt, float moveX, float moveY, bool noclip) {
-    if (dollies.running()) moveX = moveY = 0; // (Player.SetCanMove(false))
+void World::update(float dt, const FrameInput& in, bool noclip) {
+    float moveX = in.moveX, moveY = in.moveY;
+    if (playerLocked()) moveX = moveY = 0; // (Player.SetCanMove(false))
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
@@ -182,14 +184,14 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     chad.coroutines(*this, dt);
     finale.coroutines(*this, dt);
     intro.coroutines(*this, dt);
-    dollies.update(*this, dt, actionHeld);
+    dollies.update(*this, dt, in.actionHeld);
     runStarts(); // (the final Slider may have appeared)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
     items.follow(*this);          // (the carried item is a child of the item holder the Animator moves)
     ruins.update(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
-    fadeDone(effects.update(area, dt, settings.screenShake)); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
+    fadeDone(effects.update(area, dt, settings.screenShake, frame)); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
     frame++;
 }
 
@@ -218,7 +220,7 @@ bool World::showsPrompt(const Interactable& it) const {
 }
 
 void World::action() {
-    if (dollies.running()) { // (PlayerAction: not while the player can't move)
+    if (playerLocked()) { // (PlayerAction: not while the player can't move)
         dollies.actionPressed();
         return;
     }

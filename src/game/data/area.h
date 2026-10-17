@@ -624,7 +624,7 @@ struct AreaGridDef {
     int ruinsFragment = -1;     // Area::items index: CheckHole hides it (or, Caves first, puts it in the hole)
     int slider8Floor = -1;      // slider8FloorTransform: where CheckHole puts it
     int introDolly = -1;        // introCameraDolly: Area::cameraDollies index (OnHouseExit's intro), -1 = none
-    int romeo = -1;             // romeoNPC's object (the intro turns him and walks him in), -1 = none
+    int romeo = -1;             // romeoNPC: Area::npcs index (the intro turns him and walks him in), -1 = none
 };
 
 // CameraDolly: a cutscene camera rolling along a Cinemachine path, given as where the camera is over

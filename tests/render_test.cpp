@@ -18,6 +18,7 @@
 
 #include "game/render/area_view.h"
 #include "game/ui/artifact_ui.h"
+#include "game/ui/hud.h"
 #include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/village/knot_box.h"
@@ -593,15 +594,14 @@ TEST(render_intro_goldens) {
     world.placeAt(area.spawns[0]);
     village::houseExit(world);
     for (int i = 0; i < 160; i++) world.update(1.0f / 60.0f, 0, 0, false);
-    world.actionHeld = true;
     world.action();
-    for (int i = 0; i < 30; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    for (int i = 0; i < 30; i++) world.update(1.0f / 60.0f, FrameInput{0, 0, true});
     check(world.dollies.running() && world.dollies.promptShown(), "rolling, the prompt up");
     float x, y;
     world.camera(x, y);
     testResetDrawCalls();
     view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
     view.draw(world);
-    skin.drawSkipPrompt(plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
+    drawTopOverlays(world, skin.font()); // (as main draws them: the prompt, then the panels)
     goldens.compare("intro_rolling_skip_held", 50);
 }

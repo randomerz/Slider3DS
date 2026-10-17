@@ -898,8 +898,7 @@ static bool validate(const Area& a, std::string* error) {
             return fail(error, "camera dolly: bad object, duration, rate, track or hold");
     if (a.areaGrid.introDolly < -1 || a.areaGrid.introDolly >= (int)a.cameraDollies.size())
         return fail(error, "area grid: bad introDolly");
-    if (a.areaGrid.romeo != -1 && (!objectOk(a.areaGrid.romeo) || !isNpc[a.areaGrid.romeo]))
-        return fail(error, "area grid: romeo isn't an NPC");
+    if (a.areaGrid.romeo < -1 || a.areaGrid.romeo >= (int)a.npcs.size()) return fail(error, "area grid: romeo isn't an NPC");
     for (const ChadJumpDef& c : a.chadJumps) {
         const bool ok = objectOk(c.object) && objectOk(c.renderer) && worldSpriteOn[c.renderer] && c.animator >= 0 &&
                         c.animator < (int)a.animators.size() && c.collider >= 0 && c.collider < (int)a.objectColliders.size() &&
@@ -1262,6 +1261,11 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         for (int i = 0; i < (int)out.npcs.size(); i++)
             if (out.npcs[i].object == c.tipNpc) npc = i;
         c.tipNpc = c.tipNpc >= 0 ? npc : -1;
+    }
+    if (const int object = out.areaGrid.romeo; object >= 0) { // (exported as an object)
+        out.areaGrid.romeo = -2; // (none: rejected)
+        for (int i = 0; i < (int)out.npcs.size(); i++)
+            if (out.npcs[i].object == object) out.areaGrid.romeo = i;
     }
     if (!validate(out, error)) return false;
     buildComponentIndex(out);

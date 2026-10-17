@@ -16,7 +16,8 @@ void CameraDollies::start(World& world, int dolly) {
     dolly_ = dolly;
     rolling_ = true;
     since_ = world.frame;
-    world.effects.fadeFromBlack(); // (the camera is at the track's start this frame: t = 0)
+    world.lockPlayer(LOCK_DOLLY, true);
+    world.effects.fadeFromBlack(world.frame); // (the camera is at the track's start this frame: t = 0)
 }
 
 void CameraDollies::actionPressed() {
@@ -37,7 +38,7 @@ void CameraDollies::update(World& world, float dt, bool actionHeld) {
             fill_ = 0;
         } else if (held_ >= d.holdToSkip) {
             holding_ = false;
-            world.effects.fadeToBlack(FadeDone::DollyEnd); // SkipToEndOfTrack: the camera stops where it is
+            world.effects.fadeToBlack(FadeDone::DollyEnd, world.frame); // SkipToEndOfTrack: the camera stops where it is
             rolling_ = false;
         }
     }
@@ -46,7 +47,7 @@ void CameraDollies::update(World& world, float dt, bool actionHeld) {
     t_ += dt;
     if (!fadingOut_ && t_ >= d.duration - END_FADE_LEAD) {
         fadingOut_ = true;
-        world.effects.fadeToBlack(FadeDone::DollyEnd);
+        world.effects.fadeToBlack(FadeDone::DollyEnd, world.frame);
     }
     if (t_ < d.duration)
         camT_ = t_;
@@ -56,8 +57,9 @@ void CameraDollies::update(World& world, float dt, bool actionHeld) {
 
 void CameraDollies::end(World& world) {
     if (!running()) return;
-    world.effects.fadeFromBlack();
-    *this = CameraDollies(); // the player moves again, the camera cuts back to it, the prompt goes
+    world.effects.fadeFromBlack(world.frame);
+    world.lockPlayer(LOCK_DOLLY, false); // the player moves again
+    *this = CameraDollies(); // the camera cuts back to it, the prompt goes
 }
 
 bool CameraDollies::camera(const Area& area, float& x, float& y) const {

@@ -7,19 +7,8 @@ namespace village {
 
 namespace {
 
-// Romeo's NPC index, -1 if the area has none.
-int romeo(const World& world) {
-    const int object = world.area.areaGrid.romeo;
-    return object >= 0 ? world.area.npcOn(object) : -1;
-}
-
 void faceRight(World& world, int npc, bool flipped) { // romeoNPC.sr.flipX
     if (npc >= 0 && world.area.npcs[npc].sprite >= 0) world.objects.setFlipX(world.area.npcs[npc].sprite, flipped);
-}
-
-void showPing(World& world, int npc, bool shown) { // DialogueDisplay.Activate / DeactivateMessagePing
-    if (npc >= 0 && world.area.npcs[npc].pingObject >= 0)
-        world.objects.setActive(world.area, world.area.npcs[npc].pingObject, shown);
 }
 
 } // namespace
@@ -28,9 +17,9 @@ void VillageIntro::houseExit(World& world) {
     if (world.state.flag(INTRO_CUTSCENE_FLAG)) return;
     world.state.setFlag(INTRO_CUTSCENE_FLAG, true);
     // StartVillageCutscene, up to its first wait.
-    const int npc = romeo(world);
+    const int npc = world.area.areaGrid.romeo;
     faceRight(world, npc, true);
-    showPing(world, npc, false);
+    if (npc >= 0) world.npcs.setPing(world, npc, false);
     world.dollies.start(world, world.area.areaGrid.introDolly);
     step_ = 0;
     wait_.start(0.5f, world.frame);
@@ -38,7 +27,7 @@ void VillageIntro::houseExit(World& world) {
 
 void VillageIntro::coroutines(World& world, float dt) {
     if (step_ < 0 || !wait_.done(world.frame, dt)) return;
-    const int npc = romeo(world);
+    const int npc = world.area.areaGrid.romeo;
     switch (step_++) {
     case 0:
         faceRight(world, npc, false);
@@ -53,7 +42,7 @@ void VillageIntro::coroutines(World& world, float dt) {
         wait_.start(3, world.frame);
         break;
     default:
-        showPing(world, npc, true);
+        if (npc >= 0) world.npcs.setPing(world, npc, true);
         step_ = -1;
         break;
     }

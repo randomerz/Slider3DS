@@ -61,7 +61,7 @@ void runCall(World& world, const CallDef& c) {
         world.player.onWater = c.boolArg;
         break;
     case M::FadeFromBlack:
-        world.effects.fadeFromBlack();
+        world.effects.fadeFromBlack(world.frame);
         break;
     case M::CheckConditions:
         runConditionals(world, world.area.conditionCheckers[c.data].conditionals);

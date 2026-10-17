@@ -36,6 +36,8 @@ public:
     void triggerExit(World& world, int npc);  // NPC.OnDialogueTriggerExit
     void interact(World& world, int npc);     // the action button while it's on offer
     void typeCurrent(World& world, int npc);  // NPC.TypeCurrentDialogue
+    // DialogueDisplay.Activate / DeactivateMessagePing (SetMessagePing): its ping object on or off.
+    void setPing(World& world, int npc, bool shown);
     // NPC.Teleport: onto `target` (an object), parented to it; nothing if it's already there.
     void teleport(World& world, int npc, int target);
     bool showsPrompt(const Area& area, int npc) const; // DisplayInteractionPrompt
@@ -88,7 +90,6 @@ private:
     void deactivate(World& world, int npc);       // DeactivateDialogueBox
     void setEmote(World& world, int npc, int emote); // NPCEmotes.SetEmote
     void playAnimation(World& world, int npc, const std::string& state); // NPCAnimatorController.Play
-    void setPing(World& world, int npc, bool shown); // DialogueDisplay.SetMessagePing
 
     std::vector<State> s_;
     uint32_t textCounter_ = 0; // never reset: a cache keyed by textVersion can't see an old value again

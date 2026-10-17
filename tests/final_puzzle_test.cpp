@@ -282,16 +282,16 @@ TEST(screen_effects_shake_and_flash) {
     const Area& area = villageArea();
     ScreenEffects fx;
     fx.reset();
-    fx.update(area, DT, Settings().screenShake);
+    fx.update(area, DT, Settings().screenShake, 0);
     CHECK(fx.shakeGain() == 0 && fx.shakeX() == 0 && fx.shakeY() == 0);
     // CameraShake.Shake(1, 2): gain 2 * setting falling linearly to 0 over 1 s, then gone.
     fx.shake(1, 2);
-    fx.update(area, DT, Settings().screenShake);
+    fx.update(area, DT, Settings().screenShake, 0);
     CHECK(fx.shakeGain() == 2 * Settings().screenShake);
     float most = 0;
     bool moved = false;
     for (int f = 1; f < 30; f++) {
-        fx.update(area, DT, Settings().screenShake);
+        fx.update(area, DT, Settings().screenShake, 0);
         most = std::max(most, std::max(std::fabs(fx.shakeX()), std::fabs(fx.shakeY())));
         moved |= fx.shakeX() != 0;
     }
@@ -299,11 +299,11 @@ TEST(screen_effects_shake_and_flash) {
     float bound = 0; // the channels' amplitudes (a cosine's half, Perlin's half at most)
     for (const CameraShakeDef::Channel& ch : area.cameraShake.position) bound += std::max(ch.amplitude[0], ch.amplitude[1]);
     CHECK(moved && most > 0 && most <= bound * 2 * Settings().screenShake);
-    for (int f = 0; f < 40; f++) fx.update(area, DT, Settings().screenShake);
+    for (int f = 0; f < 40; f++) fx.update(area, DT, Settings().screenShake, 0);
     CHECK(fx.shakeGain() == 0 && fx.shakeX() == 0);
     // A stronger shake wins while both run.
     fx.shake(1, 1);
     fx.shake(1, 3);
-    fx.update(area, DT, Settings().screenShake);
+    fx.update(area, DT, Settings().screenShake, 0);
     CHECK(fx.shakeGain() == 3 * Settings().screenShake);
 }

@@ -32,6 +32,10 @@
 
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
 // the STile it stands on, which it rides while that tile slides.
+// Who holds the player (Player.SetCanMove(false) + a PauseManager restriction): while any does, it
+// can't move, act or pause, and the Artifact stays shut.
+enum PlayerLock : uint8_t { LOCK_DOLLY = 1 }; // (next: ItemPickupEffect)
+
 struct Player {
     float x = 0, y = 0;
     bool onWater = false;
@@ -39,6 +43,7 @@ struct Player {
     float lastMoveX = 0, lastMoveY = 0; // Player.lastMoveDir: the last non-zero input (item drops go that way)
     bool inHouse = false;    // Player.SetIsInHouse (house teleports set it)
     int stile = 0;           // islandId underneath, 0 = none
+    uint8_t locks = 0;       // PlayerLock bits held now
 
     const Hitbox& hitbox(const Area& area) const { return onWater ? area.player.boatBox : area.player.footBox; }
 };
@@ -55,6 +60,13 @@ struct Interactable {
 };
 
 inline const Settings DEFAULT_SETTINGS{}; // SettingsManager's defaults
+
+// The player's input for one frame (from the frontend): where it walks (each -1..1) and whether the
+// action button is down (held-button behaviours: holding to skip a dolly). Presses go to action().
+struct FrameInput {
+    float moveX = 0, moveY = 0;
+    bool actionHeld = false;
+};
 
 // World-space text in the dialogue style that isn't an NPC's typed line (CatTrick's count): drawn
 // fully shown in `box`, placed with objectBase(object), sorted like its canvas by `sortObject`'s y.
@@ -96,11 +108,12 @@ public:
     // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless noclip
     // (and is pushed out of anything it overlaps); triggers react to what it touches; NPCs update;
     // Starts run for components that became active; Animators and particles advance.
-    void update(float dt, float moveX, float moveY, bool noclip);
+    void update(float dt, const FrameInput& in, bool noclip = false);
+    void update(float dt, float moveX, float moveY, bool noclip) { update(dt, FrameInput{moveX, moveY, false}, noclip); }
 
     // PlayerAction.Action (the action button): pick up an item if one is in reach, use the offered
-    // interactables; if neither did anything, drop the carried item. During a camera dolly the
-    // player can't act: the press starts the hold to skip instead.
+    // interactables; if neither did anything, drop the carried item. While the player is locked it
+    // can't act: the press goes to what holds it (a dolly: the hold to skip).
     void action();
     // PlayerAction: offer / withdraw an interactable, and run the offered ones with the highest
     // priority; true if one did something (IInteractable.Interact).
@@ -120,7 +133,11 @@ public:
     void worldTexts(std::vector<WorldText>& out) const;
     // Where the top screen's camera is: on a running camera dolly, else following the player (shaken).
     void camera(float& x, float& y) const;
-    bool canPause() const { return !dollies.running(); } // (PauseManager's restrictions)
+    // Something holds the player (PlayerLock): no moving, acting, pausing or Artifact.
+    bool playerLocked() const { return player.locks != 0; }
+    void lockPlayer(PlayerLock owner, bool locked) {
+        player.locks = locked ? (uint8_t)(player.locks | owner) : (uint8_t)(player.locks & ~owner);
+    }
     // Moves `object` (and what's under it) so it sits at world (x, y), on STile `owner` (0 = the world).
     void placeObject(int object, int owner, float x, float y);
     // A script's item drop has landed: runs its callback (Items::drop's DropDone).
@@ -152,7 +169,6 @@ public:
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
     const Settings& settings; // the player's preferences (not the save profile)
-    bool actionHeld = false;  // the action button is down (holds: skipping a dolly); the frontend sets it
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
 

@@ -20,6 +20,7 @@
 #include "game/render/area_view.h"
 #include "game/save/settings.h"
 #include "game/ui/artifact_ui.h"
+#include "game/ui/hud.h"
 #include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/dev/dev_overlay.h"
@@ -107,23 +108,23 @@ int main(int, char**) {
             if (action != PauseMenu::Action::None) saveIfChanged(settings, savedSettings);
             if (action == PauseMenu::Action::Quit) break;
             if (action == PauseMenu::Action::Resume) artifactUI.releaseStylus();
-        } else if ((in.pressed & plat::BTN_START) && world.canPause()) {
+        } else if ((in.pressed & plat::BTN_START) && !world.playerLocked()) {
             pauseMenu.open();
             artifactUI.releaseStylus();
         } else {
             const bool devSliding = DEV && dev.update(in, world);
-            if (world.canPause()) artifactUI.update(in, world, FRAME_DT);
-            else artifactUI.releaseStylus(); // (the Artifact stays shut during a cutscene)
-            float moveX = 0, moveY = 0;
+            if (!world.playerLocked()) artifactUI.update(in, world, FRAME_DT);
+            else artifactUI.releaseStylus(); // (the Artifact stays shut while the player is held)
+            FrameInput frame;
             if (!devSliding) {
-                if (in.held & plat::BTN_LEFT) moveX -= 1;
-                if (in.held & plat::BTN_RIGHT) moveX += 1;
-                if (in.held & plat::BTN_UP) moveY += 1;
-                if (in.held & plat::BTN_DOWN) moveY -= 1;
+                if (in.held & plat::BTN_LEFT) frame.moveX -= 1;
+                if (in.held & plat::BTN_RIGHT) frame.moveX += 1;
+                if (in.held & plat::BTN_UP) frame.moveY += 1;
+                if (in.held & plat::BTN_DOWN) frame.moveY -= 1;
             }
-            world.actionHeld = (in.held & plat::BTN_A) != 0;
+            frame.actionHeld = (in.held & plat::BTN_A) != 0;
             if (in.pressed & plat::BTN_A) world.action();
-            world.update(FRAME_DT, moveX, moveY, DEV && dev.noclip);
+            world.update(FRAME_DT, frame, DEV && dev.noclip);
         }
         const float updateMs = (float)(plat::nowMs() - updateStart);
 
@@ -135,12 +136,7 @@ int main(int, char**) {
         view.draw(world);
         if (DEV && dev.noclip) // the position point the player moves by (the camera follows it)
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
-        if (world.dollies.promptShown()) // (its canvas is under the fade's)
-            menuSkin.drawSkipPrompt(plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
-        if (world.effects.black() > 0) // UIEffects' black panel
-            plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(world.effects.black() * 255)));
-        if (const float white = world.effects.whiteAlpha(area); white > 0) // FlashWhite (UIEffects' white panel)
-            plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0xff, 0xff, 0xff, (uint8_t)(white * 255)));
+        drawTopOverlays(world, menuSkin.font());
         if (pauseMenu.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
 
         plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));

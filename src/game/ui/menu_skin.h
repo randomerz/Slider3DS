@@ -44,13 +44,10 @@ public:
     // The value a touch at UI x `touchX` (fractional) sets on a slider at x, `w` wide (0-1, clamped):
     // the handle's middle follows it.
     static float sliderValueAt(float touchX, int x, int w);
+    // Its TinyUnicode font (the top screen's HUD draws it at 1x).
+    const Font& font() const { return font_; }
     // A toggle (TOGGLE_SIZE square at (x, y)); `selected` swaps its background.
     void drawToggle(int x, int y, bool on, bool selected) const;
-
-    // The cutscene skip prompt (Skip Prompt: "Skip" over a bar filling 0-1) in the bottom-right of
-    // a screen `screenW` x `screenH`. Unlike the menus it's on the top screen, so at 1x: the world's
-    // pixel size, as the original's sits over its 320x180 view.
-    void drawSkipPrompt(int screenW, int screenH, float fill) const;
 
 private:
     struct Sprite {

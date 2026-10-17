@@ -16,7 +16,7 @@ void frames(World& world, int n, float moveX = 0, float moveY = 0) {
     for (int i = 0; i < n; i++) world.update(DT, moveX, moveY, false);
 }
 
-int romeo(const Area& area) { return area.npcOn(area.areaGrid.romeo); }
+int romeo(const Area& area) { return area.areaGrid.romeo; }
 
 bool romeoFlipped(const World& world) { return world.objects.flipX(world.area.npcs[romeo(world.area)].sprite); }
 
@@ -54,7 +54,7 @@ TEST(intro_plays_once_on_the_first_house_exit) {
     world.placeAt(world.area.spawns[0]);
     const float px = world.player.x, py = world.player.y;
     village::houseExit(world);
-    CHECK(world.state.flag(village::INTRO_CUTSCENE_FLAG) && world.dollies.running() && !world.canPause());
+    CHECK(world.state.flag(village::INTRO_CUTSCENE_FLAG) && world.dollies.running() && world.playerLocked());
     CHECK(world.effects.black() == 1 && cameraAt(world, 0)); // fading in on the track's start
     CHECK(romeoFlipped(world) && !romeoPing(world));
     frames(world, 1, 1, 0); // (the frame it started in: the camera stays)
@@ -75,7 +75,7 @@ TEST(intro_plays_once_on_the_first_house_exit) {
     CHECK(world.effects.black() > 0.4f && world.dollies.running());
     for (; f < 600 && world.dollies.running(); f++) world.update(DT, 0, 0, false);
     check(f >= 400 && f <= 412, "ends after 6.75 s: " + std::to_string(f) + " frames");
-    CHECK(world.canPause() && world.effects.black() > 0.9f);
+    CHECK(!world.playerLocked() && world.effects.black() > 0.9f);
     float cx, cy;
     world.camera(cx, cy);
     CHECK(cx == world.player.x && cy == world.player.y);
@@ -95,29 +95,33 @@ TEST(intro_hold_action_to_skip) {
     village::houseExit(world);
     frames(world, 10);
     CHECK(!world.dollies.promptShown());
+    bool held = false; // the action button
+    auto run = [&](int n) {
+        for (int i = 0; i < n; i++) world.update(DT, FrameInput{0, 0, held});
+    };
     // A press shows the prompt and starts the hold; letting go early empties the bar (the prompt stays).
-    world.actionHeld = true;
+    held = true;
     world.action();
     CHECK(world.items.carried() == -1); // (the player can't act: no pick-up)
-    frames(world, 30);
+    run(30);
     CHECK(world.dollies.promptShown() && world.dollies.promptFill() > 0.3f && world.dollies.promptFill() < 0.7f);
-    world.actionHeld = false;
-    frames(world, 1);
+    held = false;
+    run(1);
     CHECK(world.dollies.promptShown() && world.dollies.promptFill() == 0);
-    frames(world, 30); // (the opening fade from black is over)
+    run(30); // (the opening fade from black is over)
     CHECK(world.effects.black() == 0);
     // A full second held: fade to black, the camera stops; then it ends.
-    world.actionHeld = true;
+    held = true;
     world.action();
-    frames(world, 62);
+    run(62);
     CHECK(world.effects.black() > 0 && world.dollies.running());
     float x0, y0, x1, y1;
     world.camera(x0, y0);
-    frames(world, 20);
+    run(20);
     world.camera(x1, y1);
     CHECK(x0 == x1 && y0 == y1);
-    frames(world, 45);
-    CHECK(!world.dollies.running() && !world.dollies.promptShown());
+    run(45);
+    CHECK(!world.dollies.running() && !world.dollies.promptShown() && !world.playerLocked());
 }
 
 TEST(intro_fade_to_black_runs_its_callback_unless_replaced) {
@@ -125,15 +129,17 @@ TEST(intro_fade_to_black_runs_its_callback_unless_replaced) {
     const Area& area = villageArea();
     ScreenEffects fx;
     fx.reset();
-    fx.fadeToBlack(FadeDone::DollyEnd);
+    uint32_t frame = 0; // (World::frame: a fade counts from the frame after it starts)
+    fx.fadeToBlack(FadeDone::DollyEnd, frame);
     CHECK(fx.black() == 0);
+    CHECK(fx.update(area, DT, 0, frame++) == FadeDone::None && fx.black() == 0); // (its start frame)
     FadeDone done = FadeDone::None;
     int n = 0;
-    for (; n < 600 && done == FadeDone::None; n++) done = fx.update(area, DT, 0);
+    for (; n < 600 && done == FadeDone::None; n++) done = fx.update(area, DT, 0, frame++);
     CHECK(done == FadeDone::DollyEnd && std::abs(n - (int)std::lround(area.fadeDuration / DT)) <= 1);
     CHECK(fx.black() == 0); // (the panel turns off at the end)
-    fx.fadeToBlack(FadeDone::DollyEnd);
-    fx.update(area, DT, 0);
-    fx.fadeFromBlack();
-    for (n = 0; n < 600; n++) check(fx.update(area, DT, 0) == FadeDone::None, "cancelled: no callback");
+    fx.fadeToBlack(FadeDone::DollyEnd, frame);
+    fx.update(area, DT, 0, frame++);
+    fx.fadeFromBlack(frame);
+    for (n = 0; n < 600; n++) check(fx.update(area, DT, 0, frame++) == FadeDone::None, "cancelled: no callback");
 }

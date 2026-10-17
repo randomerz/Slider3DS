@@ -18,9 +18,6 @@ constexpr uint32_t SLIDER_FILL = plat::rgba(0x99, 0x99, 0x99);
 constexpr uint32_t TEXT_DARK = plat::rgba(0x1a, 0x1a, 0x1a);
 constexpr uint32_t TEXT_LIGHT = plat::rgba(0xe6, 0xe6, 0xe6);
 constexpr uint32_t TEXT_GRAY = plat::rgba(0x99, 0x99, 0x99);
-constexpr uint32_t PROMPT_EDGE = plat::rgba(0x66, 0x66, 0x66); // the skip prompt (Skip Prompt prefab)
-constexpr uint32_t PROMPT_FILL = plat::rgba(0xe5, 0xe5, 0xe5);
-constexpr uint32_t PROMPT_TEXT = plat::rgba(0xff, 0xff, 0xff);
 // Button24's bottom 2 px are its shaded edge: labels center on the face above it.
 constexpr int BUTTON_EDGE = 2;
 constexpr int HANDLE_W = 3; // ui_slider's handles
@@ -122,25 +119,6 @@ void MenuSkin::drawText(std::string_view text, int x, int cy, uint32_t color) co
     const GlyphRect& cap = font_.def().glyph('A').text;
     const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
     font_.drawText(text, (float)(x * S), (float)(baseline * S), S, color);
-}
-
-void MenuSkin::drawSkipPrompt(int screenW, int screenH, float fill) const {
-    // The original's layout on its 1920x1080 canvas over the 320x180 view (6 canvas units a pixel):
-    // a 50x12 box (dialogueHighContrastBG, 9-sliced: a 1 px gray outline with open corners, dark
-    // inside) 8 px from the right and 11 from the bottom, the fill 1 px inside it, the text on top.
-    constexpr int W = 50, H = 12, RIGHT = 8, BOTTOM = 11;
-    const int x = screenW - RIGHT - W, y = screenH - BOTTOM - H;
-    plat::drawRect((float)x + 1, (float)y, W - 2, 1, PROMPT_EDGE);
-    plat::drawRect((float)x + 1, (float)(y + H - 1), W - 2, 1, PROMPT_EDGE);
-    plat::drawRect((float)x, (float)y + 1, 1, H - 2, PROMPT_EDGE);
-    plat::drawRect((float)(x + W - 1), (float)y + 1, 1, H - 2, PROMPT_EDGE);
-    plat::drawRect((float)x + 1, (float)y + 1, W - 2, H - 2, TEXT_DARK);
-    const int filled = (int)std::lround(std::min(std::max(fill, 0.0f), 1.0f) * (W - 2));
-    if (filled > 0) plat::drawRect((float)x + 1, (float)y + 1, (float)filled, H - 2, PROMPT_FILL);
-    const char* text = "Skip";
-    const GlyphRect& cap = font_.def().glyph('A').text;
-    const int baseline = y + H / 2 - (int)std::floor(cap.oy + cap.h / 2.0f);
-    font_.drawText(text, (float)(x + (W - font_.textWidth(text)) / 2), (float)baseline, 1, PROMPT_TEXT);
 }
 
 void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {

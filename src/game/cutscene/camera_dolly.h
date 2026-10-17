@@ -25,7 +25,7 @@ public:
     // EndTrack (its fade to black ended: World::fadeDone).
     void end(World& world);
 
-    bool running() const { return dolly_ >= 0; } // the player can't move, act or pause
+    bool running() const { return dolly_ >= 0; } // (it holds the player: LOCK_DOLLY)
     // Where the camera is while a dolly holds it.
     bool camera(const Area& area, float& x, float& y) const;
     // The skip prompt: shown once a hold started, its bar 0..1.
