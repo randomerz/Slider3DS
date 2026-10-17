@@ -22,6 +22,7 @@
 #include "game/ui/artifact_ui.h"
 #include "game/ui/hud.h"
 #include "game/ui/menu_skin.h"
+#include "game/ui/palette.h"
 #include "game/ui/pause_menu.h"
 #include "game/dev/dev_overlay.h"
 #include "game/render/font.h"
@@ -42,7 +43,7 @@ void showLoadError() {
     while (plat::mainLoop() && !(plat::pollInput().pressed & plat::BTN_START)) {
         plat::beginFrame();
         plat::beginScreen(plat::Screen::Top, plat::rgba(0x80, 0x20, 0x20));
-        plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));
+        plat::beginScreen(plat::Screen::Bottom, palette::DARK);
         plat::endFrame();
     }
 }
@@ -139,7 +140,7 @@ int main(int, char**) {
         drawTopOverlays(world, menuSkin.font());
         if (pauseMenu.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
 
-        plat::beginScreen(plat::Screen::Bottom, plat::rgba(0x1a, 0x1a, 0x1a));
+        plat::beginScreen(plat::Screen::Bottom, palette::DARK);
         if (pauseMenu.isOpen()) pauseMenu.draw(settings, menuSkin);
         else artifactUI.draw(world, sheets);
         if (DEV) {

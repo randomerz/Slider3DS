@@ -22,7 +22,7 @@ public:
     // The hold and the Rollercoaster coroutine: one frame (coroutine slot). `actionHeld`: the
     // button is down now.
     void update(World& world, float dt, bool actionHeld);
-    // EndTrack (its fade to black ended: World::fadeDone).
+    // EndTrack (its fade to black ended: World::effectDone).
     void end(World& world);
 
     bool running() const { return dolly_ >= 0; } // (it holds the player: LOCK_DOLLY)

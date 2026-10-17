@@ -3,15 +3,14 @@
 #include <algorithm>
 #include <cmath>
 
+#include "game/ui/palette.h"
 #include "game/world/world.h"
 #include "platform/platform.h"
 
 namespace {
 
 constexpr uint32_t PROMPT_EDGE = plat::rgba(0x66, 0x66, 0x66); // Skip Prompt (dialogueHighContrastBG's outline)
-constexpr uint32_t PROMPT_BACK = plat::rgba(0x1a, 0x1a, 0x1a);
 constexpr uint32_t PROMPT_FILL = plat::rgba(0xe5, 0xe5, 0xe5);
-constexpr uint32_t PROMPT_TEXT = plat::rgba(0xe6, 0xe6, 0xe6); // Slider's off-white (the white panel's too)
 
 } // namespace
 
@@ -25,13 +24,13 @@ void drawSkipPrompt(const Font& font, int screenW, int screenH, float fill) {
     plat::drawRect((float)x + 1, (float)(y + H - 1), W - 2, 1, PROMPT_EDGE);
     plat::drawRect((float)x, (float)y + 1, 1, H - 2, PROMPT_EDGE);
     plat::drawRect((float)(x + W - 1), (float)y + 1, 1, H - 2, PROMPT_EDGE);
-    plat::drawRect((float)x + 1, (float)y + 1, W - 2, H - 2, PROMPT_BACK);
+    plat::drawRect((float)x + 1, (float)y + 1, W - 2, H - 2, palette::DARK);
     const int filled = (int)std::lround(std::min(std::max(fill, 0.0f), 1.0f) * (W - 2));
     if (filled > 0) plat::drawRect((float)x + 1, (float)y + 1, (float)filled, H - 2, PROMPT_FILL);
     const char* text = "Skip";
     const GlyphRect& cap = font.def().glyph('A').text;
     const int baseline = y + H / 2 - (int)std::floor(cap.oy + cap.h / 2.0f);
-    font.drawText(text, (float)(x + (W - font.textWidth(text)) / 2), (float)baseline, 1, PROMPT_TEXT);
+    font.drawText(text, (float)(x + (W - font.textWidth(text)) / 2), (float)baseline, 1, palette::OFF_WHITE);
 }
 
 void drawTopOverlays(const World& world, const Font& font) {
@@ -39,5 +38,5 @@ void drawTopOverlays(const World& world, const Font& font) {
     if (const float black = world.effects.black(); black > 0)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(black * 255)));
     if (const float white = world.effects.whiteAlpha(world.area); white > 0)
-        plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0xe6, 0xe6, 0xe6, (uint8_t)(white * 255)));
+        plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, palette::withAlpha(palette::OFF_WHITE, (uint8_t)(white * 255)));
 }

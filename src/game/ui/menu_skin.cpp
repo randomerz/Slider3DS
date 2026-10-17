@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "game/data/json.h"
+#include "game/ui/palette.h"
 
 namespace {
 
@@ -15,8 +16,8 @@ constexpr uint32_t SLIDER_BAR = plat::rgba(0x66, 0x66, 0x66);
 constexpr uint32_t SLIDER_FILL = plat::rgba(0x99, 0x99, 0x99);
 // Text colors: Menu Button's label (m_fontColor 0.102, on its light face), titles and the selected
 // option (0.902), option labels (UI Slider / Label Toggle Pair "Label": 0.6).
-constexpr uint32_t TEXT_DARK = plat::rgba(0x1a, 0x1a, 0x1a);
-constexpr uint32_t TEXT_LIGHT = plat::rgba(0xe6, 0xe6, 0xe6);
+constexpr uint32_t TEXT_DARK = palette::DARK;
+constexpr uint32_t TEXT_LIGHT = palette::OFF_WHITE;
 constexpr uint32_t TEXT_GRAY = plat::rgba(0x99, 0x99, 0x99);
 // Button24's bottom 2 px are its shaded edge: labels center on the face above it.
 constexpr int BUTTON_EDGE = 2;
