@@ -33,6 +33,19 @@ void World::sendGridEvents() {
     runStarts(); // (the arrow may show the buried Slider)
 }
 
+void World::fadeDone(FadeDone done) {
+    switch (done) {
+    case FadeDone::None: break;
+    case FadeDone::DollyEnd: dollies.end(*this); break; // (Unity's OnRollercoasterEnd: the cat abduction, not ported)
+    }
+}
+
+void World::camera(float& x, float& y) const {
+    if (dollies.camera(area, x, y)) return; // (the brain cuts to the dolly's camera: no shake there)
+    x = player.x + effects.shakeX();
+    y = player.y + effects.shakeY();
+}
+
 void World::dropLanded(DropDone done, int arg) {
     switch (done) {
     case DropDone::None: break;
@@ -65,6 +78,8 @@ void World::reloadObjects() {
     ruins.reset(area);
     chad.reset(area);
     finale.reset(area);
+    intro.reset();
+    dollies.reset();
     artifactButtons.reset(area);
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
     starts.reset(area);
@@ -116,6 +131,7 @@ void World::placeNear(float x, float y) {
 }
 
 void World::update(float dt, float moveX, float moveY, bool noclip) {
+    if (dollies.running()) moveX = moveY = 0; // (Player.SetCanMove(false))
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
@@ -165,13 +181,15 @@ void World::update(float dt, float moveX, float moveY, bool noclip) {
     walks.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
     chad.coroutines(*this, dt);
     finale.coroutines(*this, dt);
+    intro.coroutines(*this, dt);
+    dollies.update(*this, dt, actionHeld);
     runStarts(); // (the final Slider may have appeared)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
     items.follow(*this);          // (the carried item is a child of the item holder the Animator moves)
     ruins.update(*this, dt);
     particles.update(*this, dt);
     knots.update(*this); // (KnotBox.LateUpdate)
-    effects.update(area, dt, settings.screenShake); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
+    fadeDone(effects.update(area, dt, settings.screenShake)); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
     frame++;
 }
 
@@ -200,6 +218,10 @@ bool World::showsPrompt(const Interactable& it) const {
 }
 
 void World::action() {
+    if (dollies.running()) { // (PlayerAction: not while the player can't move)
+        dollies.actionPressed();
+        return;
+    }
     const bool picked = items.tryPickUp(*this);
     const bool interacted = interact();
     if (!interacted && !picked) items.tryDrop(*this);

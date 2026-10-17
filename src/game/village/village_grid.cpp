@@ -30,9 +30,7 @@ void waterfallEntry(World& world) {
     if (world.state.hasCollectible("Slider 9", world.area.name)) world.state.setFlag(CAVE_DOOR_EXPLODED_FLAG, true);
 }
 
-void houseExit(World& world) {
-    world.state.setFlag(INTRO_CUTSCENE_FLAG, true); // (the camera-dolly cutscene isn't ported yet)
-}
+void houseExit(World& world) { world.intro.houseExit(world); }
 
 bool checkSpec(const World& world, const ConditionDef& c) {
     switch (c.spec) {

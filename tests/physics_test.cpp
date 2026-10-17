@@ -547,6 +547,7 @@ TEST(physics_scripted_walk_is_pinned) {
     const Area& area = villageArea();
     World world(area, DEFAULT_SETTINGS);
     for (int t = 2; t <= 9; t++) world.setTileActive(t, true);
+    world.state.setFlag("villageIntroCutscene", true); // (seen: leaving the house doesn't stop the player)
     unsigned long long h = 1469598103934665603ull; // FNV-1a over the positions' bits
     auto mix = [&](float f) { unsigned u; std::memcpy(&u, &f, 4); h = (h ^ u) * 1099511628211ull; };
     unsigned rng = 12345;

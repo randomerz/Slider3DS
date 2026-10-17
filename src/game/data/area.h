@@ -623,6 +623,29 @@ struct AreaGridDef {
     RuinsSymbolsDef ruinsSymbols; // FillInHole / ShufflePuzzle
     int ruinsFragment = -1;     // Area::items index: CheckHole hides it (or, Caves first, puts it in the hole)
     int slider8Floor = -1;      // slider8FloorTransform: where CheckHole puts it
+    int introDolly = -1;        // introCameraDolly: Area::cameraDollies index (OnHouseExit's intro), -1 = none
+    int romeo = -1;             // romeoNPC's object (the intro turns him and walks him in), -1 = none
+};
+
+// CameraDolly: a cutscene camera rolling along a Cinemachine path, given as where the camera is over
+// its duration (sampled: the path and its pathMovementCurve). Holding the action button skips it.
+struct CameraDollyDef {
+    int object = -1;
+    float duration = 0;       // s
+    float rate = 60;          // track samples per second
+    std::vector<float> track; // x, y (world) at t = k / rate, from 0 to duration
+    float holdToSkip = 1;     // holdDurationToSkip (s)
+    SampledCurve holdCurve;   // holdAnimationCurve: the skip prompt's fill over the hold (0..1)
+
+    // Where the camera is at t s (clamped to the track).
+    void at(float t, float& x, float& y) const {
+        const int n = (int)track.size() / 2;
+        const float k = std::min(std::max(t * rate, 0.0f), (float)(n - 1));
+        const int i = std::min((int)k, n - 2);
+        const float f = k - (float)i;
+        x = track[2 * i] + (track[2 * i + 2] - track[2 * i]) * f;
+        y = track[2 * i + 1] + (track[2 * i + 3] - track[2 * i + 1]) * f;
+    }
 };
 
 // CameraShake's Cinemachine noise (CinemachineBasicMultiChannelPerlin's profile): position channels,
@@ -748,6 +771,7 @@ struct Area {
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
     float flashDuration = 1; // UIEffects.flashDuration (s): FlashWhite
     CameraShakeDef cameraShake;
+    std::vector<CameraDollyDef> cameraDollies;
     AreaGridDef areaGrid;
     int collectible(const std::string& name) const; // index in collectibles of the area's own one named so, -1 if none
     // Each object's components (derived at load): componentRefs[componentStart[o] .. componentStart[o + 1]),

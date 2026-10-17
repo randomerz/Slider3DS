@@ -726,9 +726,9 @@ static bool validate(const Area& a, std::string* error) {
             if (targets[t].object == -1 && t != a.playerAction.carryTarget)
                 return fail(error, "player animator: target " + targets[t].path + " inside the player isn't moved by the port");
     }
-    std::vector<bool> isNpc(a.objects.size(), false), isWorldSprite(a.objects.size(), false);
+    std::vector<bool> isNpc(a.objects.size(), false), worldSpriteOn(a.objects.size(), false); // (objects with a world sprite)
     for (const WorldSprite& ws : a.worldSprites)
-        if (objectOk(ws.object)) isWorldSprite[ws.object] = true;
+        if (objectOk(ws.object)) worldSpriteOn[ws.object] = true;
     for (const NpcDef& n : a.npcs)
         if (objectOk(n.object)) isNpc[n.object] = true;
     auto callsOk = [&](const std::vector<CallDef>& calls) {
@@ -790,7 +790,7 @@ static bool validate(const Area& a, std::string* error) {
             return fail(error, "collectible " + c.name + ": bad object, sprite or call");
     for (const NpcDef& n : a.npcs) {
         bool ok = objectOk(n.object) && (n.pingObject == -1 || objectOk(n.pingObject)) &&
-                  n.text.minX < n.text.maxX && n.text.minY < n.text.maxY && (n.sprite == -1 || isWorldSprite[n.sprite]) &&
+                  n.text.minX < n.text.maxX && n.text.minY < n.text.maxY && (n.sprite == -1 || worldSpriteOn[n.sprite]) &&
                   n.speed >= 0;
         const NpcEmoteDef& e = n.emote;
         if (e.object != -1) {
@@ -866,8 +866,6 @@ static bool validate(const Area& a, std::string* error) {
         for (int pd : k.particles) ok = ok && particlesOk(pd);
         if (!ok) return fail(error, "knot box: bad object, node, line, ray collider, position or particles");
     }
-    std::vector<bool> worldSpriteOn(a.objects.size(), false); // objects with a world sprite
-    for (const WorldSprite& ws : a.worldSprites) worldSpriteOn[ws.object] = true;
     for (const RuinsArrowDef& r : a.ruinsArrows) {
         auto spriteOrNone = [&](int sp) { return sp == -1 || (spriteIndexOk(sp) && a.sprites[sp].ppu == (float)a.ppu); };
         bool ok = objectOk(r.object) && objectOk(r.renderer) && worldSpriteOn[r.renderer] && objectOk(r.buriedSlider) &&
@@ -894,6 +892,14 @@ static bool validate(const Area& a, std::string* error) {
     if (a.areaGrid.ruinsFragment < -1 || a.areaGrid.ruinsFragment >= (int)a.items.size())
         return fail(error, "area grid: bad ruinsFragment item");
     if (a.areaGrid.slider8Floor != -1 && !objectOk(a.areaGrid.slider8Floor)) return fail(error, "area grid: bad slider8Floor");
+    for (const CameraDollyDef& d : a.cameraDollies)
+        if (!objectOk(d.object) || d.duration <= 0 || d.rate <= 0 || d.track.size() < 4 || d.track.size() % 2 != 0 ||
+            d.holdToSkip <= 0)
+            return fail(error, "camera dolly: bad object, duration, rate, track or hold");
+    if (a.areaGrid.introDolly < -1 || a.areaGrid.introDolly >= (int)a.cameraDollies.size())
+        return fail(error, "area grid: bad introDolly");
+    if (a.areaGrid.romeo != -1 && (!objectOk(a.areaGrid.romeo) || !isNpc[a.areaGrid.romeo]))
+        return fail(error, "area grid: romeo isn't an NPC");
     for (const ChadJumpDef& c : a.chadJumps) {
         const bool ok = objectOk(c.object) && objectOk(c.renderer) && worldSpriteOn[c.renderer] && c.animator >= 0 &&
                         c.animator < (int)a.animators.size() && c.collider >= 0 && c.collider < (int)a.objectColliders.size() &&
@@ -1086,6 +1092,18 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     }
     out.areaGrid.ruinsFragment = doc["areaGrid"]["ruinsFragment"].asInt(-1);
     out.areaGrid.slider8Floor = doc["areaGrid"]["slider8Floor"].asInt(-1);
+    out.areaGrid.introDolly = doc["areaGrid"]["introDolly"].asInt(-1);
+    out.areaGrid.romeo = doc["areaGrid"]["romeo"].asInt(-1);
+    for (const Json& d : doc["cameraDollies"].items()) {
+        CameraDollyDef c;
+        c.object = d["object"].asInt(-1);
+        c.duration = d["duration"].asFloat();
+        c.rate = d["rate"].asFloat(60);
+        for (const Json& v : d["track"].items()) c.track.push_back(v.asFloat());
+        c.holdToSkip = d["holdToSkip"].asFloat(1);
+        c.holdCurve = readCurve(d["holdCurve"]);
+        out.cameraDollies.push_back(std::move(c));
+    }
     out.flashDuration = doc["flashDuration"].asFloat(1);
     out.cameraShake.frequencyGain = doc["cameraShake"]["frequencyGain"].asFloat(1);
     for (const Json& ch : doc["cameraShake"]["position"].items()) {

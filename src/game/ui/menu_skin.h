@@ -47,6 +47,11 @@ public:
     // A toggle (TOGGLE_SIZE square at (x, y)); `selected` swaps its background.
     void drawToggle(int x, int y, bool on, bool selected) const;
 
+    // The cutscene skip prompt (Skip Prompt: "Skip" over a bar filling 0-1) in the bottom-right of
+    // a screen `screenW` x `screenH`. Unlike the menus it's on the top screen, so at 1x: the world's
+    // pixel size, as the original's sits over its 320x180 view.
+    void drawSkipPrompt(int screenW, int screenH, float fill) const;
+
 private:
     struct Sprite {
         int x = 0, y = 0, w = 0, h = 0;

@@ -1,7 +1,8 @@
 // VillageGrid (the Village's SGrid): the methods its UnityEvent calls and spec conditions use.
 // The knot box is in game/village/knot_box, the ruins arrow in game/village/ruins_arrow, Chad in
 // game/village/chad_jump, FillInHole / ShufflePuzzle and the final 8-puzzle in game/village/final_puzzle.
-// Not yet: cats (their specs), the intro cutscene, trackers, particles and sounds.
+// The intro cutscene is game/village/village_intro, the cats game/village/cat_trick. Not yet: trackers,
+// particles and sounds.
 #pragma once
 
 #include <string>
@@ -29,7 +30,7 @@ void turnFishOn(World& world);
 void explode(World& world);
 // OnWaterfallEntry: with Slider 9, the cave door counts as exploded.
 void waterfallEntry(World& world);
-// OnHouseExit: the first time, the intro cutscene would play (not yet: only its flag).
+// OnHouseExit: the first time, the intro cutscene plays (VillageIntro).
 void houseExit(World& world);
 
 // The spec conditions (Condition.checkBool) on VillageGrid & co., and what they read.

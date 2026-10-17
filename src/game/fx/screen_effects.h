@@ -8,17 +8,26 @@
 
 #include "game/data/area.h"
 
+// What runs when a fade to black ends (UIEffects.FadeToBlack's callback; World::fadeDone runs it).
+enum class FadeDone : uint8_t { None, DollyEnd };
+
 class ScreenEffects {
 public:
     void reset(); // nothing showing; the noise from its start
 
-    void fadeFromBlack() { fade = 1; } // UIEffectApplier.FadeFromBlack
+    // UIEffects' black panel: FadeFromBlack (black to clear) and FadeToBlack (clear to black, then
+    // `done`), each over area.fadeDuration; the panel turns off at the end (the callback usually
+    // fades back in that frame). A new fade cancels a running one, callback and all.
+    void fadeFromBlack() { startBlack(1, 0, FadeDone::None); }
+    void fadeToBlack(FadeDone done) { startBlack(0, 1, done); }
+    float black() const { return black_; } // the black panel's alpha
     void flashWhite();                 // UIEffects.FlashWhite: white up over flashDuration / 2, then back
     // CameraShake.Shake: `amount` falling to 0 over `duration` s.
     void shake(float duration, float amount);
     // One frame: the fade and flash advance; CameraShake.Update picks the strongest shake (times the
     // screenShake setting), then the camera's noise (CinemachineBasicMultiChannelPerlin) moves by it.
-    void update(const Area& area, float dt, float screenShake);
+    // Returns the callback of a fade to black that ended (for World to run).
+    FadeDone update(const Area& area, float dt, float screenShake);
 
     float whiteAlpha(const Area& area) const; // the white panel's alpha
     float shakeGain() const { return gain_; } // the noise's amplitude gain this frame
@@ -26,7 +35,6 @@ public:
     float shakeX() const { return shakeX_; }
     float shakeY() const { return shakeY_; }
 
-    float fade = 0;        // FadeFromBlack: black overlay alpha, falls to 0 over area.fadeDuration
     bool leftArea = false; // SceneChanger.ChangeScenes ran (the port ends at the Village)
 
 private:
@@ -34,6 +42,11 @@ private:
         float duration, start, end, elapsed; // CameraShake.CameraShakeData (no delay: Shake's)
     };
     float random(); // [0, 1)
+    void startBlack(float from, float to, FadeDone done);
+
+    bool blackOn_ = false;
+    float black_ = 0, blackFrom_ = 0, blackTo_ = 0, blackT_ = 0;
+    FadeDone blackDone_ = FadeDone::None;
 
     float flashT_ = 0;
     bool flashFresh_ = false; // started this frame (scripts run before update)

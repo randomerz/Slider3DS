@@ -21,6 +21,7 @@
 #include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/village/knot_box.h"
+#include "game/village/village_grid.h"
 #include "game/grid/artifact.h"
 #include "game/grid/grid.h"
 #include "game/world/world.h"
@@ -574,4 +575,33 @@ TEST(render_npc_walk_goldens) {
         for (int i = 0; i < 40; i++) world.update(1.0f / 60.0f, 0, 0, false);
         shoot(world, "Romeo", "romeo_walking");
     }
+}
+
+TEST(render_intro_goldens) {
+    // The intro's camera dolly mid-roll (Romeo walking in, the player held in the house) with the
+    // skip prompt half held, as main draws them: the view at World::camera, the prompt at 1x over it.
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    Font font;
+    MenuSkin skin;
+    AreaView view;
+    std::string error;
+    check(sheets.load(area) && font.load("fonts/dialogue.json", &error) && skin.load(&error), "assets load " + error);
+    view.setFont(&font);
+    GoldenSet goldens("intro.txt");
+    World world = sceneWorld();
+    world.placeAt(area.spawns[0]);
+    village::houseExit(world);
+    for (int i = 0; i < 160; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    world.actionHeld = true;
+    world.action();
+    for (int i = 0; i < 30; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.dollies.running() && world.dollies.promptShown(), "rolling, the prompt up");
+    float x, y;
+    world.camera(x, y);
+    testResetDrawCalls();
+    view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
+    view.draw(world);
+    skin.drawSkipPrompt(plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
+    goldens.compare("intro_rolling_skip_held", 50);
 }

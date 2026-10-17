@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "game/anim/animators.h"
+#include "game/cutscene/camera_dolly.h"
 #include "game/data/area.h"
 #include "game/fx/particles.h"
 #include "game/fx/screen_effects.h"
@@ -27,6 +28,7 @@
 #include "game/village/chad_jump.h"
 #include "game/village/final_puzzle.h"
 #include "game/village/ruins_arrow.h"
+#include "game/village/village_intro.h"
 
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
 // the STile it stands on, which it rides while that tile slides.
@@ -97,7 +99,8 @@ public:
     void update(float dt, float moveX, float moveY, bool noclip);
 
     // PlayerAction.Action (the action button): pick up an item if one is in reach, use the offered
-    // interactables; if neither did anything, drop the carried item.
+    // interactables; if neither did anything, drop the carried item. During a camera dolly the
+    // player can't act: the press starts the hold to skip instead.
     void action();
     // PlayerAction: offer / withdraw an interactable, and run the offered ones with the highest
     // priority; true if one did something (IInteractable.Interact).
@@ -115,10 +118,15 @@ public:
     void objectPosition(int object, float& x, float& y) const;
     // The world texts showing now (`out` is cleared first).
     void worldTexts(std::vector<WorldText>& out) const;
+    // Where the top screen's camera is: on a running camera dolly, else following the player (shaken).
+    void camera(float& x, float& y) const;
+    bool canPause() const { return !dollies.running(); } // (PauseManager's restrictions)
     // Moves `object` (and what's under it) so it sits at world (x, y), on STile `owner` (0 = the world).
     void placeObject(int object, int owner, float x, float y);
     // A script's item drop has landed: runs its callback (Items::drop's DropDone).
     void dropLanded(DropDone done, int arg);
+    // A fade to black ended: runs its callback (ScreenEffects::fadeToBlack's FadeDone).
+    void fadeDone(FadeDone done);
 
     const Area& area;
     Grid grid;
@@ -137,11 +145,14 @@ public:
     village::ChadJumps chad;    // Chad's jump onto the rock and fall (Village)
     village::CatTricks cats;    // Cathy's cats returned (Village)
     village::FinalPuzzle finale; // the fragment in the hole, the shuffle, the final 8-puzzle (Village)
+    village::VillageIntro intro; // the first house exit's cutscene (Village)
+    CameraDollies dollies;       // cutscene cameras on a path
     GameState state;
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
     const Settings& settings; // the player's preferences (not the save profile)
+    bool actionHeld = false;  // the action button is down (holds: skipping a dolly); the frontend sets it
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
 

@@ -47,6 +47,14 @@ void ScreenEffects::reset() {
     offsetY_ = random() * 2000 - 1000;
 }
 
+void ScreenEffects::startBlack(float from, float to, FadeDone done) {
+    blackOn_ = true; // (FadeCoroutine: the start alpha this frame)
+    black_ = blackFrom_ = from;
+    blackTo_ = to;
+    blackT_ = 0;
+    blackDone_ = done;
+}
+
 void ScreenEffects::flashWhite() {
     flash_ = Flash::Up; // (FlashCoroutine: alpha 0 this frame, t counts from the next)
     flashT_ = 0;
@@ -57,8 +65,18 @@ void ScreenEffects::shake(float duration, float amount) {
     shakes_.push_back({duration, amount, 0, 0});
 }
 
-void ScreenEffects::update(const Area& area, float dt, float screenShake) {
-    if (fade > 0) fade = area.fadeDuration > 0 ? std::max(0.0f, fade - dt / area.fadeDuration) : 0;
+FadeDone ScreenEffects::update(const Area& area, float dt, float screenShake) {
+    FadeDone done = FadeDone::None;
+    if (blackOn_) {
+        blackT_ += dt;
+        if (area.fadeDuration <= 0 || blackT_ >= area.fadeDuration) {
+            blackOn_ = false; // (disableAtEnd)
+            black_ = 0;
+            done = std::exchange(blackDone_, FadeDone::None);
+        } else {
+            black_ = blackFrom_ + (blackTo_ - blackFrom_) * (blackT_ / area.fadeDuration);
+        }
+    }
     // FlashCoroutine: t climbs to flashDuration / 2, then falls back below 0.
     if (flash_ != Flash::None && !std::exchange(flashFresh_, false)) {
         if (flash_ == Flash::Up) {
@@ -86,13 +104,14 @@ void ScreenEffects::update(const Area& area, float dt, float screenShake) {
     const CameraShakeDef& cs = area.cameraShake;
     noiseTime_ += dt * cs.frequencyGain;
     shakeX_ = shakeY_ = 0;
-    if (gain_ <= 0) return;
+    if (gain_ <= 0) return done;
     for (const CameraShakeDef::Channel& ch : cs.position) {
         shakeX_ += noiseAt(ch.frequency[0], ch.amplitude[0], ch.constant[0], noiseTime_, offsetX_);
         shakeY_ += noiseAt(ch.frequency[1], ch.amplitude[1], ch.constant[1], noiseTime_, offsetY_);
     }
     shakeX_ *= gain_;
     shakeY_ *= gain_;
+    return done;
 }
 
 float ScreenEffects::whiteAlpha(const Area& area) const {

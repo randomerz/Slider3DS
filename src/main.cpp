@@ -2,6 +2,7 @@
 // camera follows. The new-game start is the Default spawn inside tile 1's house.
 //   D-pad / circle pad: walk          A: action (pick up / drop items, doors, NPC dialogue)
 //   START: pause (game/ui/pause_menu: Resume, Options (General, Sound), Quit)
+//   Cutscenes (the intro's camera dolly): hold A to skip
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) start outdoors on tile 1 and add:
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
@@ -106,12 +107,13 @@ int main(int, char**) {
             if (action != PauseMenu::Action::None) saveIfChanged(settings, savedSettings);
             if (action == PauseMenu::Action::Quit) break;
             if (action == PauseMenu::Action::Resume) artifactUI.releaseStylus();
-        } else if (in.pressed & plat::BTN_START) {
+        } else if ((in.pressed & plat::BTN_START) && world.canPause()) {
             pauseMenu.open();
             artifactUI.releaseStylus();
         } else {
             const bool devSliding = DEV && dev.update(in, world);
-            artifactUI.update(in, world, FRAME_DT);
+            if (world.canPause()) artifactUI.update(in, world, FRAME_DT);
+            else artifactUI.releaseStylus(); // (the Artifact stays shut during a cutscene)
             float moveX = 0, moveY = 0;
             if (!devSliding) {
                 if (in.held & plat::BTN_LEFT) moveX -= 1;
@@ -119,6 +121,7 @@ int main(int, char**) {
                 if (in.held & plat::BTN_UP) moveY += 1;
                 if (in.held & plat::BTN_DOWN) moveY -= 1;
             }
+            world.actionHeld = (in.held & plat::BTN_A) != 0;
             if (in.pressed & plat::BTN_A) world.action();
             world.update(FRAME_DT, moveX, moveY, DEV && dev.noclip);
         }
@@ -126,13 +129,16 @@ int main(int, char**) {
 
         plat::beginFrame();
         plat::beginScreen(plat::Screen::Top, plat::rgba(area.background[0], area.background[1], area.background[2]));
-        view.begin(area, sheets, world.player.x + world.effects.shakeX(), world.player.y + world.effects.shakeY(),
-                   plat::TOP_W, plat::TOP_H, world.frame * FRAME_DT, DEV && dev.showInactive);
+        float camX, camY;
+        world.camera(camX, camY);
+        view.begin(area, sheets, camX, camY, plat::TOP_W, plat::TOP_H, world.frame * FRAME_DT, DEV && dev.showInactive);
         view.draw(world);
         if (DEV && dev.noclip) // the position point the player moves by (the camera follows it)
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
-        if (world.effects.fade > 0) // FadeFromBlack (UIEffects' black panel)
-            plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(world.effects.fade * 255)));
+        if (world.dollies.promptShown()) // (its canvas is under the fade's)
+            menuSkin.drawSkipPrompt(plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
+        if (world.effects.black() > 0) // UIEffects' black panel
+            plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(world.effects.black() * 255)));
         if (const float white = world.effects.whiteAlpha(area); white > 0) // FlashWhite (UIEffects' white panel)
             plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0xff, 0xff, 0xff, (uint8_t)(white * 255)));
         if (pauseMenu.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));

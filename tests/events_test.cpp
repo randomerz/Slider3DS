@@ -54,7 +54,7 @@ TEST(events_house_door_round_trip) {
     world.interact();
     check(world.player.y > -20 && !world.player.inHouse, "outside after the exit (y " + std::to_string(world.player.y) + ")");
     check(world.player.stile == 1, "on tile 1");
-    check(world.effects.fade == 1, "faded to black");
+    check(world.effects.black() == 1, "faded to black");
     check(!boxBlocked(world, hitboxAt(world.player.hitbox(area), world.player.x, world.player.y), false),
           "landed somewhere free");
     world.update(DT, 0, 0, false);
@@ -64,9 +64,9 @@ TEST(events_house_door_round_trip) {
         check(world.interactables.size() == 1 && world.interactables[0].index == interactionOn(area, HOUSE1_DOOR),
               "outside, the house door is on offer instead of the exit (" + offered + ")");
     }
-    check(world.effects.fade < 1 && world.effects.fade > 0.9f, "fading back in");
+    check(world.effects.black() < 1 && world.effects.black() > 0.9f, "fading back in");
     for (int i = 0; i < 120; i++) world.update(DT, 0, 0, false);
-    check(world.effects.fade == 0, "faded in within the fade duration");
+    check(world.effects.black() == 0, "faded in within the fade duration");
 
     check(standIn(world, HOUSE1_DOOR), "standing at the house's door outside");
     world.update(DT, 0, 0, false);
