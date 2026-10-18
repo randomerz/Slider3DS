@@ -67,6 +67,48 @@ World::World(const Area& a, const Settings& s) : area(a), settings(s) {
     reloadObjects();
 }
 
+void World::load(const SaveProfile& profile) {
+    state.assign(profile.state);
+    playTime = profile.playTime;
+    effects.reset();
+    grid.init(area);
+    // SGrid.Load: the saved arrangement and collected tiles (one that no longer fits keeps the authored grid).
+    if (!profile.grid.empty() && grid.setGrid(profile.grid))
+        for (const TileState& t : grid.tiles())
+            grid.setTileActive(t.islandId, std::find(profile.activeTiles.begin(), profile.activeTiles.end(),
+                                                     t.islandId) != profile.activeTiles.end());
+    artifact.init(grid); // (UIArtifact.SetButtonPos)
+    if (profile.hasPlayer) { // Player.Load (before the rest)
+        player = Player();
+        player.x = profile.playerX;
+        player.y = profile.playerY;
+        player.onWater = profile.onWater;
+        player.inHouse = profile.inHouse;
+        player.stile = grid.stileUnder(player.x, player.y);
+    }
+    saveRequested = false;
+    reloadObjects();
+}
+
+void World::save(SaveProfile& profile) const {
+    profile.state = state;
+    profile.playTime = playTime;
+    profile.grid = grid.gridString(true);
+    profile.activeTiles.clear();
+    for (const TileState& t : grid.tiles())
+        if (t.active) profile.activeTiles.push_back(t.islandId);
+    // Player.GetSavePosition: on a tile, relative to where the tile will be (it may be sliding).
+    profile.hasPlayer = true;
+    profile.playerX = player.x;
+    profile.playerY = player.y;
+    if (const TileState* t = grid.tile(player.stile)) {
+        profile.playerX += (t->x - t->posX) * grid.tileWidth();
+        profile.playerY += (t->y - t->posY) * grid.tileWidth();
+    }
+    profile.onWater = player.onWater;
+    profile.inHouse = player.inHouse;
+}
+
 void World::reloadObjects() {
     objects.init(area);
     grid.clearEvents(); // (a fresh load: nothing has happened yet)
@@ -79,6 +121,7 @@ void World::reloadObjects() {
     npcs.reset(area);
     walks.reset(area);
     items.reset(area);
+    village::CatTricks::load(*this);
     animators.reset(area);
     particles.reset();
     ruins.reset(area);
@@ -204,6 +247,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     const EffectCallbacks due = effects.update(area, dt, settings.screenShake, frame);
     effectDone(due.flashMiddle);
     effectDone(due.fadeEnd); // (UIEffects; CameraShake.Update, then the camera's noise in LateUpdate)
+    playTime += dt;
     frame++;
 }
 

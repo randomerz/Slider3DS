@@ -23,10 +23,11 @@ void enterInteraction(World& world, int index) {
 }
 
 void pickUp(World& world, const CollectibleDef& c) {
-    // Collectible.DoPickUp (without the cutscene yet): into the inventory, hidden, onCollect.
+    // Collectible.DoPickUp (without the cutscene yet): into the inventory, hidden, onCollect, saved.
     world.state.setCollectible(c.name, c.area, true);
     world.objects.setActive(world.area, c.object, false);
     runCalls(world, c.onCollect);
+    world.saveRequested = true;
 }
 
 // The object's components react to the player entering (or leaving) its trigger.

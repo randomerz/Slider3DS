@@ -172,7 +172,8 @@ TEST(area_validation_rejects_bad_cat_tricks) {
                "collider": 0, "pickUpDuration": 0.5, "xCurve": [0, 1], "yCurve": [0, 1], "enableOnDrop": [],
                "onPickUp": [], "onDrop": []}],
   "catTricks": [{"object": 0, "zone": [-1, -1, 1, 1], "cats": [0, 0, 0], "textObjects": [1, 1],
-                 "text": {"box": [0, 0, 2, 1], "lineAdvance": 0.43, "sortingLayerValue": 9, "order": 0}}],
+                 "text": {"box": [0, 0, 2, 1], "lineAdvance": 0.43, "sortingLayerValue": 9, "order": 0},
+                 "spawns": [1, 1, 1]}],
   "fadeDuration": 0.5,)json";
     const std::string good = fixture(R"("fadeDuration": 0.5,)", item);
     Area a;
@@ -187,6 +188,7 @@ TEST(area_validation_rejects_bad_cat_tricks) {
         {R"("zone": [-1, -1, 1, 1])", R"("zone": [1, -1, -1, 1])", "empty zone"},
         {R"("textObjects": [1, 1])", R"("textObjects": [1, 9])", "text object -> missing object"},
         {R"("catTricks": [{"object": 0)", R"("catTricks": [{"object": 7)", "cat trick -> missing object"},
+        {R"("spawns": [1, 1, 1])", R"("spawns": [1, 1, 9])", "spawn -> missing object"},
     };
     for (const auto& c : cases) {
         Area bad;

@@ -20,6 +20,7 @@
 #include "game/npc/npc_walks.h"
 #include "game/npc/npcs.h"
 #include "game/world/object_states.h"
+#include "game/save/profile.h"
 #include "game/save/settings.h"
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
@@ -85,6 +86,12 @@ public:
     // at the origin until placed. `settings` (the player's, owned by main) must outlive the World
     // (tests: DEFAULT_SETTINGS, or their own).
     World(const Area& area, const Settings& settings);
+
+    // The scene loaded from `profile` (SaveProfile.Load, then the scene's Starts): its state, the
+    // grid (unless never saved), the player (unless never saved: left where it is), play time.
+    void load(const SaveProfile& profile);
+    // Profile.Save: writes what the profile keeps (all but its name) from the game as it is now.
+    void save(SaveProfile& profile) const;
 
     // Scene objects as a fresh load with the current state would have them (e.g. after changing
     // the state in a dev control): authored, uncollected tiles' objects off (STile.Awake), then
@@ -173,6 +180,10 @@ public:
     const Settings& settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
+    float playTime = 0; // seconds played in this profile (PlayTimer: update() adds each frame)
+    // A script asked for the game to be saved (SaveSystem.SaveGame: a collectible's pick-up); the
+    // frontend saves and clears it.
+    bool saveRequested = false;
 
 private:
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.

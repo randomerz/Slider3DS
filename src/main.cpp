@@ -12,12 +12,16 @@
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there), or the pause
 // menu. Dev builds add a perf overlay (game/dev/dev_overlay). The player's Settings live here,
 // loaded at start and saved when they've changed: as the pause menu closes, and when the app exits.
+// The save profile (game/save/profile; the first slot until the title screen picks one) loads at
+// start and is saved as Unity's GameSaver / SaveSystem.SaveGame do: once the scene has started, when
+// a script asks (a collectible's pick-up), and on quitting (the pause menu's Quit, the app closing).
 #include <cstdio>
 #include <string>
 
 #include "dev_controls.h"
 #include "game/data/area.h"
 #include "game/render/area_view.h"
+#include "game/save/profile.h"
 #include "game/save/settings.h"
 #include "game/ui/artifact_ui.h"
 #include "game/ui/hud.h"
@@ -53,6 +57,13 @@ void saveIfChanged(const Settings& settings, Settings& saved) {
     if (settings == saved) return;
     if (!settings.save()) printf("Couldn't save the settings\n");
     saved = settings;
+}
+
+// Writes the game into `profile` and its slot (-1: a profile that couldn't be read: not overwritten).
+void saveGame(const World& world, SaveProfile& profile, int slot) {
+    if (slot < 0) return;
+    world.save(profile);
+    if (!profile.save(slot)) printf("Couldn't save the profile\n");
 }
 
 // The new-game start (dev builds: outdoors on tile 1 instead of in the house).
@@ -100,6 +111,19 @@ int main(int, char**) {
     DevOverlay overlay;
     PauseMenu pauseMenu;
     placeAtStart(world, dev);
+    int slot = 0;
+    SaveProfile profile;
+    switch (SaveProfile::load(slot, profile)) {
+    case SaveProfile::Read::Ok: break;
+    case SaveProfile::Read::None: profile = SaveProfile::make("Cat"); break; // (until the title screen names it)
+    case SaveProfile::Read::Bad:
+        printf("Profile %d is unreadable: playing without saving\n", slot + 1);
+        profile = SaveProfile::make("Cat");
+        slot = -1;
+        break;
+    }
+    world.load(profile); // (a new profile: its name, the rest as a new game)
+    saveGame(world, profile, slot); // (GameSaver.Start)
 
     while (plat::mainLoop()) {
         const double updateStart = plat::nowMs();
@@ -126,6 +150,10 @@ int main(int, char**) {
             frame.actionHeld = (in.held & plat::BTN_A) != 0;
             if (in.pressed & plat::BTN_A) world.action();
             world.update(FRAME_DT, frame, DEV && dev.noclip);
+            if (world.saveRequested) {
+                world.saveRequested = false;
+                saveGame(world, profile, slot);
+            }
         }
         const float updateMs = (float)(plat::nowMs() - updateStart);
 
@@ -150,6 +178,7 @@ int main(int, char**) {
         plat::endFrame();
     }
     saveIfChanged(settings, savedSettings); // (closed while paused: HOME > Close, the PC window)
+    saveGame(world, profile, slot);         // (Quit, or the app closing: GameSaver.OnApplicationQuit)
 
     menuSkin.unload();
     font.unload();

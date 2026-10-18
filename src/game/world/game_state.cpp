@@ -10,6 +10,12 @@ void GameState::newProfile(const std::string& profileName) {
     setStr("CatUpper", upper);
 }
 
+void GameState::assign(const GameState& o) {
+    const uint32_t version = std::max(version_, o.version_) + 1;
+    *this = o;
+    version_ = version;
+}
+
 bool GameState::flag(std::string_view name) const {
     return std::find(flags_.begin(), flags_.end(), name) != flags_.end();
 }

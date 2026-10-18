@@ -3,8 +3,7 @@
 // it's dropped in the zone. The returned cats are the save's flags (villageHasMittens / Autumn /
 // Tofu), which the specs CheckMittens / CheckAutumn / CheckTofu read and Cathy's conditionals
 // test. While 1 or 2 are back, UpdateText shows "n/3" (its text objects on; World::worldTexts has
-// it, AreaView draws it).
-// Not yet: Load's moving returned cats to their spawn spots (with the save profile).
+// it, AreaView draws it). Load puts the cats already back on their spawn spots.
 #pragma once
 
 #include <vector>
@@ -21,6 +20,8 @@ inline constexpr const char* CAT_FLAGS[CatTrickDef::CATS] = {"villageHasMittens"
 
 class CatTricks {
 public:
+    // CatTrick.Load: the cats already back sit on their CollectedSpawnLoc (World::reloadObjects).
+    static void load(World& world);
     // CatTrick.Update: UpdateCollection, then UpdateText. In the scripts' Update.
     void update(World& world);
     // How many cats are back (the flags), and the "n/3" text UpdateText shows.

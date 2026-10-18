@@ -5,6 +5,13 @@
 
 namespace village {
 
+void CatTricks::load(World& world) {
+    const Area& area = world.area;
+    for (const CatTrickDef& c : area.catTricks)
+        for (int i = 0; i < CatTrickDef::CATS; i++)
+            if (world.state.flag(CAT_FLAGS[i])) world.objects.moveOnto(area, area.items[c.cats[i]].object, c.spawns[i]);
+}
+
 void CatTricks::update(World& world) {
     const Area& area = world.area;
     for (const CatTrickDef& c : area.catTricks) {

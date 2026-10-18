@@ -487,6 +487,7 @@ static CatTrickDef readCatTrick(const Json& j) {
     for (int i = 0; i < CatTrickDef::CATS; i++) d.cats[i] = j["cats"].at(i).asInt(-1);
     for (int i = 0; i < 2; i++) d.textObjects[i] = j["textObjects"].at(i).asInt(-1);
     d.text = readTextBox(j["text"]);
+    for (int i = 0; i < CatTrickDef::CATS; i++) d.spawns[i] = j["spawns"].at(i).asInt(-1);
     return d;
 }
 
@@ -940,7 +941,8 @@ static bool validate(const Area& a, std::string* error) {
                   c.zoneMinX < c.zoneMaxX && c.zoneMinY < c.zoneMaxY;
         for (int cat : c.cats) // (the zone tests each cat's collider)
             ok = ok && cat >= 0 && cat < (int)a.items.size() && a.solidCollider(a.items[cat].colliderSlot);
-        if (!ok) return fail(error, "cat trick: bad object, zone, cat or text object");
+        for (int spawn : c.spawns) ok = ok && objectOk(spawn);
+        if (!ok) return fail(error, "cat trick: bad object, zone, cat, text object or spawn");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");

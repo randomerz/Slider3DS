@@ -588,6 +588,7 @@ struct CatTrickDef {
     int cats[CATS] = {-1, -1, -1};               // Area::items: mittens, autumn, tofu
     int textObjects[2] = {-1, -1};               // text and backgroundText (UpdateText switches them)
     TextBoxDef text;                             // where the count shows
+    int spawns[CATS] = {-1, -1, -1};             // <cat>CollectedSpawnLoc's objects: where Load puts returned cats
 };
 
 struct ChadJumpDef {
