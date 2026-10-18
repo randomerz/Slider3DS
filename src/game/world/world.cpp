@@ -179,13 +179,16 @@ void World::placeAt(const Spawn& spawn) {
     player.stile = grid.stileUnder(player.x, player.y);
 }
 
-int World::placeAtStart() {
+int World::startSpawn() const {
     for (size_t i = 0; i < area.spawns.size(); i++)
-        if (area.spawns[i].name == "Default") {
-            placeAt(area.spawns[i]);
-            return (int)i;
-        }
+        if (area.spawns[i].name == "Default") return (int)i;
     return -1;
+}
+
+int World::placeAtStart() {
+    const int start = startSpawn();
+    if (start >= 0) placeAt(area.spawns[start]);
+    return start;
 }
 
 void World::placeNear(float x, float y) {

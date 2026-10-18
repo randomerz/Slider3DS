@@ -18,7 +18,7 @@ constexpr uint32_t SLIDER_FILL = plat::rgba(0x99, 0x99, 0x99);
 // option (0.902), option labels (UI Slider / Label Toggle Pair "Label": 0.6).
 constexpr uint32_t TEXT_DARK = palette::DARK;
 constexpr uint32_t TEXT_LIGHT = palette::OFF_WHITE;
-constexpr uint32_t TEXT_GRAY = plat::rgba(0x99, 0x99, 0x99);
+constexpr uint32_t TEXT_GRAY = palette::GRAY;
 // Button24's bottom 2 px are its shaded edge: labels center on the face above it.
 constexpr int BUTTON_EDGE = 2;
 constexpr int HANDLE_W = 3; // ui_slider's handles
@@ -62,6 +62,16 @@ bool MenuSkin::load(std::string* error) {
     read("toggleCheck", toggleCheck_);
     read("sliderHandle", handle_);
     read("sliderHandleSelected", handleSelected_);
+    const char* states[3] = {"", "Pressed", "Selected"};
+    for (int i = 0; i < 3; i++) {
+        read((std::string("card") + states[i]).c_str(), card_[i]);
+        read((std::string("back") + states[i]).c_str(), back_[i]);
+        read((std::string("trash") + states[i]).c_str(), trash_[i]);
+    }
+    read("cardBack", cardBack_);
+    read("frameLight", frame_[(int)Frame::Light]);
+    read("frameMid", frame_[(int)Frame::Mid]);
+    read("frameDark", frame_[(int)Frame::Dark]);
     // The widgets are their sprites' sizes (one grid: no scaling).
     auto is = [](const Sprite& s, int w, int h) { return s.w == w && s.h == h; };
     // The buttons alike; each pair of brackets mirror images of one size.
@@ -75,6 +85,16 @@ bool MenuSkin::load(std::string* error) {
                 is(toggleCheck_, TOGGLE_SIZE, TOGGLE_SIZE))) {
         ok = false;
         if (error) *error = "ui/menu.json: the slider handle / toggle sprites aren't their widgets' sizes";
+    }
+    // Each sprite-swapped widget's looks are one size.
+    for (const Sprite* set : {card_, back_, trash_})
+        if (ok && !(is(set[1], set[0].w, set[0].h) && is(set[2], set[0].w, set[0].h))) {
+            ok = false;
+            if (error) *error = "ui/menu.json: a card / icon's states differ in size";
+        }
+    if (ok && !is(cardBack_, card_[0].w, card_[0].h)) {
+        ok = false;
+        if (error) *error = "ui/menu.json: the card background isn't the card's size";
     }
     if (!ok) return false;
     sheet_ = plat::loadSheet(doc["sheet"].asString().c_str());
@@ -127,7 +147,7 @@ void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {
 }
 
 void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed,
-                          int bracketOut) const {
+                          int bracketOut, bool enabled) const {
     drawNineSlice(pressed ? buttonPressed_ : button_, x, y, w, h);
     if (selected) {
         // At rest BRACKET_GAP px from the sides, 1 px past the face's top and bottom (a pressed
@@ -139,7 +159,7 @@ void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bo
         drawNineSlice(r, x + w + BRACKET_GAP + bracketOut, top, r.w, height);
     }
     const int drop = pressed ? PRESS_DROP : 0;
-    drawText(label, x + (w - font_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop, TEXT_DARK);
+    drawText(label, x + (w - font_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop, enabled ? TEXT_DARK : TEXT_GRAY);
 }
 
 void MenuSkin::drawLabel(std::string_view text, int x, int cy, bool selected) const {
@@ -156,6 +176,23 @@ void MenuSkin::drawSlider(int x, int y, int w, float value, bool selected) const
 
 float MenuSkin::sliderValueAt(float touchX, int x, int w) {
     return std::clamp((touchX - x - HANDLE_W / 2.0f) / (w - HANDLE_W), 0.0f, 1.0f);
+}
+
+void MenuSkin::drawCard(int x, int y, int w, int h, State state) const {
+    drawNineSlice(cardBack_, x, y, w, h);
+    drawNineSlice(card_[(int)state], x, y, w, h);
+}
+
+void MenuSkin::drawFrame(Frame frame, int x, int y, int w, int h) const { drawNineSlice(frame_[(int)frame], x, y, w, h); }
+
+void MenuSkin::drawIcon(Icon icon, int x, int y, State state) const {
+    draw((icon == Icon::Back ? back_ : trash_)[(int)state], x, y);
+}
+
+void MenuSkin::iconSize(Icon icon, int& w, int& h) const {
+    const Sprite& s = (icon == Icon::Back ? back_ : trash_)[0];
+    w = s.w;
+    h = s.h;
 }
 
 void MenuSkin::drawToggle(int x, int y, bool on, bool selected) const {

@@ -77,6 +77,8 @@ bool readFile(const char* path, std::string& out);
 // through a temporary, so a failed write keeps the old one.
 bool readUserFile(const char* name, std::string& out);
 bool writeUserFile(const char* name, const std::string& data);
+// Deletes a user file (and a leftover temporary); true if none is left.
+bool removeUserFile(const char* name);
 
 // Loads sprite sheet `name` (PC: assets/sheets/<name>.png, 3DS: romfs:/gfx/<name>.t3x).
 // Returns nullptr on failure.

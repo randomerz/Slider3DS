@@ -1,6 +1,7 @@
 // The original's menu widgets, for the port's menus: its buttons (Menu Button: Button24, 9-sliced,
 // sprite swap; selected: brackets beside it, the user's art), sliders
-// (UI Slider) and toggles (UI Toggle), with TinyUnicode text (a port choice:
+// (UI Slider) and toggles (UI Toggle); the title menu's profile cards, bracket frames (keyboard keys,
+// the name field) and icons (back, trash); with TinyUnicode text (a port choice:
 // it reads better on the 3DS than the original's menu fonts). Sprites cut by tools/make_ui.py
 // (assets/ui/menu.json), fonts baked by tools/make_font.py.
 //
@@ -21,6 +22,12 @@ public:
     // to 2x), the toggle its sprites' size (8x8 at 1x).
     static constexpr int SLIDER_H = 5, TOGGLE_SIZE = 8;
     static constexpr int PRESS_DROP = 1; // the label follows Button24's pressed face, 1 px lower
+    static constexpr int CARD_EDGE = 2;  // a card's face leaves its background's bottom 2 px showing
+
+    // A sprite-swapped widget's look (Button transition: normal, pressed, highlighted).
+    enum class State { Normal, Pressed, Selected };
+    enum class Icon { Back, Trash };
+    enum class Frame { Light, Mid, Dark }; // MainMenuButton20's bracket frames
 
     MenuSkin() = default;
     MenuSkin(const MenuSkin&) = delete;
@@ -34,9 +41,10 @@ public:
     void drawTitle(std::string_view text, int cx, int cy) const;
     // A button filling the box (its label dark, centered on its face): `pressed` sinks its face;
     // `selected` (the menu's cursor) brackets its sides, `bracketOut` px further out than at rest
-    // (the bounce), a pressed one's brackets sunk with the face.
+    // (the bounce), a pressed one's brackets sunk with the face. A disabled one's label is gray
+    // (Continue without a profile).
     void drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed,
-                    int bracketOut = 0) const;
+                    int bracketOut = 0, bool enabled = true) const;
     // An option's label, left-aligned at x, centered on cy: gray, light when selected.
     void drawLabel(std::string_view text, int x, int cy, bool selected) const;
     // A slider (w x SLIDER_H at (x, y)) at `value` 0-1; `selected` swaps its handle.
@@ -48,6 +56,17 @@ public:
     const Font& font() const { return font_; }
     // A toggle (TOGGLE_SIZE square at (x, y)); `selected` swaps its background.
     void drawToggle(int x, int y, bool on, bool selected) const;
+    // A profile card filling the box: its background, and its face (pressed: 1 px lower; selected:
+    // outlined). Its contents are the caller's (drawText), PRESS_DROP lower when pressed.
+    void drawCard(int x, int y, int w, int h, State state) const;
+    // A bracket frame filling the box ("[ ]").
+    void drawFrame(Frame frame, int x, int y, int w, int h) const;
+    // An icon button at (x, y), its sprite's size (iconSize).
+    void drawIcon(Icon icon, int x, int y, State state) const;
+    void iconSize(Icon icon, int& w, int& h) const;
+    // `text` in `color`, its capitals' middle on cy (rounded down to the grid), pen at x.
+    void drawText(std::string_view text, int x, int cy, uint32_t color) const;
+    int textWidth(std::string_view text) const { return font_.textWidth(text); }
 
 private:
     struct Sprite {
@@ -58,10 +77,9 @@ private:
     // A 9-slice filling the box: corners 1:1, edges and middle stretched.
     void drawNineSlice(const Sprite& s, int x, int y, int w, int h) const;
     void draw(const Sprite& s, int x, int y) const;
-    // `text` in `color`, its capitals' middle on cy (rounded down to the grid), pen at x.
-    void drawText(std::string_view text, int x, int cy, uint32_t color) const;
 
     plat::Texture* sheet_ = nullptr;
     Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
+    Sprite card_[3], cardBack_, frame_[3], back_[3], trash_[3]; // ([State] / [Frame])
     Font font_;
 };

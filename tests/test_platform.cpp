@@ -60,6 +60,10 @@ bool writeUserFile(const char* name, const std::string& data) {
     g_userFiles[name] = data;
     return true;
 }
+bool removeUserFile(const char* name) {
+    g_userFiles.erase(name);
+    return true;
+}
 
 Texture* loadSheet(const char* name) { return new Texture{name}; }
 void freeSheet(Texture* tex) { delete tex; }

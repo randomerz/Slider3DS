@@ -185,9 +185,10 @@ PauseMenu::Box PauseMenu::controlBox(Item item) {
 
 PauseMenu::Item PauseMenu::cursor() const { return pageDef(page_).items[cursor_].item; }
 
-void PauseMenu::open() {
+void PauseMenu::open(Page start) {
     open_ = true;
-    go(Page::Paused, RESUME);
+    root_ = start;
+    go(start, pageDef(start).items[0].item);
     wasTouching_ = true; // (a touch held when the menu opens isn't a tap on it)
 }
 
@@ -202,9 +203,14 @@ void PauseMenu::go(Page page, Item select) {
         if (p.items[i].item == select) cursor_ = i;
 }
 
-void PauseMenu::back() {
+PauseMenu::Action PauseMenu::back() {
     const PageDef& p = pageDef(page_);
+    if (page_ == root_ || !p.hasParent) {
+        open_ = false;
+        return Action::Resume;
+    }
     go(p.parent, p.returnTo);
+    return Action::None;
 }
 
 int PauseMenu::itemAt(int x, int y) const {
@@ -230,7 +236,7 @@ PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
         confirmQuit_ = true;
         break;
     case Act::Open: go(def.opens, pageDef(def.opens).items[0].item); break;
-    case Act::Back: back(); break;
+    case Act::Back: return back();
     }
     return Action::None;
 }
@@ -259,14 +265,7 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
         open_ = false;
         return Action::Resume;
     }
-    if (in.pressed & plat::BTN_B) {
-        if (pageDef(page_).hasParent) {
-            back();
-            return Action::None;
-        }
-        open_ = false;
-        return Action::Resume;
-    }
+    if (in.pressed & plat::BTN_B) return back();
     const PageDef& p = pageDef(page_);
     const int move = ((in.pressed & plat::BTN_DOWN) ? 1 : 0) - ((in.pressed & plat::BTN_UP) ? 1 : 0);
     if (move != 0) {

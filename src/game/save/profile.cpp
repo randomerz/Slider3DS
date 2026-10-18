@@ -107,6 +107,12 @@ struct Kind {
 constexpr Kind KINDS[] = {
     {"name", 1, [](const Fields& f, SaveProfile& p) { p.name = f[1]; return true; }},
     {"playTime", 1, [](const Fields& f, SaveProfile& p) { return toReal(f[1], p.playTime) && p.playTime >= 0; }},
+    {"lastSaved", 1,
+     [](const Fields& f, SaveProfile& p) {
+         char* rest = nullptr;
+         p.lastSaved = std::strtoll(f[1].c_str(), &rest, 10);
+         return !f[1].empty() && *rest == '\0';
+     }},
     {"flag", 1, [](const Fields& f, SaveProfile& p) { p.state.setFlag(f[1], true); return true; }},
     {"string", 2, [](const Fields& f, SaveProfile& p) { p.state.setStr(f[1], f[2]); return true; }},
     {"collectible", 2, [](const Fields& f, SaveProfile& p) { p.state.setCollectible(f[1], f[2], true); return true; }},
@@ -135,6 +141,7 @@ std::string SaveProfile::serialize() const {
     out += '\n';
     line(out, "name", {name});
     line(out, "playTime", {number(playTime)});
+    line(out, "lastSaved", {std::to_string(lastSaved)});
     for (const std::string& f : state.flags()) line(out, "flag", {f});
     for (const auto& [key, value] : state.strings()) line(out, "string", {key, value});
     for (const GameState::Collectible& c : state.collectibles()) line(out, "collectible", {c.name, c.area});
@@ -177,5 +184,9 @@ SaveProfile::Read SaveProfile::load(int slot, SaveProfile& out) {
     if (!plat::readUserFile(fileName(slot).c_str(), text)) return Read::None;
     return parse(text, out) ? Read::Ok : Read::Bad;
 }
+
+int SaveProfile::areasCompleted() const { return state.hasCollectible("Slider 9", "Village") ? 1 : 0; }
+
+bool SaveProfile::remove(int slot) { return plat::removeUserFile(fileName(slot).c_str()); }
 
 bool SaveProfile::save(int slot) const { return plat::writeUserFile(fileName(slot).c_str(), serialize()); }

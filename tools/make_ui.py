@@ -9,6 +9,10 @@ The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   UI Toggle: background ui_toggle_0, selected background ui_toggle_0_selected, checkmark ui_toggle_1.
   UI Slider: handle ui_slider_1 (the Handle Image's m_Sprite), selected handle ui_slider_0 (the
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
+  The title menu (MainMenu.unity): profile cards (Button24_BottomEmpty: normal _0, pressed _1 (1 px
+      lower), selected _2 (outlined); on Button24_Backgrounds_0), bracket frames (MainMenuButton20:
+      light _0, mid _1, dark _2: keyboard keys, the name field), icons (back_button, trash icon: normal
+      _0, pressed _1 (1 px lower), selected _2 (light)).
 
   assets/sheets/ui_menu.png   the sheet (.fmt: la8, all gray)
   assets/ui/menu.json         {"sheet", "sprites": {name: {"rect": [x, y, w, h] (top-left origin),
@@ -35,6 +39,20 @@ SPRITES = {
     "toggleCheck": ("Sprites/UI/ui_toggle.png", "ui_toggle_1"),
     "sliderHandle": ("Sprites/UI/menus/ui_slider.png", "ui_slider_1"),
     "sliderHandleSelected": ("Sprites/UI/menus/ui_slider.png", "ui_slider_0"),
+    # The title menu (MainMenu.unity's SavesPanel / NewSavePanel):
+    "card": ("Sprites/UI/Button24_BottomEmpty.png", "Button24_0_Empty"),
+    "cardPressed": ("Sprites/UI/Button24_BottomEmpty.png", "Button24_1_Empty"),
+    "cardSelected": ("Sprites/UI/Button24_BottomEmpty.png", "Button24_2_Empty"),
+    "cardBack": ("Sprites/UI/Button24_Backgrounds.png", "Button24_Backgrounds_0"),
+    "frameLight": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_0"),
+    "frameMid": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_1"),
+    "frameDark": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_2"),
+    "back": ("Sprites/UI/artifact/back_button.png", "back_button_0"),
+    "backPressed": ("Sprites/UI/artifact/back_button.png", "back_button_1"),
+    "backSelected": ("Sprites/UI/artifact/back_button.png", "back_button_2"),
+    "trash": ("Sprites/UI/menus/trash icon.png", "trash icon_0"),
+    "trashPressed": ("Sprites/UI/menus/trash icon.png", "trash icon_1"),
+    "trashSelected": ("Sprites/UI/menus/trash icon.png", "trash icon_2"),
 }
 SHEET_W = 128
 

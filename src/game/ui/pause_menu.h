@@ -11,8 +11,8 @@
 // A: use it   left / right: move the slider or flip the toggle   B: back a page (on Paused:
 // resume)   START: resume
 // Stylus: tap a button or the toggle's row (a button shows pressed while held), drag the slider
-// (only the slider: its label is just a label). Quit asks again (it ends the app; Unity's goes to
-// the main menu). The menu changes the Settings it's given in place; whoever owns them saves them
+// (only the slider: its label is just a label). Quit asks again, then saves and goes back to the
+// title screen (QuitHandler; main does both). The menu changes the Settings it's given in place; whoever owns them saves them
 // (main, when the menu closes).
 //
 // Pages are data (pause_menu.cpp's tables): each page has a title, a parent (where B and Back go,
@@ -47,7 +47,9 @@ public:
     };
 
     bool isOpen() const { return open_; }
-    void open(); // on Paused, Resume selected
+    // Opens on `start` (its first item selected): Paused in the game, Options from the title screen.
+    // Backing out of the page it opened on closes it (Resume).
+    void open(Page start = Page::Paused);
 
     // One frame (the game steps a fixed 60 fps) of input while open. Resume / Quit: the menu just
     // closed.
@@ -70,11 +72,12 @@ private:
     Action activate(const ItemDef& def, Settings& settings);
     void step(const ItemDef& def, int dir, Settings& settings); // left / right on an option
     void go(Page page, Item select);
-    void back(); // to the parent page (B, Back)
+    Action back(); // to the parent page (B, Back), or closed (Resume) from the page it opened on
     int itemAt(int x, int y) const; // UI px -> index on the page, -1 = none
 
     bool open_ = false;
     Page page_ = Page::Paused;
+    Page root_ = Page::Paused; // the page it opened on
     int cursor_ = 0; // index on the page
     bool confirmQuit_ = false;
     // Stylus (UI px): a tap is a press and release on the same item (the 3DS reports no position on

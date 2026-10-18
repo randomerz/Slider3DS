@@ -125,6 +125,15 @@ bool writeUserFile(const char* name, const std::string& data) {
     return rename(tmp.c_str(), path.c_str()) == 0;
 }
 
+bool removeUserFile(const char* name) {
+    const std::string path = std::string(USER_DIR) + name;
+    remove((path + ".tmp").c_str());
+    FILE* f = fopen(path.c_str(), "rb");
+    if (!f) return true;
+    fclose(f);
+    return remove(path.c_str()) == 0;
+}
+
 Texture* loadSheet(const char* name) {
     std::string path = std::string("romfs:/gfx/") + name + ".t3x";
     C2D_SpriteSheet sheet = C2D_SpriteSheetLoad(path.c_str());

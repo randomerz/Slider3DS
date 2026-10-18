@@ -175,6 +175,16 @@ bool writeUserFile(const char* name, const std::string& data) {
     return rename(tmp.c_str(), path.c_str()) == 0;
 }
 
+bool removeUserFile(const char* name) {
+    if (userDir().empty()) return false;
+    const std::string path = userDir() + name;
+    remove((path + ".tmp").c_str());
+    FILE* f = fopen(path.c_str(), "rb");
+    if (!f) return true;
+    fclose(f);
+    return remove(path.c_str()) == 0;
+}
+
 bool readFile(const char* path, std::string& out) {
     std::string full = std::string(ASSET_ROOT) + "/" + path;
     size_t size = 0;

@@ -261,3 +261,15 @@ TEST(cat_trick_load_puts_returned_cats_on_their_spawns) {
         else check(onSpawn && l.objects.parent(cat) == c.spawns[i], "a returned cat sits on its spawn");
     }
 }
+
+TEST(profile_keeps_last_saved_and_counts_the_village) {
+    SaveProfile p = SaveProfile::make("Cat"), q;
+    p.lastSaved = 1760000000123;
+    CHECK(p.areasCompleted() == 0);
+    p.state.setCollectible("Slider 9", "Village", true); // (PlaceTile9: the Village's map turns color)
+    CHECK(SaveProfile::parse(p.serialize(), q) && q.lastSaved == p.lastSaved && q.areasCompleted() == 1);
+    CHECK(!SaveProfile::parse(SaveProfile::make("Cat").serialize() + "lastSaved\tsoon\n", q));
+    testUserFiles().clear();
+    CHECK(p.save(2) && SaveProfile::remove(2) && testUserFiles().empty());
+    CHECK(SaveProfile::remove(2)); // (nothing there: still fine)
+}

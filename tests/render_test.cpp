@@ -21,6 +21,8 @@
 #include "game/ui/hud.h"
 #include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
+#include "game/ui/title_menu.h"
+#include "game/save/profile.h"
 #include "game/village/knot_box.h"
 #include "game/village/village_grid.h"
 #include "game/grid/artifact.h"
@@ -477,6 +479,71 @@ TEST(render_pause_menu_goldens) {
     menu.update(in, s);
     CHECK(menu.isOpen() && menu.cursor() == PauseMenu::RESUME);
     shoot("pause_menu_pressed");
+}
+
+TEST(render_title_menu_goldens) {
+    // Main without profiles (Continue grayed) and with one; Saves: a profile (1/9, 1h32), an
+    // unreadable file, an empty slot; delete mode with a card awaiting Confirm; New Save with a name
+    // in capitals.
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "menu skin loads " + error);
+    GoldenSet goldens("title.txt");
+    TitleMenu menu;
+    auto shoot = [&](const char* name) {
+        testResetDrawCalls();
+        menu.draw(skin);
+        goldens.compare(name, 20);
+    };
+    auto press = [&](uint32_t button) {
+        plat::Input in;
+        in.pressed = button;
+        menu.update(in);
+    };
+    testUserFiles().clear();
+    menu.open();
+    menu.update(plat::Input{});
+    shoot("title_main_new");
+    SaveProfile p = SaveProfile::make("Boomo");
+    p.playTime = 3600 + 32 * 60;
+    p.state.setCollectible("Slider 9", "Village", true);
+    p.save(0);
+    testUserFiles()[SaveProfile::fileName(1)] = "garbage";
+    menu.open();
+    menu.update(plat::Input{});
+    shoot("title_main");
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A);
+    shoot("title_saves");
+    auto tap = [&](TitleMenu::Widget w) {
+        TitleMenu::Box b;
+        check(menu.box(w, b), "widget shown");
+        plat::Input in;
+        in.touching = true;
+        in.touchX = b.x + b.w / 2;
+        in.touchY = b.y + b.h / 2;
+        menu.update(in);
+        menu.update(plat::Input{});
+    };
+    tap(TitleMenu::TRASH); // delete mode
+    tap(TitleMenu::CARD);  // the first card awaits Confirm (its text showing: the blink's first half)
+    CHECK(menu.deleting() && menu.confirming() == 0);
+    shoot("title_saves_delete");
+    press(plat::BTN_B);
+    press(plat::BTN_A);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A); // the empty slot: New Save
+    press(plat::BTN_DOWN);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A); // Caps
+    press(plat::BTN_UP);
+    press(plat::BTN_A);
+    press(plat::BTN_A);
+    shoot("title_new_save");
+    testUserFiles().clear();
 }
 
 TEST(render_npc_dialogue_goldens) {

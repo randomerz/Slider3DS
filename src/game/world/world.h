@@ -114,6 +114,7 @@ public:
     // The new game's start: the "Default" spawn (inside tile 1's house). Its Area::spawns index, -1
     // if the area has none (the player stays put).
     int placeAtStart();
+    int startSpawn() const; // that spawn's index, -1 = none
     // Puts the player at (x, y) on foot (or the nearest spot where it fits, if any).
     void placeNear(float x, float y);
 

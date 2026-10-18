@@ -317,3 +317,24 @@ TEST(pause_menu_selected_brackets_bounce) {
     menu.update(press(plat::BTN_DOWN), s); // Options: at rest again
     CHECK(leftmost() == rest);
 }
+
+TEST(pause_menu_opened_on_options_closes_from_it) {
+    // The title screen's Options: Back and B leave the menu instead of going to Paused.
+    Menu m;
+    Settings s;
+    m.open(Menu::Page::Options);
+    CHECK(m.isOpen() && m.page() == Menu::Page::Options && m.cursor() == Menu::GENERAL);
+    m.update(press(plat::BTN_A), s); // General
+    CHECK(m.page() == Menu::Page::General);
+    CHECK(m.update(press(plat::BTN_B), s) == Menu::Action::None && m.page() == Menu::Page::Options);
+    CHECK(m.update(press(plat::BTN_B), s) == Menu::Action::Resume && !m.isOpen());
+    m.open(Menu::Page::Options);
+    m.update(press(plat::BTN_UP), s); // Back (the cursor wraps)
+    CHECK(m.cursor() == Menu::OPTIONS_BACK);
+    CHECK(m.update(press(plat::BTN_A), s) == Menu::Action::Resume && !m.isOpen());
+    m.open();
+    m.update(press(plat::BTN_DOWN), s);
+    m.update(press(plat::BTN_A), s); // Paused > Options: Back returns to Paused
+    m.update(press(plat::BTN_B), s);
+    CHECK(m.isOpen() && m.page() == Menu::Page::Paused);
+}
