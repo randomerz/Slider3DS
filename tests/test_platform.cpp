@@ -20,6 +20,7 @@ std::map<std::string, std::string> g_files;
 std::map<std::string, std::string> g_userFiles;
 std::vector<DrawCall> g_draws;
 int g_audioWanted = 0;
+bool g_audioAvailable = true;
 std::vector<int16_t> g_audio;
 } // namespace
 
@@ -33,6 +34,7 @@ void testSetAudioWanted(int blocks) {
     g_audio.clear();
 }
 const std::vector<int16_t>& testAudioQueued() { return g_audio; }
+void testSetAudioAvailable(bool available) { g_audioAvailable = available; }
 
 namespace plat {
 
@@ -97,6 +99,7 @@ void endFrame() {}
 FrameStats lastFrameStats() { return {}; }
 double nowMs() { return 0; }
 
+bool audioAvailable() { return g_audioAvailable; }
 int audioBlocksWanted() { return g_audioWanted; }
 void queueAudioBlock(const int16_t* stereo) {
     g_audio.insert(g_audio.end(), stereo, stereo + AUDIO_BLOCK * 2);

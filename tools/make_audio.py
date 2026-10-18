@@ -162,7 +162,8 @@ def headroom(clips):
 
 def encode(samples, path, quality):
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ar', str(RATE), '-ac', str(samples.shape[1]), '-i', '-',
-                    '-c:a', 'libvorbis', '-q:a', str(quality), path],
+                    '-c:a', 'libvorbis', '-q:a', str(quality),
+                    '-fflags', '+bitexact', '-flags:a', '+bitexact', path], # (reproducible: no random serial)
                    input=samples.astype(np.float32).tobytes(), check=True)
     # The port seeks by frame: the file must decode to exactly as many as were rendered.
     probe = subprocess.run(['ffprobe', '-v', 'error', '-count_packets', '-show_entries', 'stream=duration_ts',
@@ -188,6 +189,8 @@ class Event:
         self.volume = mm['props']['volume']
         if mm['props']['pitch'] != 0:
             raise Fail(f'{path}: a master pitch')
+        if P.rel(mm, 'modulators'):
+            raise Fail(f'{path}: a modulator on the master track')
         self.bus = self.bus_name()
         self.spatial = None
         self.pitch_param = False
@@ -218,6 +221,9 @@ class Event:
         self.attack = self.release = 0
         self.pitch_random = 0
         self.tracks = [self.track(t) for t in P.rel(self.ev, 'groupTracks')]
+        # The AHDSR is played as the whole event's: one track's, with no others beside it.
+        if len(self.tracks) > 1 and (self.attack or self.release):
+            raise Fail(f'{path}: an AHDSR on one of several tracks')
         if P.rel(self.ev, 'returnTracks'):
             raise Fail(f'{path}: return tracks')
 

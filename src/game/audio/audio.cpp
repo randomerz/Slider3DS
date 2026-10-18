@@ -19,7 +19,10 @@ void Audio::unload() {
 }
 
 void Audio::run(const std::vector<AudioCue>& cues) {
+    // Without an output nothing mixes, so nothing would ever end: only the parameters are kept.
+    const bool output = plat::audioAvailable();
     for (const AudioCue& c : cues) {
+        if (!output && c.kind != AudioCue::Kind::SetParameter) continue;
         switch (c.kind) {
         case AudioCue::Kind::Play: play(c); break;
         case AudioCue::Kind::PlayMusic: playMusic(c); break;
@@ -42,7 +45,8 @@ void Audio::play(const AudioCue& cue) {
     if (s->pitchParam && cue.value > 0) rate *= std::clamp(cue.value, 0.5f, 2.0f);
     // Centered (2D, or at the listener): a mono source at -3 dB a side (constant power).
     const float side = s->gain * std::sqrt(0.5f);
-    mixer_.playClip(clip, Bus::Sfx, rate, side, side, s->canPause);
+    // Unity's SetPaused reaches only managed (spatial) instances: 2D one-shots play on.
+    mixer_.playClip(clip, Bus::Sfx, rate, side, side, s->canPause && s->spatial);
 }
 
 void Audio::playMusic(const AudioCue& cue) {

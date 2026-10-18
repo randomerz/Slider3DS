@@ -165,3 +165,50 @@ TEST(audio_plays_music_as_audio_manager) {
     CHECK(testAudioQueued().size() == 3u * N * 2);
     testSetAudioWanted(0);
 }
+
+TEST(mixer_stream_landing_on_its_length_plays_on) {
+    // As both real tracks loop: a jump lands exactly on `length` (where the crossfade starts) and
+    // the track goes on from there, out of the crossfade and back.
+    Mixer m;
+    const StreamDef d = stream(2048, {{1024, 2048}, {2560, 0}});
+    const Mixer::Voice v = m.playStream(d);
+    const std::vector<int16_t> out = mixBlocks(m, 4);
+    CHECK(same(out, 1024, decoded(2048, 512), 0, 512)); // (landed on the length: no end)
+    CHECK(same(out, 1536, decoded(0, 512), 0, 512));    // (out of the "crossfade", back to the start)
+    CHECK(m.playing(v) && m.streamPosition(v) == 512);
+}
+
+TEST(mixer_stop_without_a_release_fades_over_a_block) {
+    Mixer m;
+    const StreamDef d = stream(100000, {});
+    const Mixer::Voice v = m.playStream(d);
+    mixBlocks(m, 1);
+    m.stop(v);
+    const std::vector<int16_t> out = mixBlocks(m, 1);
+    const std::vector<int16_t> ref = decoded(N, N);
+    // Down to silence across the block (no click), then gone.
+    CHECK(out[0] == ref[0] && out[1] == ref[1]);
+    CHECK(std::abs(out[2 * (N - 1)]) <= std::abs(ref[2 * (N - 1)]) / 64 + 1);
+    CHECK(!m.playing(v) && m.voices() == 0);
+    // A clip too.
+    Clip clip;
+    clip.pcm.assign(4 * N, 1000);
+    const Mixer::Voice c = m.playClip(clip, Bus::Sfx, 1, 1, 1, false);
+    m.stop(c);
+    const std::vector<int16_t> fade = mixBlocks(m, 1);
+    CHECK(fade[0] == 1000 && fade[2 * (N - 1)] < 10 && m.voices() == 0);
+}
+
+TEST(audio_without_an_output_plays_nothing) {
+    // Nothing would mix, so nothing would ever end: no voices pile up, the parameters still apply.
+    Audio audio;
+    CHECK(audio.load());
+    testSetAudioAvailable(false);
+    AudioCues cues;
+    for (int i = 0; i < 40; i++) cues.play(sounds::UI_CLICK);
+    cues.playMusic(tracks::MAIN_MENU);
+    cues.setParameter(audio_params::MAIN_MENU_ACTIVATED, 1);
+    audio.run(cues.take());
+    CHECK(audio.mixer().voices() == 0 && audio.mixer().parameter(audio_params::MAIN_MENU_ACTIVATED) == 1);
+    testSetAudioAvailable(true);
+}

@@ -17,7 +17,7 @@ namespace plat {
 namespace {
 
 constexpr int RING = 8;         // wave buffers
-constexpr int QUEUE_BLOCKS = 4; // queued ahead, ~64 ms
+constexpr int QUEUE_BLOCKS = 6; // queued ahead, ~96 ms (the game mixes on its main loop: room for a slow frame)
 constexpr int CHANNEL = 0;
 
 bool g_ready = false;
@@ -61,6 +61,8 @@ void exitAudio() {
     linearFree(g_pcm);
     g_ready = false;
 }
+
+bool audioAvailable() { return g_ready; }
 
 int audioBlocksWanted() {
     if (!g_ready) return 0;

@@ -95,6 +95,7 @@ void ArtifactUI::selectButton(Grid& grid, Artifact& artifact, int x, int y, bool
 }
 
 void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
+    clicked_ = false;
     if (nudges_.empty()) return; // (before init: no buttons yet)
     const Area& area = world.area;
     Grid& grid = world.grid;
@@ -137,7 +138,10 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
         int ux = -1, uy = -1;
         bool upOnSlot = slotAtPixel(area, artifact, lastX_, lastY_, ux, uy);
         if (!dragging_) {
-            if (upOnSlot && ux == downSlotX_ && uy == downSlotY_) selectButton(grid, artifact, ux, uy, false, playerStile, autoMove());
+            if (upOnSlot && ux == downSlotX_ && uy == downSlotY_) {
+                clicked_ = true;
+                selectButton(grid, artifact, ux, uy, false, playerStile, autoMove());
+            }
         } else if (grid.tileActive(artifact.buttonAt(downSlotX_, downSlotY_)) && selectedId_) {
             // ButtonDragEnd / DoButtonDrag: drop on an option moves there; anywhere else but the
             // dragged tile cancels. Back on the dragged tile, Unity's Button also gets the click
@@ -145,6 +149,7 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
             // ButtonDragEnd's SelectButton selects it again like a tap — auto-moving a single option.
             const bool onItself = upOnSlot && ux == downSlotX_ && uy == downSlotY_;
             if (onItself) {
+                clicked_ = true;
                 deselect();
                 selectButton(grid, artifact, ux, uy, false, playerStile, autoMove());
             } else {

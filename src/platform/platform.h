@@ -108,10 +108,12 @@ double nowMs();
 
 // ---- Audio ----
 // The game mixes (game/audio) and the backend only plays: stereo int16 blocks at AUDIO_RATE, in
-// order. audioBlocksWanted() is how many more blocks it wants now: it keeps a short queue filled, so
-// a frame that runs long doesn't starve it (0 when audio is unavailable: nothing to mix).
+// order. audioBlocksWanted() is how many more blocks it wants now: it keeps a short queue (~100 ms)
+// filled, so a frame that runs long doesn't starve it. Without an output (no device; a 3DS without
+// the DSP firmware) audioAvailable() is false and nothing should play: voices would never end.
 constexpr int AUDIO_RATE = 32000;
 constexpr int AUDIO_BLOCK = 512; // frames per block (16 ms)
+bool audioAvailable();
 int audioBlocksWanted();
 void queueAudioBlock(const int16_t* stereo); // AUDIO_BLOCK frames, interleaved L R
 

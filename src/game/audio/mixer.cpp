@@ -25,7 +25,7 @@ Mixer::Voice Mixer::nextId() {
 Mixer::Voice Mixer::playClip(const Clip& clip, Bus bus, float rate, float left, float right, bool pausable) {
     if (full() || clip.pcm.empty()) return 0;
     const Voice id = nextId();
-    clips_.push_back({id, &clip, bus, 0, rate, left, right, pausable});
+    clips_.push_back({id, &clip, bus, 0, rate, left, right, pausable, false});
     return id;
 }
 
@@ -49,16 +49,13 @@ void Mixer::closeStream(StreamVoice& s) {
 }
 
 void Mixer::stop(Voice voice) {
-    clips_.erase(std::remove_if(clips_.begin(), clips_.end(), [&](const ClipVoice& c) { return c.id == voice; }), clips_.end());
+    for (ClipVoice& c : clips_)
+        if (c.id == voice) c.stopping = true;
     for (StreamVoice& s : streams_) {
         if (s.id != voice || s.releasing) continue;
-        if (s.def->release > 0) {
-            s.releasing = true;
-            s.releaseFrom = s.levelDb;
-            s.releaseT = 0;
-        } else {
-            s.ended = true; // (dropped at the next block)
-        }
+        s.releasing = true; // (no release: down to silence over the next block, so it doesn't click)
+        s.releaseFrom = s.levelDb;
+        s.releaseT = 0;
     }
 }
 
@@ -71,7 +68,7 @@ void Mixer::stopAll() {
 bool Mixer::playing(Voice voice) const {
     if (voice == 0) return false;
     for (const ClipVoice& c : clips_)
-        if (c.id == voice) return true;
+        if (c.id == voice) return !c.stopping;
     for (const StreamVoice& s : streams_)
         if (s.id == voice) return !s.ended;
     return false;
@@ -167,7 +164,7 @@ void Mixer::mix(int16_t* out) {
         if (paused_ && c.pausable) continue;
         const std::vector<int16_t>& pcm = c.clip->pcm;
         const double last = (double)(pcm.size() - 1);
-        const float g0 = from[(int)c.bus], g1 = to[(int)c.bus];
+        const float g0 = from[(int)c.bus], g1 = c.stopping ? 0 : to[(int)c.bus];
         for (int i = 0; i < N && c.pos <= last; i++, c.pos += c.rate) {
             const size_t k = (size_t)c.pos;
             const float f = (float)(c.pos - (double)k);
@@ -178,7 +175,9 @@ void Mixer::mix(int16_t* out) {
         }
     }
     clips_.erase(std::remove_if(clips_.begin(), clips_.end(),
-                                [](const ClipVoice& c) { return c.pos > (double)(c.clip->pcm.size() - 1); }),
+                                [&](const ClipVoice& c) {
+                                    return c.pos > (double)(c.clip->pcm.size() - 1) || (c.stopping && !(paused_ && c.pausable));
+                                }),
                  clips_.end());
 
     decoded_.resize(N * 2);

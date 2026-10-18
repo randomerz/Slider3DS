@@ -8,7 +8,7 @@
 #pragma once
 
 #include <cstdint>
-#include <functional>
+#include <functional> // (std::less<>)
 #include <map>
 #include <string>
 #include <string_view>
@@ -35,7 +35,8 @@ public:
     Voice playClip(const Clip& clip, Bus bus, float rate, float left, float right, bool pausable);
     // `def` (which must outlive the voice) from its start; 0 if its file won't open.
     Voice playStream(const StreamDef& def);
-    // A stream fades out over its release, then ends; a clip ends at once.
+    // A stream fades out over its release, then ends; a clip (or a stream without a release) fades
+    // out over the next block.
     void stop(Voice voice);
     void stopAll(); // everything, at once
     bool playing(Voice voice) const; // (false once it has ended, or for 0)
@@ -50,6 +51,7 @@ public:
     void mix(int16_t* out);
 
     int64_t streamPosition(Voice voice) const; // the frame a stream plays next (tests; -1: not a stream)
+    int voices() const { return (int)(clips_.size() + streams_.size()); } // (ended ones go at the next block)
 
 private:
     struct ClipVoice {
@@ -59,6 +61,7 @@ private:
         double pos = 0;
         float rate, left, right;
         bool pausable;
+        bool stopping = false; // fading out over this block, then gone
     };
     struct StreamVoice {
         Voice id;

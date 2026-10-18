@@ -437,9 +437,20 @@ TEST(frontend_asks_for_the_title_music_the_clicks_and_the_villages_music) {
     newGame(f); // (three taps: Play, a key, Done)
     cues = f.audio().take();
     CHECK(countCues(cues, K::Play, sounds::UI_CLICK) == 3);
-    CHECK(!cues.empty() && cues.back().kind == K::PlayMusic && cues.back().name == tracks::VILLAGE); // (VillageGrid.Start)
+    CHECK(countCues(cues, K::PlayMusic, tracks::VILLAGE) == 1); // (VillageGrid.Start, once)
+    // A tap on an Artifact button clicks (its UIClick).
+    int bx, by;
+    float sx, sy;
+    CHECK(f.world().artifact.findButton(1, bx, by));
+    f.artifactUI().slotCenter(villageArea(), bx, by, sx, sy);
+    f.update({}, 0, 0);
+    f.update(touchAt((int)sx, (int)sy), 0, 0);
+    f.update({}, 0, 0);
+    CHECK(countCues(f.audio().take(), K::Play, sounds::UI_CLICK) == 1);
+    CHECK(!f.audioPaused());
     // Pause > Quit (asked twice: two clicks) and the title's music again.
     f.update(buttons(plat::BTN_START), 0, 0);
+    CHECK(f.audioPaused()); // (the game's pause menu holds its pausable sounds)
     f.update(buttons(plat::BTN_DOWN), 0, 0);
     f.update(buttons(plat::BTN_DOWN), 0, 0);
     f.update(buttons(plat::BTN_A), 0, 0);
@@ -447,5 +458,9 @@ TEST(frontend_asks_for_the_title_music_the_clicks_and_the_villages_music) {
     cues = f.audio().take();
     CHECK(f.mode() == Frontend::Mode::Title && countCues(cues, K::Play, sounds::UI_CLICK) == 2 &&
           countCues(cues, K::PlayMusic, tracks::MAIN_MENU) == 1);
+    // The title's Options isn't the game's pause.
+    showMenu(f);
+    tapTitle(f, TitleMenu::OPTIONS);
+    CHECK(f.pauseMenu().isOpen() && !f.audioPaused());
     testUserFiles().clear();
 }

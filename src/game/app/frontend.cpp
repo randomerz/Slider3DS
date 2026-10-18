@@ -22,6 +22,7 @@ void Frontend::startGame(SaveProfile profile, int slot) {
     // scene isn't ported: a new game starts in the Village).
     profile_ = std::move(profile);
     slot_ = slot;
+    world_.audio.take(); // (left from the World before this scene: its construction's Starts)
     world_.load(profile_);
     artifactUI_.init(area_, world_.artifact);
     artifactUI_.releaseStylus(); // (the touch that started it isn't a press on the Artifact)
@@ -102,8 +103,12 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         artifactUI_.releaseStylus();
         return true;
     }
-    if (!world_.playerLocked()) artifactUI_.update(in, world_, FRAME_DT);
-    else artifactUI_.releaseStylus(); // (the Artifact stays shut while the player is held)
+    if (!world_.playerLocked()) {
+        artifactUI_.update(in, world_, FRAME_DT);
+        if (artifactUI_.clicked()) audio_.play(sounds::UI_CLICK);
+    } else {
+        artifactUI_.releaseStylus(); // (the Artifact stays shut while the player is held)
+    }
     FrameInput frame{moveX, moveY, (in.held & plat::BTN_A) != 0};
     if (in.pressed & plat::BTN_A) world_.action();
     world_.update(FRAME_DT, frame, noclip);

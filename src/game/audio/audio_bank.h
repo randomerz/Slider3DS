@@ -4,7 +4,7 @@
 #pragma once
 
 #include <cstdint>
-#include <functional>
+#include <functional> // (std::less<>)
 #include <map>
 #include <string>
 #include <string_view>

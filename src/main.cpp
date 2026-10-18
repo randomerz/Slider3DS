@@ -100,7 +100,7 @@ int main(int, char**) {
             if (!front.update(in, moveX, moveY, DEV && dev.noclip)) break;
         }
         audio.setVolumes(settings);
-        audio.setPaused(front.mode() == Frontend::Mode::Game && front.pauseMenu().isOpen()); // (AudioManager.SetPaused)
+        audio.setPaused(front.audioPaused());
         audio.run(front.audio().take());
         audio.pump();
         const float updateMs = (float)(plat::nowMs() - updateStart);

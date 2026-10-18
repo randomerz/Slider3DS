@@ -45,7 +45,7 @@ constexpr int BOTTOM_Y = TOP_H;
 SDL_Window* g_window = nullptr;
 SDL_Renderer* g_renderer = nullptr;
 SDL_AudioDeviceID g_audio = 0;
-constexpr int AUDIO_QUEUE_BLOCKS = 4; // ~64 ms
+constexpr int AUDIO_QUEUE_BLOCKS = 6; // ~96 ms
 bool g_quit = false;
 uint32_t g_prevHeld = 0;
 
@@ -350,6 +350,8 @@ void endFrame() {
     SDL_RenderPresent(g_renderer);
     paceFrame();
 }
+
+bool audioAvailable() { return g_audio != 0; }
 
 int audioBlocksWanted() {
     if (!g_audio) return 0;

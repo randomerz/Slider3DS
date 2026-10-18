@@ -33,6 +33,8 @@ public:
     // Forgets the stylus (a drag in progress is dropped; the selection stays) and ignores a touch
     // held now until it's lifted: around the pause menu, which takes the touch screen meanwhile.
     void releaseStylus();
+    // A button was clicked this frame (a tap, or a drag back onto its own tile: its UIClick).
+    bool clicked() const { return clicked_; }
 
     int selected() const { return selectedId_; } // islandId of the selected tile, 0 = none
     bool isOption(int x, int y) const;           // slot highlighted as a move option
@@ -59,6 +61,7 @@ private:
     std::vector<std::pair<int, int>> options_;
     // Stylus state.
     bool wasTouching_ = false, dragging_ = false;
+    bool clicked_ = false;
     int downX_ = 0, downY_ = 0;       // touch-down pixel
     int lastX_ = 0, lastY_ = 0;       // last touched pixel (the 3DS reports none on release)
     int downSlotX_ = -1, downSlotY_ = -1; // slot touched down on (-1 = none)
