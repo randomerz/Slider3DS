@@ -1,5 +1,6 @@
 #include "game/app/frontend.h"
 
+#include <cmath>
 #include <cstdio>
 #include <ctime>
 #include <utility>
@@ -122,5 +123,9 @@ void Frontend::drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) cons
     plat::beginScreen(plat::Screen::Bottom, palette::DARK);
     if (pause_.isOpen()) pause_.draw(settings_, skin);
     else if (mode_ == Mode::Game) artifactUI_.draw(world_, sheets);
-    else if (screen_.menuShown()) title_.draw(skin); // (before "press any key": empty)
+    else if (screen_.menuShown()) { // (before "press any key": empty)
+        // It slides up from below as it comes in (the original's buttons; whole UI px).
+        const MenuSkin::Shift slide(skin, (int)std::lround(screen_.menuDrop(art_) * plat::BOTTOM_H / MenuSkin::UI_SCALE));
+        title_.draw(skin);
+    }
 }

@@ -24,10 +24,6 @@ constexpr int BUTTON_EDGE = 2;
 constexpr int HANDLE_W = 3; // ui_slider's handles
 constexpr int BRACKET_GAP = 1; // px between a selected button's sides and its brackets at rest
 
-void rect(int x, int y, int w, int h, uint32_t color) {
-    plat::drawRect((float)(x * S), (float)(y * S), (float)(w * S), (float)(h * S), color);
-}
-
 } // namespace
 
 bool MenuSkin::load(std::string* error) {
@@ -115,7 +111,11 @@ void MenuSkin::unload() {
 }
 
 void MenuSkin::draw(const Sprite& s, int x, int y) const {
-    plat::drawSprite(sheet_, s.x, s.y, s.w, s.h, (float)(x * S), (float)(y * S), 0, S);
+    plat::drawSprite(sheet_, s.x, s.y, s.w, s.h, (float)(x * S), (float)((y + shiftY_) * S), 0, S);
+}
+
+void MenuSkin::fillRect(int x, int y, int w, int h, uint32_t color) const {
+    plat::drawRect((float)(x * S), (float)((y + shiftY_) * S), (float)(w * S), (float)(h * S), color);
 }
 
 void MenuSkin::drawNineSlice(const Sprite& s, int x, int y, int w, int h) const {
@@ -126,6 +126,7 @@ void MenuSkin::drawNineSlice(const Sprite& s, int x, int y, int w, int h) const 
     const int shs[3] = {s.top, s.h - s.top - s.bottom, s.bottom};
     const int xs[3] = {x, x + s.left, x + w - s.right};
     const int ws[3] = {s.left, w - s.left - s.right, s.right};
+    y += shiftY_;
     const int ys[3] = {y, y + s.top, y + h - s.bottom};
     const int hs[3] = {s.top, h - s.top - s.bottom, s.bottom};
     for (int row = 0; row < 3; row++)
@@ -142,7 +143,7 @@ void MenuSkin::drawNineSlice(const Sprite& s, int x, int y, int w, int h) const 
 void MenuSkin::drawText(std::string_view text, int x, int cy, uint32_t color) const {
     const GlyphRect& cap = font_.def().glyph('A').text;
     const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
-    font_.drawText(text, (float)(x * S), (float)(baseline * S), S, color);
+    font_.drawText(text, (float)(x * S), (float)((baseline + shiftY_) * S), S, color);
 }
 
 void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {
@@ -172,8 +173,8 @@ void MenuSkin::drawLabel(std::string_view text, int x, int cy, bool selected) co
 void MenuSkin::drawSlider(int x, int y, int w, float value, bool selected) const {
     const Sprite& handle = selected ? handleSelected_ : handle_;
     const int handleX = x + (int)std::lround((w - handle.w) * std::clamp(value, 0.0f, 1.0f));
-    rect(x, y + 1, w, SLIDER_H - 2, SLIDER_BAR);
-    rect(x, y + 1, handleX - x + handle.w / 2, SLIDER_H - 2, SLIDER_FILL);
+    fillRect(x, y + 1, w, SLIDER_H - 2, SLIDER_BAR);
+    fillRect(x, y + 1, handleX - x + handle.w / 2, SLIDER_H - 2, SLIDER_FILL);
     draw(handle, handleX, y);
 }
 

@@ -78,6 +78,7 @@ bool TitleArt::load(std::string* error) {
         stars.push_back({s["pos"].at(0).asFloat(), s["pos"].at(1).asFloat(), sprite(s["on"]), sprite(s["off"])});
     for (const Json& i : doc["images"].items()) images.push_back(image(i));
     backgroundFade = readKeys(doc["backgroundFade"]);
+    menuSlide = readKeys(doc["menuSlide"]);
     // The port's fit to the top screen (tools/make_title_extra.py): the background spread out to
     // 400x240, then the stars added in its gaps.
     std::string extraText;
@@ -125,7 +126,7 @@ bool TitleArt::load(std::string* error) {
     prompt.color = plat::rgba((uint8_t)c.at(0).asInt(), (uint8_t)c.at(1).asInt(), (uint8_t)c.at(2).asInt());
     prompt.fade = readKeys(p["fade"]);
     prompt.fadeOutSpeed = p["fadeOutSpeed"].asFloat(1);
-    if (!ok || backgroundFade.empty() || logo.letters.empty() || logo.slideIn.empty() || logo.riseY.empty() ||
+    if (!ok || backgroundFade.empty() || menuSlide.empty() || logo.letters.empty() || logo.slideIn.empty() || logo.riseY.empty() ||
         player.riseY.empty() || prompt.fade.empty() || prompt.fadeOutSpeed <= 0)
         return fail("ui/title.json: a missing sprite, curve or timing");
     sheet = plat::loadSheet(sheetDoc["sheet"].asString().c_str());
@@ -140,6 +141,7 @@ void TitleArt::unload() {
     stars.clear();
     images.clear();
     backgroundFade.clear();
+    menuSlide.clear();
     logo.letters.clear();
 }
 
@@ -200,6 +202,11 @@ float TitleScreen::promptAlpha(const TitleArt& art) const {
 float TitleScreen::backgroundAlpha(const TitleArt& art) const {
     if (!menuShown()) return 0; // MainMenuBackgroundHidden
     return std::clamp(evalKeys(art.backgroundFade, time_ - upAt_), 0.0f, 1.0f);
+}
+
+float TitleScreen::menuDrop(const TitleArt& art) const {
+    if (!menuShown()) return 1; // MainMenuButtonsHidden
+    return -evalKeys(art.menuSlide, time_ - upAt_);
 }
 
 void TitleScreen::draw(const TitleArt& art, const Font& font) const {

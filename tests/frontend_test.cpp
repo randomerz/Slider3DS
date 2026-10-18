@@ -279,6 +279,38 @@ TEST(frontend_draws_every_screen) {
     testUserFiles().clear();
 }
 
+TEST(frontend_title_menu_slides_up_as_it_comes_in) {
+    // MainMenuButtonsUp: a whole screen below on the key's frame, part way up half a second later,
+    // in its place (as TitleMenu draws it) once the lockout ends.
+    testUserFiles().clear();
+    SaveProfile::make("Tofu").save(0); // (Continue usable: it has a box)
+    MenuSkin skin;
+    SpriteSheets sheets;
+    std::string err;
+    CHECK(skin.load(&err));
+    Settings settings;
+    Frontend f(villageArea(), titleArt(), settings);
+    auto menuTop = [&](bool alone = false) { // the bottom screen's highest draw, px
+        testResetDrawCalls();
+        if (alone) f.title().draw(skin);
+        else f.drawBottom(sheets, skin);
+        float top = 1e9f;
+        for (const DrawCall& d : testDrawCalls()) top = std::min(top, d.y);
+        return top;
+    };
+    frames(f, 30);
+    f.update(buttons(plat::BTN_A), 0, 0);
+    const float start = menuTop();
+    frames(f, Frontend::MENU_LOCKOUT_FRAMES / 2);
+    const float mid = menuTop();
+    frames(f, Frontend::MENU_LOCKOUT_FRAMES / 2);
+    const float rest = menuTop();
+    CHECK(rest == menuTop(true) && mid > rest && mid < start);
+    TitleMenu::Box b; // (the top button; no cursor yet at the start)
+    CHECK(f.title().box(TitleMenu::CONTINUE, b) && start == b.y + plat::BOTTOM_H);
+    testUserFiles().clear();
+}
+
 TEST(frontend_title_key_waits_for_the_second_frame_and_locks_the_menu_out) {
     testUserFiles().clear();
     SaveProfile::make("Tofu").save(0);

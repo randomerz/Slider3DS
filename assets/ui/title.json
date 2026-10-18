@@ -67,6 +67,7 @@
     {"pos": [-144, -74], "frames": ["mainmenu_plannet"], "frameTime": 0}
   ],
   "backgroundFade": [[0, 0, 0, 0], [1, 1, 0, 0]],
+  "menuSlide": [[0, -1, 0.0568, 0.0568], [1, 0, 0.0192, 0.0192]],
   "logo": {
     "origin": [0, 0],
     "restY": 40,

@@ -68,6 +68,20 @@ public:
     void drawText(std::string_view text, int x, int cy, uint32_t color) const;
     int textWidth(std::string_view text) const { return font_.textWidth(text); }
 
+    // While it lives, everything the skin draws is `dy` UI px lower (a whole panel sliding in; on
+    // the grid, as everything else).
+    class Shift {
+    public:
+        Shift(const MenuSkin& skin, int dy) : skin_(skin), old_(skin.shiftY_) { skin.shiftY_ += dy; }
+        ~Shift() { skin_.shiftY_ = old_; }
+        Shift(const Shift&) = delete;
+        Shift& operator=(const Shift&) = delete;
+
+    private:
+        const MenuSkin& skin_;
+        int old_;
+    };
+
 private:
     struct Sprite {
         int x = 0, y = 0, w = 0, h = 0;
@@ -77,9 +91,11 @@ private:
     // A 9-slice filling the box: corners 1:1, edges and middle stretched.
     void drawNineSlice(const Sprite& s, int x, int y, int w, int h) const;
     void draw(const Sprite& s, int x, int y) const;
+    void fillRect(int x, int y, int w, int h, uint32_t color) const;
 
     plat::Texture* sheet_ = nullptr;
     Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
     Sprite card_[3], cardBack_, frame_[2], back_[3], trash_[3]; // ([State] / [Frame])
     Font font_;
+    mutable int shiftY_ = 0; // (Shift: a draw-time offset, not the skin's look)
 };

@@ -10,7 +10,7 @@
 // From the second frame (the listener's), any button or touch starts the main menu (StartMainMenu):
 // the shakes stop, the stars and images fade in (mainMenuBackgroundAnimator's isVisible), the logo
 // and the player rise (TitleRiseUp / MainMenuPlayerUp), the prompt fades out (if shown) and the
-// bottom screen's menu (game/ui/title_menu) appears.
+// bottom screen's menu (game/ui/title_menu) slides up from below (MainMenuButtonsUp: menuDrop).
 // Not ported: the parallax with the mouse (no pointer on the top screen), the language selector.
 // A port addition: the stars and images are spread from the original's 320x180 view over the
 // 400x240 top screen, with extra stars in the gaps; the logo sits lower (logoDown) and the player
@@ -55,6 +55,7 @@ struct TitleArt {
     std::vector<Star> stars;
     std::vector<Image> images;
     std::vector<CurveKey> backgroundFade; // the stars' and images' alpha from StartMainMenu on (0 before)
+    std::vector<CurveKey> menuSlide;      // the bottom menu's y from StartMainMenu on, screen heights up
     struct {
         float originX = 0, originY = 0, restY = 0;
         std::vector<Letter> letters;
@@ -96,6 +97,7 @@ public:
     float time() const { return time_; } // s since start
     float promptAlpha(const TitleArt& art) const; // "[press any key to begin]"'s, 0-1
     float backgroundAlpha(const TitleArt& art) const; // the stars' and images', 0-1
+    float menuDrop(const TitleArt& art) const; // how far below its place the bottom menu is, screen heights
 
 private:
     struct StarState {
