@@ -6,6 +6,7 @@
 
 #include "game/app/frontend.h"
 #include "game/save/profile.h"
+#include "game/ui/title_screen.h"
 #include "test.h"
 #include "test_platform.h"
 
@@ -24,6 +25,20 @@ plat::Input touchAt(int x, int y, uint32_t b = 0) {
     in.touchX = x;
     in.touchY = y;
     return in;
+}
+
+const TitleArt& titleArt() {
+    static TitleArt art;
+    static const bool loaded = art.load();
+    check(loaded, "the title art loads");
+    return art;
+}
+
+// "Press any key": the title menu appears (that press is used up), then the key is let go.
+void showMenu(Frontend& f) {
+    f.update({}, 0, 0);
+    f.update(buttons(plat::BTN_A), 0, 0);
+    f.update({}, 0, 0);
 }
 
 bool frames(Frontend& f, int n, const plat::Input& in = {}) {
@@ -66,7 +81,8 @@ void newGame(Frontend& f) {
 TEST(frontend_boots_to_the_title_and_writes_nothing) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), settings);
+    Frontend f(villageArea(), titleArt(), settings);
+    showMenu(f);
     CHECK(f.mode() == Frontend::Mode::Title && frames(f, 30));
     f.shutdown();
     CHECK(testUserFiles().empty() && profileFiles() == 0);
@@ -75,7 +91,8 @@ TEST(frontend_boots_to_the_title_and_writes_nothing) {
 TEST(frontend_new_game_saves_once_started) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), settings);
+    Frontend f(villageArea(), titleArt(), settings);
+    showMenu(f);
     const int64_t before = (int64_t)std::time(nullptr);
     newGame(f);
     CHECK(f.mode() == Frontend::Mode::Game && f.slot() == 0);
@@ -91,7 +108,8 @@ TEST(frontend_new_game_saves_once_started) {
 TEST(frontend_quit_saves_and_continue_resumes) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), settings);
+    Frontend f(villageArea(), titleArt(), settings);
+    showMenu(f);
     newGame(f);
     for (int i = 0; i < 30; i++) f.update({}, 1, 0); // (walks right for half a second)
     const float x = f.world().player.x, y = f.world().player.y;
@@ -105,6 +123,8 @@ TEST(frontend_quit_saves_and_continue_resumes) {
     CHECK(f.mode() == Frontend::Mode::Title && f.title().page() == TitleMenu::Page::Main);
     const SaveProfile p = saved(0);
     CHECK(std::fabs(p.playTime - 30 * Frontend::FRAME_DT) < 1e-3 && p.playerX == x && p.playerY == y);
+    CHECK(!f.titleScreen().menuShown()); // (the title's intro again: MainMenu reloads)
+    showMenu(f);
     CHECK(f.title().selected() == TitleMenu::CONTINUE && f.title().card(0).name == "a");
     f.update(buttons(plat::BTN_A), 0, 0); // Continue
     CHECK(f.mode() == Frontend::Mode::Game && f.slot() == 0);
@@ -115,7 +135,8 @@ TEST(frontend_quit_saves_and_continue_resumes) {
 TEST(frontend_saves_on_a_pick_up_and_on_closing_in_the_game) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), settings);
+    Frontend f(villageArea(), titleArt(), settings);
+    showMenu(f);
     newGame(f);
     int slider2 = -1;
     for (int i = 0; i < (int)villageArea().collectibles.size(); i++)
@@ -136,7 +157,8 @@ TEST(frontend_saves_on_a_pick_up_and_on_closing_in_the_game) {
 TEST(frontend_direct_boot_never_writes) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), settings);
+    Frontend f(villageArea(), titleArt(), settings);
+    showMenu(f);
     f.bootDirect();
     CHECK(f.mode() == Frontend::Mode::Game && f.slot() == -1 && f.world().state.str("Cat") == "Boomo");
     frames(f, 10);
@@ -153,7 +175,8 @@ TEST(frontend_direct_boot_never_writes) {
 TEST(frontend_options_from_the_title) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), settings);
+    Frontend f(villageArea(), titleArt(), settings);
+    showMenu(f);
     tapTitle(f, TitleMenu::OPTIONS);
     CHECK(f.pauseMenu().isOpen() && f.pauseMenu().page() == PauseMenu::Page::Options);
     f.update(buttons(plat::BTN_A), 0, 0); // General
@@ -176,12 +199,13 @@ TEST(frontend_stylus_held_into_the_game_is_no_artifact_press) {
     testUserFiles().clear();
     SaveProfile::make("Tofu").save(0);
     Settings settings;
-    Frontend f(villageArea(), settings);
+    Frontend f(villageArea(), titleArt(), settings);
+    showMenu(f);
     CHECK(f.title().selected() == TitleMenu::CONTINUE);
     // Continue with A while the stylus already rests on tile 1's Artifact button.
     int bx = 0, by = 0;
     float sx = 0, sy = 0;
-    Frontend probe(villageArea(), settings); // (where tile 1's button will be)
+    Frontend probe(villageArea(), titleArt(), settings); // (where tile 1's button will be)
     probe.bootDirect();
     CHECK(probe.world().artifact.findButton(1, bx, by));
     probe.artifactUI().slotCenter(villageArea(), bx, by, sx, sy);

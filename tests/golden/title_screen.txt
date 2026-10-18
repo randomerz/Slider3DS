@@ -1,0 +1,5 @@
+# Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
+title_stars 69:00e7adf195e0ec8f
+title_logo_landing 69:1700c32fe2ca0fda
+title_prompt 89:218b4b384bb4d6dd
+title_rising 69:c79ccbaf175e41a8

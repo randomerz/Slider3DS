@@ -1,4 +1,4 @@
-"""Cuts the original's menu UI sprites into a sheet for the port's pause menu (game/ui/menu_skin).
+"""Cuts the original's menu UI sprites into a sheet for the port's menus (game/ui/menu_skin), and the title art's.
 
 The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   Menu Button (the main menu's; Image sliced, Button sprite swap): normal Button24_0 (a light face
@@ -17,6 +17,11 @@ The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
   assets/sheets/ui_menu.png   the sheet (.fmt: la8, all gray)
   assets/ui/menu.json         {"sheet", "sprites": {name: {"rect": [x, y, w, h] (top-left origin),
                                "border": [left, top, right, bottom] (9-slice, px)}}}
+
+The title screen's art: the sprites assets/ui/title.json names (written by the Unity exporter's
+Slider3DSTitleExporter: the layout), cut from TITLE_TEXTURES:
+  assets/sheets/ui_title.png  the sheet (.fmt by its colors)
+  assets/ui/title_sheet.json  {"sheet", "sprites": {name: {"rect", "pivot": [x, y] (px from the bottom-left)}}}
 
 Usage: python tools/make_ui.py [path to Slider/Assets]   (needs Pillow)
 """
@@ -85,16 +90,12 @@ def mirrored(sprite):
     return img.transpose(Image.Transpose.FLIP_LEFT_RIGHT), [right, top, left, bottom]
 
 
-def main():
-    cut = {name: unity_sprite(tex, sprite) for name, (tex, sprite) in SPRITES.items()}
-    for name, art in (("bracket", "bracket"), ("bracketPressed", "bracket_pressed")):
-        cut[name + "Left"] = port_art(art)
-        cut[name + "Right"] = mirrored(cut[name + "Left"])
-    # Shelf packing in table order, 1 px gaps.
+def pack(cut, width):
+    """Shelf-packs {name: image} in order, 1 px gaps: the sheet and each image's top-left corner."""
     x = y = shelf = 0
     placed = {}
-    for name, (img, border) in cut.items():
-        if x + img.width > SHEET_W:
+    for name, img in cut.items():
+        if x + img.width > width:
             x, y, shelf = 0, y + shelf + 1, 0
         placed[name] = (x, y)
         x += img.width + 1
@@ -102,23 +103,91 @@ def main():
     height = 8
     while height < y + shelf:
         height *= 2
-    sheet = Image.new("RGBA", (SHEET_W, height), (0, 0, 0, 0))
-    sprites = {}
-    for name, (img, border) in cut.items():
-        px, py = placed[name]
-        sheet.paste(img, (px, py))
-        sprites[name] = {"rect": [px, py, img.width, img.height], "border": border}
+    sheet = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    for name, img in cut.items():
+        sheet.paste(img, placed[name])
+    return sheet, placed
 
-    sheet.save(os.path.join(REPO, "assets", "sheets", "ui_menu.png"))
-    with open(os.path.join(REPO, "assets", "sheets", "ui_menu.fmt"), "w", newline="\n") as f:
-        f.write("la8\n")  # gray sprites: lossless as luminance + alpha (see the Makefile)
-    os.makedirs(os.path.join(REPO, "assets", "ui"), exist_ok=True)
-    with open(os.path.join(REPO, "assets", "ui", "menu.json"), "w", newline="\n") as f:
-        f.write('{\n  "sheet": "ui_menu",\n  "sprites": {\n')
+
+def write_sheet(sheet, name):
+    sheet.save(os.path.join(REPO, "assets", "sheets", name + ".png"))
+    px = sheet.tobytes()  # RGBA
+    gray = all(px[i] == px[i + 1] == px[i + 2] for i in range(0, len(px), 4) if px[i + 3])
+    with open(os.path.join(REPO, "assets", "sheets", name + ".fmt"), "w", newline="\n") as f:
+        f.write("la8\n" if gray else "rgba8\n")  # gray sprites: lossless as luminance + alpha (see the Makefile)
+
+
+def write_json(path, sheet_name, sprites):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", newline="\n") as f:
+        f.write('{\n  "sheet": "' + sheet_name + '",\n  "sprites": {\n')
         f.write(",\n".join(f'    "{n}": ' + json.dumps(s, separators=(",", ":")) for n, s in sprites.items()))
         f.write("\n  }\n}\n")
-    print(f"{len(sprites)} sprites, sheet {SHEET_W}x{height}")
+
+
+def menu():
+    cut = {name: unity_sprite(tex, sprite) for name, (tex, sprite) in SPRITES.items()}
+    for name, art in (("bracket", "bracket"), ("bracketPressed", "bracket_pressed")):
+        cut[name + "Left"] = port_art(art)
+        cut[name + "Right"] = mirrored(cut[name + "Left"])
+    sheet, placed = pack({n: img for n, (img, border) in cut.items()}, SHEET_W)
+    write_sheet(sheet, "ui_menu")
+    sprites = {n: {"rect": [*placed[n], img.width, img.height], "border": border} for n, (img, border) in cut.items()}
+    write_json(os.path.join(REPO, "assets", "ui", "menu.json"), "ui_menu", sprites)
+    print(f"menu: {len(sprites)} sprites, sheet {sheet.width}x{sheet.height}")
+
+
+# The title art's textures (assets/ui/title.json names their sprites: Slider3DSTitleExporter).
+TITLE_TEXTURES = ["Sprites/UI/menus/pixel_logo.png", "Sprites/UI/menus/mainmenu_bg_stars.png",
+                  "Sprites/UI/menus/mainmenu_giant_star.png", "Sprites/UI/menus/mainmenu_meteor.png",
+                  "Sprites/UI/menus/mainmenu_plannet.png", "Sprites/Characters/player/playersprite.png"]
+ALIGNMENT_PIVOTS = {0: (0.5, 0.5), 1: (0, 1), 2: (0.5, 1), 3: (1, 1), 4: (0, 0.5), 5: (1, 0.5), 6: (0, 0),
+                    7: (0.5, 0), 8: (1, 0)}  # (9: custom, the sprite's own pivot)
+
+
+def texture_sprites(texture):
+    """{name: (image, pivot (px from the bottom-left))} for a texture's sprites (or the whole texture)."""
+    meta = open(os.path.join(ASSETS, texture + ".meta"), encoding="utf-8").read()
+    img = Image.open(os.path.join(ASSETS, texture)).convert("RGBA")
+    out = {}
+    if re.search(r"spriteMode: 1\n", meta):
+        align = int(re.search(r"\n  alignment: (\d+)", meta).group(1))
+        pivot = ALIGNMENT_PIVOTS.get(align) or tuple(map(float, re.search(r"spritePivot: \{x: ([\d.]+), y: ([\d.]+)\}", meta).groups()))
+        out[os.path.splitext(os.path.basename(texture))[0]] = (img, [pivot[0] * img.width, pivot[1] * img.height])
+        return out
+    for m in re.finditer(r"name: (.+)\n\s+rect:\n\s+serializedVersion: \d+\n\s+x: (\d+)\n\s+y: (\d+)\n\s+width: (\d+)\n"
+                         r"\s+height: (\d+)\n\s+alignment: (\d+)\n\s+pivot: \{x: ([\d.]+), y: ([\d.]+)\}", meta):
+        name = m.group(1)
+        x, y, w, h, align = map(int, m.groups()[1:6])
+        pivot = ALIGNMENT_PIVOTS.get(align) or (float(m.group(7)), float(m.group(8)))
+        top = img.height - y - h
+        out[name] = (img.crop((x, top, x + w, top + h)), [pivot[0] * w, pivot[1] * h])
+    return out
+
+
+def title():
+    layout = json.load(open(os.path.join(REPO, "assets", "ui", "title.json"), encoding="utf-8"))
+    names = []
+    for s in layout["stars"]:
+        names += [s["on"], s["off"]]
+    for i in layout["images"]:
+        names += i["frames"]
+    names += [l["sprite"] for l in layout["logo"]["letters"]] + layout["player"]["frames"]
+    available = {}
+    for t in TITLE_TEXTURES:
+        available.update(texture_sprites(t))
+    cut = {}
+    for n in dict.fromkeys(names):
+        if n not in available:
+            sys.exit(f"title.json: no sprite {n} in TITLE_TEXTURES")
+        cut[n] = available[n]
+    sheet, placed = pack({n: img for n, (img, pivot) in cut.items()}, 256)
+    write_sheet(sheet, "ui_title")
+    sprites = {n: {"rect": [*placed[n], img.width, img.height], "pivot": pivot} for n, (img, pivot) in cut.items()}
+    write_json(os.path.join(REPO, "assets", "ui", "title_sheet.json"), "ui_title", sprites)
+    print(f"title: {len(sprites)} sprites, sheet {sheet.width}x{sheet.height}")
 
 
 if __name__ == "__main__":
-    main()
+    menu()
+    title()

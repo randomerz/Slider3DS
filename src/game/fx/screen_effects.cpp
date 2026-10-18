@@ -63,6 +63,8 @@ void ScreenEffects::flashWhite(EffectDone middle) {
     flashFresh_ = true;
 }
 
+void ScreenEffects::shakeIncrease(float duration, float amount) { shakes_.push_back({duration, 0, amount, 0}); }
+
 void ScreenEffects::shake(float duration, float amount) {
     shakes_.push_back({duration, amount, 0, 0});
 }

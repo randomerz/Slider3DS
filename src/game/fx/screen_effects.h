@@ -34,6 +34,9 @@ public:
     void flashWhite(EffectDone middle = EffectDone::None);
     // CameraShake.Shake: `amount` falling to 0 over `duration` s.
     void shake(float duration, float amount);
+    // CameraShake.ShakeIncrease: 0 rising to `amount` over `duration` s.
+    void shakeIncrease(float duration, float amount);
+    void stopShake() { shakes_.clear(); } // CameraShake.StopShake
     // One frame: the fade and flash advance; CameraShake.Update picks the strongest shake (times the
     // screenShake setting), then the camera's noise (CinemachineBasicMultiChannelPerlin) moves by it.
     // Returns the callbacks now due (for World to run). `frame`: World::frame.

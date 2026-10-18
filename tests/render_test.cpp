@@ -22,6 +22,7 @@
 #include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/ui/title_menu.h"
+#include "game/ui/title_screen.h"
 #include "game/save/profile.h"
 #include "game/village/knot_box.h"
 #include "game/village/village_grid.h"
@@ -479,6 +480,41 @@ TEST(render_pause_menu_goldens) {
     menu.update(in, s);
     CHECK(menu.isOpen() && menu.cursor() == PauseMenu::RESUME);
     shoot("pause_menu_pressed");
+}
+
+TEST(render_title_screen_goldens) {
+    // The top screen's intro: stars only (the logo off to the left), the logo landing (the shake
+    // rising), at rest with the prompt half faded in, and half a second after a key (risen part way,
+    // the prompt fading out).
+    TitleArt art;
+    std::string error;
+    check(art.load(&error), "title art loads " + error);
+    MenuSkin skin;
+    check(skin.load(&error), "menu skin loads " + error);
+    GoldenSet goldens("title_screen.txt");
+    TitleScreen screen;
+    screen.start(art);
+    auto run = [&](float until, const plat::Input& in = {}) {
+        while (screen.time() < until - 1e-4f) screen.update(villageArea(), in, 1.0f / 60, 0.5f);
+    };
+    auto shoot = [&](const char* name) {
+        testResetDrawCalls();
+        screen.draw(art, skin.font());
+        goldens.compare(name, 20);
+    };
+    run(1);
+    shoot("title_stars");
+    run(2.9f);
+    shoot("title_logo_landing");
+    run(5);
+    CHECK(screen.promptAlpha(art) > 0.4f && screen.promptAlpha(art) < 0.6f && !screen.menuShown());
+    shoot("title_prompt");
+    plat::Input key;
+    key.pressed = plat::BTN_A;
+    screen.update(villageArea(), key, 1.0f / 60, 0.5f);
+    CHECK(screen.menuShown());
+    run(5.5f);
+    shoot("title_rising");
 }
 
 TEST(render_title_menu_goldens) {

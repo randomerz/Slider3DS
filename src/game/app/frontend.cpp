@@ -10,9 +10,9 @@
 #include "game/ui/menu_skin.h"
 #include "game/ui/palette.h"
 
-Frontend::Frontend(const Area& area, Settings& settings)
-    : area_(area), settings_(settings), savedSettings_(settings), world_(area, settings) {
-    title_.open();
+Frontend::Frontend(const Area& area, const TitleArt& art, Settings& settings)
+    : area_(area), art_(art), settings_(settings), savedSettings_(settings), world_(area, settings) {
+    toTitle();
 }
 
 void Frontend::startGame(SaveProfile profile, int slot) {
@@ -44,7 +44,8 @@ void Frontend::saveSettingsIfChanged() {
 
 void Frontend::toTitle() {
     mode_ = Mode::Title;
-    title_.open(); // (the profiles re-read; the held touch released)
+    screen_.start(art_); // (MainMenu reloads: its intro again)
+    title_.open();       // (the profiles re-read; the held touch released)
 }
 
 void Frontend::shutdown() {
@@ -66,6 +67,9 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         return true;
     }
     if (mode_ == Mode::Title) {
+        const bool wasShown = screen_.menuShown();
+        if (screen_.update(area_, in, FRAME_DT, settings_.screenShake)) title_.releaseStylus(); // (the key that shows it)
+        if (!wasShown) return true;
         const TitleMenu::Action a = title_.update(in);
         switch (a.kind) {
         case TitleMenu::Action::Kind::None: break;
@@ -100,7 +104,8 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
 
 void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin, bool showInactive) const {
     if (mode_ == Mode::Title) {
-        plat::beginScreen(plat::Screen::Top, palette::DARK);
+        screen_.draw(art_, skin.font());
+        if (pause_.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
         return;
     }
     plat::beginScreen(plat::Screen::Top, plat::rgba(area_.background[0], area_.background[1], area_.background[2]));
@@ -115,6 +120,6 @@ void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSki
 void Frontend::drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) const {
     plat::beginScreen(plat::Screen::Bottom, palette::DARK);
     if (pause_.isOpen()) pause_.draw(settings_, skin);
-    else if (mode_ == Mode::Title) title_.draw(skin);
+    else if (mode_ == Mode::Title && screen_.menuShown()) title_.draw(skin);
     else artifactUI_.draw(world_, sheets);
 }

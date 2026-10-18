@@ -1,7 +1,9 @@
 // The app's screens and the save points between them (main's loop minus the platform, the assets
 // and the dev tools), testable headless:
-//   Title: the title screen (game/ui/title_menu; Options opens the pause menu on its Options page).
-//          Play / Continue / a new profile start the game; Quit ends the app.
+//   Title: the title art on the top screen (game/ui/title_screen); after "press any key" the menu
+//          on the bottom one (game/ui/title_menu; Options opens the pause menu on its Options page).
+//          Play / Continue / a new profile start the game; Quit ends the app. Quitting the game to
+//          the title plays its intro again (Unity reloads the MainMenu scene).
 //   Game:  the World on the top screen, the Artifact (game/ui/artifact_ui) on the bottom; START
 //          pauses (game/ui/pause_menu), whose Quit saves and returns to the title (QuitHandler).
 // The save profile is written as Unity's GameSaver / SaveSystem.SaveGame do: once the scene has
@@ -19,6 +21,7 @@
 #include "game/ui/artifact_ui.h"
 #include "game/ui/pause_menu.h"
 #include "game/ui/title_menu.h"
+#include "game/ui/title_screen.h"
 #include "game/world/world.h"
 #include "platform/platform.h"
 
@@ -31,8 +34,8 @@ public:
     enum class Mode { Title, Game };
     static constexpr float FRAME_DT = 1.0f / 60.0f; // the game steps a fixed 60 fps
 
-    // Starts on the title screen. `settings` (main's) must outlive it.
-    Frontend(const Area& area, Settings& settings);
+    // Starts on the title screen. `settings` (main's) and `art` (loaded) must outlive it.
+    Frontend(const Area& area, const TitleArt& art, Settings& settings);
 
     // One frame of input. In the game, (moveX, moveY) is where the player walks (each -1..1; main
     // leaves out what its dev controls use) and `noclip` skips collisions (dev). False once the app
@@ -55,6 +58,7 @@ public:
     const SaveProfile& profile() const { return profile_; }
     int slot() const { return slot_; } // the profile's slot, -1 = temporary
     const TitleMenu& title() const { return title_; }
+    const TitleScreen& titleScreen() const { return screen_; }
     const PauseMenu& pauseMenu() const { return pause_; }
     const ArtifactUI& artifactUI() const { return artifactUI_; }
 
@@ -65,9 +69,11 @@ private:
     void toTitle();
 
     const Area& area_;
+    const TitleArt& art_;
     Settings& settings_;
     Settings savedSettings_;
     World world_;
+    TitleScreen screen_;
     TitleMenu title_;
     PauseMenu pause_;
     ArtifactUI artifactUI_;

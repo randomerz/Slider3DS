@@ -28,6 +28,7 @@
 #include "game/save/settings.h"
 #include "game/ui/menu_skin.h"
 #include "game/ui/palette.h"
+#include "game/ui/title_screen.h"
 #include "platform/platform.h"
 
 namespace {
@@ -56,9 +57,10 @@ int main(int, char**) {
     SpriteSheets sheets;
     Font font;
     MenuSkin menuSkin;
+    TitleArt titleArt;
     std::string error;
     if (!loadArea("village/village.json", area, &error) || !sheets.load(area) || !font.load("fonts/dialogue.json", &error) ||
-        !menuSkin.load(&error)) {
+        !menuSkin.load(&error) || !titleArt.load(&error)) {
         printf("Failed to load village: %s\n", error.c_str());
         showLoadError();
         plat::shutdown();
@@ -66,7 +68,7 @@ int main(int, char**) {
     }
 
     Settings settings = Settings::load();
-    Frontend front(area, settings);
+    Frontend front(area, titleArt, settings);
     AreaView view;
     view.setFont(&font);
     DevControls dev;
@@ -110,6 +112,7 @@ int main(int, char**) {
     }
     front.shutdown();
 
+    titleArt.unload();
     menuSkin.unload();
     font.unload();
     sheets.unload();

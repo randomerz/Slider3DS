@@ -28,6 +28,7 @@ public:
     // Objects: missing keys yield a Null value.
     const Json& operator[](const char* key) const;
     bool has(const char* key) const;
+    const std::vector<std::pair<std::string, Json>>& members() const { return fields_; } // in file order
 
 private:
     static const Json& null();
