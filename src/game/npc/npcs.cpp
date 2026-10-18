@@ -102,6 +102,7 @@ void Npcs::playAnimation(World& world, int npc, const std::string& state) {
 bool Npcs::emoteSprite(const World& world, int npc, SpritePlacement& out) const {
     const State& st = s_[npc];
     const NpcEmoteDef& e = world.area.npcs[npc].emote;
+    // (No frame yet, or a null key: nothing to show either way.)
     if (st.emote == 0 || e.animator < 0 || world.animators.sprite(e.animator) < 0) return false;
     out = e.place;
     out.anim = -1;

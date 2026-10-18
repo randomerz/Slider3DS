@@ -13,6 +13,10 @@ void faceRight(World& world, int npc, bool flipped) { // romeoNPC.sr.flipX
 
 } // namespace
 
+void dollyEnded(World& world, int dolly) {
+    if (dolly >= 0 && dolly == world.area.areaGrid.introDolly) world.abduction.introFinished();
+}
+
 void VillageIntro::houseExit(World& world) {
     if (world.state.flag(INTRO_CUTSCENE_FLAG)) return;
     world.state.setFlag(INTRO_CUTSCENE_FLAG, true);

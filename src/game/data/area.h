@@ -620,7 +620,6 @@ struct RuinsSymbolsDef {
     int hole = -1;                // ruinsHole's object (a world sprite)
 };
 
-// The area's SGrid subclass and the objects its methods act on.
 // CatAbductionController (VillageGrid's): the cat item, its Animator, the bubble that carries it off
 // (CatBubbleController), the sine wave it rides (SinWaveAnimation) and where it lands.
 struct CatAbductionDef {
@@ -636,6 +635,7 @@ struct CatAbductionDef {
     SampledCurve lerpCurve;
 };
 
+// The area's SGrid subclass and the objects its methods act on.
 struct AreaGridDef {
     std::string type;          // e.g. "VillageGrid"
     int caveDoorEntrance = -1;  // VillageGrid.Explode shows it

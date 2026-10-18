@@ -1,6 +1,7 @@
 // The cat's abduction (CatAbductionController) on the exported Village: after the intro (or a
 // pick-up) a bubble carries the cat off along a sine wave to the beach. Also the Animator triggers
 // and null sprite keys its bubble brought in.
+#include <algorithm>
 #include <cmath>
 #include <string>
 
@@ -77,11 +78,10 @@ TEST(cat_abduction_after_the_intro) {
     CHECK(bubbleShown(world) && awake(world) && world.objects.parent(cat(world).object) == -1);
     CHECK(!world.objects.active(world.area.objectColliders[cat(world).colliderSlot]));
     CHECK(world.objects.sortingOrder(cat(world).spriteObject) == 99);
-    frames(world, 1); // (the Animator takes the trigger: the bubble forms)
-    CHECK(world.animators.stateName(world.area, def(world).bubbleAnimator) == "BubbleForm");
-    CHECK(!world.animators.param(world.area, def(world).bubbleAnimator, "formBubble")); // (used up)
+    // (formBubble waits for the bubble's idle loop to end: animator_exit_times_match_unity)
+    CHECK(world.animators.param(world.area, def(world).bubbleAnimator, "formBubble"));
     // 1 s in it starts drifting; DoExploresseSequence sets its flag 1.4 s later.
-    frames(world, 58);
+    frames(world, 59);
     catAt(world, x, y);
     CHECK(x == x0 && y == y0);
     frames(world, 3);
@@ -91,7 +91,6 @@ TEST(cat_abduction_after_the_intro) {
     CHECK(!world.state.flag("villageCatFloatAway"));
     frames(world, 6);
     CHECK(world.state.flag("villageCatFloatAway"));
-    CHECK(world.animators.stateName(world.area, def(world).bubbleAnimator) == "BubbleIdle");
     // On the wave, eastward over the water, then the pop and the drop onto the beach.
     float lastX = x;
     bool east = true;
@@ -137,11 +136,103 @@ TEST(cat_abduction_start_after_the_intro_finds_it_on_the_beach) {
     CHECK(!world.abduction.started()); // (no intro this time)
 }
 
+TEST(cat_abduction_pick_up_restarts_the_intro_countdown) {
+    // Picked up 4 s after the intro: taken 3 s after the pick-up (SetPickedUp restarted the 6 s), not at 6 s.
+    World world(villageArea(), DEFAULT_SETTINGS);
+    world.abduction.introFinished();
+    frames(world, 240);
+    float cx, cy;
+    catAt(world, cx, cy);
+    world.placeNear(cx - 0.8f, cy);
+    world.action();
+    const int n = framesUntilStarted(world, 400);
+    check(n >= 208 && n <= 212, "started " + std::to_string(n) + " frames after the pick-up began");
+}
+
+TEST(cat_abduction_mid_pick_up_drifts_from_the_hands) {
+    // The countdown runs out while the pick-up animation plays: the animation still ends in the
+    // player's hands, and the cat drifts off from there (no jump back to where it lay).
+    World world(villageArea(), DEFAULT_SETTINGS);
+    world.abduction.introFinished();
+    frames(world, 345);
+    float cx, cy;
+    catAt(world, cx, cy);
+    world.placeNear(cx - 0.8f, cy);
+    world.action();
+    CHECK(framesUntilStarted(world, 60) > 0 && world.items.busy()); // (mid pick-up)
+    float x, y, lastX, lastY;
+    catAt(world, lastX, lastY);
+    float jump = 0;
+    for (int f = 0; f < 60 * 4; f++) {
+        frames(world, 1);
+        catAt(world, x, y);
+        if (f > 40) jump = std::max(jump, std::hypot(x - lastX, y - lastY)); // (after the pick-up's own flight)
+        lastX = x;
+        lastY = y;
+    }
+    check(jump < 0.2f, "largest step " + std::to_string(jump));
+    CHECK(world.items.carried() == -1);
+}
+
+TEST(cat_abduction_leaves_another_carried_item) {
+    // Port choice: only the cat leaves the player's hands (Unity's RemoveItem drops whatever is carried).
+    const Area& area = villageArea();
+    int other = -1;
+    for (int i = 0; i < (int)area.items.size() && other < 0; i++) {
+        if (i == area.areaGrid.catAbduction.item || area.items[i].colliderSlot < 0) continue;
+        World world(area, DEFAULT_SETTINGS);
+        for (int id = 2; id <= 9; id++) world.setTileActive(id, true); // (the other items are on later tiles)
+        float x, y;
+        world.objectPosition(area.items[i].object, x, y);
+        if (!world.objects.active(area.objectColliders[area.items[i].colliderSlot])) continue;
+        world.placeNear(x - 0.8f, y);
+        world.action();
+        frames(world, 31);
+        if (world.items.carried() != i) continue;
+        other = i;
+        world.abduction.introFinished();
+        CHECK(framesUntilStarted(world, 400) > 0 && world.items.carried() == i);
+    }
+    CHECK(other >= 0); // (some item could be picked up)
+}
+
+TEST(animator_exit_times_match_unity) {
+    // Measured in Unity (Slider3DSSceneSurvey.SurveyExitTimesBatch: 60 fps, fN = the Nth update): an
+    // exit time below 1 is taken as the loop passes it, never at the state's start. (Unity also carries
+    // the overshoot into the next state; the port starts it at 0: up to a frame later after that.)
+    World world(villageArea(), DEFAULT_SETTINGS);
+    const int cat = def(world).animator, bubble = def(world).bubbleAnimator;
+    int f = 0;
+    auto until = [&](int animator, const char* state, int limit) {
+        for (int n = 0; n < limit; n++) {
+            frames(world, 1);
+            f++;
+            if (world.animators.stateName(world.area, animator) == state) return f;
+        }
+        return -1;
+    };
+    auto near = [&](int got, int unity, int late) {
+        check(got >= unity - 1 && got <= unity + late, "f" + std::to_string(got) + " (Unity: f" + std::to_string(unity) + ")");
+    };
+    frames(world, 20);
+    f = 20;
+    world.animators.setBool(world, cat, "isAwake", true);
+    world.animators.setTrigger(world, bubble, "formBubble");
+    near(until(cat, "Cat1WakeUp", 1), 21, 0);        // a condition alone: at once
+    near(until(cat, "Cat1IdleAwake", 100), 70, 0);   // WakeUp (0.8 s, exit 0) plays through
+    near(until(bubble, "BubbleForm", 400), 301, 0);  // at the 5 s idle loop's end
+    CHECK(!world.animators.param(world.area, bubble, "formBubble")); // (used up)
+    world.animators.setBool(world, cat, "isAwake", false); // mid awake loop (entered at f70)
+    near(until(cat, "Cat1FallAsleep", 100), 310, 1); // at that loop's next end
+    const int asleep = f;
+    near(until(cat, "Cat1IdleAsleep", 100) - asleep, 22, 1); // FallAsleep (0.375 s) plays through
+}
+
 TEST(animator_null_key_shows_nothing) {
     World world(villageArea(), DEFAULT_SETTINGS);
     const int bubble = def(world).bubbleAnimator;
     world.animators.setTrigger(world, bubble, "formBubble");
-    frames(world, 1);
+    for (int n = 0; n < 400 && world.animators.stateName(world.area, bubble) != "BubbleForm"; n++) frames(world, 1);
     CHECK(world.animators.stateName(world.area, bubble) == "BubbleForm" && world.animators.sprite(bubble) >= 0);
     frames(world, 30); // past 0.25 s: the null keys
     CHECK(world.animators.sprite(bubble) == NULL_SPRITE);

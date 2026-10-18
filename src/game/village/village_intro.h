@@ -11,6 +11,10 @@ class World;
 
 namespace village {
 
+// CameraDolly.OnRollercoasterEnd for Area::cameraDollies[dolly]: the intro's
+// (VillageGrid.OnVillageCutsceneEnd) starts the cat abduction's countdown.
+void dollyEnded(World& world, int dolly);
+
 class VillageIntro {
 public:
     void reset() { *this = VillageIntro(); }

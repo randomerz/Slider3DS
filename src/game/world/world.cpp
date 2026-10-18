@@ -37,9 +37,9 @@ void World::effectDone(EffectDone done) {
     switch (done) {
     case EffectDone::None: break;
     case EffectDone::DollyEnd: {
-        const bool wasIntro = dollies.current() == area.areaGrid.introDolly;
+        const int dolly = dollies.current();
         dollies.end(*this);
-        if (wasIntro) abduction.introFinished(); // (OnRollercoasterEnd: VillageGrid.OnVillageCutsceneEnd)
+        village::dollyEnded(*this, dolly); // (CameraDolly.OnRollercoasterEnd)
         break;
     }
     case EffectDone::VillageShuffle: finale.doShuffle(*this); break;

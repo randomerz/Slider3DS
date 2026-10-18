@@ -57,11 +57,12 @@ void CatAbduction::update(World& world, float dt) {
         if (introFinished_ && (sinceIntro_ += dt) > TIME_ABDUCT_NORMAL) startAbducting(world);
         if (picked_ && (sincePicked_ += dt) > TIME_ABDUCT_PICKED) startAbducting(world);
     }
-    if (sinOn_) { // SinWaveAnimation.Update (Time.time: the frame's start)
+    if (sinOn_) { // SinWaveAnimation.Update
         sinOrigX_ += sinVelocity_ * dt;
         sinX_ = sinOrigX_;
-        sinY_ = sinOrigY_ + d.sinA * std::sin(d.sinB * (float)world.frame * dt + d.sinC) + d.sinD;
+        sinY_ = sinOrigY_ + d.sinA * std::sin(d.sinB * clock_ + d.sinC) + d.sinD;
     }
+    clock_ += dt; // (Time.time is the frame's start)
 }
 
 void CatAbduction::startAbducting(World& world) {
@@ -72,9 +73,10 @@ void CatAbduction::startAbducting(World& world) {
     // PlayerInventory.RemoveItem. (Unity drops whatever the player carries from the inventory; the
     // port only lets go of the cat, so another carried item isn't stranded on the player.)
     if (world.items.carried() == d.item) world.items.removeCarried();
-    world.objectPosition(cat.object, catX_, catY_);
+    float x, y;
+    world.objectPosition(cat.object, x, y);
     freeCat(world, cat);
-    placeCat(world, catX_, catY_);
+    placeCat(world, x, y); // (where it was: SetParent keeps the world position)
     // AbductCat, up to its first wait.
     world.effects.shake(0.5f, 0.5f);
     setBubble(world, d, true);
@@ -84,9 +86,14 @@ void CatAbduction::startAbducting(World& world) {
 }
 
 void CatAbduction::placeCat(World& world, float x, float y) {
-    catX_ = x;
-    catY_ = y;
     world.placeObject(world.area.items[world.area.areaGrid.catAbduction.item].object, 0, x, y);
+}
+
+void CatAbduction::startLerp(World& world) {
+    // (A pick-up animation still running when the abduction started puts the cat in the player's
+    // hands as it ends: it drifts off from there, as Unity reads the transform.)
+    world.objectPosition(world.area.items[world.area.areaGrid.catAbduction.item].object, fromX_, fromY_);
+    t_ = 0;
 }
 
 void CatAbduction::lerpCat(World& world, float toX, float toY, float duration, float dt) {
@@ -112,9 +119,7 @@ void CatAbduction::coroutines(World& world, float dt) {
         }
         sinOn_ = true;
         sinVelocity_ = 2;
-        fromX_ = catX_;
-        fromY_ = catY_;
-        t_ = 0;
+        startLerp(world);
         step_ = Step::ToWave;
         lerpCat(world, sinX_, sinY_, TIME_ABDUCT_FINISH_LERP, dt);
         break;
@@ -128,7 +133,7 @@ void CatAbduction::coroutines(World& world, float dt) {
         break;
     case Step::OverWater: {
         bool there = false;
-        if (world.frame != overWater_.since) { // the WaitUntil's predicate, with its side effects
+        if (overWater_.polling(world.frame)) { // the WaitUntil's predicate, with its side effects
             if (world.player.x > sinX_) sinVelocity_ = 2.5f;
             placeCat(world, sinX_, sinY_);
             there = sinX_ > d.landingX - 1;
@@ -138,9 +143,7 @@ void CatAbduction::coroutines(World& world, float dt) {
         sinOn_ = false;
         sinVelocity_ = 0;
         setBubble(world, d, false);
-        fromX_ = catX_;
-        fromY_ = catY_;
-        t_ = 0;
+        startLerp(world);
         step_ = Step::Dropping;
         lerpCat(world, d.landingX, d.landingY, 1, dt);
         break;

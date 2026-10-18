@@ -54,11 +54,21 @@ void Animators::update(World& world, float dt) {
         const AnimatorControllerDef& c = area.animatorControllers[st.controller];
         if (c.states.empty()) continue;
         const AnimatorStateDef& s = c.states[st.state];
+        const float before = s.length > 0 ? st.time / s.length : 1;
         st.time += dt * s.speed;
         // Any State transitions first, then the state's own, in order; one per frame.
         const float normalized = s.length > 0 ? st.time / s.length : 1;
+        // An exit time of 1 or more holds from then on; below 1 only on the frame the normalized time
+        // passes it in a loop (k + exitTime, k = 0, 1, ...; never the 0 a state starts at). Measured in
+        // Unity (Slider3DSSceneSurvey.SurveyExitTimesBatch): Cat1's 0.8 s WakeUp (exit 0) plays all 48
+        // frames, the bubble's formBubble waits for its 5 s idle loop's end.
+        auto exitReached = [&](float exitTime) {
+            if (exitTime >= 1 || s.length <= 0) return normalized >= exitTime;
+            const float passed = std::ceil(normalized - exitTime) - 1 + exitTime; // the last k + exitTime below now
+            return passed > 0 && passed >= before;
+        };
         auto fires = [&](const AnimatorTransitionDef& t) {
-            if (t.exitTime >= 0 && normalized < t.exitTime) return false;
+            if (t.exitTime >= 0 && !exitReached(t.exitTime)) return false;
             for (const auto& k : t.conds)
                 if ((st.params[k.first] != 0) != k.second) return false;
             return t.exitTime >= 0 || !t.conds.empty(); // Unity needs one or the other

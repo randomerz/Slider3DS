@@ -35,6 +35,7 @@ private:
     enum class Step : uint8_t { None, Waking, ToWave, OverWater, Dropping, Settling, Done };
     void startAbducting(World& world);
     void placeCat(World& world, float x, float y);
+    void startLerp(World& world); // from where the cat is now (catItem.transform.position)
     void lerpCat(World& world, float toX, float toY, float duration, float dt); // one loop step
 
     bool introFinished_ = false, picked_ = false, started_ = false;
@@ -43,7 +44,7 @@ private:
     Wait wait_, exploresse_;
     WaitUntil overWater_;
     float t_ = 0, fromX_ = 0, fromY_ = 0; // the current lerp: time, start
-    float catX_ = 0, catY_ = 0;           // where the coroutine last put the cat (world)
+    float clock_ = 0;                     // Time.time: s since the scene started
     // The SinWaveAnimation: off until the cat rides it.
     bool sinOn_ = false;
     float sinVelocity_ = 0;

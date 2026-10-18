@@ -173,6 +173,7 @@ static bool isTeleport(CallDef::Method m) {
 }
 
 static std::vector<AnimatorDef::Target> readTargets(const Json& j);
+static AnimatorDef readAnimator(const Json& j);
 
 // Calls; teleport payloads go to out.teleports.
 static std::vector<CallDef> readCalls(const Json& j, Area& out) {
@@ -501,8 +502,7 @@ static NpcDef readNpc(const Json& j, Area& out) {
     if (j.has("animator")) {
         const Json& a = j["animator"];
         n.animator = (int)out.animators.size();
-        out.animators.push_back({a["object"].asInt(-1), a["controller"].asInt(-1), a["keepState"].asBool(),
-                                 a["controllerObject"].asInt(-1), readTargets(a["targets"]), {}});
+        out.animators.push_back(readAnimator(a));
     }
     if (j.has("emote")) {
         const Json& e = j["emote"];
@@ -511,7 +511,9 @@ static NpcDef readNpc(const Json& j, Area& out) {
         n.emote.localX = e["localX"].asFloat();
         n.emote.facesRight = e["facesRight"].asBool();
         n.emote.animator = (int)out.animators.size();
-        out.animators.push_back({n.emote.object, e["controller"].asInt(-1), e["keepState"].asBool(), -1, {}, {}});
+        AnimatorDef emote = readAnimator(e);
+        emote.object = n.emote.object;
+        out.animators.push_back(std::move(emote));
     }
     for (const Json& c : j["conds"].items()) {
         NpcCondDef d;
@@ -572,6 +574,17 @@ static std::vector<AnimatorDef::Target> readTargets(const Json& j) {
     for (const Json& t : j.items())
         targets.push_back({t["path"].asString(), t["object"].asInt(-1), t["local"].at(0).asFloat(), t["local"].at(1).asFloat()});
     return targets;
+}
+
+// An exported Animator ({"object", "controller", "keepState", optional "controllerObject" / "targets"}).
+static AnimatorDef readAnimator(const Json& j) {
+    AnimatorDef a;
+    a.object = j["object"].asInt(-1);
+    a.controller = j["controller"].asInt(-1);
+    a.keepState = j["keepState"].asBool();
+    a.controllerObject = j["controllerObject"].asInt(-1);
+    a.targets = readTargets(j["targets"]);
+    return a;
 }
 
 static AnimatorControllerDef readController(const Json& j) {
@@ -1111,7 +1124,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         d.present = true;
         d.item = ca["item"].asInt(-1);
         auto animator = [&](const Json& j) {
-            out.animators.push_back({j["object"].asInt(-1), j["controller"].asInt(-1), j["keepState"].asBool(), -1, {}, {}});
+            out.animators.push_back(readAnimator(j));
             return (int)out.animators.size() - 1;
         };
         d.animator = animator(ca["animator"]);
@@ -1158,8 +1171,10 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.player.footBox = readHitbox(doc["player"]["footBox"]);
         if (doc["player"].has("animator")) {
             out.player.animator = (int)out.animators.size();
-            out.animators.push_back({-1, doc["player"]["animator"].asInt(-1), false, -1,
-                                     readTargets(doc["player"]["animatorTargets"]["targets"]), {}});
+            AnimatorDef player; // (object -1: the player)
+            player.controller = doc["player"]["animator"].asInt(-1);
+            player.targets = readTargets(doc["player"]["animatorTargets"]["targets"]);
+            out.animators.push_back(std::move(player));
         }
         out.player.boatBox = readHitbox(doc["player"]["boatBox"]);
     }

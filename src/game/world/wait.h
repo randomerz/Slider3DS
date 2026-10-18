@@ -36,6 +36,8 @@ struct WaitUntil {
         active = true;
         since = frame;
     }
+    // Evaluating its condition this frame (a predicate with side effects runs only then).
+    bool polling(uint32_t frame) const { return active && since != frame; }
     // True (and stopped) once `condition` holds on a frame after the start.
     bool done(uint32_t frame, bool condition) {
         if (!active || since == frame || !condition) return false;

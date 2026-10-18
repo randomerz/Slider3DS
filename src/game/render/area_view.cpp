@@ -1,6 +1,7 @@
 #include "game/render/area_view.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 
 #include "platform/platform.h"
@@ -306,7 +307,8 @@ void AreaView::drawLayer(const Area& area, const Grid& grid, const TileLayer& L)
 }
 
 bool AreaView::spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const {
-    if (sp.sprite < 0) return false; // (NULL_SPRITE: a clip's null key)
+    if (sp.sprite == NULL_SPRITE) return false; // (a clip's null key)
+    assert(sp.sprite >= 0);
     const SpriteDef& S = area.sprites[sp.sprite];
     // The pivot sits on (x, y). A flipped sprite mirrors around its pivot, like Unity's flipX/flipY.
     const float left = (sp.flags & plat::FLIP_X) ? sp.x - (S.w - S.pivotX) / S.ppu : sp.x - S.pivotX / S.ppu;
