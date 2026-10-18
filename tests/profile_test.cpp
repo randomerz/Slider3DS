@@ -184,6 +184,12 @@ TEST(world_save_then_load_keeps_the_boat_and_the_house) {
     World l(area, DEFAULT_SETTINGS);
     l.load(read);
     CHECK(l.player.onWater && !l.player.inHouse && &l.player.hitbox(area) == &area.player.boatBox);
+    // And back in the house: loaded as saved (the load doesn't re-derive it from y).
+    w.placeAtStart();
+    w.save(p);
+    l.placeNear(bx, by);
+    l.load(p);
+    CHECK(l.player.inHouse && !l.player.onWater && l.player.x == w.player.x && l.player.y == w.player.y);
 }
 
 TEST(world_load_keeps_the_authored_grid_if_the_saved_one_doesnt_fit) {

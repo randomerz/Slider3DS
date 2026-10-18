@@ -84,8 +84,8 @@ TEST(title_menu_new_game_with_a_typed_name) {
     CHECK(m.page() == Menu::Page::Saves && m.selected() == Menu::CARD);
     press(m, plat::BTN_B);
     CHECK(m.page() == Menu::Page::Main && m.selected() == Menu::PLAY);
-    press(m, plat::BTN_A);
-    CHECK(m.page() == Menu::Page::Saves);
+    press(m, plat::BTN_A); // (Saves closed: its skip flag cleared, so Play skips again)
+    CHECK(m.page() == Menu::Page::NewSave);
 }
 
 TEST(title_menu_keyboard_moves_by_position) {

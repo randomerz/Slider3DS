@@ -25,7 +25,6 @@ namespace village {
 
 constexpr const char* SHUFFLED_GRID = "182_943_765"; // DoShuffle's {7,0,1},{6,4,8},{5,3,2} ([x, y]; 0 = 9)
 constexpr const char* SOLVED_GRID = "624_8#7_153";   // CheckFinalPlacements
-constexpr const char* FINAL_SLIDER = "Slider 9";
 
 class FinalPuzzle {
 public:

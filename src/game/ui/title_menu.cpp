@@ -28,11 +28,11 @@ constexpr int CONFIRM_W = 70, CONFIRM_Y = 99;
 constexpr int FIELD_X = 28, FIELD_Y = 4, FIELD_W = UI_W - 2 * FIELD_X, FIELD_H = 18, FIELD_PAD = 5;
 constexpr int KEY_SIZE = 14, KEY_PITCH = 15, KEYS_X = 5, KEYS_TOP = 28, KEY_ROW_PITCH = 16;
 constexpr int ROW_LENGTHS[3] = {10, 9, 7};
+static_assert(ROW_LENGTHS[0] + ROW_LENGTHS[1] + ROW_LENGTHS[2] == TitleMenu::KEY_COUNT, "the rows hold every key");
 constexpr int ROW_INSETS[3] = {0, KEY_PITCH / 2, KEY_PITCH * 3 / 2};
 constexpr int KEYBOARD_BUTTON_W = 44, KEYBOARD_BUTTON_Y = 80, KEYBOARD_BUTTON_GAP = 6;
-// The selected button's brackets bounce: at rest, then 1 px out, each half a second (frames at 60 fps);
-// a card awaiting Confirm hides and shows its text every half second (SavePanelManager.BASE_TIME_UNTIL_SWAP).
-constexpr int BOUNCE_FRAMES = 60, BLINK_FRAMES = 30;
+// A card awaiting Confirm hides and shows its text every half second (SavePanelManager.BASE_TIME_UNTIL_SWAP).
+constexpr int BLINK_FRAMES = 30;
 // Text: the name field's (CFCFCF) and its placeholder.
 constexpr uint32_t FIELD_TEXT = plat::rgba(0xcf, 0xcf, 0xcf);
 constexpr const char* PLACEHOLDER = "Enter name...";
@@ -102,17 +102,15 @@ int TitleMenu::continueSlot() const {
 void TitleMenu::open() {
     readCards();
     deleting_ = false;
-    skippedSaves_ = false;
     go(Page::Main, continueSlot() >= 0 ? CONTINUE : PLAY);
-    wasTouching_ = true; // (a touch held as the menu opens isn't a tap on it)
+    tap_.release(); // (a touch held as the menu opens isn't a tap on it)
 }
 
 void TitleMenu::go(Page page, Widget select) {
     page_ = page;
     selected_ = select;
     confirm_ = -1;
-    pressed_ = -1;
-    frame_ = 0;
+    tap_.cancel(); // (a touch held across pages is no tap on the new one)
 }
 
 void TitleMenu::back() {
@@ -160,7 +158,7 @@ std::vector<TitleMenu::Item> TitleMenu::items() const {
         break;
     case Page::NewSave:
         add(NEW_BACK, {ICON_INSET, ICON_INSET, ICON_W, ICON_H});
-        for (int k = 0; k < 26; k++) add((Widget)(KEY + k), keyBox(k));
+        for (int k = 0; k < KEY_COUNT; k++) add((Widget)(KEY + k), keyBox(k));
         for (int i = 0; i < 3; i++) add((Widget)(CAPS + i), keyboardButton(i));
         break;
     }
@@ -220,8 +218,7 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
     } else if (w == PLAY) {
         bool none = true; // (no files at all: an unreadable one isn't written over)
         for (const Card& c : cards_) none = none && c.status == SaveProfile::Read::None;
-        if (none && !skippedSaves_) {
-            skippedSaves_ = true;
+        if (none) {
             openNewSave(0);
         } else {
             go(Page::Saves, CARD);
@@ -242,7 +239,7 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
             openNewSave(slot);
         } else if (deleting_) {
             confirm_ = slot;
-            frame_ = 0;
+            blinkFrame_ = 0;
         } else if (c.status == SaveProfile::Read::Ok) {
             a.kind = Action::Kind::Play;
             a.slot = slot;
@@ -272,7 +269,6 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
 
 TitleMenu::Action TitleMenu::update(const plat::Input& in) {
     const Page page = page_;
-    const Widget selected = selected_;
     Action action;
     if (in.pressed & plat::BTN_B) back();
     else if (in.pressed & plat::BTN_A) action = activate(selected_);
@@ -281,35 +277,24 @@ TitleMenu::Action TitleMenu::update(const plat::Input& in) {
     else if (in.pressed & plat::BTN_LEFT) move(-1, 0);
     else if (in.pressed & plat::BTN_RIGHT) move(1, 0);
 
-    if (in.touching) {
-        lastX_ = in.touchX / S;
-        lastY_ = in.touchY / S;
-        if (!wasTouching_) {
-            pressed_ = itemAt(lastX_, lastY_);
-            if (pressed_ >= 0) selected_ = (Widget)pressed_;
-        }
-    } else if (wasTouching_) {
-        if (pressed_ >= 0 && page_ == page && itemAt(lastX_, lastY_) == pressed_) action = activate((Widget)pressed_);
-        pressed_ = -1;
+    if (page_ == page) { // (a button changed the page: the touch waits for its release)
+        const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y); });
+        if (f.down >= 0) selected_ = (Widget)f.down;
+        if (f.tapped >= 0) action = activate((Widget)f.tapped);
     }
-    wasTouching_ = in.touching;
     // Selection follows the page: a widget gone (Confirm after a delete) gives way to the first one.
     if (!usable(selected_)) {
         const std::vector<Item> all = items();
         if (!all.empty()) selected_ = all.front().widget;
     }
-    if (page_ != page || selected_ != selected) frame_ = 0;
-    else frame_++;
+    bounce_.update((int)page_ * (DONE + 1) + selected_);
+    blinkFrame_++;
     return action;
 }
 
 void TitleMenu::draw(const MenuSkin& skin) const {
-    const bool touching = wasTouching_ && pressed_ >= 0;
-    const int bounce = frame_ % BOUNCE_FRAMES >= BOUNCE_FRAMES / 2 ? 1 : 0;
-    auto held = [&](Widget w, const Box& b) { return touching && pressed_ == w && b.contains(lastX_, lastY_); };
-    auto state = [&](Widget w, const Box& b) {
-        return held(w, b) ? State::Pressed : w == selected_ ? State::Selected : State::Normal;
-    };
+    auto held = [&](Widget w) { return tap_.held(w); };
+    auto state = [&](Widget w) { return held(w) ? State::Pressed : w == selected_ ? State::Selected : State::Normal; };
     if (page_ == Page::Saves) {
         const char* title = deleting_ ? "Delete file?" : "Select Save";
         skin.drawText(title, CENTER_X - skin.textWidth(title) / 2, TITLE_Y, palette::GRAY);
@@ -326,24 +311,24 @@ void TitleMenu::draw(const MenuSkin& skin) const {
         const Widget w = it.widget;
         const Box& b = it.box;
         if (isButton(w)) {
-            skin.drawButton(b.x, b.y, b.w, b.h, buttonLabel(w), w == selected_, held(w, b), bounce);
+            skin.drawButton(b.x, b.y, b.w, b.h, buttonLabel(w), w == selected_, held(w), bounce_.out());
         } else if (w == SAVES_BACK || w == NEW_BACK || w == TRASH) {
             const MenuSkin::Icon icon = w == TRASH ? MenuSkin::Icon::Trash : MenuSkin::Icon::Back;
             int iw, ih;
             skin.iconSize(icon, iw, ih);
-            skin.drawIcon(icon, b.x + (b.w - iw) / 2, b.y + (b.h - ih) / 2, deleting_ && w == TRASH ? State::Selected : state(w, b));
+            skin.drawIcon(icon, b.x + (b.w - iw) / 2, b.y + (b.h - ih) / 2, deleting_ && w == TRASH ? State::Selected : state(w));
         } else if (w >= KEY && w < CAPS) {
-            const bool on = w == selected_ || held(w, b);
+            const bool on = w == selected_ || held(w);
             skin.drawFrame(on ? MenuSkin::Frame::Light : MenuSkin::Frame::Dark, b.x, b.y, b.w, b.h);
             const char letter[2] = {caps_ ? (char)(KEYS[w - KEY] - 'a' + 'A') : KEYS[w - KEY], 0};
-            const int drop = held(w, b) ? MenuSkin::PRESS_DROP : 0;
+            const int drop = held(w) ? MenuSkin::PRESS_DROP : 0;
             skin.drawText(letter, b.x + (b.w - skin.textWidth(letter) + 1) / 2, b.y + b.h / 2 + drop, palette::OFF_WHITE);
         } else { // a card
             const int slot = w - CARD;
             const Card& c = cards_[slot];
-            const State st = state(w, b);
+            const State st = state(w);
             skin.drawCard(b.x, b.y, b.w, b.h, st);
-            if (confirm_ == slot && frame_ % (2 * BLINK_FRAMES) >= BLINK_FRAMES) continue; // (blinking: hidden)
+            if (confirm_ == slot && blinkFrame_ % (2 * BLINK_FRAMES) >= BLINK_FRAMES) continue; // (blinking: hidden)
             const int cy = b.y + (b.h - MenuSkin::CARD_EDGE) / 2 + (st == State::Pressed ? MenuSkin::PRESS_DROP : 0);
             const uint32_t dark = deleting_ ? palette::GRAY : palette::DARK;
             std::string name = c.status == SaveProfile::Read::Ok ? c.name

@@ -6,8 +6,9 @@
 //            unreadable one only says so (delete it to reuse the slot). The trash icon toggles delete
 //            mode ("Delete file?", names with "?", grayed): a profile's card blinks to be confirmed,
 //            then Confirm deletes it (an empty card still opens New Save). While no slot has a
-//            file, Play goes straight to New Save for the first slot (SavePanelManager.OpenSaves,
-//            once; back from it lands on Saves).
+//            file, Play goes straight to New Save for the first slot (SavePanelManager.OpenSaves:
+//            its skip flag is cleared whenever the panel closes, so every Play from Main skips;
+//            back from New Save lands on Saves).
 //   NewSave: the name field and the original's keyboard (a-z, Caps, Del, Done; 10 letters): Done
 //            with a name starts a new game in that slot.
 // D-pad: move to the nearest widget that way. A: use it. B: back (New Save -> Saves -> Main).
@@ -21,6 +22,7 @@
 #include <vector>
 
 #include "game/save/profile.h"
+#include "game/ui/menu_input.h"
 #include "game/ui/menu_skin.h"
 #include "platform/platform.h"
 
@@ -32,7 +34,9 @@ public:
         SAVES_BACK, TRASH, CARD, CONFIRM = CARD + SaveProfile::SLOTS, // Saves (CARD + slot)
         NEW_BACK, KEY, CAPS = KEY + 26, DEL, DONE,                // NewSave (KEY + key index, KEYS order)
     };
-    static constexpr const char* KEYS = "qwertyuiopasdfghjklzxcvbnm"; // the keyboard's rows, top first
+    static constexpr const char KEYS[] = "qwertyuiopasdfghjklzxcvbnm"; // the keyboard's rows, top first
+    static constexpr int KEY_COUNT = CAPS - KEY;
+    static_assert(sizeof(KEYS) - 1 == KEY_COUNT, "one Widget per key");
     static constexpr int MAX_NAME = 10; // KeyboardButton.MAX_PROFILE_NAME_LENGTH
 
     struct Action {
@@ -59,6 +63,8 @@ public:
     void open();
     // One frame (the game steps a fixed 60 fps) of input.
     Action update(const plat::Input& in);
+    // Ignores the touch held now (the Options menu closing over it).
+    void releaseStylus() { tap_.release(); }
     void draw(const MenuSkin& skin) const;
 
     Page page() const { return page_; }
@@ -94,13 +100,10 @@ private:
     Card cards_[SaveProfile::SLOTS];
     bool deleting_ = false;
     int confirm_ = -1;
-    bool skippedSaves_ = false; // Play went straight to New Save once (SavePanelManager.hasAlreadySkippedSavePicking)
     int newSlot_ = 0;           // New Save's slot
     std::string name_;
     bool caps_ = false;
-    // Stylus (UI px): a tap is a press and release on the same widget (the 3DS reports no position on release).
-    bool wasTouching_ = false;
-    int pressed_ = -1; // the Widget touched down on, -1 = none
-    int lastX_ = 0, lastY_ = 0;
-    int frame_ = 0; // frames on this page / selection: the brackets' bounce, the confirm blink
+    MenuTap tap_; // stylus taps on the page's widgets
+    BracketBounce bounce_;
+    int blinkFrame_ = 0; // frames since a card started awaiting Confirm (its own timer: timeUntilSwap)
 };

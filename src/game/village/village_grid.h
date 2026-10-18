@@ -19,6 +19,7 @@ constexpr const char* CAVE_DOOR_EXPLODED_FLAG = "caveDoorExploded";
 constexpr const char* VILLAGE_COMPLETION_FLAG = "villageCompletion"; // VillageGrid.checkCompletion (saved as this)
 constexpr const char* AUTO_MOVE_FLAG = "forceAutoMoveVillage";        // UIArtifact.GetAutoMoveActive
 constexpr const char* PENDING_COMPLETE_FLAG = "villagePendingComplete";
+constexpr const char* FINAL_SLIDER = "Slider 9"; // PlaceTile9 hands it out: the Village is complete
 
 // SGrid.ActivateCollectible / ActivateSliderCollectible: the area's collectible `name` appears
 // (SpawnCollectable: its object turns on) unless it's already in the inventory. `clearDisableAtStart`

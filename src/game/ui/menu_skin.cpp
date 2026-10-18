@@ -70,7 +70,6 @@ bool MenuSkin::load(std::string* error) {
     }
     read("cardBack", cardBack_);
     read("frameLight", frame_[(int)Frame::Light]);
-    read("frameMid", frame_[(int)Frame::Mid]);
     read("frameDark", frame_[(int)Frame::Dark]);
     // The widgets are their sprites' sizes (one grid: no scaling).
     auto is = [](const Sprite& s, int w, int h) { return s.w == w && s.h == h; };
@@ -92,6 +91,10 @@ bool MenuSkin::load(std::string* error) {
             ok = false;
             if (error) *error = "ui/menu.json: a card / icon's states differ in size";
         }
+    if (ok && !is(frame_[1], frame_[0].w, frame_[0].h)) {
+        ok = false;
+        if (error) *error = "ui/menu.json: the bracket frames differ in size";
+    }
     if (ok && !is(cardBack_, card_[0].w, card_[0].h)) {
         ok = false;
         if (error) *error = "ui/menu.json: the card background isn't the card's size";

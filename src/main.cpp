@@ -1,48 +1,37 @@
-// Village walkabout: the player walks the exported Village with the original's collision; the
-// camera follows. The new-game start is the Default spawn inside tile 1's house.
+// Slider (Stonybrook Village) for the 3DS: boots to the title screen; the screens, the game and the
+// save points between them are game/app/frontend's. Here: the platform, the assets and the dev tools.
+//   Title (bottom screen): Continue / Play (three profiles, delete, a new one's name) / Options / Quit
 //   D-pad / circle pad: walk          A: action (pick up / drop items, doors, NPC dialogue)
-//   START: pause (game/ui/pause_menu: Resume, Options (General, Sound), Quit)
+//   START: pause (game/ui/pause_menu: Resume, Options (General, Sound), Quit to the title)
 //   Cutscenes (the intro's camera dolly): hold A to skip
-// Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) add R on the title screen (boot the
-// Village directly, outdoors on tile 1, on a temporary profile) and in the game:
+//   Bottom screen in the game: the Artifact (tap a tile, then a highlighted slot, or drag it there)
+// The new-game start is the Default spawn inside tile 1's house. The player's Settings live here,
+// loaded at start (the Frontend saves them when they change).
+// Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) add a perf overlay
+// (game/dev/dev_overlay; SELECT toggles it), R on the title screen (boot the Village directly,
+// outdoors on tile 1, on a temporary profile that is never written) and in the game:
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
-//   L + D-pad: slide the tile you stand on          SELECT: toggle the perf overlay
+//   L + D-pad: slide the tile you stand on
 //   L + B: tiles 2-4 only, next to Kevin's unsolved knot (Slider 5)
 //   L + Y: tiles 2-6 only, the ruins one slide from assembled (slide 2 left; Slider 7)
-// Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there), or the pause
-// menu. Dev builds add a perf overlay (game/dev/dev_overlay). The player's Settings live here,
-// loaded at start and saved when they've changed: as the pause menu closes, and when the app exits.
-// It boots to the title screen (game/ui/title_menu: Continue / Play (three profiles, delete, a new
-// one's name) / Options / Quit). The save profile (game/save/profile) is saved as Unity's GameSaver /
-// SaveSystem.SaveGame do: once the scene has started, when a script asks (a collectible's pick-up),
-// and on quitting (the pause menu's Quit, back to the title; the app closing) — unless the scene was
-// booted directly (dev builds: R on the title screen): then, as in Unity's editor, it plays a
-// temporary profile that is never written.
 #include <cstdio>
-#include <ctime>
 #include <string>
 
 #include "dev_controls.h"
+#include "game/app/frontend.h"
 #include "game/data/area.h"
-#include "game/render/area_view.h"
-#include "game/save/profile.h"
-#include "game/save/settings.h"
-#include "game/ui/artifact_ui.h"
-#include "game/ui/hud.h"
-#include "game/ui/menu_skin.h"
-#include "game/ui/palette.h"
-#include "game/ui/pause_menu.h"
-#include "game/ui/title_menu.h"
 #include "game/dev/dev_overlay.h"
+#include "game/render/area_view.h"
 #include "game/render/font.h"
 #include "game/render/sprite_sheets.h"
-#include "game/world/world.h"
+#include "game/save/settings.h"
+#include "game/ui/menu_skin.h"
+#include "game/ui/palette.h"
 #include "platform/platform.h"
 
 namespace {
 
-constexpr float FRAME_DT = 1.0f / 60.0f;
 #ifndef SLIDER_DEV
 #define SLIDER_DEV 0
 #endif
@@ -56,21 +45,6 @@ void showLoadError() {
         plat::beginScreen(plat::Screen::Bottom, palette::DARK);
         plat::endFrame();
     }
-}
-
-// Writes `settings` if they differ from what was last saved (one attempt per change).
-void saveIfChanged(const Settings& settings, Settings& saved) {
-    if (settings == saved) return;
-    if (!settings.save()) printf("Couldn't save the settings\n");
-    saved = settings;
-}
-
-// Writes the game into `profile` and its slot (-1: a temporary profile, never written).
-void saveGame(const World& world, SaveProfile& profile, int slot) {
-    if (slot < 0) return;
-    world.save(profile);
-    profile.lastSaved = (int64_t)std::time(nullptr);
-    if (!profile.save(slot)) printf("Couldn't save the profile\n");
 }
 
 } // namespace
@@ -92,120 +66,49 @@ int main(int, char**) {
     }
 
     Settings settings = Settings::load();
-    Settings savedSettings = settings;
-    World world(area, settings);
+    Frontend front(area, settings);
     AreaView view;
     view.setFont(&font);
-    ArtifactUI artifactUI;
-    artifactUI.init(area, world.artifact);
     DevControls dev;
     dev.showPerf = DEV;
+    if (const int start = front.world().startSpawn(); start >= 0) dev.spawnIndex = start;
     DevOverlay overlay;
-    PauseMenu pauseMenu;
-    TitleMenu title;
-    title.open();
-    enum class Mode { Title, Game } mode = Mode::Title;
-    int slot = -1; // the profile's slot; -1: a temporary profile, never written
-    SaveProfile profile;
-    // Starts the game from `p` (SaveSystem.LoadSaveProfile / NewSavePanelManager.StartNewGame; the
-    // original's intro cutscene scene isn't ported: a new game starts in the Village).
-    auto startGame = [&](SaveProfile p, int s) {
-        profile = std::move(p);
-        slot = s;
-        world.load(profile);
-        if (const int start = world.startSpawn(); start >= 0) dev.spawnIndex = start;
-        artifactUI.init(area, world.artifact);
-        mode = Mode::Game;
-        saveGame(world, profile, slot); // (GameSaver.Start)
-    };
 
-    bool quit = false;
-    while (!quit && plat::mainLoop()) {
+    while (plat::mainLoop()) {
         const double updateStart = plat::nowMs();
         const plat::Input in = plat::pollInput();
-        if (pauseMenu.isOpen()) {
-            const PauseMenu::Action action = pauseMenu.update(in, settings);
-            if (action != PauseMenu::Action::None) saveIfChanged(settings, savedSettings);
-            if (action == PauseMenu::Action::Quit) { // (QuitHandler: save, then the main menu)
-                saveGame(world, profile, slot);
-                mode = Mode::Title;
-                title.open();
-            }
-            if (action == PauseMenu::Action::Resume && mode == Mode::Game) artifactUI.releaseStylus();
-        } else if (mode == Mode::Title) {
-            if (DEV && (in.pressed & plat::BTN_R)) {
-                // The scene booted directly: a temporary profile (SaveSystem.Current's "Boomo", index -1),
-                // outdoors on tile 1.
-                startGame(SaveProfile::make("Boomo"), -1);
-                float x, y;
-                world.grid.ownerBase(1, x, y);
-                world.placeNear(x, y);
-            } else {
-                const TitleMenu::Action a = title.update(in);
-                switch (a.kind) {
-                case TitleMenu::Action::Kind::None: break;
-                case TitleMenu::Action::Kind::Play: {
-                    SaveProfile p;
-                    if (SaveProfile::load(a.slot, p) == SaveProfile::Read::Ok) startGame(std::move(p), a.slot);
-                    else title.open(); // (the file changed since the cards were read)
-                    break;
-                }
-                case TitleMenu::Action::Kind::NewGame: startGame(SaveProfile::make(a.name), a.slot); break;
-                case TitleMenu::Action::Kind::Options: pauseMenu.open(PauseMenu::Page::Options); break;
-                case TitleMenu::Action::Kind::Quit: quit = true; break;
-                }
-            }
-        } else if ((in.pressed & plat::BTN_START) && !world.playerLocked()) {
-            pauseMenu.open();
-            artifactUI.releaseStylus();
+        bool devSliding = false;
+        if (DEV && front.mode() == Frontend::Mode::Title && !front.pauseMenu().isOpen() && (in.pressed & plat::BTN_R)) {
+            front.bootDirect(); // (outdoors on tile 1)
+            float x, y;
+            front.world().grid.ownerBase(1, x, y);
+            front.world().placeNear(x, y);
         } else {
-            const bool devSliding = DEV && dev.update(in, world);
-            if (!world.playerLocked()) artifactUI.update(in, world, FRAME_DT);
-            else artifactUI.releaseStylus(); // (the Artifact stays shut while the player is held)
-            FrameInput frame;
+            if (DEV && front.playing()) devSliding = dev.update(in, front.world());
+            float moveX = 0, moveY = 0;
             if (!devSliding) {
-                if (in.held & plat::BTN_LEFT) frame.moveX -= 1;
-                if (in.held & plat::BTN_RIGHT) frame.moveX += 1;
-                if (in.held & plat::BTN_UP) frame.moveY += 1;
-                if (in.held & plat::BTN_DOWN) frame.moveY -= 1;
+                if (in.held & plat::BTN_LEFT) moveX -= 1;
+                if (in.held & plat::BTN_RIGHT) moveX += 1;
+                if (in.held & plat::BTN_UP) moveY += 1;
+                if (in.held & plat::BTN_DOWN) moveY -= 1;
             }
-            frame.actionHeld = (in.held & plat::BTN_A) != 0;
-            if (in.pressed & plat::BTN_A) world.action();
-            world.update(FRAME_DT, frame, DEV && dev.noclip);
-            if (world.saveRequested) {
-                world.saveRequested = false;
-                saveGame(world, profile, slot);
-            }
+            if (!front.update(in, moveX, moveY, DEV && dev.noclip)) break;
         }
         const float updateMs = (float)(plat::nowMs() - updateStart);
 
         plat::beginFrame();
-        if (mode == Mode::Title) {
-            plat::beginScreen(plat::Screen::Top, palette::DARK);
-        } else {
-            plat::beginScreen(plat::Screen::Top, plat::rgba(area.background[0], area.background[1], area.background[2]));
-            float camX, camY;
-            world.camera(camX, camY);
-            view.begin(area, sheets, camX, camY, plat::TOP_W, plat::TOP_H, world.frame * FRAME_DT, DEV && dev.showInactive);
-            view.draw(world);
-            if (DEV && dev.noclip) // the position point the player moves by (the camera follows it)
-                plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
-            drawTopOverlays(world, menuSkin.font());
-            if (pauseMenu.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
-        }
-
-        plat::beginScreen(plat::Screen::Bottom, palette::DARK);
-        if (pauseMenu.isOpen()) pauseMenu.draw(settings, menuSkin);
-        else if (mode == Mode::Title) title.draw(menuSkin);
-        else artifactUI.draw(world, sheets);
+        const bool inGame = front.mode() == Frontend::Mode::Game;
+        front.drawTop(view, sheets, menuSkin, DEV && dev.showInactive);
+        if (inGame && DEV && dev.noclip) // the position point the player moves by (the camera follows it)
+            plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
+        front.drawBottom(sheets, menuSkin);
         if (DEV) {
-            overlay.record(plat::lastFrameStats(), updateMs, mode == Mode::Game ? view.lastSpriteCount() : 0);
+            overlay.record(plat::lastFrameStats(), updateMs, inGame ? view.lastSpriteCount() : 0);
             if (dev.showPerf) overlay.draw();
         }
         plat::endFrame();
     }
-    saveIfChanged(settings, savedSettings); // (closed while paused: HOME > Close, the PC window)
-    if (mode == Mode::Game) saveGame(world, profile, slot); // (the app closing: GameSaver.OnApplicationQuit)
+    front.shutdown();
 
     menuSkin.unload();
     font.unload();

@@ -11,7 +11,7 @@ The sprites, as the prefabs use them (UICanvas PausePanel, GeneralOptionsPanel):
       Slider's m_SpriteState). Names mislead: resolve fileIDs through the .meta's internalIDs.
   The title menu (MainMenu.unity): profile cards (Button24_BottomEmpty: normal _0, pressed _1 (1 px
       lower), selected _2 (outlined); on Button24_Backgrounds_0), bracket frames (MainMenuButton20:
-      light _0, mid _1, dark _2: keyboard keys, the name field), icons (back_button, trash icon: normal
+      light _0: the name field, a selected key; dark _2: keys; the mid _1, the main menu's, is unused), icons (back_button, trash icon: normal
       _0, pressed _1 (1 px lower), selected _2 (light)).
 
   assets/sheets/ui_menu.png   the sheet (.fmt: la8, all gray)
@@ -45,7 +45,6 @@ SPRITES = {
     "cardSelected": ("Sprites/UI/Button24_BottomEmpty.png", "Button24_2_Empty"),
     "cardBack": ("Sprites/UI/Button24_Backgrounds.png", "Button24_Backgrounds_0"),
     "frameLight": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_0"),
-    "frameMid": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_1"),
     "frameDark": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_2"),
     "back": ("Sprites/UI/artifact/back_button.png", "back_button_0"),
     "backPressed": ("Sprites/UI/artifact/back_button.png", "back_button_1"),

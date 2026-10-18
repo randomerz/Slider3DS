@@ -35,7 +35,8 @@ struct SaveProfile {
     static SaveProfile make(const std::string& profileName);
 
     // Areas completed, for the title screen's cards (MainMenuSaveButton.GetNumAreasCompleted: areas
-    // whose world map status is color). The Village's turns color as PlaceTile9 hands out Slider 9.
+    // whose world map status is color). The Village's turns color as PlaceTile9 hands out Slider 9
+    // (counted from the collectible; when a second area or the world map lands, save each area's).
     int areasCompleted() const;
     static constexpr int AREAS = 9; // (the original's, shown as "n/9")
 

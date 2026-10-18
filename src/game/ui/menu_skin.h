@@ -27,7 +27,7 @@ public:
     // A sprite-swapped widget's look (Button transition: normal, pressed, highlighted).
     enum class State { Normal, Pressed, Selected };
     enum class Icon { Back, Trash };
-    enum class Frame { Light, Mid, Dark }; // MainMenuButton20's bracket frames
+    enum class Frame { Light, Dark }; // MainMenuButton20's bracket frames (_0, _2)
 
     MenuSkin() = default;
     MenuSkin(const MenuSkin&) = delete;
@@ -80,6 +80,6 @@ private:
 
     plat::Texture* sheet_ = nullptr;
     Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
-    Sprite card_[3], cardBack_, frame_[3], back_[3], trash_[3]; // ([State] / [Frame])
+    Sprite card_[3], cardBack_, frame_[2], back_[3], trash_[3]; // ([State] / [Frame])
     Font font_;
 };

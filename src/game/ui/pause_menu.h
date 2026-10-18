@@ -24,6 +24,7 @@
 #pragma once
 
 #include "game/save/settings.h"
+#include "game/ui/menu_input.h"
 #include "game/ui/menu_skin.h"
 #include "platform/platform.h"
 
@@ -47,6 +48,8 @@ public:
     };
 
     bool isOpen() const { return open_; }
+    // Ignores the touch held now (the title screen under it closing or opening it).
+    void releaseStylus() { tap_.release(); }
     // Opens on `start` (its first item selected): Paused in the game, Options from the title screen.
     // Backing out of the page it opened on closes it (Resume).
     void open(Page start = Page::Paused);
@@ -80,13 +83,7 @@ private:
     Page root_ = Page::Paused; // the page it opened on
     int cursor_ = 0; // index on the page
     bool confirmQuit_ = false;
-    // Stylus (UI px): a tap is a press and release on the same item (the 3DS reports no position on
-    // release).
-    bool wasTouching_ = false, sliding_ = false;
-    int pressed_ = -1; // item index touched down on
-    int lastX_ = 0, lastY_ = 0;
-    // The selected button's bracket bounce: frames into its period, for the item it started on.
-    int bounceFrame_ = 0;
-    Page bouncePage_ = Page::Paused;
-    int bounceCursor_ = -1;
+    MenuTap tap_; // stylus taps on the page's items (indices)
+    bool sliding_ = false; // the touch went down on the pressed item's slider: it drags it
+    BracketBounce bounce_;
 };

@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <iterator>
 
+#include "game/village/village_grid.h"
 #include "platform/platform.h"
 
 namespace {
@@ -185,7 +186,7 @@ SaveProfile::Read SaveProfile::load(int slot, SaveProfile& out) {
     return parse(text, out) ? Read::Ok : Read::Bad;
 }
 
-int SaveProfile::areasCompleted() const { return state.hasCollectible("Slider 9", "Village") ? 1 : 0; }
+int SaveProfile::areasCompleted() const { return state.hasCollectible(village::FINAL_SLIDER, "Village") ? 1 : 0; }
 
 bool SaveProfile::remove(int slot) { return plat::removeUserFile(fileName(slot).c_str()); }
 

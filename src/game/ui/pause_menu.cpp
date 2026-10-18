@@ -36,8 +36,6 @@ constexpr int TITLE_Y = 20; // the title's middle
 constexpr int FIRST_TOP = 34;
 constexpr int BUTTON_W = 120, BUTTON_H = 18, BUTTON_SLOT = 24;
 constexpr int ROW_SLOT = 15;
-// The selected button's brackets bounce: at rest, then 1 px out, each half a second (frames at 60 fps).
-constexpr int BOUNCE_FRAMES = 60;
 // Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the
 // row's ends): the slider at the right end, the toggle centered under it. Selected: a light label.
 constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X, ROW_PAD = 4;
@@ -189,13 +187,13 @@ void PauseMenu::open(Page start) {
     open_ = true;
     root_ = start;
     go(start, pageDef(start).items[0].item);
-    wasTouching_ = true; // (a touch held when the menu opens isn't a tap on it)
+    tap_.release(); // (a touch held when the menu opens isn't a tap on it)
 }
 
 void PauseMenu::go(Page page, Item select) {
     page_ = page;
     confirmQuit_ = false;
-    pressed_ = -1;
+    tap_.cancel();
     sliding_ = false;
     cursor_ = 0;
     const PageDef& p = pageDef(page);
@@ -249,14 +247,7 @@ void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
 PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
     if (!open_) return Action::None;
     const Action action = handleInput(in, settings);
-    // The bounce restarts on each newly selected item.
-    if (page_ != bouncePage_ || cursor_ != bounceCursor_) {
-        bouncePage_ = page_;
-        bounceCursor_ = cursor_;
-        bounceFrame_ = 0;
-    } else {
-        bounceFrame_ = (bounceFrame_ + 1) % BOUNCE_FRAMES;
-    }
+    bounce_.update((int)page_ * ITEM_COUNT + cursor_);
     return action;
 }
 
@@ -276,34 +267,25 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
     if (in.pressed & plat::BTN_LEFT) step(p.items[cursor_], -1, settings);
     if (in.pressed & plat::BTN_RIGHT) step(p.items[cursor_], 1, settings);
 
-    Action action = Action::None;
-    if (in.touching) {
-        lastX_ = in.touchX / S;
-        lastY_ = in.touchY / S;
-        if (!wasTouching_) {
-            pressed_ = itemAt(lastX_, lastY_);
-            if (pressed_ >= 0) {
-                const ItemDef& def = p.items[pressed_];
-                cursor_ = pressed_;
-                if (def.act != Act::Quit) confirmQuit_ = false;
-                if (def.kind == Kind::Slider) {
-                    // Only the slider drags, though a finger may land a little above or below it.
-                    const Box s = uiControl(p, pressed_), row = uiBox(p, pressed_);
-                    sliding_ = Box{s.x, row.y, s.w, row.h}.contains(lastX_, lastY_);
-                }
-            }
+    const bool wasSliding = sliding_;
+    const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y); });
+    if (f.down >= 0) {
+        const ItemDef& def = p.items[f.down];
+        cursor_ = f.down;
+        if (def.act != Act::Quit) confirmQuit_ = false;
+        if (def.kind == Kind::Slider) {
+            // Only the slider drags, though a finger may land a little above or below it.
+            const Box s = uiControl(p, f.down), row = uiBox(p, f.down);
+            sliding_ = Box{s.x, row.y, s.w, row.h}.contains(in.touchX / S, in.touchY / S);
         }
-        if (sliding_) {
-            const Box s = uiControl(p, pressed_);
-            settings.*p.items[pressed_].value = Settings::snap(MenuSkin::sliderValueAt(in.touchX / (float)S, s.x, s.w));
-        }
-    } else if (wasTouching_) {
-        if (pressed_ >= 0 && !sliding_ && itemAt(lastX_, lastY_) == pressed_) action = activate(p.items[pressed_], settings);
-        pressed_ = -1;
-        sliding_ = false;
     }
-    wasTouching_ = in.touching;
-    return action;
+    if (!in.touching) sliding_ = false;
+    if (sliding_) {
+        const Box s = uiControl(p, tap_.pressed());
+        settings.*p.items[tap_.pressed()].value = Settings::snap(MenuSkin::sliderValueAt(in.touchX / (float)S, s.x, s.w));
+    }
+    if (f.tapped >= 0 && !wasSliding) return activate(p.items[f.tapped], settings);
+    return Action::None;
 }
 
 void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
@@ -315,9 +297,8 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
         const bool selected = i == cursor_;
         switch (def.kind) {
         case Kind::Button: {
-            const bool held = i == pressed_ && wasTouching_ && itemAt(lastX_, lastY_) == i;
             const char* label = def.act == Act::Quit && confirmQuit_ ? "Really quit?" : def.label;
-            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, held, bounceFrame_ >= BOUNCE_FRAMES / 2 ? 1 : 0);
+            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, tap_.held(i), bounce_.out());
             break;
         }
         case Kind::Slider:
