@@ -18,10 +18,9 @@ public:
     Frame update(const plat::Input& in, int scale, ItemAt itemAt) {
         Frame f;
         if (in.touching) {
-            x_ = in.touchX / scale;
-            y_ = in.touchY / scale;
-            if (!wasTouching_) f.down = pressed_ = itemAt(x_, y_);
-            over_ = itemAt(x_, y_);
+            const int x = in.touchX / scale, y = in.touchY / scale;
+            if (!wasTouching_) f.down = pressed_ = itemAt(x, y);
+            over_ = itemAt(x, y);
         } else if (wasTouching_) {
             if (pressed_ >= 0 && over_ == pressed_) f.tapped = pressed_;
             pressed_ = over_ = -1;
@@ -43,7 +42,6 @@ public:
 private:
     bool wasTouching_ = false;
     int pressed_ = -1, over_ = -1;
-    int x_ = 0, y_ = 0;
 };
 
 // The selected button's brackets bounce: at rest, then 1 px out, each half a second, restarting

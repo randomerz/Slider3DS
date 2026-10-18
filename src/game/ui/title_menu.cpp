@@ -268,6 +268,13 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
 }
 
 TitleMenu::Action TitleMenu::update(const plat::Input& in) {
+    if (lockout_ > 0) {
+        lockout_--;
+        tap_.update(in, S, [](int, int) { return -1; }); // (a touch that goes down now is on nothing)
+        bounce_.update((int)page_ * (DONE + 1) + selected_);
+        blinkFrame_++;
+        return {};
+    }
     const Page page = page_;
     Action action;
     if (in.pressed & plat::BTN_B) back();

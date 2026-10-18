@@ -65,6 +65,10 @@ public:
     Action update(const plat::Input& in);
     // Ignores the touch held now (the Options menu closing over it).
     void releaseStylus() { tap_.release(); }
+    // Ignores all input for `frames` frames (StartMainMenu's LockoutSelectablesInCurrentMenu: 1 s
+    // while the buttons come in); a touch held through it is no tap.
+    void lockOut(int frames) { lockout_ = frames; }
+    bool lockedOut() const { return lockout_ > 0; }
     void draw(const MenuSkin& skin) const;
 
     Page page() const { return page_; }
@@ -106,4 +110,5 @@ private:
     MenuTap tap_; // stylus taps on the page's widgets
     BracketBounce bounce_;
     int blinkFrame_ = 0; // frames since a card started awaiting Confirm (its own timer: timeUntilSwap)
+    int lockout_ = 0;    // frames left ignoring input
 };

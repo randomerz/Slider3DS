@@ -180,7 +180,15 @@ def title():
     for n in dict.fromkeys(names):
         if n not in available:
             sys.exit(f"title.json: no sprite {n} in TITLE_TEXTURES")
-        cut[n] = available[n]
+        img, (px, py) = available[n]
+        # Cropped to its visible pixels (each logo letter sits in a full-logo frame), the pivot kept
+        # on the same pixel.
+        box = img.getbbox()
+        if box:
+            left, top, right, bottom = box
+            px, py = px - left, py - (img.height - bottom)
+            img = img.crop(box)
+        cut[n] = (img, [px, py])
     sheet, placed = pack({n: img for n, (img, pivot) in cut.items()}, 256)
     write_sheet(sheet, "ui_title")
     sprites = {n: {"rect": [*placed[n], img.width, img.height], "pivot": pivot} for n, (img, pivot) in cut.items()}

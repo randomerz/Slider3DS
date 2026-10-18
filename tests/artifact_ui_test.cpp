@@ -2,8 +2,11 @@
 #include <cmath>
 #include <string>
 
+#include "game/render/sprite_sheets.h"
 #include "game/ui/artifact_ui.h"
+#include "game/world/world.h"
 #include "test.h"
+#include "test_platform.h"
 
 namespace {
 
@@ -197,4 +200,22 @@ TEST(artifact_ui_auto_move) {
     f.settle();
     f.tap(0, 0); // tile 1 now has one option (right), but without autoMove a tap only selects
     CHECK(f.ui.selected() == 1 && f.artifact.queueEmpty());
+}
+
+TEST(artifact_ui_before_init_does_nothing) {
+    // A screen that shows or feeds the Artifact before a game started it (the title once did) gets
+    // nothing drawn and nothing moved, not a bad index.
+    World world(villageArea(), DEFAULT_SETTINGS);
+    SpriteSheets sheets;
+    ArtifactUI ui;
+    testResetDrawCalls();
+    ui.draw(world, sheets);
+    CHECK(testDrawCalls().empty());
+    plat::Input in;
+    in.touching = true;
+    in.touchX = 160;
+    in.touchY = 120;
+    ui.update(in, world, 1.0f / 60);
+    ui.update(plat::Input{}, world, 1.0f / 60);
+    CHECK(ui.selected() == 0 && world.artifact.queueEmpty());
 }

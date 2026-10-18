@@ -92,7 +92,7 @@
     "text": "[press any key to begin]",
     "pos": [0, -64],
     "color": [230, 230, 230],
-    "fadeIn": 2,
+    "fade": [[0, 0, 0, 0], [2, 1, 0, 0]],
     "fadeOutSpeed": 6
   }
 }

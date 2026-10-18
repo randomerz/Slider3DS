@@ -94,6 +94,11 @@ EffectCallbacks ScreenEffects::update(const Area& area, float dt, float screenSh
             if (flashT_ < 0) flash_ = Flash::None;
         }
     }
+    updateShake(area.cameraShake, dt, screenShake);
+    return done;
+}
+
+void ScreenEffects::updateShake(const CameraShakeDef& cs, float dt, float screenShake) {
     // CameraShake.FindMaxShake: finished shakes go, the strongest of the rest is the gain.
     gain_ = 0;
     for (size_t i = 0; i < shakes_.size();) {
@@ -108,17 +113,15 @@ EffectCallbacks ScreenEffects::update(const Area& area, float dt, float screenSh
     }
     // CinemachineBasicMultiChannelPerlin: the channels' sum, times the gain (camera-relative x / y;
     // the 2D camera isn't rotated).
-    const CameraShakeDef& cs = area.cameraShake;
     noiseTime_ += dt * cs.frequencyGain;
     shakeX_ = shakeY_ = 0;
-    if (gain_ <= 0) return done;
+    if (gain_ <= 0) return;
     for (const CameraShakeDef::Channel& ch : cs.position) {
         shakeX_ += noiseAt(ch.frequency[0], ch.amplitude[0], ch.constant[0], noiseTime_, offsetX_);
         shakeY_ += noiseAt(ch.frequency[1], ch.amplitude[1], ch.constant[1], noiseTime_, offsetY_);
     }
     shakeX_ *= gain_;
     shakeY_ *= gain_;
-    return done;
 }
 
 float ScreenEffects::whiteAlpha(const Area& area) const {

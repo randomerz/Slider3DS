@@ -21,7 +21,6 @@
 #include "platform/platform.h"
 
 class Font;
-struct Area;
 
 // The loaded title art (read-only, like Area). Positions in px, y up, from the screen's center.
 struct TitleArt {
@@ -62,7 +61,8 @@ struct TitleArt {
         std::string text;
         float x = 0, y = 0;
         uint32_t color = 0;
-        float fadeIn = 1, fadeOutSpeed = 1;
+        std::vector<CurveKey> fade; // AnyKeyFadeIn's alpha over time
+        float fadeOutSpeed = 1;     // AnyKeyFadeOut: that curve backwards from its end, this many times as fast
     } prompt;
 
     TitleArt() = default;
@@ -78,9 +78,9 @@ public:
     // The scene loads (MainMenuManager.Start): the intro from its start.
     void start(const TitleArt& art);
     // One frame (the game steps a fixed 60 fps): `in` is the frame's input (any button or touch
-    // starts the menu), `area` the camera shake's noise, `screenShake` the setting. True on the
-    // frame the menu starts (that input is used up).
-    bool update(const Area& area, const plat::Input& in, float dt, float screenShake);
+    // starts the menu), `noise` the camera shake's (MainMenu's camera has the Player's CM 2D Shake:
+    // the area's), `screenShake` the setting. True on the frame the menu starts (that input is used up).
+    bool update(const CameraShakeDef& noise, const plat::Input& in, float dt, float screenShake);
     bool menuShown() const { return upAt_ >= 0; } // StartMainMenu has run
     void draw(const TitleArt& art, const Font& font) const;
 

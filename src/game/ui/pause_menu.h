@@ -48,8 +48,6 @@ public:
     };
 
     bool isOpen() const { return open_; }
-    // Ignores the touch held now (the title screen under it closing or opening it).
-    void releaseStylus() { tap_.release(); }
     // Opens on `start` (its first item selected): Paused in the game, Options from the title screen.
     // Backing out of the page it opened on closes it (Resume).
     void open(Page start = Page::Paused);

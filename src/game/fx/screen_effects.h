@@ -41,6 +41,8 @@ public:
     // screenShake setting), then the camera's noise (CinemachineBasicMultiChannelPerlin) moves by it.
     // Returns the callbacks now due (for World to run). `frame`: World::frame.
     EffectCallbacks update(const Area& area, float dt, float screenShake, uint32_t frame);
+    // Only the shakes and the noise (`noise`: the camera's Cinemachine noise; what update runs too).
+    void updateShake(const CameraShakeDef& noise, float dt, float screenShake);
 
     float whiteAlpha(const Area& area) const; // the white panel's alpha
     float shakeGain() const { return gain_; } // the noise's amplitude gain this frame

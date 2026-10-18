@@ -38,11 +38,12 @@ const TitleArt& titleArt() {
     return art;
 }
 
-// "Press any key": the title menu appears (that press is used up), then the key is let go.
+// "Press any key": the title menu appears (that press is used up), then takes input once its 1 s
+// lockout is over.
 void showMenu(Frontend& f) {
     f.update({}, 0, 0);
     f.update(buttons(plat::BTN_A), 0, 0);
-    f.update({}, 0, 0);
+    for (int i = 0; i < Frontend::MENU_LOCKOUT_FRAMES; i++) f.update({}, 0, 0);
 }
 
 bool frames(Frontend& f, int n, const plat::Input& in = {}) {
@@ -247,7 +248,7 @@ TEST(frontend_draws_every_screen) {
     };
     for (int i = 0; i < 300; i++) step({}); // (the whole intro, prompt included)
     step(buttons(plat::BTN_A));
-    step({});
+    for (int i = 0; i < Frontend::MENU_LOCKOUT_FRAMES; i++) step({});
     TitleMenu::Box b;
     CHECK(f.title().box(TitleMenu::OPTIONS, b));
     step(touchAt(b.x + 4, b.y + 4));
@@ -269,11 +270,67 @@ TEST(frontend_draws_every_screen) {
     CHECK(f.mode() == Frontend::Mode::Title);
     for (int i = 0; i < 10; i++) step({});
     step(buttons(plat::BTN_A)); // (any key)
-    step({});
+    for (int i = 0; i < Frontend::MENU_LOCKOUT_FRAMES; i++) step({});
     step(buttons(plat::BTN_A)); // Continue
     CHECK(f.mode() == Frontend::Mode::Game);
     for (int i = 0; i < 30; i++) step({});
     f.bootDirect();
     for (int i = 0; i < 30; i++) step({});
     testUserFiles().clear();
+}
+
+TEST(frontend_title_key_waits_for_the_second_frame_and_locks_the_menu_out) {
+    testUserFiles().clear();
+    SaveProfile::make("Tofu").save(0);
+    Settings settings;
+    Frontend f(villageArea(), titleArt(), settings);
+    f.update(buttons(plat::BTN_A), 0, 0); // (frame 1: the listener isn't there yet)
+    CHECK(!f.titleScreen().menuShown());
+    f.update(buttons(plat::BTN_A), 0, 0);
+    CHECK(f.titleScreen().menuShown() && f.title().selected() == TitleMenu::CONTINUE);
+    // A second press right after doesn't play: the buttons are locked out for 1 s
+    // (LockoutSelectablesInCurrentMenu), then they work.
+    for (int i = 0; i < Frontend::MENU_LOCKOUT_FRAMES - 1; i++) f.update(buttons(plat::BTN_A), 0, 0);
+    CHECK(f.mode() == Frontend::Mode::Title);
+    f.update({}, 0, 0);
+    f.update(buttons(plat::BTN_A), 0, 0);
+    CHECK(f.mode() == Frontend::Mode::Game && f.slot() == 0);
+    testUserFiles().clear();
+}
+
+TEST(frontend_title_touch_that_shows_the_menu_is_no_tap) {
+    // Tapping to skip the intro where Play will appear, held while it appears and let go: no Play.
+    testUserFiles().clear();
+    Settings settings;
+    Frontend probe(villageArea(), titleArt(), settings);
+    showMenu(probe);
+    TitleMenu::Box play;
+    CHECK(probe.title().box(TitleMenu::PLAY, play));
+    Frontend f(villageArea(), titleArt(), settings);
+    f.update({}, 0, 0);
+    for (int i = 0; i < Frontend::MENU_LOCKOUT_FRAMES + 10; i++) f.update(touchAt(play.x + 4, play.y + 4), 0, 0);
+    CHECK(f.titleScreen().menuShown());
+    f.update({}, 0, 0);
+    CHECK(f.title().page() == TitleMenu::Page::Main && f.mode() == Frontend::Mode::Title);
+    tapTitle(f, TitleMenu::PLAY); // (a fresh tap does)
+    CHECK(f.title().page() == TitleMenu::Page::NewSave);
+}
+
+TEST(title_prompt_fades_on_the_originals_curve) {
+    // AnyKeyFadeIn's alpha keys ease in and out (flat tangents): a quarter of the way in it's
+    // 0.156, not 0.25; AnyKeyFadeOut plays it backwards 6x as fast from full.
+    TitleScreen s;
+    s.start(titleArt());
+    const plat::Input none;
+    while (s.time() < 4.5f - 1e-4f) s.update(villageArea().cameraShake, none, 1.0f / 60, 0);
+    const float in = s.promptAlpha(titleArt());
+    check(in > 0.14f && in < 0.17f, "a quarter in: " + std::to_string(in));
+    while (s.time() < 6.5f - 1e-4f) s.update(villageArea().cameraShake, none, 1.0f / 60, 0);
+    CHECK(s.promptAlpha(titleArt()) == 1.0f);
+    plat::Input key;
+    key.pressed = plat::BTN_A;
+    s.update(villageArea().cameraShake, key, 1.0f / 60, 0);
+    for (int i = 0; i < 4; i++) s.update(villageArea().cameraShake, none, 1.0f / 60, 0); // (5 frames: 1/12 s)
+    const float out = s.promptAlpha(titleArt());
+    check(out > 0.8f && out < 0.88f, "a quarter out: " + std::to_string(out));
 }

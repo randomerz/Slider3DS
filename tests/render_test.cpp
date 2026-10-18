@@ -495,7 +495,7 @@ TEST(render_title_screen_goldens) {
     TitleScreen screen;
     screen.start(art);
     auto run = [&](float until, const plat::Input& in = {}) {
-        while (screen.time() < until - 1e-4f) screen.update(villageArea(), in, 1.0f / 60, 0.5f);
+        while (screen.time() < until - 1e-4f) screen.update(villageArea().cameraShake, in, 1.0f / 60, 0.5f);
     };
     auto shoot = [&](const char* name) {
         testResetDrawCalls();
@@ -511,7 +511,7 @@ TEST(render_title_screen_goldens) {
     shoot("title_prompt");
     plat::Input key;
     key.pressed = plat::BTN_A;
-    screen.update(villageArea(), key, 1.0f / 60, 0.5f);
+    screen.update(villageArea().cameraShake, key, 1.0f / 60, 0.5f);
     CHECK(screen.menuShown());
     run(5.5f);
     shoot("title_rising");

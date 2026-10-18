@@ -97,10 +97,10 @@ bool TitleArt::load(std::string* error) {
     prompt.y = p["pos"].at(1).asFloat();
     const Json& c = p["color"];
     prompt.color = plat::rgba((uint8_t)c.at(0).asInt(), (uint8_t)c.at(1).asInt(), (uint8_t)c.at(2).asInt());
-    prompt.fadeIn = p["fadeIn"].asFloat(1);
+    prompt.fade = readKeys(p["fade"]);
     prompt.fadeOutSpeed = p["fadeOutSpeed"].asFloat(1);
     if (!ok || logo.letters.empty() || logo.slideIn.empty() || logo.riseY.empty() || player.riseY.empty() ||
-        prompt.fadeIn <= 0 || prompt.fadeOutSpeed <= 0)
+        prompt.fade.empty() || prompt.fadeOutSpeed <= 0)
         return fail("ui/title.json: a missing sprite, curve or timing");
     sheet = plat::loadSheet(sheetDoc["sheet"].asString().c_str());
     if (!sheet) return fail("can't load the title sheet " + sheetDoc["sheet"].asString());
@@ -128,7 +128,7 @@ void TitleScreen::start(const TitleArt& art) {
     shake_.reset();
 }
 
-bool TitleScreen::update(const Area& area, const plat::Input& in, float dt, float screenShake) {
+bool TitleScreen::update(const CameraShakeDef& noise, const plat::Input& in, float dt, float screenShake) {
     // OpenCutscene: from its second frame any key starts the menu (InputSystem.onAnyButtonPress).
     const bool starts = !menuShown() && time_ > 0 && (in.pressed != 0 || in.touching);
     if (starts) {
@@ -157,17 +157,17 @@ bool TitleScreen::update(const Area& area, const plat::Input& in, float dt, floa
         s.showsOn = s.enabled;
         s.timeTillSwap = s.enabled ? random(MAX_TIME_ON / 2, MAX_TIME_ON) : random(MAX_TIME_OFF / 2, MAX_TIME_OFF);
     }
-    shake_.update(area, dt, screenShake, 0);
+    shake_.updateShake(noise, dt, screenShake);
     time_ += dt;
     return starts;
 }
 
 float TitleScreen::promptAlpha(const TitleArt& art) const {
     if (promptShownAt_ < 0) return 0;
-    const float fadeIn = art.prompt.fadeIn;
+    const std::vector<CurveKey>& fade = art.prompt.fade;
     if (promptHiddenAt_ >= 0) // AnyKeyFadeOut: the fade-in clip backwards from its end, fadeOutSpeed times as fast
-        return std::max(0.0f, 1 - (time_ - promptHiddenAt_) * art.prompt.fadeOutSpeed / fadeIn);
-    return std::min(1.0f, (time_ - promptShownAt_) / fadeIn);
+        return std::max(0.0f, evalKeys(fade, fade.back().t - (time_ - promptHiddenAt_) * art.prompt.fadeOutSpeed));
+    return std::min(1.0f, evalKeys(fade, time_ - promptShownAt_));
 }
 
 void TitleScreen::draw(const TitleArt& art, const Font& font) const {

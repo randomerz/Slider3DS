@@ -68,7 +68,8 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
     }
     if (mode_ == Mode::Title) {
         const bool wasShown = screen_.menuShown();
-        if (screen_.update(area_, in, FRAME_DT, settings_.screenShake)) title_.releaseStylus(); // (the key that shows it)
+        if (screen_.update(area_.cameraShake, in, FRAME_DT, settings_.screenShake))
+            title_.lockOut(MENU_LOCKOUT_FRAMES); // (StartMainMenu: the buttons come in; the key that shows it isn't theirs)
         if (!wasShown) return true;
         const TitleMenu::Action a = title_.update(in);
         switch (a.kind) {
