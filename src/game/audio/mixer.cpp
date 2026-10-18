@@ -38,7 +38,7 @@ Mixer::Voice Mixer::playStream(const StreamDef& def) {
     s.def = &def;
     s.ogg = ogg;
     s.levelDb = def.attack > 0 ? SILENT_DB : 0;
-    s.gainMixed = level(s.levelDb);
+    s.gainMixed = level(s.levelDb) * paramGain(def);
     streams_.push_back(s);
     return s.id;
 }
@@ -97,15 +97,30 @@ int64_t Mixer::streamPosition(Voice voice) const {
 
 float Mixer::envelope(StreamVoice& s, float dt) const {
     const StreamDef& d = *s.def;
+    // Along FMOD's AHDSR shape (a release from where it was: that many dB below it).
+    auto shape = [&](float x) { return ahdsr_ ? ahdsr_->release(x) : SILENT_DB * x; };
     if (s.releasing) {
         s.releaseT += dt;
-        s.levelDb = d.release > 0 ? s.releaseFrom + (SILENT_DB - s.releaseFrom) * std::min(s.releaseT / d.release, 1.0f) : SILENT_DB;
+        const float x = d.release > 0 ? std::min(s.releaseT / d.release, 1.0f) : 1;
+        s.levelDb = x >= 1 ? SILENT_DB : std::max(s.releaseFrom + shape(x), SILENT_DB);
         if (s.levelDb <= SILENT_DB) s.ended = true; // (after this block, which ramps down to it)
     } else if (s.levelDb < 0) {
         s.attackT += dt;
-        s.levelDb = d.attack > 0 ? SILENT_DB + -SILENT_DB * std::min(s.attackT / d.attack, 1.0f) : 0;
+        const float x = d.attack > 0 ? std::min(s.attackT / d.attack, 1.0f) : 1;
+        s.levelDb = x >= 1 ? 0 : shape(1 - x);
     }
     return level(s.levelDb);
+}
+
+float Mixer::paramGain(const StreamDef& d) const {
+    if (d.volumeParam.empty()) return 1;
+    const auto& l = d.volumeLevels;
+    const float v = parameter(d.volumeParam);
+    if (v <= l.front().first) return level(l.front().second);
+    for (size_t i = 1; i < l.size(); i++)
+        if (v <= l[i].first)
+            return level(l[i - 1].second + (l[i].second - l[i - 1].second) * (v - l[i - 1].first) / (l[i].first - l[i - 1].first));
+    return level(l.back().second);
 }
 
 int Mixer::readStream(StreamVoice& s, int16_t* out, int frames) {
@@ -183,7 +198,7 @@ void Mixer::mix(int16_t* out) {
     decoded_.resize(N * 2);
     for (StreamVoice& s : streams_) {
         if (s.ended) continue;
-        const float e0 = s.gainMixed, e1 = envelope(s, BLOCK_S);
+        const float e0 = s.gainMixed, e1 = envelope(s, BLOCK_S) * paramGain(*s.def);
         s.gainMixed = e1;
         const int n = readStream(s, decoded_.data(), N);
         if (n < N) s.ended = true;

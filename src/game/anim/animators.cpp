@@ -48,6 +48,7 @@ void Animators::enable(const World& world) {
 void Animators::update(World& world, float dt) {
     const Area& area = world.area;
     enable(world);
+    fired_.clear();
     for (size_t i = 0; i < s_.size(); i++) {
         State& st = s_[i];
         if (!st.enabled) continue;
@@ -55,7 +56,18 @@ void Animators::update(World& world, float dt) {
         if (c.states.empty()) continue;
         const AnimatorStateDef& s = c.states[st.state];
         const float before = s.length > 0 ? st.time / s.length : 1;
+        const float from = st.time;
         st.time += dt * s.speed;
+        // Clip events between the last time and now (each loop's, for a looping clip; one at the
+        // state's very start counts once it begins).
+        for (const auto& [at, function] : s.events) {
+            if (s.length <= 0) break;
+            float t = s.loop ? at + std::ceil((from - at) / s.length) * s.length : at; // the first pass from `from` on
+            for (; t <= st.time; t += s.length) {
+                if (t > from || (t == 0 && from == 0)) fired_.push_back({(int)i, &function});
+                if (!s.loop) break;
+            }
+        }
         // Any State transitions first, then the state's own, in order; one per frame.
         const float normalized = s.length > 0 ? st.time / s.length : 1;
         // An exit time of 1 or more holds from then on; below 1 only on the frame the normalized time

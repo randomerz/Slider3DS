@@ -53,6 +53,18 @@ struct CollisionLayer {
     int cell(int cx, int cy) const { return cells[cy * w + cx]; }
 };
 
+// Material tilemap (STileTilemap.materials): cells index Area::footsteps, the surface the player's
+// footsteps sound on. An STile has one for its surface and one for its house.
+struct MaterialLayer {
+    int owner = 0;
+    bool house = false; // its STile's houseTilemaps' (read while the player is in that house)
+    float originX = 0, originY = 0;
+    int minX = 0, minY = 0, w = 0, h = 0;
+    std::vector<int8_t> cells; // Area::footsteps index, -1 = none
+
+    int cell(int cx, int cy) const { return cells[cy * w + cx]; }
+};
+
 // One polygon, flat x0,y0,x1,y1,... in cell units with (0,0) at the cell's min corner.
 using Polygon = std::vector<float>;
 
@@ -261,7 +273,7 @@ struct CallDef {
     // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index;
     // SetAnimatorController: Area::animatorControllers index; SetColliderEnabled: ObjectCollider::slot;
     // KnotCheckParticles / KnotSetToCorrect: Area::knotBoxes index; ChadJumpStarter / ChadSetIsOnRock:
-    // Area::chadJumps index.
+    // Area::chadJumps index; CowMoo / DogBark: the prop's emote object (-1 = none).
     int data = -1;
 };
 
@@ -286,6 +298,7 @@ struct AnimatorStateDef {
     float length = 0;          // its clip's (0 = no clip, or a zero-length one)
     bool loop = true;
     bool writeDefaults = true; // what its clip doesn't move goes back to the default (authored) position
+    std::vector<std::pair<float, std::string>> events; // its clip's AnimationEvents: time (s), function
     std::vector<MoveCurveDef> moves;
 };
 struct AnimatorControllerDef {
@@ -773,6 +786,9 @@ struct Area {
     std::vector<STileDef> stiles;
     std::vector<Spawn> spawns;
     std::vector<CollisionLayer> collision;
+    std::vector<MaterialLayer> materials;
+    std::vector<std::string> footsteps; // per material: its surface ("grass": the "Footstep grass" sound)
+    std::string footstepFallback;       // the surface off any material tile (MaterialSoundMapping's fallback)
     std::vector<std::vector<Polygon>> shapes; // collision shapes (each a list of polygons)
     struct ShapeBounds { float minX, minY, maxX, maxY; };
     std::vector<ShapeBounds> shapeBounds;     // per shape, relative to its cell (physics culls by them)
@@ -793,6 +809,16 @@ struct Area {
     std::vector<RuinsArrowDef> ruinsArrows;
     std::vector<ChadJumpDef> chadJumps;
     std::vector<CatTrickDef> catTricks;
+    // DistanceBasedAmbience: an ambience that plays while its object's scene runs, its global
+    // parameter set to the player's distance to the nearest active node.
+    struct AmbienceDef {
+        int object = -1;
+        std::string name, parameter; // AudioManager's ambience; the FMOD parameter
+        float defaultValue = 0;      // the parameter without a node (and once the scene ends)
+        bool enabled = true;
+        std::vector<int> nodes;      // objects
+    };
+    std::vector<AmbienceDef> ambiences;
     std::vector<ParticlesDef> particles;
     PlayerActionDef playerAction;
     std::vector<AnimatorControllerDef> animatorControllers;

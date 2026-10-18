@@ -2,7 +2,8 @@
 //   clips:   a sound's decoded clip at a playback rate (its pitch; linear interpolation), with a
 //            gain per side;
 //   streams: a music / ambience track decoded from its Ogg as it plays, following its jumps (the
-//            global parameters decide the conditional ones) and faded in / out by its AHDSR.
+//            global parameters decide the conditional ones), faded in / out by its AHDSR (on
+//            FMOD's shape) and at the volume its parameter sets (an ambience's distance).
 // Each through its bus's volume and the master's. Every gain change ramps across a block, so
 // nothing clicks. Single-threaded: the app mixes on its own loop (Audio::pump).
 #pragma once
@@ -25,7 +26,8 @@ public:
     using Voice = uint32_t; // 0 = none
     static constexpr int MAX_VOICES = 32; // (past it, new sounds are dropped)
 
-    Mixer() = default;
+    explicit Mixer(const AhdsrShape* ahdsr = nullptr) : ahdsr_(ahdsr) {} // (none: fades linear in dB)
+    void setAhdsr(const AhdsrShape* ahdsr) { ahdsr_ = ahdsr; }
     Mixer(const Mixer&) = delete;
     Mixer& operator=(const Mixer&) = delete;
     ~Mixer();
@@ -82,6 +84,7 @@ private:
     bool full() const { return clips_.size() + streams_.size() >= MAX_VOICES; }
     int readStream(StreamVoice& s, int16_t* out, int frames); // fewer than asked: it ended
     float envelope(StreamVoice& s, float dt) const;            // its level after `dt` more seconds, linear
+    float paramGain(const StreamDef& def) const;               // its volume parameter's, linear
     void closeStream(StreamVoice& s);
 
     std::vector<ClipVoice> clips_;
@@ -90,6 +93,7 @@ private:
     float bus_[3] = {1, 1, 1}, busMixed_[3] = {1, 1, 1}; // set / as the last block ended
     float master_ = 1, masterMixed_ = 1;
     bool paused_ = false;
+    const AhdsrShape* ahdsr_ = nullptr;
     Voice lastId_ = 0;
     std::vector<float> acc_;       // the block being mixed
     std::vector<int16_t> decoded_; // a stream's frames for the block

@@ -9,6 +9,7 @@
 
 #include "game/anim/animators.h"
 #include "game/audio/audio_cues.h"
+#include "game/events/sound_props.h"
 #include "game/cutscene/camera_dolly.h"
 #include "game/data/area.h"
 #include "game/fx/particles.h"
@@ -23,6 +24,7 @@
 #include "game/world/object_states.h"
 #include "game/save/settings.h"
 #include "game/world/starts.h"
+#include "game/world/world_sounds.h"
 #include "game/events/triggers.h"
 #include "game/village/knot_box.h"
 #include "game/village/cat_trick.h"
@@ -148,6 +150,8 @@ public:
     void worldTexts(std::vector<WorldText>& out) const;
     // Where the top screen's camera is: on a running camera dolly, else following the player (shaken).
     void camera(float& x, float& y) const;
+    // What the camera follows (the dolly, else the player), without its shake: AudioManager's listener.
+    void cameraTarget(float& x, float& y) const;
     // Something holds the player (PlayerLock): no moving, acting, pausing or Artifact.
     bool playerLocked() const { return player.locks != 0; }
     void lockPlayer(PlayerLock owner, bool locked) {
@@ -193,13 +197,10 @@ public:
     bool saveRequested = false;
     // What scripts asked AudioManager for; the frontend passes it on each frame.
     AudioCues audio;
-    // A sound prop (CowProp / DogProp) can sound again: true (and its cooldown starts) unless it
-    // sounded less than `cooldown` s of play ago.
-    bool propReady(int object, float cooldown);
+    SoundProps props; // CowProp / DogProp: cooldowns and emotes
+    WorldSounds sfx;  // footsteps, ambiences
 
 private:
-    std::vector<std::pair<int, double>> propSounded_; // object, playTime it last sounded
-    void slideSounds(const std::vector<GridEvent>& events);
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.
     void runStarts();
     // Scripts listening to the grid's events (SGrid / SGridAnimator) hear what happened since last time.

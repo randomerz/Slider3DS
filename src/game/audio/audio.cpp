@@ -15,7 +15,9 @@ constexpr float BLOCK_S = plat::AUDIO_BLOCK / (float)plat::AUDIO_RATE;
 
 bool Audio::load(std::string* error) {
     unload();
-    return bank_.load(error);
+    if (!bank_.load(error)) return false;
+    mixer_.setAhdsr(&bank_.ahdsr());
+    return true;
 }
 
 void Audio::unload() {
@@ -43,7 +45,7 @@ void Audio::run(const std::vector<AudioCue>& cues) {
             break;
         case AudioCue::Kind::SetParameter: mixer_.setParameter(c.name, c.value); break;
         case AudioCue::Kind::DampenMusic:
-            if (c.volume > 0) dampens_.push_back({c.value, c.volume, 0});
+            if (c.length > 0) dampens_.push_back({c.value, c.length, 0});
             break;
         }
     }

@@ -6,6 +6,7 @@
 #include "game/audio/sounds.h"
 #include "game/events/events.h"
 #include "game/physics/physics.h"
+#include "game/world/slide_effects.h"
 #include "game/save/profile.h"
 
 namespace {
@@ -29,37 +30,11 @@ void World::sendGridEvents() {
     if (grid.events().empty()) return;
     const std::vector<GridEvent> events = grid.takeEvents();
     grid.clearEvents(); // (a moved-from vector is valid but unspecified)
-    slideSounds(events);
+    slide_effects::gridEvents(*this, events);
     ruins.gridEvents(*this, events);
     chad.gridEvents(*this, events);
     walks.gridEvents(*this, events);
     runStarts(); // (the arrow may show the buried Slider)
-}
-
-void World::slideSounds(const std::vector<GridEvent>& events) {
-    // SGridAnimator.EffectOnMoveStart / Finish: a tile starting to slide rumbles, one landing
-    // explodes, louder the longer the move (its duration, clamped to 0.1-1); those of one frame
-    // play as one (LateUpdate's queue: the loudest volume, between the tiles — at the listener if
-    // the player rides one), always heard as outdoors.
-    for (const auto& [kind, name] : {std::make_pair(GridEvent::Kind::TileMoveStart, sounds::SLIDE_RUMBLE),
-                                     std::make_pair(GridEvent::Kind::TileMoveEnd, sounds::SLIDE_EXPLOSION)}) {
-        int n = 0;
-        bool riding = false;
-        float volume = 0, sx = 0, sy = 0;
-        for (const GridEvent& e : events) {
-            if (e.kind != kind) continue;
-            n++;
-            volume = std::max(volume, std::clamp(e.duration, 0.1f, 1.0f));
-            riding = riding || e.islandId == player.stile;
-            float x, y;
-            grid.ownerBase(e.islandId, x, y);
-            sx += x;
-            sy += y;
-        }
-        if (n == 0) continue;
-        if (riding) audio.play(name, volume);
-        else audio.playAt(name, sx / n, sy / n, volume, 0, true);
-    }
 }
 
 void World::effectDone(EffectDone done) {
@@ -73,6 +48,12 @@ void World::effectDone(EffectDone done) {
     }
     case EffectDone::VillageShuffle: finale.doShuffle(*this); break;
     }
+}
+
+void World::cameraTarget(float& x, float& y) const {
+    if (dollies.camera(area, x, y)) return;
+    x = player.x;
+    y = player.y;
 }
 
 void World::camera(float& x, float& y) const {
@@ -141,20 +122,10 @@ void World::save(SaveProfile& profile) const {
     profile.inHouse = player.inHouse;
 }
 
-bool World::propReady(int object, float cooldown) {
-    for (auto& [o, t] : propSounded_) {
-        if (o != object) continue;
-        if (playTime - t < cooldown) return false;
-        t = playTime;
-        return true;
-    }
-    propSounded_.push_back({object, playTime});
-    return true;
-}
-
 void World::reloadObjects() {
     objects.init(area);
-    propSounded_.clear();
+    props.reset();
+    sfx.reset();
     grid.clearEvents(); // (a fresh load: nothing has happened yet)
     for (const STileDef& s : area.stiles) setTileObjects(*this, s, grid.tileActive(s.islandId));
     // SGrid.Start: collectibles already in the inventory stay picked up.
@@ -182,6 +153,7 @@ void World::reloadObjects() {
     audio.playMusic(tracks::VILLAGE); // VillageGrid.Start
     finale.start(*this); // VillageGrid.Start (after every Awake; CheckHole may hide the fragment)
     abduction.start(*this); // CatAbductionController.Start
+    sfx.start(*this);       // DistanceBasedAmbience.Start
     runStarts();
     knots.update(*this);
 }
@@ -247,7 +219,8 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
-    chad.update(*this, dt); // (scripts' Update comes before the coroutine that ends moves)
+    chad.update(*this, dt);
+    props.update(dt); // (scripts' Update comes before the coroutine that ends moves)
     sendGridEvents(); // moves started since the last frame (the stylus), before their tiles slide
     artifact.update(grid, dt, player.stile);
     sendGridEvents(); // tiles arrived, queued moves started
@@ -296,9 +269,11 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     finale.coroutines(*this, dt);
     intro.coroutines(*this, dt);
     abduction.coroutines(*this, dt);
+    props.coroutines(*this, dt);
     dollies.update(*this, dt, in.actionHeld);
     runStarts(); // (the final Slider may have appeared)
     animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
+    sfx.update(*this);            // (its clip events: footsteps; DistanceBasedAmbience's LateUpdate)
     items.follow(*this);          // (the carried item is a child of the item holder the Animator moves)
     ruins.update(*this, dt);
     particles.update(*this, dt);

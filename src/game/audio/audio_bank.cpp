@@ -1,5 +1,6 @@
 #include "game/audio/audio_bank.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "game/data/json.h"
@@ -8,6 +9,16 @@
 namespace {
 
 float dbToGain(float db) { return std::pow(10.0f, db / 20); }
+
+} // namespace
+
+float AhdsrShape::release(float x) const {
+    const float f = std::clamp(x, 0.0f, 1.0f) * (POINTS - 1);
+    const int i = std::min((int)f, POINTS - 2);
+    return db[i] + (db[i + 1] - db[i]) * (f - i);
+}
+
+namespace {
 
 // A whole Ogg file as mono int16 at the port's rate; false if it isn't one.
 bool decodeClip(const std::string& path, Clip& clip) {
@@ -52,6 +63,9 @@ bool AudioBank::load(std::string* error) {
                                 k.at(5).asFloat()});
     }
     if (dampenCurve_.size() < 2) return fail("audio/audio.json: no dampenCurve");
+    const Json& shape = doc["ahdsrShape"];
+    if (shape.size() != AhdsrShape::POINTS) return fail("audio/audio.json: no ahdsrShape");
+    for (int i = 0; i < AhdsrShape::POINTS; i++) ahdsr_.db[i] = shape.at(i).asFloat();
 
     for (const auto& [name, j] : doc["sounds"].members()) {
         SoundDef& s = sounds_[name];
@@ -96,6 +110,11 @@ bool AudioBank::load(std::string* error) {
                 last = jump.at;
                 s.jumps.push_back(jump);
             }
+            if (j.has("volumeParam")) {
+                s.volumeParam = j["volumeParam"].at(0).asString();
+                for (const Json& l : j["volumeParam"].at(1).items()) s.volumeLevels.push_back({l.at(0).asFloat(), l.at(1).asFloat()});
+                if (s.volumeParam.empty() || s.volumeLevels.size() < 2) return fail("audio/audio.json: a bad volumeParam in " + name);
+            }
             if (!checkStream(s)) return fail("audio/" + s.file + ": not a stereo stream matching its entry");
         }
     }
@@ -104,6 +123,7 @@ bool AudioBank::load(std::string* error) {
 
 void AudioBank::unload() {
     dampenCurve_.clear();
+    ahdsr_ = {};
     sounds_.clear();
     music_.clear();
     ambience_.clear();

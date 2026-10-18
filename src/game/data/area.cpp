@@ -196,6 +196,7 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
             if (c.has("chadJump")) d.data = c["chadJump"].asInt(-1);
             else d.method = CallDef::Method::Unsupported; // its ChadJump was left out (the export says so)
         }
+        if (d.method == CallDef::Method::CowMoo || d.method == CallDef::Method::DogBark) d.data = c["emote"].asInt(-1);
         if (d.method == CallDef::Method::SetColliderEnabled) { // (colliders load first)
             if (c.has("collider")) d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
             else d.method = CallDef::Method::Unsupported; // a collider the export left out (it warns)
@@ -606,6 +607,7 @@ static AnimatorControllerDef readController(const Json& j) {
         st.length = s["length"].asFloat();
         st.loop = s["loop"].asBool(true);
         st.writeDefaults = s["writeDefaults"].asBool(true);
+        for (const Json& e : s["events"].items()) st.events.push_back({e.at(0).asFloat(), e.at(1).asString()});
         for (const Json& cj : s["moves"].items()) {
             MoveCurveDef mc;
             mc.path = cj["path"].asString();
@@ -1088,6 +1090,16 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& j : doc["ruinsArrows"].items()) out.ruinsArrows.push_back(readRuinsArrow(j));
     for (const Json& j : doc["chadJumps"].items()) out.chadJumps.push_back(readChadJump(j, out));
     for (const Json& j : doc["catTricks"].items()) out.catTricks.push_back(readCatTrick(j));
+    for (const Json& j : doc["ambiences"].items()) {
+        Area::AmbienceDef a;
+        a.object = j["object"].asInt(-1);
+        a.name = j["name"].asString();
+        a.parameter = j["parameter"].asString();
+        a.defaultValue = j["default"].asFloat();
+        a.enabled = j["enabled"].asBool(true);
+        for (const Json& n : j["nodes"].items()) a.nodes.push_back(n.asInt());
+        out.ambiences.push_back(std::move(a));
+    }
     for (const Json& j : doc["particles"].items()) out.particles.push_back(readParticles(j));
     if (doc.has("playerAction")) {
         const Json& pa = doc["playerAction"];
@@ -1248,6 +1260,28 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         if ((int)C.cells.size() != C.w * C.h)
             return fail(error, "tilemap " + C.path + ": cell count mismatch");
         out.collision.push_back(std::move(C));
+    }
+
+    for (const Json& m : doc["materials"].items()) out.footsteps.push_back(m["footstep"].asString());
+    out.footstepFallback = doc["footstepFallback"].asString();
+    for (const Json& t : doc["tilemaps"].items()) {
+        if (t["kind"].asString() != "material" || t["size"].at(0).asInt() == 0) continue;
+        MaterialLayer M;
+        M.owner = t["owner"].asInt();
+        M.house = t["house"].asBool();
+        M.originX = t["origin"].at(0).asFloat();
+        M.originY = t["origin"].at(1).asFloat();
+        M.minX = t["cellMin"].at(0).asInt();
+        M.minY = t["cellMin"].at(1).asInt();
+        M.w = t["size"].at(0).asInt();
+        M.h = t["size"].at(1).asInt();
+        for (const Json& c : t["cells"].items()) {
+            const int k = c.asInt();
+            if (k >= (int)out.footsteps.size()) return fail(error, "a material tilemap names an unknown material");
+            M.cells.push_back((int8_t)k);
+        }
+        if ((int)M.cells.size() != M.w * M.h) return fail(error, "a material tilemap's cell count mismatch");
+        out.materials.push_back(std::move(M));
     }
 
     for (const Json& t : doc["tilemaps"].items()) {

@@ -55,6 +55,13 @@ public:
         y = s_[animator].targetY[target];
     }
     const std::string& stateName(const Area& area, int animator) const;
+    // The clip events (AnimationEvents) the last update passed, in order: the Animator and the
+    // event's function (e.g. PlayerRun's "Step").
+    struct Fired {
+        int animator;
+        const std::string* function;
+    };
+    const std::vector<Fired>& fired() const { return fired_; }
     bool param(const Area& area, int animator, const std::string& name) const;
 
 private:
@@ -73,5 +80,6 @@ private:
     void refreshSprite(const Area& area, State& st);
 
     std::vector<State> s_;
+    std::vector<Fired> fired_;
     std::vector<float> scratchX_, scratchY_; // applyMoves
 };

@@ -147,7 +147,8 @@ void runCall(World& world, const CallDef& c) {
     case M::ChadSetIsOnRock:
         world.chad.setIsOnRock(c.data);
         break;
-    // Sounds (AudioManager's names). The props' cooldowns: CowProp.MOO_COOLDOWN, DogProp.BARK_COOLDOWN.
+    // Sounds (AudioManager's names). The props (game/events/sound_props): CowProp.MOO_COOLDOWN /
+    // DogProp.BARK_COOLDOWN, and their emotes.
     case M::AudioPlay:
     case M::PlaySoundString:
         if (!c.stringArg.empty()) world.audio.play(c.stringArg);
@@ -158,7 +159,7 @@ void runCall(World& world, const CallDef& c) {
     case M::CowMoo:
     case M::DogBark: {
         const bool cow = c.method == M::CowMoo;
-        if (c.target < 0 || !world.propReady(c.target, cow ? 0.1f : 0.2f)) break;
+        if (c.target < 0 || !world.props.use(world, c.target, c.data, cow ? 0.1f : 0.2f)) break;
         float x, y;
         world.objectPosition(c.target, x, y);
         // (the dog: one of two barks, by the frame's parity for a random pick, at half volume; its

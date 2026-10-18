@@ -14,7 +14,8 @@ do without it), so a changed FMOD project can't slip through unnoticed. Needs FM
 (FMOD_STUDIO below), ffmpeg on PATH, numpy.
 
 audio.json (the port's game/audio/audio_bank reads it):
-  {"rate": 32000, "dampenCurve": AudioManager.soundDampenCurve's keys [t, v, in, out, inWeight,
+  {"rate": 32000, "ahdsrShape": the AHDSR's curve, dB at each 5% of its time from 0 to -80 (a release;
+       an attack is the same, mirrored; measured: tools/fmod_measure.py), "dampenCurve": AudioManager.soundDampenCurve's keys [t, v, in, out, inWeight,
        outWeight] (DampenMusic: the music's volume goes lerp(amount, 1, curve(t / length))),
    "sounds": {name: {"clips": [file, ...] (a multi instrument's playlist: one picked at random),
        "volume": dB (the event's master volume), "pitchRandom": semitones (FMOD's randomizer: a
@@ -26,7 +27,8 @@ audio.json (the port's game/audio/audio_bank reads it):
        up to it ends the event; the file goes on with the crossfades, reached only by jumps),
        "jumps": [[at, to] or [at, to, parameter, min, max], ...] (frames, in order of `at`: when
        playback reaches `at` (landing there by a jump doesn't count), it continues from `to` if the
-       global parameter is in [min, max]; the first such jump wins)}}}
+       global parameter is in [min, max]; the first such jump wins), "volumeParam": [parameter,
+       [[value, dB], ...]] (absent: none; the volume by a global parameter, measured)}}}
 Clips are mono (sounds are spatialized or centered); streams are stereo. Track and instrument
 volumes, trims and fades are baked; the event's master volume is data (less whatever a render
 had to be turned down by to fit, so it plays as loud). A transition with a
@@ -50,6 +52,7 @@ PREFAB = os.path.join(UNITY, 'Assets', 'Prefabs', 'Managers', 'AudioManager.pref
 PROJECT = os.path.join(UNITY, 'FMODAssets', 'Slider')
 FMOD_STUDIO = r'C:\Program Files\FMOD SoundSystem\FMOD Studio 2.02.29\fmodstudiocl.exe'
 OUT = os.path.join(ROOT, 'assets', 'audio')
+MEASURED = json.load(open(os.path.join(ROOT, 'tools', 'fmod_measured.json'), encoding='utf-8'))
 RATE = 32000
 PEAK = 0.98 # renders louder than this are scaled down (Vorbis overshoots a little)
 QUALITY = {'sounds': 4, 'music': 2, 'ambience': 2} # Vorbis -q
@@ -58,7 +61,10 @@ QUALITY = {'sounds': 4, 'music': 2, 'ambience': 2} # Vorbis -q
 SOUNDS = ['UI Click', 'Village Pick Up', 'Puzzle Complete', 'Hat Click', 'Slide Rumble', 'Slide Explosion', 'TFT Bell',
           'MagicChimes1', 'Meow', 'Pop', 'Fall', 'Hurt', 'Artifact Error', 'Cow Moo', 'Dog Bark 1', 'Dog Bark 2']
 MUSIC = ['Main Menu', 'Village']
-AMBIENCE = []
+# The surfaces in the Village's material maps (the export's "materials" and "footstepFallback"):
+# Player Footstep Mapping's events, played as sounds named "Footstep <surface>".
+FOOTSTEPS = ['grass', 'wood', 'concrete', 'sand', 'puddle', 'water']
+AMBIENCE = ['Waterfall']
 
 # Effects that change nothing by default, and the bus faders.
 NEUTRAL_EFFECTS = {'MixerBusFader'}
@@ -220,6 +226,12 @@ class Event:
                 p = fx['props']
                 if p['distanceRolloffType'] != 0:
                     raise Fail(f'{path}: a spatializer rolloff other than linear squared')
+                # The port models distance and side only: anything else set differently fails.
+                defaults = {'bypass': False, 'extentMode': 0, 'soundSize': 0, 'minimumExtent': 0, 'panBlend': 1,
+                            'occlusionEnabled': True, 'LFEUpmixEnabled': False}
+                changed = [k for k, v in defaults.items() if k in p and p[k] != v]
+                if changed:
+                    raise Fail(f'{path}: spatializer settings the port does not model: {changed}')
                 self.spatial = [p['minimumDistance'], p['maximumDistance']] if p['overrideRange'] else \
                     [props['minimumDistance'], props['maximumDistance']]
             elif kind == 'PitchShifterEffect':
@@ -239,6 +251,7 @@ class Event:
                     self.pitch_param = True
         self.attack = self.release = 0
         self.pitch_random = 0
+        self.volume_param = None
         self.tracks = [self.track(t) for t in P.rel(self.ev, 'groupTracks')]
         # The AHDSR is played as the whole event's: one track's, with no others beside it.
         if len(self.tracks) > 1 and (self.attack or self.release):
@@ -276,8 +289,17 @@ class Event:
             if p['initialValue'] > -80 or p['finalValue'] > -80 or p['peakValue'] != 0 or p['sustainValue'] != 0:
                 raise Fail(f'{self.path}: an AHDSR other than in from / out to silence')
             self.attack, self.release = p['attackTime'] / 1000, p['releaseTime'] / 1000
-        if P.rel(t, 'automationTracks'):
-            raise Fail(f'{self.path}: track automation')
+        # A volume curve on a global parameter (an ambience's distance): played from FMOD's own
+        # rendering of it (tools/fmod_measure.py), as its curve shapes aren't modelled.
+        for prop, param, pts in P.automators(g):
+            if prop != 'volume' or param is None:
+                raise Fail(f'{self.path}: automation of {prop} by {param}')
+            measured = MEASURED['curves'].get(f'{self.path}|{param}')
+            if measured is None or measured['points'] != [[x, y] for x, y in pts]:
+                raise Fail(f'{self.path}: its {param} curve is not measured as it is now: run tools/fmod_measure.py')
+            if self.volume_param:
+                raise Fail(f'{self.path}: more than one volume curve')
+            self.volume_param = [param, measured['levels']]
         # (A transition's source / destination regions sit on the tracks too: read with its marker.)
         return {'volume': g['props']['volume'], 'modules': [self.module(m) for m in P.rel(t, 'modules')
                                                              if m['entity'] not in TRANSITION_REGIONS]}
@@ -435,7 +457,9 @@ def file_name(table, name, variant=None):
 def main():
     keep = '--keep-export' in sys.argv
     tables = audio_manager_tables()
-    wanted = [('sounds', n) for n in SOUNDS] + [('music', n) for n in MUSIC] + [('ambience', n) for n in AMBIENCE]
+    # The player's footsteps aren't AudioManager's (MaterialSoundMapping's events, by surface): sounds too.
+    tables['sounds'].update({f'Footstep {f}': [f'event:/SFX/Footsteps/player_footstep_{f}', True] for f in FOOTSTEPS})
+    wanted = [('sounds', n) for n in SOUNDS + [f'Footstep {f}' for f in FOOTSTEPS]] +              [('music', n) for n in MUSIC] + [('ambience', n) for n in AMBIENCE]
     paths = []
     for table, name in wanted:
         if name not in tables.get(table, {}):
@@ -447,7 +471,8 @@ def main():
     for f in os.listdir(OUT):
         if f.endswith('.ogg'):
             os.remove(os.path.join(OUT, f))
-    bank = {'rate': RATE, 'dampenCurve': dampen_curve(), 'sounds': {}, 'music': {}, 'ambience': {}}
+    bank = {'rate': RATE, 'ahdsrShape': MEASURED['ahdsr'], 'dampenCurve': dampen_curve(), 'sounds': {}, 'music': {},
+            'ambience': {}}
     try:
         for table, name in wanted:
             path, can_pause = tables[table][name]
@@ -467,7 +492,7 @@ def main():
                 if ev.pitch_random: entry['pitchRandom'] = round(ev.pitch_random, 4)
                 if ev.pitch_param: entry['pitchParam'] = True
                 if ev.spatial: entry['spatial'] = ev.spatial
-                if ev.attack or ev.release: raise Fail(f'{path}: an AHDSR on a sound')
+                if ev.attack or ev.release or ev.volume_param: raise Fail(f'{path}: an AHDSR or a volume curve on a sound')
                 entry['canPause'] = can_pause
             else:
                 if ev.spatial or ev.pitch_param or ev.pitch_random:
@@ -478,6 +503,7 @@ def main():
                 encode(audio * db(gain), os.path.join(OUT, f), QUALITY[table])
                 entry = {'file': f, 'volume': round(ev.volume - gain, 3), 'attack': ev.attack, 'release': ev.release,
                          'length': length, 'jumps': jumps}
+                if ev.volume_param: entry['volumeParam'] = ev.volume_param
             bank[table][name] = entry
             print(f'{table:8} {name:12} -> {entry.get("file") or ", ".join(entry["clips"])}')
     except Fail as e:

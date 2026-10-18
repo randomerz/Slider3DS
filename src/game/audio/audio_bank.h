@@ -40,9 +40,20 @@ struct StreamDef {
     std::string file; // under audio/ (stereo, plat::AUDIO_RATE)
     Bus bus = Bus::Music;
     float gain = 1;
-    float attack = 0, release = 0; // s, in from / out to silence (linear in dB; 0: at once)
+    float attack = 0, release = 0; // s, in from / out to silence (on the bank's AHDSR shape; 0: at once)
     int64_t length = 0;            // playing up to it ends the track (past it: crossfades, by jumps)
     std::vector<Jump> jumps;       // in order of `at`; the first that applies wins
+    // Its volume by a global parameter (none if empty): dB at each value, in order (measured).
+    std::string volumeParam;
+    std::vector<std::pair<float, float>> volumeLevels;
+};
+
+// FMOD's AHDSR shape (measured: tools/fmod_measure.py): dB at each 5% of a release, 0 to -80.
+struct AhdsrShape {
+    static constexpr int POINTS = 21;
+    float db[POINTS] = {};
+    float release(float x) const; // dB below the start at `x` (0-1) of the release
+    float attack(float x) const { return release(1 - x); } // dB below full at `x` of the attack
 };
 
 class AudioBank {
@@ -57,8 +68,10 @@ public:
     const StreamDef* ambience(std::string_view name) const;
     // AudioManager.soundDampenCurve: DampenMusic's shape, 1 -> 0 -> 1 over its length.
     const std::vector<CurveKey>& dampenCurve() const { return dampenCurve_; }
+    const AhdsrShape& ahdsr() const { return ahdsr_; }
 
 private:
+    AhdsrShape ahdsr_;
     std::vector<CurveKey> dampenCurve_;
     std::map<std::string, SoundDef, std::less<>> sounds_;
     std::map<std::string, StreamDef, std::less<>> music_, ambience_;

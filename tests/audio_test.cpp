@@ -1,5 +1,6 @@
 // Audio (game/audio): the exported bank, the mixer's streams (jumps, the timeline's end, the AHDSR)
 // and clips (rate, gains, buses, pause), and AudioManager's music.
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <string>
@@ -256,8 +257,10 @@ TEST(audio_dampens_the_music_and_brings_it_back) {
     for (int i = 0; i < blocks; i++) audio.mixBlock(block.data());
     CHECK(std::fabs(audio.musicDampening() - 0.2f) < 0.02f);
     audio.setPaused(true);
-    CHECK(audio.musicDampening() == 1); // (paused: none, and it holds)
+    CHECK(audio.musicDampening() == 1); // (paused: none...)
+    for (int i = 0; i < blocks; i++) audio.mixBlock(block.data());
     audio.setPaused(false);
+    CHECK(std::fabs(audio.musicDampening() - 0.2f) < 0.02f); // (...and it held where it was)
     for (int i = 0; i < blocks + 2; i++) audio.mixBlock(block.data());
     CHECK(audio.musicDampening() == 1);
 }
@@ -265,4 +268,32 @@ TEST(audio_dampens_the_music_and_brings_it_back) {
 TEST(audio_bank_has_the_areas_pick_up) {
     AudioBank bank;
     CHECK(bank.load() && bank.sound(villageArea().name + " Pick Up") != nullptr); // (ItemPickupEffect's name)
+}
+
+TEST(mixer_stream_volume_follows_its_parameter) {
+    // An ambience's distance curve: 0 dB at 0, -20 dB at 10 (linear in dB between the levels).
+    Mixer m;
+    StreamDef d = stream(100000, {});
+    d.volumeParam = "Dist";
+    d.volumeLevels = {{0.0f, 0.0f}, {10.0f, -20.0f}};
+    m.setParameter("Dist", 10);
+    m.playStream(d);
+    mixBlocks(m, 1);
+    const std::vector<int16_t> out = mixBlocks(m, 1), ref = decoded(N, N);
+    int peak = 0, refPeak = 0;
+    for (int i = 0; i < N * 2; i++) {
+        peak = std::max(peak, std::abs((int)out[i]));
+        refPeak = std::max(refPeak, std::abs((int)ref[i]));
+    }
+    CHECK(refPeak > 1000 && std::abs(peak - refPeak / 10) <= 2); // (-20 dB: a tenth)
+}
+
+TEST(mixer_attack_follows_fmods_shape) {
+    // The measured AHDSR shape: an attack is the release mirrored (dB below full at each point).
+    AhdsrShape shape;
+    for (int i = 0; i < AhdsrShape::POINTS; i++) shape.db[i] = -80.0f * i / (AhdsrShape::POINTS - 1);
+    CHECK(shape.release(0) == 0 && shape.release(1) == -80 && std::fabs(shape.release(0.5f) + 40) < 1e-4f);
+    CHECK(std::fabs(shape.attack(0.25f) - shape.release(0.75f)) < 1e-6f);
+    AudioBank bank;
+    CHECK(bank.load() && bank.ahdsr().db[0] == 0 && bank.ahdsr().db[AhdsrShape::POINTS - 1] == -80);
 }

@@ -59,7 +59,7 @@ void Frontend::toTitle() {
 Listener Frontend::listener() const {
     Listener l;
     if (mode_ != Mode::Game) return l; // (the title plays nothing spatial)
-    world_.camera(l.x, l.y);
+    world_.cameraTarget(l.x, l.y);
     l.indoor = world_.player.inHouse;
     l.housingOffset = (float)area_.housingOffset;
     return l;
@@ -77,6 +77,8 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         if (action != PauseMenu::Action::None) saveSettingsIfChanged();
         if (action == PauseMenu::Action::Quit) { // (QuitHandler: save, then the main menu)
             saveGame();
+            world_.sfx.end(world_); // (the scene unloads: its ambience stops)
+            audio_.takeFrom(world_.audio);
             toTitle();
         } else if (action == PauseMenu::Action::Resume) {
             if (mode_ == Mode::Game) artifactUI_.releaseStylus();

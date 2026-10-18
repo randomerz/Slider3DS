@@ -22,7 +22,8 @@ struct AudioCue {
     float value = 0;     // SetParameter: the value; Play: the "Pitch" parameter (0: the event's own);
                          // DampenMusic: the volume it dips to
     bool restart = true; // PlayMusic: restart the track if it's already playing
-    float volume = 1;    // Play: SoundWrapper.WithVolume; DampenMusic: the length, s
+    float volume = 1;    // Play: SoundWrapper.WithVolume
+    float length = 0;    // DampenMusic: s
     bool positioned = false; // Play: at (x, y) (WithAttachmentToTransform), else at the listener
     float x = 0, y = 0;      // world units
     bool alwaysOutdoor = false; // Play: IndoorStatus.AlwaysOutdoor (else by its y: a house below)
@@ -60,7 +61,7 @@ public:
     // AudioManager.DampenMusic: the music dips to `amount` and comes back over `length` s.
     void dampenMusic(float amount, float length) {
         AudioCue c{AudioCue::Kind::DampenMusic, "", amount};
-        c.volume = length;
+        c.length = length;
         add(std::move(c));
     }
 

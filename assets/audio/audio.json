@@ -1,5 +1,6 @@
 {
  "rate": 32000,
+ "ahdsrShape": [0.0, -1.37, -2.9, -5.38, -7.3, -10.11, -11.77, -13.87, -16.03, -18.11, -20.3, -23.18, -26.36, -29.45, -33.16, -37.48, -41.59, -47.74, -53.16, -60.49, -80.0],
  "dampenCurve": [
   [0.0, 1.0, -2.0, -2.0, 0.333333, 0.333333],
   [0.5, 0.0, -0.011236, -0.011236, 1.0, 1.0],
@@ -106,6 +107,42 @@
    "volume": 0.222,
    "spatial": [1, 20],
    "canPause": true
+  },
+  "Footstep grass": {
+   "clips": ["sfx_footstep_grass_0.ogg", "sfx_footstep_grass_1.ogg", "sfx_footstep_grass_2.ogg", "sfx_footstep_grass_3.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Footstep wood": {
+   "clips": ["sfx_footstep_wood_0.ogg", "sfx_footstep_wood_1.ogg", "sfx_footstep_wood_2.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Footstep concrete": {
+   "clips": ["sfx_footstep_concrete_0.ogg", "sfx_footstep_concrete_1.ogg", "sfx_footstep_concrete_2.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Footstep sand": {
+   "clips": ["sfx_footstep_sand_0.ogg", "sfx_footstep_sand_1.ogg", "sfx_footstep_sand_2.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Footstep puddle": {
+   "clips": ["sfx_footstep_puddle_0.ogg", "sfx_footstep_puddle_1.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Footstep water": {
+   "clips": ["sfx_footstep_water_0.ogg", "sfx_footstep_water_1.ogg", "sfx_footstep_water_2.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 20],
+   "canPause": true
   }
  },
  "music": {
@@ -133,5 +170,38 @@
    ]
   }
  },
- "ambience": {}
+ "ambience": {
+  "Waterfall": {
+   "file": "amb_waterfall.ogg",
+   "volume": -16.0,
+   "attack": 0,
+   "release": 0,
+   "length": 4288000,
+   "jumps": [
+    [4160000, 4288000],
+    [4320000, 288000]
+   ],
+   "volumeParam": [
+    "AmbienceDistToWater",
+    [
+     [0.0, 0.0],
+     [1.0, -0.17],
+     [2.0, -0.4],
+     [3.0, -0.71],
+     [4.0, -1.13],
+     [5.0, -1.69],
+     [6.0, -2.44],
+     [7.0, -3.45],
+     [8.0, -4.82],
+     [9.0, -6.66],
+     [10.0, -9.13],
+     [11.0, -12.46],
+     [12.0, -16.94],
+     [13.0, -24.24],
+     [14.0, -38.13],
+     [15.0, -80.0]
+    ]
+   ]
+  }
+ }
 }
