@@ -3,6 +3,7 @@
 #include <string>
 
 #include "game/save/profile.h"
+#include "game/ui/menu_skin.h"
 #include "game/ui/title_menu.h"
 #include "test.h"
 #include "test_platform.h"
@@ -189,4 +190,51 @@ TEST(title_menu_tap_released_elsewhere_does_nothing) {
     m.update(in);
     CHECK(m.update(plat::Input{}).kind == Kind::None);
     CHECK(tap(m, Menu::QUIT).kind == Kind::Quit && tap(m, Menu::OPTIONS).kind == Kind::Options);
+}
+
+TEST(title_menu_moves_only_to_what_lines_up) {
+    // The D-pad goes to the nearest widget that way sharing columns (up / down) or rows (left /
+    // right) with the selected one; nothing lines up: the cursor stays (no diagonal jumps).
+    testUserFiles().clear();
+    saveProfile(0, "Mittens", 10);
+    Menu m = opened();
+    auto from = [&](Menu::Widget w, uint32_t dir) {
+        m.select(w);
+        press(m, dir);
+        return m.selected();
+    };
+    press(m, plat::BTN_DOWN);
+    press(m, plat::BTN_A); // Saves
+    CHECK(from(Menu::SAVES_BACK, plat::BTN_DOWN) == Menu::CARD && from(Menu::TRASH, plat::BTN_DOWN) == Menu::CARD);
+    CHECK(from(Menu::SAVES_BACK, plat::BTN_RIGHT) == Menu::TRASH && from(Menu::TRASH, plat::BTN_LEFT) == Menu::SAVES_BACK);
+    CHECK(from(Menu::CARD, plat::BTN_UP) == Menu::SAVES_BACK);
+    CHECK(from((Menu::Widget)(Menu::CARD + 1), plat::BTN_LEFT) == Menu::CARD + 1);
+    CHECK(from((Menu::Widget)(Menu::CARD + 1), plat::BTN_RIGHT) == Menu::CARD + 1);
+    CHECK(from((Menu::Widget)(Menu::CARD + 2), plat::BTN_DOWN) == Menu::CARD + 2); // (no Confirm shown)
+    tap(m, (Menu::Widget)(Menu::CARD + 1)); // New Save
+    auto key = [](char c) { return (Menu::Widget)(Menu::KEY + (int)(std::string(Menu::KEYS).find(c))); };
+    CHECK(from(key('a'), plat::BTN_LEFT) == key('a') && from(key('z'), plat::BTN_LEFT) == key('z')); // (rows don't wrap)
+    CHECK(from(key('p'), plat::BTN_RIGHT) == key('p') && from(Menu::DONE, plat::BTN_RIGHT) == Menu::DONE);
+    CHECK(from(Menu::CAPS, plat::BTN_LEFT) == Menu::CAPS && from(Menu::CAPS, plat::BTN_UP) == key('z'));
+    CHECK(from(Menu::DONE, plat::BTN_UP) == key('m') && from(key('q'), plat::BTN_UP) == Menu::NEW_BACK);
+    CHECK(from(key('e'), plat::BTN_UP) == key('e')); // (nothing above it)
+    testUserFiles().clear();
+}
+
+TEST(title_menu_lockout_hides_the_cursor) {
+    // LockoutSelectablesInCurrentMenu deselects: no brackets until the second is over.
+    testUserFiles().clear();
+    Menu m = opened();
+    m.lockOut(3);
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "menu skin loads " + error);
+    auto drawn = [&] {
+        testResetDrawCalls();
+        m.draw(skin);
+        return testDrawCalls().size();
+    };
+    const size_t locked = drawn();
+    for (int i = 0; i < 3; i++) m.update(plat::Input{});
+    CHECK(!m.lockedOut() && drawn() > locked); // (the selected button's brackets)
 }

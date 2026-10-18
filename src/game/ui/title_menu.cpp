@@ -102,6 +102,7 @@ int TitleMenu::continueSlot() const {
 void TitleMenu::open() {
     readCards();
     deleting_ = false;
+    lockout_ = 0;
     go(Page::Main, continueSlot() >= 0 ? CONTINUE : PLAY);
     tap_.release(); // (a touch held as the menu opens isn't a tap on it)
 }
@@ -181,8 +182,11 @@ int TitleMenu::itemAt(int x, int y) const {
 }
 
 void TitleMenu::move(int dx, int dy) {
-    // The nearest usable widget whose center lies that way: within 45 degrees of it if any is (off to
-    // the side counts double), else anywhere that way.
+    // The nearest usable widget that way that lines up with this one (shares some of its columns for
+    // up / down, its rows for left / right, or misses them by at most NEAR px: the keyboard's rows are
+    // offset by half a key): the smallest gap, then the closest center. Nothing lines up: the cursor
+    // stays (no diagonal jumps).
+    constexpr int NEAR = 2;
     const std::vector<Item> all = items();
     const Item* from = nullptr;
     for (const Item& it : all)
@@ -191,21 +195,22 @@ void TitleMenu::move(int dx, int dy) {
         if (!all.empty()) selected_ = all.front().widget;
         return;
     }
-    const int cx = from->box.x * 2 + from->box.w, cy = from->box.y * 2 + from->box.h; // (doubled centers)
+    const Box& f = from->box;
     const Item* best = nullptr;
-    for (bool cone : {true, false}) {
-        int bestScore = 0;
-        for (const Item& it : all) {
-            const int ix = it.box.x * 2 + it.box.w - cx, iy = it.box.y * 2 + it.box.h - cy;
-            const int along = dx != 0 ? ix * dx : iy * dy, across = std::abs(dx != 0 ? iy : ix);
-            if (along <= 0 || (cone && across > along)) continue;
-            const int score = along + 2 * across;
-            if (!best || score < bestScore) {
-                best = &it;
-                bestScore = score;
-            }
+    int bestGap = 0, bestOff = 0;
+    for (const Item& it : all) {
+        const Box& b = it.box;
+        // The gap between the boxes along the move (>= 0: entirely that way), and whether they line up.
+        const int gap = dx > 0 ? b.x - (f.x + f.w) : dx < 0 ? f.x - (b.x + b.w) : dy > 0 ? b.y - (f.y + f.h) : f.y - (b.y + b.h);
+        const bool linedUp = dx != 0 ? b.y < f.y + f.h + NEAR && f.y < b.y + b.h + NEAR
+                                     : b.x < f.x + f.w + NEAR && f.x < b.x + b.w + NEAR;
+        if (&it == from || gap < 0 || !linedUp) continue;
+        const int off = dx != 0 ? std::abs((b.y * 2 + b.h) - (f.y * 2 + f.h)) : std::abs((b.x * 2 + b.w) - (f.x * 2 + f.w));
+        if (!best || gap < bestGap || (gap == bestGap && off < bestOff)) {
+            best = &it;
+            bestGap = gap;
+            bestOff = off;
         }
-        if (best) break;
     }
     if (best) selected_ = best->widget;
 }
@@ -268,23 +273,19 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
 }
 
 TitleMenu::Action TitleMenu::update(const plat::Input& in) {
+    const Page page = page_;
+    Action action;
     if (lockout_ > 0) {
         lockout_--;
         tap_.update(in, S, [](int, int) { return -1; }); // (a touch that goes down now is on nothing)
-        bounce_.update((int)page_ * (DONE + 1) + selected_);
-        blinkFrame_++;
-        return {};
-    }
-    const Page page = page_;
-    Action action;
-    if (in.pressed & plat::BTN_B) back();
+    } else if (in.pressed & plat::BTN_B) back();
     else if (in.pressed & plat::BTN_A) action = activate(selected_);
     else if (in.pressed & plat::BTN_UP) move(0, -1);
     else if (in.pressed & plat::BTN_DOWN) move(0, 1);
     else if (in.pressed & plat::BTN_LEFT) move(-1, 0);
     else if (in.pressed & plat::BTN_RIGHT) move(1, 0);
 
-    if (page_ == page) { // (a button changed the page: the touch waits for its release)
+    if (lockout_ == 0 && page_ == page) { // (a button changed the page: the touch waits for its release)
         const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y); });
         if (f.down >= 0) selected_ = (Widget)f.down;
         if (f.tapped >= 0) action = activate((Widget)f.tapped);
@@ -294,14 +295,16 @@ TitleMenu::Action TitleMenu::update(const plat::Input& in) {
         const std::vector<Item> all = items();
         if (!all.empty()) selected_ = all.front().widget;
     }
-    bounce_.update((int)page_ * (DONE + 1) + selected_);
+    bounce_.update(lockedOut() ? -1 : (int)page_ * (DONE + 1) + selected_); // (restarts as the cursor appears)
     blinkFrame_++;
     return action;
 }
 
 void TitleMenu::draw(const MenuSkin& skin) const {
+    // The cursor, none while locked out (LockoutSelectablesInCurrentMenu deselects).
+    const int cursor = lockedOut() ? -1 : selected_;
     auto held = [&](Widget w) { return tap_.held(w); };
-    auto state = [&](Widget w) { return held(w) ? State::Pressed : w == selected_ ? State::Selected : State::Normal; };
+    auto state = [&](Widget w) { return held(w) ? State::Pressed : w == cursor ? State::Selected : State::Normal; };
     if (page_ == Page::Saves) {
         const char* title = deleting_ ? "Delete file?" : "Select Save";
         skin.drawText(title, CENTER_X - skin.textWidth(title) / 2, TITLE_Y, palette::GRAY);
@@ -318,14 +321,14 @@ void TitleMenu::draw(const MenuSkin& skin) const {
         const Widget w = it.widget;
         const Box& b = it.box;
         if (isButton(w)) {
-            skin.drawButton(b.x, b.y, b.w, b.h, buttonLabel(w), w == selected_, held(w), bounce_.out());
+            skin.drawButton(b.x, b.y, b.w, b.h, buttonLabel(w), w == cursor, held(w), bounce_.out());
         } else if (w == SAVES_BACK || w == NEW_BACK || w == TRASH) {
             const MenuSkin::Icon icon = w == TRASH ? MenuSkin::Icon::Trash : MenuSkin::Icon::Back;
             int iw, ih;
             skin.iconSize(icon, iw, ih);
-            skin.drawIcon(icon, b.x + (b.w - iw) / 2, b.y + (b.h - ih) / 2, deleting_ && w == TRASH ? State::Selected : state(w));
+            skin.drawIcon(icon, b.x + (b.w - iw) / 2, b.y + (b.h - ih) / 2, state(w));
         } else if (w >= KEY && w < CAPS) {
-            const bool on = w == selected_ || held(w);
+            const bool on = w == cursor || held(w);
             skin.drawFrame(on ? MenuSkin::Frame::Light : MenuSkin::Frame::Dark, b.x, b.y, b.w, b.h);
             const char letter[2] = {caps_ ? (char)(KEYS[w - KEY] - 'a' + 'A') : KEYS[w - KEY], 0};
             const int drop = held(w) ? MenuSkin::PRESS_DROP : 0;

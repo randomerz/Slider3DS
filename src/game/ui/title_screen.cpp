@@ -83,8 +83,12 @@ bool TitleArt::load(std::string* error) {
     Json extra;
     if (!plat::readFile("ui/title_extra.json", extraText) || !Json::parse(extraText, extra, error))
         return fail("can't read ui/title_extra.json");
-    const float spreadX = extra["spread"].at(0).asFloat(1), spreadY = extra["spread"].at(1).asFloat(1);
-    for (Star& s : stars) s = {s.x * spreadX, s.y * spreadY, s.on, s.off};
+    const float spreadX = extra["spread"].at(0).asFloat(), spreadY = extra["spread"].at(1).asFloat();
+    if (spreadX <= 0 || spreadY <= 0) return fail("ui/title_extra.json: bad spread");
+    for (Star& s : stars) {
+        s.x *= spreadX;
+        s.y *= spreadY;
+    }
     for (Image& im : images) {
         im.x *= spreadX;
         im.y *= spreadY;

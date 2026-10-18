@@ -4,14 +4,16 @@
 //   Saves:   "Select Save": the three profiles' cards (name, areas done "n/9", play time "0h32") under
 //            the back and trash icons. A profile's card plays it, an empty one opens New Save, an
 //            unreadable one only says so (delete it to reuse the slot). The trash icon toggles delete
-//            mode ("Delete file?", names with "?", grayed): a profile's card blinks to be confirmed,
+//            mode ("Delete file?", names with "?", grayed; the icon itself shows only the cursor, as
+//            the original's): a profile's card blinks to be confirmed,
 //            then Confirm deletes it (an empty card still opens New Save). While no slot has a
 //            file, Play goes straight to New Save for the first slot (SavePanelManager.OpenSaves:
 //            its skip flag is cleared whenever the panel closes, so every Play from Main skips;
 //            back from New Save lands on Saves).
 //   NewSave: the name field and the original's keyboard (a-z, Caps, Del, Done; 10 letters): Done
 //            with a name starts a new game in that slot.
-// D-pad: move to the nearest widget that way. A: use it. B: back (New Save -> Saves -> Main).
+// D-pad: move to the nearest widget that way that lines up with the selected one (same columns for
+// up / down, rows for left / right; none: stay). A: use it. B: back (New Save -> Saves -> Main).
 // Stylus: tap (a widget shows pressed while held; releasing elsewhere cancels).
 // The menu reads the slots' files itself (SaveProfile::load / remove); whoever opens it starts the
 // game its Action names.
@@ -65,14 +67,15 @@ public:
     Action update(const plat::Input& in);
     // Ignores the touch held now (the Options menu closing over it).
     void releaseStylus() { tap_.release(); }
-    // Ignores all input for `frames` frames (StartMainMenu's LockoutSelectablesInCurrentMenu: 1 s
-    // while the buttons come in); a touch held through it is no tap.
+    // Ignores all input for `frames` frames and shows no cursor (StartMainMenu's
+    // LockoutSelectablesInCurrentMenu: 1 s while the buttons come in); a touch held through it is no tap.
     void lockOut(int frames) { lockout_ = frames; }
     bool lockedOut() const { return lockout_ > 0; }
     void draw(const MenuSkin& skin) const;
 
     Page page() const { return page_; }
     Widget selected() const { return selected_; }
+    void select(Widget w) { if (usable(w)) selected_ = w; } // (as if the D-pad got there; tests)
     bool deleting() const { return deleting_; }
     int confirming() const { return confirm_; } // the slot whose card awaits Confirm, -1 = none
     const std::string& name() const { return name_; }
