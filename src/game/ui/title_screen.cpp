@@ -77,6 +77,20 @@ bool TitleArt::load(std::string* error) {
     for (const Json& s : doc["stars"].items())
         stars.push_back({s["pos"].at(0).asFloat(), s["pos"].at(1).asFloat(), sprite(s["on"]), sprite(s["off"])});
     for (const Json& i : doc["images"].items()) images.push_back(image(i));
+    // The port's fit to the top screen (tools/make_title_extra.py): the background spread out to
+    // 400x240, then the stars added in its gaps.
+    std::string extraText;
+    Json extra;
+    if (!plat::readFile("ui/title_extra.json", extraText) || !Json::parse(extraText, extra, error))
+        return fail("can't read ui/title_extra.json");
+    const float spreadX = extra["spread"].at(0).asFloat(1), spreadY = extra["spread"].at(1).asFloat(1);
+    for (Star& s : stars) s = {s.x * spreadX, s.y * spreadY, s.on, s.off};
+    for (Image& im : images) {
+        im.x *= spreadX;
+        im.y *= spreadY;
+    }
+    for (const Json& s : extra["stars"].items())
+        stars.push_back({s["pos"].at(0).asFloat(), s["pos"].at(1).asFloat(), sprite(s["on"]), sprite(s["off"])});
     const Json& l = doc["logo"];
     logo.originX = l["origin"].at(0).asFloat();
     logo.originY = l["origin"].at(1).asFloat();

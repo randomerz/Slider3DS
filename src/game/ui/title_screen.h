@@ -10,6 +10,8 @@
 // the shakes stop, the logo and the player rise (TitleRiseUp / MainMenuPlayerUp), the prompt fades
 // out (if shown) and the bottom screen's menu (game/ui/title_menu) appears.
 // Not ported: the parallax with the mouse (no pointer on the top screen), the language selector.
+// A port addition: the stars and images are spread from the original's 320x180 view over the
+// 400x240 top screen, with extra stars in the gaps (assets/ui/title_extra.json, tools/make_title_extra.py).
 #pragma once
 
 #include <cstdint>
