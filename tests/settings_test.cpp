@@ -140,14 +140,19 @@ TEST(pause_menu_buttons) {
     CHECK(near(s.musicVolume, 0.6f) && s.masterVolume == 0.5f && s.sfxVolume == 0.5f && s.ambienceVolume == 0.5f);
     menu.update(press(plat::BTN_UP), s);
     menu.update(press(plat::BTN_UP), s);
-    menu.update(press(plat::BTN_UP), s); // wraps to Back
+    menu.update(press(plat::BTN_UP), s); // (stops at the top: no wrap)
+    CHECK(menu.cursor() == Menu::MASTER_VOLUME);
+    for (int i = 0; i < 6; i++) menu.update(press(plat::BTN_DOWN), s); // (stops at the bottom)
     CHECK(menu.cursor() == Menu::SOUND_BACK);
     menu.update(press(plat::BTN_A), s); // back to Options, on Sound
     CHECK(menu.page() == Menu::Page::Options && menu.cursor() == Menu::SOUND);
     menu.update(press(plat::BTN_B), s); // back to Paused, on Options
     CHECK(menu.isOpen() && menu.page() == Menu::Page::Paused && menu.cursor() == Menu::OPTIONS);
     menu.update(press(plat::BTN_A), s);
-    menu.update(press(plat::BTN_UP), s); // wraps to Back
+    menu.update(press(plat::BTN_UP), s); // (stays on General)
+    CHECK(menu.cursor() == Menu::GENERAL);
+    menu.update(press(plat::BTN_DOWN), s);
+    menu.update(press(plat::BTN_DOWN), s);
     CHECK(menu.cursor() == Menu::OPTIONS_BACK);
     menu.update(press(plat::BTN_A), s);
     CHECK(menu.page() == Menu::Page::Paused && menu.cursor() == Menu::OPTIONS);
@@ -329,7 +334,8 @@ TEST(pause_menu_opened_on_options_closes_from_it) {
     CHECK(m.update(press(plat::BTN_B), s) == Menu::Action::None && m.page() == Menu::Page::Options);
     CHECK(m.update(press(plat::BTN_B), s) == Menu::Action::Resume && !m.isOpen());
     m.open(Menu::Page::Options);
-    m.update(press(plat::BTN_UP), s); // Back (the cursor wraps)
+    m.update(press(plat::BTN_DOWN), s);
+    m.update(press(plat::BTN_DOWN), s); // Back
     CHECK(m.cursor() == Menu::OPTIONS_BACK);
     CHECK(m.update(press(plat::BTN_A), s) == Menu::Action::Resume && !m.isOpen());
     m.open();

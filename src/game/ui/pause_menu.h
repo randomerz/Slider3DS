@@ -7,7 +7,8 @@
 //   Sound:   Master / Sound / Music / Ambience (sliders) / Back (SoundPanel's)
 // Only Screen Shake and Auto Move do something yet; the rest are saved for when their systems land.
 // Laid out for the touch screen on MenuSkin's 2x grid, filling it (bigger than the original's).
-// D-pad up / down: pick an item (a button shows brackets at its ends, an option a light label)
+// D-pad up / down: pick an item, stopping at the page's ends (a button shows brackets at its ends,
+// an option a light label)
 // A: use it   left / right: move the slider or flip the toggle   B: back a page (on Paused:
 // resume)   START: resume
 // Stylus: tap a button or the toggle's row (a button shows pressed while held), drag the slider
