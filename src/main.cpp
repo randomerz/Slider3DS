@@ -101,6 +101,7 @@ int main(int, char**) {
         }
         audio.setVolumes(settings);
         audio.setPaused(front.audioPaused());
+        audio.setListener(front.listener());
         audio.run(front.audio().take());
         audio.pump();
         const float updateMs = (float)(plat::nowMs() - updateStart);

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <string>
 
+#include "game/audio/sounds.h"
 #include "game/world/world.h"
 #include "platform/platform.h"
 
@@ -106,6 +107,9 @@ void RuinsArrows::setArrowActive(World& world, int a, bool value, const std::vec
         if (!world.objects.rendererEnabled(d.renderer) && !hasSlider7(world)) { // (it just appeared)
             world.particles.play(world, d.particles);
             world.objects.setActive(world.area, d.buriedSlider, true);
+            float x, y;
+            world.objectPosition(d.object, x, y);
+            world.audio.playAt(sounds::MAGIC_CHIMES_1, x, y);
         }
         world.objects.setRendererEnabled(d.renderer, true);
         updateDirection(world, a, slots);
@@ -217,6 +221,7 @@ void RuinsArrows::spawnNext(World& world, int a, Stagger& st) {
     const RuinsArrowDef::Trail& t = world.area.ruinsArrows[a].trail;
     const std::pair<float, float>& p = st.points[st.next++];
     world.particles.spawn(world, t.particles, p.first, p.second);
+    world.audio.play(sounds::HAT_CLICK, 0.5f); // (ParticleTrail.doAudio: on for the Village's)
     st.wait = t.delay;
 }
 

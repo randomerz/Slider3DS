@@ -46,6 +46,12 @@ bool AudioBank::load(std::string* error) {
     Json doc;
     if (!plat::readFile("audio/audio.json", text) || !Json::parse(text, doc, error)) return fail("can't read audio/audio.json");
     if (doc["rate"].asInt() != plat::AUDIO_RATE) return fail("audio/audio.json: not at the port's rate");
+    for (const Json& k : doc["dampenCurve"].items()) {
+        if (k.size() != 6) return fail("audio/audio.json: a bad dampenCurve key");
+        dampenCurve_.push_back({k.at(0).asFloat(), k.at(1).asFloat(), k.at(2).asFloat(), k.at(3).asFloat(), k.at(4).asFloat(),
+                                k.at(5).asFloat()});
+    }
+    if (dampenCurve_.size() < 2) return fail("audio/audio.json: no dampenCurve");
 
     for (const auto& [name, j] : doc["sounds"].members()) {
         SoundDef& s = sounds_[name];
@@ -97,6 +103,7 @@ bool AudioBank::load(std::string* error) {
 }
 
 void AudioBank::unload() {
+    dampenCurve_.clear();
     sounds_.clear();
     music_.clear();
     ambience_.clear();

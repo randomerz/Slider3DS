@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "game/audio/sounds.h"
 #include "game/physics/geometry.h"
 #include "game/world/world.h"
 
@@ -137,6 +138,7 @@ void KnotBoxes::line(int box, int line, float& x0, float& y0, float& x1, float& 
 void knotCheckParticles(World& world, int box) {
     if (world.knots.badLines(box) != 0) return;
     for (int p : world.area.knotBoxes[box].particles) world.particles.play(world, p);
+    world.audio.play(sounds::HAT_CLICK); // (in the Village)
 }
 
 void knotSetToCorrectPositions(World& world, int box) {

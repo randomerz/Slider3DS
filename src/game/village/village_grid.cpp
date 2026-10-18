@@ -1,5 +1,6 @@
 #include "game/village/village_grid.h"
 
+#include "game/audio/sounds.h"
 #include "game/village/cat_trick.h"
 #include "game/village/knot_box.h"
 #include "game/world/world.h"
@@ -11,7 +12,9 @@ void activateCollectible(World& world, const std::string& name, bool clearDisabl
     const int index = area.collectible(name);
     if (index < 0 || world.state.hasCollectible(name, area.name)) return;
     if (clearDisableAtStart) world.starts.markStarted(area, ComponentRef::Kind::Collectible, index);
-    world.objects.setActive(area, area.collectibles[index].object, true);
+    const int object = area.collectibles[index].object;
+    if (!world.objects.activeSelf(object)) world.audio.play(sounds::PUZZLE_COMPLETE); // (Collectible.SpawnCollectable)
+    world.objects.setActive(area, object, true);
 }
 
 void turnFishOn(World& world) {
@@ -23,7 +26,8 @@ void explode(World& world) {
     world.objects.setActive(area, area.areaGrid.caveDoorEntrance, true);
     world.objects.setActive(area, area.areaGrid.caveDoorRocks, false);
     world.state.setFlag(CAVE_DOOR_EXPLODED_FLAG, true);
-    world.effects.shake(1, 3.5f); // (and the explosion sound, smoke)
+    world.effects.shake(1, 3.5f); // (and smoke)
+    world.audio.play(sounds::SLIDE_EXPLOSION);
 }
 
 void waterfallEntry(World& world) {

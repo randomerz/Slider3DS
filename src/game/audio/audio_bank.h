@@ -10,6 +10,8 @@
 #include <string_view>
 #include <vector>
 
+#include "game/data/curve.h"
+
 // The buses under Master whose volumes are the player's (Settings).
 enum class Bus { Sfx, Music, Ambience };
 
@@ -53,8 +55,11 @@ public:
     const SoundDef* sound(std::string_view name) const;
     const StreamDef* music(std::string_view name) const;
     const StreamDef* ambience(std::string_view name) const;
+    // AudioManager.soundDampenCurve: DampenMusic's shape, 1 -> 0 -> 1 over its length.
+    const std::vector<CurveKey>& dampenCurve() const { return dampenCurve_; }
 
 private:
+    std::vector<CurveKey> dampenCurve_;
     std::map<std::string, SoundDef, std::less<>> sounds_;
     std::map<std::string, StreamDef, std::less<>> music_, ambience_;
 };

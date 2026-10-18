@@ -90,6 +90,7 @@ struct GridEvent {
     enum class Kind : uint8_t { TileMoveStart, Move, TileMoveEnd, TileEnabled };
     Kind kind = Kind::Move;
     int islandId = 0;          // TileMoveStart / TileMoveEnd / TileEnabled: the tile
+    float duration = 0;        // TileMoveStart / TileMoveEnd: the move's, s (SGridAnimator's currMoveDuration)
     std::vector<int> slots;    // idAt as of the event (y * width + x; Move: after it)
     std::string gridString;    // gridString() as of the event
     std::vector<int> oldSlots; // Move: before it

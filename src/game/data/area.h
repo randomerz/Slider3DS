@@ -233,7 +233,14 @@ struct ConditionDef {
     X(KnotSetToCorrect, "KnotBox.SetToCorrectPositions")              \
     X(ChadJumpStarter, "ChadJump.JumpStarter")                         \
     X(ChadSetIsOnRock, "VillageChadJump.SetIsOnRock")                  \
-    X(CatPickedUp, "CatAbductionController.SetPickedUp")
+    X(CatPickedUp, "CatAbductionController.SetPickedUp")              \
+    X(AudioPlay, "AudioManager.Play")                                  \
+    X(PlaySoundString, "PlaySound.PlayString")                         \
+    X(UIClick, "UIClick.Click")                                        \
+    X(PlayErrorSound, "ConditionChecker.PlayErrorSound")               \
+    X(VillagePlayDigSound, "VillageGrid.PlayDigSound")                 \
+    X(CowMoo, "CowProp.Moo")                                           \
+    X(DogBark, "DogProp.Bark")
 
 // One UnityEvent persistent call, as exported. Methods the port doesn't run load as Unsupported
 // (and do nothing); the exporter's report lists them by name.

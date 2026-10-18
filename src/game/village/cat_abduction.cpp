@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "game/audio/sounds.h"
 #include "game/data/curve.h"
 #include "game/village/village_grid.h"
 #include "game/world/world.h"
@@ -79,6 +80,8 @@ void CatAbduction::startAbducting(World& world) {
     placeCat(world, x, y); // (where it was: SetParent keeps the world position)
     // AbductCat, up to its first wait.
     world.effects.shake(0.5f, 0.5f);
+    world.audio.playAt(sounds::SLIDE_RUMBLE, x, y, 0.5f);
+    world.audio.play(sounds::MAGIC_CHIMES_1, 0.5f);
     setBubble(world, d, true);
     world.animators.setBool(world, d.animator, "isAwake", true);
     step_ = Step::Waking;
@@ -105,13 +108,17 @@ void CatAbduction::lerpCat(World& world, float toX, float toY, float duration, f
 void CatAbduction::coroutines(World& world, float dt) {
     const CatAbductionDef& d = world.area.areaGrid.catAbduction;
     if (!d.present) return;
-    if (exploresse_.done(world.frame, dt)) world.state.setFlag(CAT_FLOAT_AWAY_FLAG, true); // (and a door sound)
+    if (exploresse_.done(world.frame, dt)) {
+        world.state.setFlag(CAT_FLOAT_AWAY_FLAG, true);
+        world.audio.play(sounds::HAT_CLICK); // (Unity's stand-in for a door sound)
+    }
     switch (step_) {
     case Step::None:
     case Step::Done:
         break;
     case Step::Waking:
         if (!wait_.done(world.frame, dt)) break;
+        world.audio.play(sounds::MEOW);
         exploresse_.start(EXPLORESSE_DELAY, world.frame);
         if (!sinOn_) { // (its Start, before its first Update: where it was authored)
             sinOrigX_ = d.sinX;
@@ -143,6 +150,8 @@ void CatAbduction::coroutines(World& world, float dt) {
         sinOn_ = false;
         sinVelocity_ = 0;
         setBubble(world, d, false);
+        world.audio.play(sounds::POP);
+        world.audio.play(sounds::FALL, 0.5f);
         startLerp(world);
         step_ = Step::Dropping;
         lerpCat(world, d.landingX, d.landingY, 1, dt);
@@ -153,6 +162,7 @@ void CatAbduction::coroutines(World& world, float dt) {
             lerpCat(world, d.landingX, d.landingY, 1, dt);
         } else {
             placeCat(world, d.landingX, d.landingY);
+            world.audio.play(sounds::HAT_CLICK); // (and a SmokePoof)
             step_ = Step::Settling;
             wait_.start(1, world.frame);
         }

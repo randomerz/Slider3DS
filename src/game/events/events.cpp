@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "game/audio/sounds.h"
 #include "game/events/conditions.h"
 #include "game/village/knot_box.h"
 #include "game/village/village_grid.h"
@@ -146,6 +147,26 @@ void runCall(World& world, const CallDef& c) {
     case M::ChadSetIsOnRock:
         world.chad.setIsOnRock(c.data);
         break;
+    // Sounds (AudioManager's names). The props' cooldowns: CowProp.MOO_COOLDOWN, DogProp.BARK_COOLDOWN.
+    case M::AudioPlay:
+    case M::PlaySoundString:
+        if (!c.stringArg.empty()) world.audio.play(c.stringArg);
+        break;
+    case M::UIClick: world.audio.play(sounds::UI_CLICK); break;
+    case M::PlayErrorSound: world.audio.play(sounds::ARTIFACT_ERROR); break;
+    case M::VillagePlayDigSound: world.audio.play(sounds::HAT_CLICK); break;
+    case M::CowMoo:
+    case M::DogBark: {
+        const bool cow = c.method == M::CowMoo;
+        if (c.target < 0 || !world.propReady(c.target, cow ? 0.1f : 0.2f)) break;
+        float x, y;
+        world.objectPosition(c.target, x, y);
+        // (the dog: one of two barks, by the frame's parity for a random pick, at half volume; its
+        // random pitch does nothing: the events have no "Pitch" parameter)
+        if (cow) world.audio.playAt(sounds::COW_MOO, x, y);
+        else world.audio.playAt(world.frame % 2 ? sounds::DOG_BARK_1 : sounds::DOG_BARK_2, x, y, 0.5f);
+        break;
+    }
     case M::Unsupported:
         break;
     }

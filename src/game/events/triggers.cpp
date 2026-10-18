@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "game/audio/sounds.h"
 #include "game/events/events.h"
 #include "game/physics/physics.h"
 #include "game/world/world.h"
@@ -23,7 +24,11 @@ void enterInteraction(World& world, int index) {
 }
 
 void pickUp(World& world, const CollectibleDef& c) {
-    // Collectible.DoPickUp (without the cutscene yet): into the inventory, hidden, onCollect, saved.
+    // Collectible.DoPickUp (without the cutscene yet): into the inventory, hidden, onCollect, saved;
+    // ItemPickupEffect's sound ("<area> Pick Up") and its dip in the music (to 0.2 over its 2 s:
+    // UIEffects' soundDampenLength).
+    world.audio.play(world.area.name + " Pick Up");
+    world.audio.dampenMusic(0.2f, 2);
     world.state.setCollectible(c.name, c.area, true);
     world.objects.setActive(world.area, c.object, false);
     runCalls(world, c.onCollect);

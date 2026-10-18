@@ -56,6 +56,15 @@ void Frontend::toTitle() {
     audio_.setParameter(audio_params::MAIN_MENU_ACTIVATED, 0);
 }
 
+Listener Frontend::listener() const {
+    Listener l;
+    if (mode_ != Mode::Game) return l; // (the title plays nothing spatial)
+    world_.camera(l.x, l.y);
+    l.indoor = world_.player.inHouse;
+    l.housingOffset = (float)area_.housingOffset;
+    return l;
+}
+
 void Frontend::shutdown() {
     saveSettingsIfChanged(); // (closed while paused: HOME > Close, the PC window)
     if (mode_ == Mode::Game) saveGame(); // (GameSaver.OnApplicationQuit)

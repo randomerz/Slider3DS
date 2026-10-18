@@ -68,6 +68,8 @@ public:
     const ArtifactUI& artifactUI() const { return artifactUI_; }
     // What's asked of AudioManager since main last took it.
     AudioCues& audio() { return audio_; }
+    // Where sounds are heard from: the camera's target in the game.
+    Listener listener() const;
     // The game's pausable sounds hold (PauseManager: the pause menu in the game, not the title's Options).
     bool audioPaused() const { return mode_ == Mode::Game && pause_.isOpen(); }
 

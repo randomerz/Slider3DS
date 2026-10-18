@@ -338,6 +338,7 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
             GridEvent e; // (no snapshot: its listeners only ask which tile)
             e.kind = GridEvent::Kind::TileMoveStart;
             e.islandId = tid;
+            e.duration = duration;
             events_.push_back(std::move(e));
         }
     }
@@ -383,6 +384,7 @@ std::vector<int> Grid::update(float dt) {
             t->posY = a.ey;
             if (a.playerOn) tileBorderCount_[tileIndex_[a.islandId]]--;
             events_.push_back(event(GridEvent::Kind::TileMoveEnd, a.islandId));
+            events_.back().duration = a.duration;
         }
     }
     const size_t animCount = anims_.size();

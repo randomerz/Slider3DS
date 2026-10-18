@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "game/audio/sounds.h"
 #include "game/events/events.h"
 #include "game/physics/physics.h"
 #include "game/world/world.h"
@@ -134,6 +135,7 @@ bool Items::tryPickUp(World& world) {
     world.objectPosition(it.object, startX_, startY_);
     if (it.spriteObject >= 0) world.objects.setSortingOrder(it.spriteObject, sortingOrder_); // Item.SetSortingOrder
     for (int o : it.enableOnDrop) world.objects.setActive(area, o, false);
+    world.audio.play(sounds::UI_CLICK, 1, 1.2f); // (PlayerAction: a higher click)
     return true;
 }
 
@@ -146,6 +148,7 @@ bool Items::tryDrop(World& world) {
     carried_ = -1;
     phase_ = Phase::Dropping;
     canDrop_ = false;
+    world.audio.play(sounds::UI_CLICK, 1, 0.8f); // (a lower one)
     return true;
 }
 

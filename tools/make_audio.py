@@ -14,7 +14,8 @@ do without it), so a changed FMOD project can't slip through unnoticed. Needs FM
 (FMOD_STUDIO below), ffmpeg on PATH, numpy.
 
 audio.json (the port's game/audio/audio_bank reads it):
-  {"rate": 32000,
+  {"rate": 32000, "dampenCurve": AudioManager.soundDampenCurve's keys [t, v, in, out, inWeight,
+       outWeight] (DampenMusic: the music's volume goes lerp(amount, 1, curve(t / length))),
    "sounds": {name: {"clips": [file, ...] (a multi instrument's playlist: one picked at random),
        "volume": dB (the event's master volume), "pitchRandom": semitones (FMOD's randomizer: a
        random pitch within +-half of it), "pitchParam": the "Pitch" parameter (0.5-2) sets the pitch,
@@ -54,7 +55,8 @@ PEAK = 0.98 # renders louder than this are scaled down (Vorbis overshoots a litt
 QUALITY = {'sounds': 4, 'music': 2, 'ambience': 2} # Vorbis -q
 
 # What the Village and the title screen play, by AudioManager name.
-SOUNDS = ['UI Click']
+SOUNDS = ['UI Click', 'Village Pick Up', 'Puzzle Complete', 'Hat Click', 'Slide Rumble', 'Slide Explosion', 'TFT Bell',
+          'MagicChimes1', 'Meow', 'Pop', 'Fall', 'Hurt', 'Artifact Error', 'Cow Moo', 'Dog Bark 1', 'Dog Bark 2']
 MUSIC = ['Main Menu', 'Village']
 AMBIENCE = []
 
@@ -84,6 +86,23 @@ def audio_manager_tables():
         if re.match(r'^\s+canPause: 0', line):
             table[name][1] = False
     return tables
+
+
+def dampen_curve():
+    """AudioManager.soundDampenCurve (DampenMusic's shape over its length): [[t, v, in, out, inW, outW]]
+    (an unweighted side's weight is 1/3, as Unity plays it)."""
+    text = open(PREFAB, encoding='utf-8').read()
+    block = text[text.index('  soundDampenCurve:'):]
+    block = block[:block.index('m_PreInfinity')]
+    keys = []
+    for k in re.findall(r'time: (\S+)\s+value: (\S+)\s+inSlope: (\S+)\s+outSlope: (\S+)\s+tangentMode: \S+\s+'
+                        r'weightedMode: (\d)\s+inWeight: (\S+)\s+outWeight: (\S+)', block):
+        t, v, i, o, mode, iw, ow = k
+        mode = int(mode)
+        keys.append([float(t), float(v), float(i), float(o), float(iw) if mode & 1 else 1 / 3, float(ow) if mode & 2 else 1 / 3])
+    if len(keys) < 2:
+        sys.exit('AudioManager.prefab: no soundDampenCurve')
+    return [[round(x, 6) for x in k] for k in keys]
 
 
 def fmod_export(paths, keep):
@@ -428,7 +447,7 @@ def main():
     for f in os.listdir(OUT):
         if f.endswith('.ogg'):
             os.remove(os.path.join(OUT, f))
-    bank = {'rate': RATE, 'sounds': {}, 'music': {}, 'ambience': {}}
+    bank = {'rate': RATE, 'dampenCurve': dampen_curve(), 'sounds': {}, 'music': {}, 'ambience': {}}
     try:
         for table, name in wanted:
             path, can_pause = tables[table][name]

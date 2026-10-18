@@ -35,6 +35,7 @@ public:
     void setParent(const Area& area, int object, int parent);
 
     int parent(int object) const { return parent_[object]; }
+    bool activeSelf(int object) const { return self_[object] != 0; }
     bool activeInHierarchy(int object) const { return inHierarchy_[object] != 0; }
     bool active(const WorldSprite& ws) const { return activeInHierarchy(ws.object); }
     bool active(const ObjectCollider& c) const { return colliderEnabled_[c.slot] && activeInHierarchy(c.object); }

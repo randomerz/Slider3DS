@@ -29,10 +29,37 @@ void World::sendGridEvents() {
     if (grid.events().empty()) return;
     const std::vector<GridEvent> events = grid.takeEvents();
     grid.clearEvents(); // (a moved-from vector is valid but unspecified)
+    slideSounds(events);
     ruins.gridEvents(*this, events);
     chad.gridEvents(*this, events);
     walks.gridEvents(*this, events);
     runStarts(); // (the arrow may show the buried Slider)
+}
+
+void World::slideSounds(const std::vector<GridEvent>& events) {
+    // SGridAnimator.EffectOnMoveStart / Finish: a tile starting to slide rumbles, one landing
+    // explodes, louder the longer the move (its duration, clamped to 0.1-1); those of one frame
+    // play as one (LateUpdate's queue: the loudest volume, between the tiles — at the listener if
+    // the player rides one), always heard as outdoors.
+    for (const auto& [kind, name] : {std::make_pair(GridEvent::Kind::TileMoveStart, sounds::SLIDE_RUMBLE),
+                                     std::make_pair(GridEvent::Kind::TileMoveEnd, sounds::SLIDE_EXPLOSION)}) {
+        int n = 0;
+        bool riding = false;
+        float volume = 0, sx = 0, sy = 0;
+        for (const GridEvent& e : events) {
+            if (e.kind != kind) continue;
+            n++;
+            volume = std::max(volume, std::clamp(e.duration, 0.1f, 1.0f));
+            riding = riding || e.islandId == player.stile;
+            float x, y;
+            grid.ownerBase(e.islandId, x, y);
+            sx += x;
+            sy += y;
+        }
+        if (n == 0) continue;
+        if (riding) audio.play(name, volume);
+        else audio.playAt(name, sx / n, sy / n, volume, 0, true);
+    }
 }
 
 void World::effectDone(EffectDone done) {
@@ -114,8 +141,20 @@ void World::save(SaveProfile& profile) const {
     profile.inHouse = player.inHouse;
 }
 
+bool World::propReady(int object, float cooldown) {
+    for (auto& [o, t] : propSounded_) {
+        if (o != object) continue;
+        if (playTime - t < cooldown) return false;
+        t = playTime;
+        return true;
+    }
+    propSounded_.push_back({object, playTime});
+    return true;
+}
+
 void World::reloadObjects() {
     objects.init(area);
+    propSounded_.clear();
     grid.clearEvents(); // (a fresh load: nothing has happened yet)
     for (const STileDef& s : area.stiles) setTileObjects(*this, s, grid.tileActive(s.islandId));
     // SGrid.Start: collectibles already in the inventory stay picked up.

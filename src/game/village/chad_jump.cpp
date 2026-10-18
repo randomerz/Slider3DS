@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "game/audio/sounds.h"
 #include "game/events/events.h"
 #include "game/village/village_grid.h"
 #include "game/world/world.h"
@@ -108,6 +109,7 @@ void ChadJumps::coroutines(World& world, float dt) {
             if (s.fallT <= 0) { // WaitForSeconds(0.5) is over: he falls
                 world.animators.setBool(world, d.animator, "isFallen", true);
                 world.animators.setBool(world, d.animator, "isTipping", false);
+                world.audio.play(sounds::FALL);
                 s.fall = Chad::Fall::Moving;
                 s.fallT = 0;
                 place(world, c, d.jumpX, d.jumpY);
@@ -121,6 +123,7 @@ void ChadJumps::coroutines(World& world, float dt) {
                 place(world, c, d.fallX, d.fallY);
                 s.fall = Chad::Fall::None;
                 s.state = State::Fell;
+                world.audio.play(sounds::HURT);
                 world.objects.setSortingOrder(d.renderer, 0);
                 if (d.item >= 0) {
                     // The item drops a unit to his right (DropItem parents it to the STile there), its

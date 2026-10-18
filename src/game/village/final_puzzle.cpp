@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <string>
 
+#include "game/audio/sounds.h"
 #include "game/village/village_grid.h"
 #include "game/world/world.h"
 
@@ -16,17 +17,19 @@ constexpr float COMPLETIONS_DELAY = 1.2f;  // PlaceTile9: CheckCompletionsAfterD
 
 // ShuffleBuildUp, step by step: a camera shake, the symbol it flashes (-1 = none), whether the white
 // flash and the shuffle come with it, and the wait after it (-1 = the end).
+// Sounds: a rumble with each of the first three, then an explosion (at 0.2) with the bell.
 struct ShuffleStep {
     float shakeDuration, shakeAmount;
     int symbol;
     bool shuffle;
     float wait;
+    bool rumble = false, peak = false;
 };
 constexpr ShuffleStep SHUFFLE_STEPS[] = {
-    {0.25f, 0.25f, 0, false, 1},
-    {0.25f, 0.25f, 1, false, 1},
-    {0.75f, 0.5f, 2, false, 1},
-    {1.5f, 2.5f, 3, false, 0.25f},
+    {0.25f, 0.25f, 0, false, 1, true},
+    {0.25f, 0.25f, 1, false, 1, true},
+    {0.75f, 0.5f, 2, false, 1, true},
+    {1.5f, 2.5f, 3, false, 0.25f, false, true},
     {0, 0, -1, true, 0.75f},      // UIEffects.FlashWhite, DoShuffle at its peak (see stepShuffle)
     {2, 0.9f, -1, false, -1},
 };
@@ -90,7 +93,8 @@ void FinalPuzzle::fillInHole(World& world) {
     const int item = world.items.removeCarried(); // PlayerInventory.RemoveItem
     if (item >= 0) world.objects.setActive(area, area.items[item].object, false);
     if (area.areaGrid.ruinsSymbols.present) world.objects.setRendererEnabled(area.areaGrid.ruinsSymbols.hole, false);
-    setSymbols(world, false); // (and the "Puzzle Complete" sound, a SmokePoof)
+    setSymbols(world, false); // (and a SmokePoof)
+    world.audio.play(sounds::PUZZLE_COMPLETE);
 }
 
 void FinalPuzzle::shufflePuzzle(World& world) {
@@ -151,7 +155,8 @@ void FinalPuzzle::updateCompletions(World& world) {
         world.artifact.canAddMoves = false; // UIArtifact.DisableMovement(false): queued moves still run
         world.state.setFlag(AUTO_MOVE_FLAG, false);
         world.state.setFlag(PENDING_COMPLETE_FLAG, true);
-        placing_.start(world.frame); // PlaceTile9 (and the sound, achievements)
+        placing_.start(world.frame); // PlaceTile9 (and achievements)
+        world.audio.play(sounds::PUZZLE_COMPLETE);
     }
 }
 
@@ -175,7 +180,12 @@ void FinalPuzzle::stepShuffle(World& world, float dt) {
     while (shuffleStep_ >= 0 && shuffleStep_ < SHUFFLE_STEP_COUNT) {
         if (shuffleStep_ > 0 && !shuffleWait_.done(world.frame, dt)) break;
         const ShuffleStep& s = SHUFFLE_STEPS[shuffleStep_++];
-        if (s.shakeDuration > 0) world.effects.shake(s.shakeDuration, s.shakeAmount); // (and the rumbles)
+        if (s.shakeDuration > 0) world.effects.shake(s.shakeDuration, s.shakeAmount);
+        if (s.rumble) world.audio.play(sounds::SLIDE_RUMBLE);
+        if (s.peak) {
+            world.audio.play(sounds::SLIDE_EXPLOSION, 0.2f);
+            world.audio.play(sounds::TFT_BELL);
+        }
         if (s.symbol >= 0) flashSymbol(world, s.symbol);
         // Port choice (the user's): the grid changes behind the flash at its peak (FlashWhite's
         // callbackMiddle); Unity's DoShuffle runs as the flash starts, so the tiles jump in plain view.

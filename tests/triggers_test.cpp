@@ -298,12 +298,10 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         }
     const std::set<std::string> expected = {
         "ArtifactScreenHider.AddScreensAndShow",
-        "ArtifactWorldMapAffector.UpdateStatus", "AudioManager.Play", "Breadge.Pickup",
-        "ConditionChecker.PlayErrorSound", "CowProp.Moo", "DogProp.Bark",
+        "ArtifactWorldMapAffector.UpdateStatus", "Breadge.Pickup",
         "ParticleSystem.Play",
-        "PlaySound.PlayString",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
-        "UIArtifactWorldMap.SetAreaStatusSilhouette", "UIClick.Click", "VillageGrid.PlayDigSound",
+        "UIArtifactWorldMap.SetAreaStatusSilhouette",
         "VillageGrid.RemoveSlider2Tracker",
     };
     std::string got;

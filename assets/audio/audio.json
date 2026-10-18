@@ -1,5 +1,10 @@
 {
  "rate": 32000,
+ "dampenCurve": [
+  [0.0, 1.0, -2.0, -2.0, 0.333333, 0.333333],
+  [0.5, 0.0, -0.011236, -0.011236, 1.0, 1.0],
+  [1.0, 1.0, 2.0, 2.0, 0.333333, 0.333333]
+ ],
  "sounds": {
   "UI Click": {
    "clips": ["sfx_ui_click.ogg"],
@@ -7,6 +12,100 @@
    "pitchRandom": 2.0833,
    "pitchParam": true,
    "canPause": false
+  },
+  "Village Pick Up": {
+   "clips": ["sfx_village_pick_up.ogg"],
+   "volume": 0.0,
+   "canPause": true
+  },
+  "Puzzle Complete": {
+   "clips": ["sfx_puzzle_complete.ogg"],
+   "volume": 0.0,
+   "pitchRandom": 4.1667,
+   "pitchParam": true,
+   "canPause": true
+  },
+  "Hat Click": {
+   "clips": ["sfx_hat_click.ogg"],
+   "volume": 0.0,
+   "pitchParam": true,
+   "canPause": true
+  },
+  "Slide Rumble": {
+   "clips": ["sfx_slide_rumble.ogg"],
+   "volume": 0.0,
+   "pitchRandom": 4.1667,
+   "spatial": [1, 300],
+   "canPause": true
+  },
+  "Slide Explosion": {
+   "clips": ["sfx_slide_explosion.ogg"],
+   "volume": -0.5,
+   "pitchRandom": 4.1667,
+   "spatial": [1, 300],
+   "canPause": true
+  },
+  "TFT Bell": {
+   "clips": ["sfx_tft_bell.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 150],
+   "canPause": true
+  },
+  "MagicChimes1": {
+   "clips": ["sfx_magicchimes1.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 150],
+   "canPause": true
+  },
+  "Meow": {
+   "clips": ["sfx_meow.ogg"],
+   "volume": 0.0,
+   "pitchRandom": 4,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Pop": {
+   "clips": ["sfx_pop.ogg"],
+   "volume": 0.0,
+   "pitchParam": true,
+   "canPause": true
+  },
+  "Fall": {
+   "clips": ["sfx_fall.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 300],
+   "canPause": false
+  },
+  "Hurt": {
+   "clips": ["sfx_hurt.ogg"],
+   "volume": 0.0,
+   "pitchRandom": 4.1667,
+   "spatial": [1, 150],
+   "canPause": true
+  },
+  "Artifact Error": {
+   "clips": ["sfx_artifact_error.ogg"],
+   "volume": 0.0,
+   "pitchRandom": 4.1667,
+   "canPause": true
+  },
+  "Cow Moo": {
+   "clips": ["sfx_cow_moo_0.ogg", "sfx_cow_moo_1.ogg"],
+   "volume": 0.0,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Dog Bark 1": {
+   "clips": ["sfx_dog_bark_1.ogg"],
+   "volume": 1.051,
+   "spatial": [1, 20],
+   "canPause": true
+  },
+  "Dog Bark 2": {
+   "clips": ["sfx_dog_bark_2.ogg"],
+   "volume": 0.222,
+   "spatial": [1, 20],
+   "canPause": true
   }
  },
  "music": {

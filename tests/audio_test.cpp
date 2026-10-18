@@ -212,3 +212,57 @@ TEST(audio_without_an_output_plays_nothing) {
     CHECK(audio.mixer().voices() == 0 && audio.mixer().parameter(audio_params::MAIN_MENU_ACTIVATED) == 1);
     testSetAudioAvailable(true);
 }
+
+TEST(audio_spatial_sounds_fall_off_pan_and_cross_the_house_line) {
+    Audio audio;
+    CHECK(audio.load());
+    SoundDef s;
+    s.spatial = true;
+    s.minDistance = 1;
+    s.maxDistance = 20;
+    Listener l;
+    l.x = 10;
+    l.y = 5;
+    l.housingOffset = -150;
+    audio.setListener(l);
+    float left, right;
+    // At the listener: 10 units below it (ZLevel), centered; linear squared from 1 to 20.
+    audio.spatialGains(s, false, 0, 0, false, left, right);
+    const float k = (20 - 10) / 19.0f;
+    CHECK(std::fabs(left - right) < 1e-5f && std::fabs(left * left + right * right - k * k * k * k) < 1e-4f);
+    // To the right: louder right; past the max distance: silent.
+    audio.spatialGains(s, true, 15, 5, false, left, right);
+    CHECK(right > left && left > 0);
+    audio.spatialGains(s, true, 40, 5, false, left, right);
+    CHECK(left == 0 && right == 0);
+    // In a house (y <= -75) heard from outside: moved up by the housing offset, and quieter.
+    float l0, r0;
+    audio.spatialGains(s, true, 10, 5, false, l0, r0);
+    audio.spatialGains(s, true, 10, 5 - 150, false, left, right);
+    CHECK(std::fabs(left - l0 * std::pow(2.0f, -5 / 6.0f)) < 1e-5f);
+    // ...unless it's always outdoors (the slides): then it's far below, silent.
+    audio.spatialGains(s, true, 10, 5 - 150, true, left, right);
+    CHECK(left == 0);
+}
+
+TEST(audio_dampens_the_music_and_brings_it_back) {
+    Audio audio;
+    CHECK(audio.load());
+    AudioCues cues;
+    cues.dampenMusic(0.2f, 2);
+    audio.run(cues.take());
+    std::vector<int16_t> block(N * 2);
+    const int blocks = (int)(1 / (N / (float)plat::AUDIO_RATE)); // ~1 s: the curve's bottom
+    for (int i = 0; i < blocks; i++) audio.mixBlock(block.data());
+    CHECK(std::fabs(audio.musicDampening() - 0.2f) < 0.02f);
+    audio.setPaused(true);
+    CHECK(audio.musicDampening() == 1); // (paused: none, and it holds)
+    audio.setPaused(false);
+    for (int i = 0; i < blocks + 2; i++) audio.mixBlock(block.data());
+    CHECK(audio.musicDampening() == 1);
+}
+
+TEST(audio_bank_has_the_areas_pick_up) {
+    AudioBank bank;
+    CHECK(bank.load() && bank.sound(villageArea().name + " Pick Up") != nullptr); // (ItemPickupEffect's name)
+}

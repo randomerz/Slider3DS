@@ -193,8 +193,13 @@ public:
     bool saveRequested = false;
     // What scripts asked AudioManager for; the frontend passes it on each frame.
     AudioCues audio;
+    // A sound prop (CowProp / DogProp) can sound again: true (and its cooldown starts) unless it
+    // sounded less than `cooldown` s of play ago.
+    bool propReady(int object, float cooldown);
 
 private:
+    std::vector<std::pair<int, double>> propSounded_; // object, playTime it last sounded
+    void slideSounds(const std::vector<GridEvent>& events);
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.
     void runStarts();
     // Scripts listening to the grid's events (SGrid / SGridAnimator) hear what happened since last time.
