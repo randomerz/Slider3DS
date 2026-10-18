@@ -2,16 +2,21 @@
 // Slider3DSTitleExporter to assets/ui/title.json, its sprites cut by tools/make_ui.py), at 1x like
 // the world. MainMenuManager.Start / OpenCutscene, step by step:
 //   the stars twinkle (MainMenuBGStars: each on for 25-50 s, then off for 0.5-1 s), the giant stars
-//   and the meteor loop; each letter of the logo bobs on its own SinWaveAnimation; the player idles;
+//   and the meteor loop, all hidden (ParalaxBG's CanvasGroup at alpha 0: the empty background);
+//   each letter of the logo bobs on its own SinWaveAnimation; the player idles;
 //   0-3 s: the logo slides in from the left (TitleSlideIn); 1 s: the camera shake starts rising
 //   (ShakeIncrease 2.1 s to 0.1); 3 s: a shake (0.25 s, 0.2); 4 s: "[press any key to begin]"
 //   fades in over 2 s.
 // From the second frame (the listener's), any button or touch starts the main menu (StartMainMenu):
-// the shakes stop, the logo and the player rise (TitleRiseUp / MainMenuPlayerUp), the prompt fades
-// out (if shown) and the bottom screen's menu (game/ui/title_menu) appears.
+// the shakes stop, the stars and images fade in (mainMenuBackgroundAnimator's isVisible), the logo
+// and the player rise (TitleRiseUp / MainMenuPlayerUp), the prompt fades out (if shown) and the
+// bottom screen's menu (game/ui/title_menu) appears.
 // Not ported: the parallax with the mouse (no pointer on the top screen), the language selector.
 // A port addition: the stars and images are spread from the original's 320x180 view over the
-// 400x240 top screen, with extra stars in the gaps (assets/ui/title_extra.json, tools/make_title_extra.py).
+// 400x240 top screen, with extra stars in the gaps; the logo sits lower (logoDown) and the player
+// stays centered (playerRises false: the original's room for its buttons, here on the bottom
+// screen) (assets/ui/title_extra.json, tools/make_title_extra.py: it applies the same layout to
+// keep its stars clear).
 #pragma once
 
 #include <cstdint>
@@ -49,6 +54,7 @@ struct TitleArt {
     uint32_t background = 0;
     std::vector<Star> stars;
     std::vector<Image> images;
+    std::vector<CurveKey> backgroundFade; // the stars' and images' alpha from StartMainMenu on (0 before)
     struct {
         float originX = 0, originY = 0, restY = 0;
         std::vector<Letter> letters;
@@ -58,6 +64,7 @@ struct TitleArt {
     struct {
         Image image;
         std::vector<CurveKey> riseY;
+        bool rises = true; // (title_extra.json's playerRises)
     } player;
     struct {
         std::string text;
@@ -88,6 +95,7 @@ public:
 
     float time() const { return time_; } // s since start
     float promptAlpha(const TitleArt& art) const; // "[press any key to begin]"'s, 0-1
+    float backgroundAlpha(const TitleArt& art) const; // the stars' and images', 0-1
 
 private:
     struct StarState {

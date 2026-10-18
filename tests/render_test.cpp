@@ -483,9 +483,9 @@ TEST(render_pause_menu_goldens) {
 }
 
 TEST(render_title_screen_goldens) {
-    // The top screen's intro: stars only (the logo off to the left), the logo landing (the shake
-    // rising), at rest with the prompt half faded in, and half a second after a key (risen part way,
-    // the prompt fading out).
+    // The top screen's intro: the empty background (the logo off to the left), the logo landing (the
+    // shake rising), at rest with the prompt half faded in, half a second after a key (risen part way,
+    // the prompt fading out, the stars fading in) and once the stars are in.
     TitleArt art;
     std::string error;
     check(art.load(&error), "title art loads " + error);
@@ -497,15 +497,16 @@ TEST(render_title_screen_goldens) {
     auto run = [&](float until, const plat::Input& in = {}) {
         while (screen.time() < until - 1e-4f) screen.update(villageArea().cameraShake, in, 1.0f / 60, 0.5f);
     };
-    auto shoot = [&](const char* name) {
+    auto shoot = [&](const char* name, int minDraws = 20) {
         testResetDrawCalls();
         screen.draw(art, skin.font());
-        goldens.compare(name, 20);
+        goldens.compare(name, minDraws);
     };
     run(1);
-    shoot("title_stars");
+    CHECK(screen.backgroundAlpha(art) == 0);
+    shoot("title_start", 7); // (the logo's 6 letters and the player)
     run(2.9f);
-    shoot("title_logo_landing");
+    shoot("title_logo_landing", 7);
     run(5);
     CHECK(screen.promptAlpha(art) > 0.4f && screen.promptAlpha(art) < 0.6f && !screen.menuShown());
     shoot("title_prompt");
@@ -514,7 +515,11 @@ TEST(render_title_screen_goldens) {
     screen.update(villageArea().cameraShake, key, 1.0f / 60, 0.5f);
     CHECK(screen.menuShown());
     run(5.5f);
+    CHECK(screen.backgroundAlpha(art) > 0.3f && screen.backgroundAlpha(art) < 0.7f);
     shoot("title_rising");
+    run(7);
+    CHECK(screen.backgroundAlpha(art) == 1);
+    shoot("title_stars_in");
 }
 
 TEST(render_title_menu_goldens) {

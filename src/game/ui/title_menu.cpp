@@ -253,7 +253,7 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
     } else if (w == CONFIRM) {
         if (!SaveProfile::remove(confirm_)) printf("Couldn't delete profile %d\n", confirm_ + 1);
         readCards();
-        selected_ = (Widget)(CARD + confirm_); // (its card, now empty: a second A doesn't leave the page)
+        selected_ = (Widget)(CARD + confirm_); // (its card, now empty: a second A opens New Save there, as Unity's)
         confirm_ = -1;
     } else if (w >= KEY && w < CAPS) {
         if ((int)name_.size() < MAX_NAME) {

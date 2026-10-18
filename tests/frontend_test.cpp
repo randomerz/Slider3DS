@@ -337,7 +337,7 @@ TEST(title_prompt_fades_on_the_originals_curve) {
 
 TEST(title_art_rejects_a_bad_spread) {
     // title_extra.json is generated; a broken one fails the load (and the boot) instead of drawing
-    // the background collapsed or mirrored.
+    // the background collapsed or mirrored, or the original's layout.
     std::string original;
     CHECK(plat::readFile("ui/title_extra.json", original));
     for (const char* spread : {"[0, 1]", "[1, -2]", "[]"}) {
@@ -345,6 +345,12 @@ TEST(title_art_rejects_a_bad_spread) {
         TitleArt art;
         std::string error;
         check(!art.load(&error) && error.find("spread") != std::string::npos, std::string("rejects spread ") + spread);
+    }
+    for (const char* layout : {"\"logoDown\": 8", "\"playerRises\": false", "\"logoDown\": 8, \"playerRises\": 0"}) {
+        testSetFile("ui/title_extra.json", std::string("{\"spread\": [1, 1], ") + layout + ", \"stars\": []}");
+        TitleArt art;
+        std::string error;
+        check(!art.load(&error) && error.find("logoDown") != std::string::npos, std::string("rejects layout ") + layout);
     }
     testSetFile("ui/title_extra.json", original);
     TitleArt art;

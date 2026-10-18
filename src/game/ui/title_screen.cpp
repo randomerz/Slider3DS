@@ -77,6 +77,7 @@ bool TitleArt::load(std::string* error) {
     for (const Json& s : doc["stars"].items())
         stars.push_back({s["pos"].at(0).asFloat(), s["pos"].at(1).asFloat(), sprite(s["on"]), sprite(s["off"])});
     for (const Json& i : doc["images"].items()) images.push_back(image(i));
+    backgroundFade = readKeys(doc["backgroundFade"]);
     // The port's fit to the top screen (tools/make_title_extra.py): the background spread out to
     // 400x240, then the stars added in its gaps.
     std::string extraText;
@@ -97,8 +98,10 @@ bool TitleArt::load(std::string* error) {
         stars.push_back({s["pos"].at(0).asFloat(), s["pos"].at(1).asFloat(), sprite(s["on"]), sprite(s["off"])});
     // ...the logo lower and the player centered: the original's room for its buttons, here on the
     // bottom screen.
+    if (extra["logoDown"].type() != Json::Type::Number || extra["playerRises"].type() != Json::Type::Bool)
+        return fail("ui/title_extra.json: no logoDown / playerRises");
     const float logoDown = extra["logoDown"].asFloat();
-    const bool playerRises = extra["playerRises"].asBool(true);
+    player.rises = extra["playerRises"].asBool();
     const Json& l = doc["logo"];
     logo.originX = l["origin"].at(0).asFloat();
     logo.originY = l["origin"].at(1).asFloat();
@@ -114,8 +117,6 @@ bool TitleArt::load(std::string* error) {
     logo.slideInLength = l["slideInLength"].asFloat();
     player.image = image(doc["player"]);
     player.riseY = readKeys(doc["player"]["riseY"]);
-    if (!playerRises)
-        for (CurveKey& k : player.riseY) k.v = k.in = k.out = 0;
     const Json& p = doc["prompt"];
     prompt.text = p["text"].asString();
     prompt.x = p["pos"].at(0).asFloat();
@@ -124,8 +125,8 @@ bool TitleArt::load(std::string* error) {
     prompt.color = plat::rgba((uint8_t)c.at(0).asInt(), (uint8_t)c.at(1).asInt(), (uint8_t)c.at(2).asInt());
     prompt.fade = readKeys(p["fade"]);
     prompt.fadeOutSpeed = p["fadeOutSpeed"].asFloat(1);
-    if (!ok || logo.letters.empty() || logo.slideIn.empty() || logo.riseY.empty() || player.riseY.empty() ||
-        prompt.fade.empty() || prompt.fadeOutSpeed <= 0)
+    if (!ok || backgroundFade.empty() || logo.letters.empty() || logo.slideIn.empty() || logo.riseY.empty() ||
+        player.riseY.empty() || prompt.fade.empty() || prompt.fadeOutSpeed <= 0)
         return fail("ui/title.json: a missing sprite, curve or timing");
     sheet = plat::loadSheet(sheetDoc["sheet"].asString().c_str());
     if (!sheet) return fail("can't load the title sheet " + sheetDoc["sheet"].asString());
@@ -138,6 +139,7 @@ void TitleArt::unload() {
     sprites.clear();
     stars.clear();
     images.clear();
+    backgroundFade.clear();
     logo.letters.clear();
 }
 
@@ -195,16 +197,29 @@ float TitleScreen::promptAlpha(const TitleArt& art) const {
     return std::min(1.0f, evalKeys(fade, time_ - promptShownAt_));
 }
 
+float TitleScreen::backgroundAlpha(const TitleArt& art) const {
+    if (!menuShown()) return 0; // MainMenuBackgroundHidden
+    return std::clamp(evalKeys(art.backgroundFade, time_ - upAt_), 0.0f, 1.0f);
+}
+
 void TitleScreen::draw(const TitleArt& art, const Font& font) const {
     plat::beginScreen(plat::Screen::Top, art.background);
     const float camX = shake_.shakeX() * PX_PER_UNIT, camY = shake_.shakeY() * PX_PER_UNIT;
-    for (size_t i = 0; i < art.stars.size(); i++)
-        drawAt(art, stars_[i].showsOn ? art.stars[i].on : art.stars[i].off, art.stars[i].x, art.stars[i].y, camX, camY);
-    for (const TitleArt::Image& im : art.images) drawAt(art, frameAt(im, time_), im.x, im.y, camX, camY);
+    // The stars and images, faded in: under the background's color at the rest of the alpha (the
+    // same as their CanvasGroup's alpha over the camera's solid background, in one rect).
+    const float bgAlpha = backgroundAlpha(art);
+    if (bgAlpha > 0) {
+        for (size_t i = 0; i < art.stars.size(); i++)
+            drawAt(art, stars_[i].showsOn ? art.stars[i].on : art.stars[i].off, art.stars[i].x, art.stars[i].y, camX, camY);
+        for (const TitleArt::Image& im : art.images) drawAt(art, frameAt(im, time_), im.x, im.y, camX, camY);
+        if (bgAlpha < 1)
+            plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, palette::withAlpha(art.background, (uint8_t)std::lround((1 - bgAlpha) * 255)));
+    }
     // The player, then the logo over it (the canvas draws after the sprites).
     const float rise = menuShown() ? time_ - upAt_ : -1;
     const TitleArt::Image& p = art.player.image;
-    drawAt(art, frameAt(p, time_), p.x, p.y + (rise >= 0 ? evalKeys(art.player.riseY, rise) : 0), camX, camY);
+    const float playerRise = rise >= 0 && art.player.rises ? evalKeys(art.player.riseY, rise) : 0;
+    drawAt(art, frameAt(p, time_), p.x, p.y + playerRise, camX, camY);
     float lx, ly;
     if (rise >= 0) {
         lx = evalKeys(art.logo.riseX, rise);

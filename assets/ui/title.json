@@ -66,6 +66,7 @@
     {"pos": [124, 52], "frames": ["mainmenu_meteor_0", "mainmenu_meteor_1", "mainmenu_meteor_2", "mainmenu_meteor_3", "mainmenu_meteor_4"], "frameTime": 0.125},
     {"pos": [-144, -74], "frames": ["mainmenu_plannet"], "frameTime": 0}
   ],
+  "backgroundFade": [[0, 0, 0, 0], [1, 1, 0, 0]],
   "logo": {
     "origin": [0, 0],
     "restY": 40,
