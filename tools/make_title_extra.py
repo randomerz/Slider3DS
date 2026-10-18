@@ -1,7 +1,10 @@
 """The title screen's layout for the 3DS top screen (a port addition: the original lays its stars out
 for a 320x180 view). Generated, seeded and reproducible: don't hand-edit its output, re-run this.
 Writes assets/ui/title_extra.json = {"spread": [x, y] (the exported stars and images are spread by
-this, filling 400x240; the logo, player and prompt stay put), "stars": extra stars in the gaps
+this, filling 400x240; the logo, player and prompt stay put), "logoDown": px the logo sits lower
+(at rest and risen), "playerRises": whether the player rises with the menu (the original lifts it
+to make room for its buttons, which the port has on the bottom screen: it stays centered),
+"stars": extra stars in the gaps
 (best-candidate sampling, at the original's density and size mix, kept clear of the images, the
 logo, the player and the prompt over their whole motion)}, and a 2x preview in preview/title_spread.png.
 Everything it avoids is read from the exported data (title.json, title_sheet.json, the menu font).
@@ -20,6 +23,8 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCREEN_W, SCREEN_H = 400, 240  # the 3DS top screen
 VIEW_W, VIEW_H = 320, 180      # the original's view
 MARGIN = 4                     # px kept between a new star and anything it avoids, and the screen's edge
+LOGO_DOWN = 8                  # px the logo sits lower than the original's (the user's layout)
+PLAYER_RISES = False           # the player stays centered when the menu opens
 
 
 def load(*path):
@@ -32,6 +37,13 @@ def main():
     font = {g["c"]: g["adv"] for g in load("assets", "fonts", "menu.json")["glyphs"]}
     img = Image.open(os.path.join(REPO, "assets", "sheets", "ui_title.png")).convert("RGBA")
     sx, sy = SCREEN_W / VIEW_W, SCREEN_H / VIEW_H
+    # The port's layout, as TitleArt::load applies it.
+    d["logo"]["restY"] -= LOGO_DOWN
+    for k in d["logo"]["riseY"]:
+        k[1] -= LOGO_DOWN
+    if not PLAYER_RISES:
+        for k in d["player"]["riseY"]:
+            k[1] = 0
 
     def box(name, x, y):
         """A sprite's [left, bottom, right, top] drawn with its pivot at (x, y), y up."""
@@ -96,7 +108,8 @@ def main():
         points.append(best)
         extra_stars.append({"pos": list(best), "on": on, "off": off})
     with open(os.path.join(REPO, "assets", "ui", "title_extra.json"), "w", newline="\n") as f:
-        f.write('{\n  "spread": [%r, %r],\n  "stars": [\n    ' % (sx, sy))
+        f.write('{\n  "spread": [%r, %r],\n  "logoDown": %d,\n  "playerRises": %s,\n  "stars": [\n    '
+                % (sx, sy, LOGO_DOWN, json.dumps(PLAYER_RISES)))
         f.write(",\n    ".join(json.dumps(s, separators=(", ", ": ")) for s in extra_stars))
         f.write("\n  ]\n}\n")
 

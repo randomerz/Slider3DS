@@ -95,10 +95,14 @@ bool TitleArt::load(std::string* error) {
     }
     for (const Json& s : extra["stars"].items())
         stars.push_back({s["pos"].at(0).asFloat(), s["pos"].at(1).asFloat(), sprite(s["on"]), sprite(s["off"])});
+    // ...the logo lower and the player centered: the original's room for its buttons, here on the
+    // bottom screen.
+    const float logoDown = extra["logoDown"].asFloat();
+    const bool playerRises = extra["playerRises"].asBool(true);
     const Json& l = doc["logo"];
     logo.originX = l["origin"].at(0).asFloat();
     logo.originY = l["origin"].at(1).asFloat();
-    logo.restY = l["restY"].asFloat();
+    logo.restY = l["restY"].asFloat() - logoDown;
     for (const Json& le : l["letters"].items()) {
         const Json& s = le["sin"];
         logo.letters.push_back({sprite(le["sprite"]), s.at(0).asFloat(), s.at(1).asFloat(), s.at(2).asFloat(), s.at(3).asFloat()});
@@ -106,9 +110,12 @@ bool TitleArt::load(std::string* error) {
     logo.slideIn = readKeys(l["slideIn"]);
     logo.riseX = readKeys(l["riseX"]);
     logo.riseY = readKeys(l["riseY"]);
+    for (CurveKey& k : logo.riseY) k.v -= logoDown;
     logo.slideInLength = l["slideInLength"].asFloat();
     player.image = image(doc["player"]);
     player.riseY = readKeys(doc["player"]["riseY"]);
+    if (!playerRises)
+        for (CurveKey& k : player.riseY) k.v = k.in = k.out = 0;
     const Json& p = doc["prompt"];
     prompt.text = p["text"].asString();
     prompt.x = p["pos"].at(0).asFloat();
