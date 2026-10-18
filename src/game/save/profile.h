@@ -16,14 +16,15 @@ struct SaveProfile {
     static std::string fileName(int slot); // its user file (plat::readUserFile)
 
     std::string name; // the profile's (also the cat's: GameState::newProfile)
-    float playTime = 0; // seconds played (PlayTimer: while the game runs, not paused)
+    double playTime = 0; // seconds played (PlayTimer: while the game runs, not paused)
     GameState state;
     // The grid: tile ids in Grid::setGrid's format and the collected tiles. An empty grid has never
     // been saved (SGridData.grid null): tiles as authored.
     std::string grid;
     std::vector<int> activeTiles;
-    // The player, unless never saved (then it starts at the new game's spawn): where it stands (on a
-    // sliding tile: relative to where that tile ends up: Player.GetSavePosition), in the boat, in a house.
+    // The player, unless never saved (then it starts at the new game's spawn: World::placeAtStart):
+    // where it stands (on a sliding tile: relative to where that tile ends up: Player.GetSavePosition),
+    // in the boat, in a house.
     bool hasPlayer = false;
     float playerX = 0, playerY = 0;
     bool onWater = false, inHouse = false;

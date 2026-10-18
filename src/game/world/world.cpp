@@ -5,6 +5,7 @@
 
 #include "game/events/events.h"
 #include "game/physics/physics.h"
+#include "game/save/profile.h"
 
 namespace {
 
@@ -85,6 +86,9 @@ void World::load(const SaveProfile& profile) {
         player.onWater = profile.onWater;
         player.inHouse = profile.inHouse;
         player.stile = grid.stileUnder(player.x, player.y);
+    } else {
+        player = Player();
+        placeAtStart();
     }
     saveRequested = false;
     reloadObjects();
@@ -171,7 +175,17 @@ void World::placeAt(const Spawn& spawn) {
     player.x = bx + spawn.x;
     player.y = by + spawn.y;
     player.onWater = spawn.inBoat;
+    player.inHouse = player.y <= Player::HOUSE_Y; // (SceneSpawns.Start)
     player.stile = grid.stileUnder(player.x, player.y);
+}
+
+int World::placeAtStart() {
+    for (size_t i = 0; i < area.spawns.size(); i++)
+        if (area.spawns[i].name == "Default") {
+            placeAt(area.spawns[i]);
+            return (int)i;
+        }
+    return -1;
 }
 
 void World::placeNear(float x, float y) {
@@ -179,6 +193,7 @@ void World::placeNear(float x, float y) {
     findFreeNear(*this, player.hitbox(area), x, y);
     player.x = x;
     player.y = y;
+    player.inHouse = y <= Player::HOUSE_Y;
     player.stile = grid.stileUnder(x, y);
 }
 

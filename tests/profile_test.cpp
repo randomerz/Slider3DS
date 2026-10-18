@@ -124,7 +124,7 @@ TEST(world_save_then_load_restores_the_game) {
     SaveProfile p = SaveProfile::make("Boomo");
     w.save(p);
     CHECK(p.grid == "312_456_789" && p.activeTiles == std::vector<int>({1, 2, 9}));
-    CHECK(std::fabs(p.playTime - 30 * DT) < 1e-4f);
+    CHECK(std::fabs(p.playTime - 30 * DT) < 1e-4);
 
     SaveProfile read;
     CHECK(SaveProfile::parse(p.serialize(), read));
@@ -147,13 +147,43 @@ TEST(world_save_then_load_restores_the_game) {
 }
 
 TEST(world_load_of_a_new_profile_is_a_new_game) {
-    World w(villageArea(), DEFAULT_SETTINGS);
+    // After a session that went elsewhere (in the boat, on another tile), a never-saved profile
+    // starts at the new game's spawn, as a fresh scene load would.
+    const Area& area = villageArea();
+    World w(area, DEFAULT_SETTINGS);
     w.setTileActive(2, true);
     w.state.setFlag("x", true);
     w.placeNear(3, 4);
+    w.player.onWater = true;
+    frames(w, 10);
     w.load(SaveProfile::make("Tofu"));
     CHECK(!w.grid.tileActive(2) && !w.state.flag("x") && w.state.str("Cat") == "Tofu" && w.playTime == 0);
-    CHECK(w.player.x == 3 && w.player.y == 4); // (never saved: the player stays where the caller put it)
+    World fresh(area, DEFAULT_SETTINGS);
+    const int start = fresh.placeAtStart();
+    CHECK(start >= 0 && area.spawns[start].name == "Default");
+    CHECK(w.player.x == fresh.player.x && w.player.y == fresh.player.y && !w.player.onWater);
+    CHECK(w.player.inHouse && w.player.stile == 1); // (the Default spawn is in tile 1's house)
+}
+
+TEST(world_save_then_load_keeps_the_boat_and_the_house) {
+    const Area& area = villageArea();
+    World w(area, DEFAULT_SETTINGS);
+    w.placeAtStart();
+    CHECK(w.player.inHouse);
+    SaveProfile p;
+    w.save(p);
+    CHECK(p.inHouse && !p.onWater);
+    float bx, by;
+    w.grid.ownerBase(1, bx, by);
+    w.placeNear(bx, by); // (outdoors)
+    CHECK(!w.player.inHouse);
+    w.player.onWater = true;
+    w.save(p);
+    SaveProfile read;
+    CHECK(SaveProfile::parse(p.serialize(), read));
+    World l(area, DEFAULT_SETTINGS);
+    l.load(read);
+    CHECK(l.player.onWater && !l.player.inHouse && &l.player.hitbox(area) == &area.player.boatBox);
 }
 
 TEST(world_load_keeps_the_authored_grid_if_the_saved_one_doesnt_fit) {

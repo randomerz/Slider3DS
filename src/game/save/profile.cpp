@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <initializer_list>
+#include <iterator>
 
 #include "platform/platform.h"
 
@@ -12,13 +13,7 @@ namespace {
 
 constexpr std::string_view HEADER = "slider3ds-profile 1";
 
-// The line kinds and how many fields follow each.
-struct Kind {
-    std::string_view name;
-    size_t fields;
-};
-constexpr Kind KINDS[] = {{"name", 1},   {"playTime", 1}, {"flag", 1},        {"string", 2},
-                          {"collectible", 2}, {"grid", 1}, {"activeTiles", 1}, {"player", 4}};
+using Fields = std::vector<std::string>; // a line's fields; [0] is its kind
 
 void escapeInto(std::string& out, std::string_view field) {
     for (char c : field) {
@@ -42,14 +37,14 @@ void line(std::string& out, const char* kind, std::initializer_list<std::string_
     out += '\n';
 }
 
-std::string number(float v) {
-    char buf[32];
-    snprintf(buf, sizeof buf, "%.9g", v); // (reads back exactly)
+std::string number(double v) {
+    char buf[40];
+    snprintf(buf, sizeof buf, "%.17g", v); // (reads back exactly, as a float or a double)
     return buf;
 }
 
 // A line's tab-separated fields, unescaped; false on a bad escape.
-bool fields(std::string_view text, std::vector<std::string>& out) {
+bool split(std::string_view text, Fields& out) {
     out.assign(1, std::string());
     for (size_t i = 0; i < text.size(); i++) {
         const char c = text[i];
@@ -71,9 +66,10 @@ bool fields(std::string_view text, std::vector<std::string>& out) {
     return true;
 }
 
-bool toFloat(const std::string& s, float& v) {
+template <class T>
+bool toReal(const std::string& s, T& v) {
     char* rest = nullptr;
-    v = std::strtof(s.c_str(), &rest);
+    v = (T)std::strtod(s.c_str(), &rest);
     return !s.empty() && *rest == '\0' && std::isfinite(v);
 }
 
@@ -88,6 +84,40 @@ bool toBool(const std::string& s, bool& v) {
     v = s == "1";
     return s == "0" || s == "1";
 }
+
+bool readIds(const std::string& text, std::vector<int>& out) {
+    out.clear();
+    std::string_view ids = text;
+    while (!ids.empty()) {
+        const size_t sp = std::min(ids.find(' '), ids.size());
+        int id;
+        if (!toInt(std::string(ids.substr(0, sp)), id)) return false;
+        out.push_back(id);
+        ids.remove_prefix(std::min(sp + 1, ids.size()));
+    }
+    return true;
+}
+
+// Each line kind: its name, how many fields follow it, and how it's read (false: malformed).
+struct Kind {
+    std::string_view name;
+    size_t fields;
+    bool (*read)(const Fields& f, SaveProfile& p);
+};
+constexpr Kind KINDS[] = {
+    {"name", 1, [](const Fields& f, SaveProfile& p) { p.name = f[1]; return true; }},
+    {"playTime", 1, [](const Fields& f, SaveProfile& p) { return toReal(f[1], p.playTime) && p.playTime >= 0; }},
+    {"flag", 1, [](const Fields& f, SaveProfile& p) { p.state.setFlag(f[1], true); return true; }},
+    {"string", 2, [](const Fields& f, SaveProfile& p) { p.state.setStr(f[1], f[2]); return true; }},
+    {"collectible", 2, [](const Fields& f, SaveProfile& p) { p.state.setCollectible(f[1], f[2], true); return true; }},
+    {"grid", 1, [](const Fields& f, SaveProfile& p) { p.grid = f[1]; return !p.grid.empty(); }},
+    {"activeTiles", 1, [](const Fields& f, SaveProfile& p) { return readIds(f[1], p.activeTiles); }},
+    {"player", 4,
+     [](const Fields& f, SaveProfile& p) {
+         p.hasPlayer = true;
+         return toReal(f[1], p.playerX) && toReal(f[2], p.playerY) && toBool(f[3], p.onWater) && toBool(f[4], p.inHouse);
+     }},
+};
 
 } // namespace
 
@@ -122,7 +152,7 @@ std::string SaveProfile::serialize() const {
 bool SaveProfile::parse(std::string_view text, SaveProfile& out) {
     out = SaveProfile();
     bool header = true;
-    std::vector<std::string> f;
+    Fields f;
     while (!text.empty()) {
         const size_t end = std::min(text.find('\n'), text.size());
         std::string_view ln = text.substr(0, end);
@@ -134,40 +164,10 @@ bool SaveProfile::parse(std::string_view text, SaveProfile& out) {
             continue;
         }
         if (ln.empty()) continue;
-        if (!fields(ln, f)) return false;
-        const std::string& kind = f[0];
-        const Kind* known = std::find_if(std::begin(KINDS), std::end(KINDS), [&](const Kind& k) { return k.name == kind; });
-        if (known == std::end(KINDS)) continue; // (a later version's)
-        if (f.size() - 1 != known->fields) return false;
-        if (kind == "name") {
-            out.name = f[1];
-        } else if (kind == "playTime") {
-            if (!toFloat(f[1], out.playTime) || out.playTime < 0) return false;
-        } else if (kind == "flag") {
-            out.state.setFlag(f[1], true);
-        } else if (kind == "string") {
-            out.state.setStr(f[1], f[2]);
-        } else if (kind == "collectible") {
-            out.state.setCollectible(f[1], f[2], true);
-        } else if (kind == "grid") {
-            if (f[1].empty()) return false;
-            out.grid = f[1];
-        } else if (kind == "activeTiles") {
-            out.activeTiles.clear();
-            std::string_view ids = f[1];
-            while (!ids.empty()) {
-                const size_t sp = std::min(ids.find(' '), ids.size());
-                int id;
-                if (!toInt(std::string(ids.substr(0, sp)), id)) return false;
-                out.activeTiles.push_back(id);
-                ids.remove_prefix(std::min(sp + 1, ids.size()));
-            }
-        } else { // player
-            if (!toFloat(f[1], out.playerX) || !toFloat(f[2], out.playerY) || !toBool(f[3], out.onWater) ||
-                !toBool(f[4], out.inHouse))
-                return false;
-            out.hasPlayer = true;
-        }
+        if (!split(ln, f)) return false;
+        const Kind* kind = std::find_if(std::begin(KINDS), std::end(KINDS), [&](const Kind& k) { return k.name == f[0]; });
+        if (kind == std::end(KINDS)) continue; // (a later version's)
+        if (f.size() - 1 != kind->fields || !kind->read(f, out)) return false;
     }
     return !header;
 }

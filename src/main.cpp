@@ -12,9 +12,10 @@
 // Bottom screen: the Artifact (tap a tile, then a highlighted slot, or drag it there), or the pause
 // menu. Dev builds add a perf overlay (game/dev/dev_overlay). The player's Settings live here,
 // loaded at start and saved when they've changed: as the pause menu closes, and when the app exits.
-// The save profile (game/save/profile; the first slot until the title screen picks one) loads at
-// start and is saved as Unity's GameSaver / SaveSystem.SaveGame do: once the scene has started, when
-// a script asks (a collectible's pick-up), and on quitting (the pause menu's Quit, the app closing).
+// The save profile (game/save/profile) is saved as Unity's GameSaver / SaveSystem.SaveGame do: once
+// the scene has started, when a script asks (a collectible's pick-up), and on quitting (the pause
+// menu's Quit, the app closing) — unless the scene was booted directly (as now, until the title
+// screen picks a slot): then, as in Unity's editor, it plays a temporary profile that is never written.
 #include <cstdio>
 #include <string>
 
@@ -59,27 +60,13 @@ void saveIfChanged(const Settings& settings, Settings& saved) {
     saved = settings;
 }
 
-// Writes the game into `profile` and its slot (-1: a profile that couldn't be read: not overwritten).
+// Writes the game into `profile` and its slot (-1: a temporary profile, never written).
 void saveGame(const World& world, SaveProfile& profile, int slot) {
     if (slot < 0) return;
     world.save(profile);
     if (!profile.save(slot)) printf("Couldn't save the profile\n");
 }
 
-// The new-game start (dev builds: outdoors on tile 1 instead of in the house).
-void placeAtStart(World& world, DevControls& dev) {
-    const Area& area = world.area;
-    for (size_t i = 0; i < area.spawns.size(); i++)
-        if (area.spawns[i].name == "Default") {
-            dev.spawnIndex = i;
-            world.placeAt(area.spawns[i]);
-        }
-    if (DEV) {
-        float x, y;
-        world.grid.ownerBase(1, x, y);
-        world.placeNear(x, y);
-    }
-}
 
 } // namespace
 
@@ -110,19 +97,16 @@ int main(int, char**) {
     dev.showPerf = DEV;
     DevOverlay overlay;
     PauseMenu pauseMenu;
-    placeAtStart(world, dev);
-    int slot = 0;
-    SaveProfile profile;
-    switch (SaveProfile::load(slot, profile)) {
-    case SaveProfile::Read::Ok: break;
-    case SaveProfile::Read::None: profile = SaveProfile::make("Cat"); break; // (until the title screen names it)
-    case SaveProfile::Read::Bad:
-        printf("Profile %d is unreadable: playing without saving\n", slot + 1);
-        profile = SaveProfile::make("Cat");
-        slot = -1;
-        break;
+    // The scene booted directly: a temporary profile (SaveSystem.Current's "Boomo", index -1).
+    const int slot = -1;
+    SaveProfile profile = SaveProfile::make("Boomo");
+    world.load(profile); // (a new game at the start)
+    if (const int start = world.placeAtStart(); start >= 0) dev.spawnIndex = start;
+    if (DEV) { // (dev builds start outdoors on tile 1)
+        float x, y;
+        world.grid.ownerBase(1, x, y);
+        world.placeNear(x, y);
     }
-    world.load(profile); // (a new profile: its name, the rest as a new game)
     saveGame(world, profile, slot); // (GameSaver.Start)
 
     while (plat::mainLoop()) {

@@ -20,7 +20,6 @@
 #include "game/npc/npc_walks.h"
 #include "game/npc/npcs.h"
 #include "game/world/object_states.h"
-#include "game/save/profile.h"
 #include "game/save/settings.h"
 #include "game/world/starts.h"
 #include "game/events/triggers.h"
@@ -32,6 +31,8 @@
 #include "game/village/cat_abduction.h"
 #include "game/village/village_intro.h"
 
+struct SaveProfile;
+
 // The player (Player.cs): a position point, the box that collides (on foot or in the boat), and
 // the STile it stands on, which it rides while that tile slides.
 // Who holds the player (Player.SetCanMove(false) + a PauseManager restriction): while any does, it
@@ -39,11 +40,12 @@
 enum PlayerLock : uint8_t { LOCK_DOLLY = 1 }; // (next: ItemPickupEffect)
 
 struct Player {
+    static constexpr float HOUSE_Y = -75; // Player.houseYThreshold: below it, the player is in a house
     float x = 0, y = 0;
     bool onWater = false;
     bool facingLeft = false; // Player.Update flips the sprite by the input's x
     float lastMoveX = 0, lastMoveY = 0; // Player.lastMoveDir: the last non-zero input (item drops go that way)
-    bool inHouse = false;    // Player.SetIsInHouse (house teleports set it)
+    bool inHouse = false;    // Player.SetIsInHouse (house teleports and placing the player set it)
     int stile = 0;           // islandId underneath, 0 = none
     uint8_t locks = 0;       // PlayerLock bits held now
 
@@ -88,7 +90,7 @@ public:
     World(const Area& area, const Settings& settings);
 
     // The scene loaded from `profile` (SaveProfile.Load, then the scene's Starts): its state, the
-    // grid (unless never saved), the player (unless never saved: left where it is), play time.
+    // grid (unless never saved: as authored), the player (unless never saved: placeAtStart), play time.
     void load(const SaveProfile& profile);
     // Profile.Save: writes what the profile keeps (all but its name) from the game as it is now.
     void save(SaveProfile& profile) const;
@@ -109,6 +111,9 @@ public:
     bool setGrid(const std::string& ids);
     // Puts the player at a spawn point (SceneSpawns), in the boat if it says so.
     void placeAt(const Spawn& spawn);
+    // The new game's start: the "Default" spawn (inside tile 1's house). Its Area::spawns index, -1
+    // if the area has none (the player stays put).
+    int placeAtStart();
     // Puts the player at (x, y) on foot (or the nearest spot where it fits, if any).
     void placeNear(float x, float y);
 
@@ -180,7 +185,7 @@ public:
     const Settings& settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
-    float playTime = 0; // seconds played in this profile (PlayTimer: update() adds each frame)
+    double playTime = 0; // seconds played in this profile (PlayTimer: update() adds each frame)
     // A script asked for the game to be saved (SaveSystem.SaveGame: a collectible's pick-up); the
     // frontend saves and clears it.
     bool saveRequested = false;
