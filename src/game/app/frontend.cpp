@@ -120,6 +120,6 @@ void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSki
 void Frontend::drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) const {
     plat::beginScreen(plat::Screen::Bottom, palette::DARK);
     if (pause_.isOpen()) pause_.draw(settings_, skin);
-    else if (mode_ == Mode::Title && screen_.menuShown()) title_.draw(skin);
-    else artifactUI_.draw(world_, sheets);
+    else if (mode_ == Mode::Game) artifactUI_.draw(world_, sheets);
+    else if (screen_.menuShown()) title_.draw(skin); // (before "press any key": empty)
 }

@@ -5,6 +5,10 @@
 #include <string>
 
 #include "game/app/frontend.h"
+#include "game/render/area_view.h"
+#include "game/render/font.h"
+#include "game/render/sprite_sheets.h"
+#include "game/ui/menu_skin.h"
 #include "game/save/profile.h"
 #include "game/ui/title_screen.h"
 #include "test.h"
@@ -217,5 +221,59 @@ TEST(frontend_stylus_held_into_the_game_is_no_artifact_press) {
     f.update(touchAt((int)sx, (int)sy), 0, 0); // (a fresh tap does select it)
     f.update({}, 0, 0);
     CHECK(f.artifactUI().selected() == 1);
+    testUserFiles().clear();
+}
+
+TEST(frontend_draws_every_screen) {
+    // main's loop with both screens drawn each frame (a Debug build asserts on a bad index): the
+    // title before and after "press any key", Options from it, a new game, the pause menu, Quit to
+    // the title, Continue, a direct boot.
+    testUserFiles().clear();
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    Font font;
+    MenuSkin skin;
+    std::string err;
+    CHECK(sheets.load(area) && font.load("fonts/dialogue.json", &err) && skin.load(&err));
+    Settings settings;
+    Frontend f(area, titleArt(), settings);
+    AreaView view;
+    view.setFont(&font);
+    auto step = [&](const plat::Input& in) {
+        f.update(in, 0, 0);
+        f.drawTop(view, sheets, skin, false);
+        f.drawBottom(sheets, skin);
+        testResetDrawCalls();
+    };
+    for (int i = 0; i < 300; i++) step({}); // (the whole intro, prompt included)
+    step(buttons(plat::BTN_A));
+    step({});
+    TitleMenu::Box b;
+    CHECK(f.title().box(TitleMenu::OPTIONS, b));
+    step(touchAt(b.x + 4, b.y + 4));
+    step({});
+    CHECK(f.pauseMenu().isOpen());
+    step(buttons(plat::BTN_B));
+    step({});
+    CHECK(f.title().box(TitleMenu::PLAY, b));
+    step(touchAt(b.x + 4, b.y + 4));
+    step({});
+    for (TitleMenu::Widget w : {(TitleMenu::Widget)TitleMenu::KEY, TitleMenu::DONE}) {
+        CHECK(f.title().box(w, b));
+        step(touchAt(b.x + b.w / 2, b.y + b.h / 2));
+        step({});
+    }
+    CHECK(f.mode() == Frontend::Mode::Game);
+    for (int i = 0; i < 60; i++) step({});
+    for (uint32_t key : {plat::BTN_START, plat::BTN_DOWN, plat::BTN_DOWN, plat::BTN_A, plat::BTN_A}) step(buttons(key));
+    CHECK(f.mode() == Frontend::Mode::Title);
+    for (int i = 0; i < 10; i++) step({});
+    step(buttons(plat::BTN_A)); // (any key)
+    step({});
+    step(buttons(plat::BTN_A)); // Continue
+    CHECK(f.mode() == Frontend::Mode::Game);
+    for (int i = 0; i < 30; i++) step({});
+    f.bootDirect();
+    for (int i = 0; i < 30; i++) step({});
     testUserFiles().clear();
 }
