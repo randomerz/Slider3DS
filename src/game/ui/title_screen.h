@@ -85,6 +85,10 @@ struct TitleArt {
 
 class TitleScreen {
 public:
+    // StartMainMenu's LockoutSelectablesInCurrentMenu: the menu ignores input this long, s. TitleArt
+    // won't load a menuSlide longer than it: the menu's hit boxes stay where it comes to rest.
+    static constexpr float MENU_LOCKOUT = 1;
+
     // The scene loads (MainMenuManager.Start): the intro from its start.
     void start(const TitleArt& art);
     // One frame (the game steps a fixed 60 fps): `in` is the frame's input (any button or touch
@@ -97,7 +101,9 @@ public:
     float time() const { return time_; } // s since start
     float promptAlpha(const TitleArt& art) const; // "[press any key to begin]"'s, 0-1
     float backgroundAlpha(const TitleArt& art) const; // the stars' and images', 0-1
-    float menuDrop(const TitleArt& art) const; // how far below its place the bottom menu is, screen heights
+    // How far below its place the bottom menu is, screen heights: 1 before StartMainMenu
+    // (MainMenuButtonsHidden), then menuSlide's keys.
+    float menuDrop(const TitleArt& art) const;
 
 private:
     struct StarState {

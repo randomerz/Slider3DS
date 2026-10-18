@@ -795,6 +795,21 @@ TEST(animators_curve_keys_evaluate_like_unity) {
     check(std::fabs(evalKeys(flat, 0.25f) - 0.15625f) < 1e-5f, "flat tangents: smoothstep");
     const std::vector<CurveKey> inStep = {{0, 0, 0, 0}, {0.25f, 0.5f, INF, 0}}; // the next key's in tangent infinite
     check(evalKeys(inStep, 0.2f) == 0 && evalKeys(inStep, 0.25f) == 0.5f, "stepped by the next key's in tangent");
+    // Weighted tangents: MainMenuButtonsUp's y (its first key's out side and its last key's in side
+    // weighted), against Unity's AnimationCurve.Evaluate (probed in the editor).
+    CurveKey from{0, -180, 10.221519f, 10.221519f}, to{1, 0, 3.454001f, 3.454001f};
+    from.outW = 0.6667443f;
+    to.inW = 0.6673448f;
+    const std::vector<CurveKey> weighted = {from, to};
+    const float unity[][2] = {{0.1f, -0.98608464f}, {0.25f, -0.9203658f}, {0.5f, -0.489944875f}, {0.75f, -0.06943177f}, {0.9f, -0.0100408457f}};
+    for (const auto& u : unity)
+        check(std::fabs(evalKeys(weighted, u[0]) / 180 - u[1]) < 1e-5f, "weighted at " + std::to_string(u[0]));
+    // Weights of 1/3 on both sides are the plain Hermite.
+    from.outW = to.inW = 0.33333f;
+    const std::vector<CurveKey> thirds = {from, to};
+    from.outW = to.inW = CurveKey::UNWEIGHTED;
+    const std::vector<CurveKey> hermite = {from, to};
+    check(std::fabs(evalKeys(thirds, 0.3f) - evalKeys(hermite, 0.3f)) < 1e-2f, "weights of 1/3: Hermite");
 }
 
 TEST(animators_player_item_holder_bobs) {

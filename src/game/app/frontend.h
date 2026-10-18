@@ -33,7 +33,8 @@ class Frontend {
 public:
     enum class Mode { Title, Game };
     static constexpr float FRAME_DT = 1.0f / 60.0f; // the game steps a fixed 60 fps
-    static constexpr int MENU_LOCKOUT_FRAMES = 60;  // the title menu ignores input 1 s after it appears
+    // The title menu ignores input this long after it appears (TitleScreen::MENU_LOCKOUT).
+    static constexpr int MENU_LOCKOUT_FRAMES = (int)(TitleScreen::MENU_LOCKOUT / FRAME_DT + 0.5f);
 
     // Starts on the title screen. `settings` (main's) and `art` (loaded) must outlive it.
     Frontend(const Area& area, const TitleArt& art, Settings& settings);

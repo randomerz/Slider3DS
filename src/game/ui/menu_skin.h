@@ -68,18 +68,24 @@ public:
     void drawText(std::string_view text, int x, int cy, uint32_t color) const;
     int textWidth(std::string_view text) const { return font_.textWidth(text); }
 
-    // While it lives, everything the skin draws is `dy` UI px lower (a whole panel sliding in; on
-    // the grid, as everything else).
+    // While it lives, everything the skin draws is moved (dx, dy) UI px (a whole panel sliding in;
+    // on the grid, as everything else).
     class Shift {
     public:
-        Shift(const MenuSkin& skin, int dy) : skin_(skin), old_(skin.shiftY_) { skin.shiftY_ += dy; }
-        ~Shift() { skin_.shiftY_ = old_; }
+        Shift(const MenuSkin& skin, int dx, int dy) : skin_(skin), oldX_(skin.shiftX_), oldY_(skin.shiftY_) {
+            skin.shiftX_ += dx;
+            skin.shiftY_ += dy;
+        }
+        ~Shift() {
+            skin_.shiftX_ = oldX_;
+            skin_.shiftY_ = oldY_;
+        }
         Shift(const Shift&) = delete;
         Shift& operator=(const Shift&) = delete;
 
     private:
         const MenuSkin& skin_;
-        int old_;
+        int oldX_, oldY_;
     };
 
 private:
@@ -97,5 +103,5 @@ private:
     Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
     Sprite card_[3], cardBack_, frame_[2], back_[3], trash_[3]; // ([State] / [Frame])
     Font font_;
-    mutable int shiftY_ = 0; // (Shift: a draw-time offset, not the skin's look)
+    mutable int shiftX_ = 0, shiftY_ = 0; // (Shift: a draw-time offset, not the skin's look)
 };

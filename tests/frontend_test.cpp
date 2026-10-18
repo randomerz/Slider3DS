@@ -301,13 +301,17 @@ TEST(frontend_title_menu_slides_up_as_it_comes_in) {
     frames(f, 30);
     f.update(buttons(plat::BTN_A), 0, 0);
     const float start = menuTop();
-    frames(f, Frontend::MENU_LOCKOUT_FRAMES / 2);
-    const float mid = menuTop();
-    frames(f, Frontend::MENU_LOCKOUT_FRAMES / 2);
+    frames(f, Frontend::MENU_LOCKOUT_FRAMES / 4);
+    const float quarter = menuTop();
+    const float quarterDrop = f.titleScreen().menuDrop(titleArt());
+    frames(f, Frontend::MENU_LOCKOUT_FRAMES * 3 / 4);
     const float rest = menuTop();
-    CHECK(rest == menuTop(true) && mid > rest && mid < start);
-    TitleMenu::Box b; // (the top button; no cursor yet at the start)
+    CHECK(rest == menuTop(true));
+    TitleMenu::Box b; // (the top button; no cursor yet at the start or a quarter in)
     CHECK(f.title().box(TitleMenu::CONTINUE, b) && start == b.y + plat::BOTTOM_H);
+    // A quarter in (16 frames: the key's own frame counts): Unity's curve (weighted) has it 0.908
+    // screens low; Hermite would have it at 0.817.
+    CHECK(std::fabs(quarterDrop - 0.908f) < 0.002f && quarter == b.y + 2 * std::lround(quarterDrop * plat::BOTTOM_H / 2));
     testUserFiles().clear();
 }
 
@@ -386,5 +390,22 @@ TEST(title_art_rejects_a_bad_spread) {
     }
     testSetFile("ui/title_extra.json", original);
     TitleArt art;
+    CHECK(art.load());
+}
+
+TEST(title_art_rejects_a_menu_slide_longer_than_the_lockout) {
+    // The menu's hit boxes stay where it comes to rest: it must be there before input comes back.
+    std::string original;
+    CHECK(plat::readFile("ui/title.json", original));
+    const size_t slide = original.find("\"menuSlide\"");
+    const size_t last = original.find("[1, 0,", slide);
+    CHECK(slide != std::string::npos && last != std::string::npos && last < original.find('\n', slide));
+    std::string longer = original;
+    longer.replace(last, 6, "[1.5, 0,");
+    testSetFile("ui/title.json", longer);
+    TitleArt art;
+    std::string error;
+    CHECK(!art.load(&error) && error.find("lockout") != std::string::npos);
+    testSetFile("ui/title.json", original);
     CHECK(art.load());
 }

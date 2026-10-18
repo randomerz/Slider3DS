@@ -111,11 +111,11 @@ void MenuSkin::unload() {
 }
 
 void MenuSkin::draw(const Sprite& s, int x, int y) const {
-    plat::drawSprite(sheet_, s.x, s.y, s.w, s.h, (float)(x * S), (float)((y + shiftY_) * S), 0, S);
+    plat::drawSprite(sheet_, s.x, s.y, s.w, s.h, (float)((x + shiftX_) * S), (float)((y + shiftY_) * S), 0, S);
 }
 
 void MenuSkin::fillRect(int x, int y, int w, int h, uint32_t color) const {
-    plat::drawRect((float)(x * S), (float)((y + shiftY_) * S), (float)(w * S), (float)(h * S), color);
+    plat::drawRect((float)((x + shiftX_) * S), (float)((y + shiftY_) * S), (float)(w * S), (float)(h * S), color);
 }
 
 void MenuSkin::drawNineSlice(const Sprite& s, int x, int y, int w, int h) const {
@@ -124,9 +124,10 @@ void MenuSkin::drawNineSlice(const Sprite& s, int x, int y, int w, int h) const 
     const int sws[3] = {s.left, s.w - s.left - s.right, s.right};
     const int sys[3] = {s.y, s.y + s.top, s.y + s.h - s.bottom};
     const int shs[3] = {s.top, s.h - s.top - s.bottom, s.bottom};
+    x += shiftX_;
+    y += shiftY_;
     const int xs[3] = {x, x + s.left, x + w - s.right};
     const int ws[3] = {s.left, w - s.left - s.right, s.right};
-    y += shiftY_;
     const int ys[3] = {y, y + s.top, y + h - s.bottom};
     const int hs[3] = {s.top, h - s.top - s.bottom, s.bottom};
     for (int row = 0; row < 3; row++)
@@ -143,7 +144,7 @@ void MenuSkin::drawNineSlice(const Sprite& s, int x, int y, int w, int h) const 
 void MenuSkin::drawText(std::string_view text, int x, int cy, uint32_t color) const {
     const GlyphRect& cap = font_.def().glyph('A').text;
     const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
-    font_.drawText(text, (float)(x * S), (float)((baseline + shiftY_) * S), S, color);
+    font_.drawText(text, (float)((x + shiftX_) * S), (float)((baseline + shiftY_) * S), S, color);
 }
 
 void MenuSkin::drawTitle(std::string_view text, int cx, int cy) const {

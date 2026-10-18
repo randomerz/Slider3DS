@@ -18,9 +18,17 @@ constexpr float SHAKE_DURATION = 0.25f, SHAKE_AMOUNT = 0.2f;
 constexpr float MAX_TIME_ON = 50, MAX_TIME_OFF = 1;
 constexpr float PX_PER_UNIT = 16;
 
+// [t, v, in, out] or, weighted, [t, v, in, out, inWeight, outWeight].
 std::vector<CurveKey> readKeys(const Json& j) {
     std::vector<CurveKey> keys;
-    for (const Json& k : j.items()) keys.push_back({k.at(0).asFloat(), k.at(1).asFloat(), k.at(2).asFloat(), k.at(3).asFloat()});
+    for (const Json& k : j.items()) {
+        CurveKey key{k.at(0).asFloat(), k.at(1).asFloat(), k.at(2).asFloat(), k.at(3).asFloat()};
+        if (k.size() >= 6) {
+            key.inW = k.at(4).asFloat();
+            key.outW = k.at(5).asFloat();
+        }
+        keys.push_back(key);
+    }
     return keys;
 }
 
@@ -129,6 +137,8 @@ bool TitleArt::load(std::string* error) {
     if (!ok || backgroundFade.empty() || menuSlide.empty() || logo.letters.empty() || logo.slideIn.empty() || logo.riseY.empty() ||
         player.riseY.empty() || prompt.fade.empty() || prompt.fadeOutSpeed <= 0)
         return fail("ui/title.json: a missing sprite, curve or timing");
+    if (menuSlide.back().t > TitleScreen::MENU_LOCKOUT)
+        return fail("ui/title.json: the menu slides in for longer than its lockout");
     sheet = plat::loadSheet(sheetDoc["sheet"].asString().c_str());
     if (!sheet) return fail("can't load the title sheet " + sheetDoc["sheet"].asString());
     return true;
