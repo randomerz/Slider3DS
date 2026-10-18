@@ -334,3 +334,19 @@ TEST(title_prompt_fades_on_the_originals_curve) {
     const float out = s.promptAlpha(titleArt());
     check(out > 0.8f && out < 0.88f, "a quarter out: " + std::to_string(out));
 }
+
+TEST(title_art_rejects_a_bad_spread) {
+    // title_extra.json is generated; a broken one fails the load (and the boot) instead of drawing
+    // the background collapsed or mirrored.
+    std::string original;
+    CHECK(plat::readFile("ui/title_extra.json", original));
+    for (const char* spread : {"[0, 1]", "[1, -2]", "[]"}) {
+        testSetFile("ui/title_extra.json", std::string("{\"spread\": ") + spread + ", \"stars\": []}");
+        TitleArt art;
+        std::string error;
+        check(!art.load(&error) && error.find("spread") != std::string::npos, std::string("rejects spread ") + spread);
+    }
+    testSetFile("ui/title_extra.json", original);
+    TitleArt art;
+    CHECK(art.load());
+}

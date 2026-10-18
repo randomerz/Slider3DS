@@ -148,6 +148,7 @@ TEST(title_menu_deletes_after_confirm) {
     CHECK(m.confirming() == 0);
     tap(m, Menu::CONFIRM);
     CHECK(m.card(0).status == SaveProfile::Read::None && m.card(1).status == SaveProfile::Read::Ok);
+    CHECK(m.selected() == Menu::CARD); // (the cursor stays on the deleted card, not back on Back)
     CHECK(testUserFiles().count(SaveProfile::fileName(0)) == 0 && m.confirming() == -1 && !m.box(Menu::CONFIRM, b));
     CHECK(m.deleting()); // (still deleting, as the original)
     tap(m, Menu::TRASH);
@@ -218,6 +219,8 @@ TEST(title_menu_moves_only_to_what_lines_up) {
     CHECK(from(Menu::CAPS, plat::BTN_LEFT) == Menu::CAPS && from(Menu::CAPS, plat::BTN_UP) == key('z'));
     CHECK(from(Menu::DONE, plat::BTN_UP) == key('m') && from(key('q'), plat::BTN_UP) == Menu::NEW_BACK);
     CHECK(from(key('e'), plat::BTN_UP) == key('e')); // (nothing above it)
+    // The middle row's ends miss the bottom row by the space between keys: still lined up (NEAR).
+    CHECK(from(key('a'), plat::BTN_DOWN) == key('z') && from(key('l'), plat::BTN_DOWN) == key('m'));
     testUserFiles().clear();
 }
 

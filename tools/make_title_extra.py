@@ -65,31 +65,36 @@ def main():
     half = sum(font.get(ord(c), 0) for c in pr["text"]) / 2
     avoid.append([pr["pos"][0] - half, pr["pos"][1] - 4, pr["pos"][0] + half, pr["pos"][1] + 4])
 
-    def clear(x, y):
-        if abs(x) > SCREEN_W / 2 - MARGIN or abs(y) > SCREEN_H / 2 - MARGIN:
+    def clear(x, y, half):
+        """A star `half` px from its center to its edge fits at (x, y)."""
+        m = MARGIN + half
+        if abs(x) > SCREEN_W / 2 - m or abs(y) > SCREEN_H / 2 - m:
             return False
-        return all(not (l - MARGIN < x < r + MARGIN and b - MARGIN < y < t + MARGIN) for l, b, r, t in avoid)
+        return all(not (l - m < x < r + m and b - m < y < t + m) for l, b, r, t in avoid)
 
-    # Best-candidate sampling: each new star as far as possible from every other one.
+    # Sizes first, in the exported stars' mix (each size's on / off sprites, as often as the original
+    # has it), so each new star keeps clear by its own size.
     random.seed(3)
+    mix = collections.Counter((on, off) for _, on, off in stars)
+    kinds = [kind for kind, n in sorted(mix.items()) for _ in range(n)]
+    random.shuffle(kinds)
+    count = round(len(stars) * (sx * sy - 1))  # the original's density over the bigger screen
+    # Best-candidate sampling: each new star as far as possible from every other one.
     points = [pt for pt, _, _ in stars]
-    extra = []
-    for _ in range(round(len(stars) * (sx * sy - 1))):  # the original's density over the bigger screen
+    extra_stars = []
+    for i in range(count):
+        on, off = kinds[i % len(kinds)]
+        half = max(sheet[on]["rect"][2:]) / 2
         best, best_dist = None, -1
         for _ in range(60):
             x, y = random.uniform(-SCREEN_W / 2, SCREEN_W / 2), random.uniform(-SCREEN_H / 2, SCREEN_H / 2)
-            if not clear(x, y):
+            if not clear(x, y, half):
                 continue
             dist = min(math.hypot(x - px, y - py) for px, py in points)
             if dist > best_dist:
                 best, best_dist = (round(x), round(y)), dist
         points.append(best)
-        extra.append(best)
-    # Sizes in the exported stars' mix (each size's on / off sprites, as often as the original has it).
-    mix = collections.Counter((on, off) for _, on, off in stars)
-    kinds = [kind for kind, n in sorted(mix.items()) for _ in range(n)]
-    random.shuffle(kinds)
-    extra_stars = [{"pos": list(pt), "on": kinds[i % len(kinds)][0], "off": kinds[i % len(kinds)][1]} for i, pt in enumerate(extra)]
+        extra_stars.append({"pos": list(best), "on": on, "off": off})
     with open(os.path.join(REPO, "assets", "ui", "title_extra.json"), "w", newline="\n") as f:
         f.write('{\n  "spread": [%r, %r],\n  "stars": [\n    ' % (sx, sy))
         f.write(",\n    ".join(json.dumps(s, separators=(", ", ": ")) for s in extra_stars))

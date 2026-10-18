@@ -183,10 +183,11 @@ int TitleMenu::itemAt(int x, int y) const {
 
 void TitleMenu::move(int dx, int dy) {
     // The nearest usable widget that way that lines up with this one (shares some of its columns for
-    // up / down, its rows for left / right, or misses them by at most NEAR px: the keyboard's rows are
-    // offset by half a key): the smallest gap, then the closest center. Nothing lines up: the cursor
-    // stays (no diagonal jumps).
-    constexpr int NEAR = 2;
+    // up / down, its rows for left / right, or misses them by at most NEAR px): the smallest gap,
+    // then the closest center. Nothing lines up: the cursor stays (no diagonal jumps). NEAR spans the
+    // space between two keys: the bottom row sits a key and a half in, so the middle row's end keys
+    // (a, l) miss its own by just that and still go down to it (z, m).
+    constexpr int NEAR = KEY_PITCH - KEY_SIZE + 1;
     const std::vector<Item> all = items();
     const Item* from = nullptr;
     for (const Item& it : all)
@@ -252,6 +253,7 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
     } else if (w == CONFIRM) {
         if (!SaveProfile::remove(confirm_)) printf("Couldn't delete profile %d\n", confirm_ + 1);
         readCards();
+        selected_ = (Widget)(CARD + confirm_); // (its card, now empty: a second A doesn't leave the page)
         confirm_ = -1;
     } else if (w >= KEY && w < CAPS) {
         if ((int)name_.size() < MAX_NAME) {
@@ -274,8 +276,9 @@ TitleMenu::Action TitleMenu::activate(Widget w) {
 
 TitleMenu::Action TitleMenu::update(const plat::Input& in) {
     const Page page = page_;
+    const bool locked = lockout_ > 0;
     Action action;
-    if (lockout_ > 0) {
+    if (locked) {
         lockout_--;
         tap_.update(in, S, [](int, int) { return -1; }); // (a touch that goes down now is on nothing)
     } else if (in.pressed & plat::BTN_B) back();
@@ -285,7 +288,7 @@ TitleMenu::Action TitleMenu::update(const plat::Input& in) {
     else if (in.pressed & plat::BTN_LEFT) move(-1, 0);
     else if (in.pressed & plat::BTN_RIGHT) move(1, 0);
 
-    if (lockout_ == 0 && page_ == page) { // (a button changed the page: the touch waits for its release)
+    if (!locked && page_ == page) { // (a button changed the page: the touch waits for its release)
         const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y); });
         if (f.down >= 0) selected_ = (Widget)f.down;
         if (f.tapped >= 0) action = activate((Widget)f.tapped);

@@ -6,7 +6,7 @@
 //            unreadable one only says so (delete it to reuse the slot). The trash icon toggles delete
 //            mode ("Delete file?", names with "?", grayed; the icon itself shows only the cursor, as
 //            the original's): a profile's card blinks to be confirmed,
-//            then Confirm deletes it (an empty card still opens New Save). While no slot has a
+//            then Confirm deletes it, leaving the cursor on its card (an empty card still opens New Save). While no slot has a
 //            file, Play goes straight to New Save for the first slot (SavePanelManager.OpenSaves:
 //            its skip flag is cleared whenever the panel closes, so every Play from Main skips;
 //            back from New Save lands on Saves).
