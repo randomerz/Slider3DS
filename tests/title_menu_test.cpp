@@ -151,8 +151,10 @@ TEST(title_menu_deletes_after_confirm) {
     CHECK(m.selected() == Menu::CARD); // (the cursor stays on the deleted card, not back on Back)
     CHECK(testUserFiles().count(SaveProfile::fileName(0)) == 0 && m.confirming() == -1 && !m.box(Menu::CONFIRM, b));
     CHECK(m.deleting()); // (still deleting, as the original)
-    tap(m, Menu::TRASH);
-    CHECK(!m.deleting());
+    press(m, plat::BTN_A); // a second A: the now-empty card opens New Save there, as the original's
+    CHECK(m.page() == Menu::Page::NewSave);
+    press(m, plat::BTN_B);
+    CHECK(m.page() == Menu::Page::Saves && !m.deleting()); // (Saves closed meanwhile: delete mode ended)
     // Leaving Saves ends delete mode.
     tap(m, Menu::TRASH);
     press(m, plat::BTN_B);

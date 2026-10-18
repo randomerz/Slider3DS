@@ -6,8 +6,9 @@ this, filling 400x240; the logo, player and prompt stay put), "logoDown": px the
 to make room for its buttons, which the port has on the bottom screen: it stays centered),
 "stars": extra stars in the gaps
 (best-candidate sampling, at the original's density and size mix, kept clear of the images, the
-logo, the player and the prompt over their whole motion)}, and a 2x preview in preview/title_spread.png.
-Everything it avoids is read from the exported data (title.json, title_sheet.json, the menu font).
+logo and the player over their whole motion; not the prompt: it only shows while the stars are
+hidden)}, and a 2x preview in preview/title_spread.png.
+Everything it avoids is read from the exported data (title.json, title_sheet.json).
 
 Usage: python tools/make_title_extra.py   (needs Pillow; run make_ui.py first if title.json changed)
 """
@@ -34,10 +35,9 @@ def load(*path):
 def main():
     d = load("assets", "ui", "title.json")
     sheet = load("assets", "ui", "title_sheet.json")["sprites"]
-    font = {g["c"]: g["adv"] for g in load("assets", "fonts", "menu.json")["glyphs"]}
     img = Image.open(os.path.join(REPO, "assets", "sheets", "ui_title.png")).convert("RGBA")
     sx, sy = SCREEN_W / VIEW_W, SCREEN_H / VIEW_H
-    # The port's layout, as TitleArt::load applies it.
+    # The port's layout, as TitleArt::load / TitleScreen::draw apply it (playerRises false: no rise).
     d["logo"]["restY"] -= LOGO_DOWN
     for k in d["logo"]["riseY"]:
         k[1] -= LOGO_DOWN
@@ -69,13 +69,10 @@ def main():
         bob = abs(l["sin"][0]) + abs(l["sin"][3])
         for y in (lo - bob, hi + bob):
             avoid.append(box(l["sprite"], logo["origin"][0], logo["origin"][1] + y))
-    # The player, at rest and risen; the prompt's text (its width in the menu font, its cap height).
+    # The player, at rest and risen.
     p = d["player"]
     lo, hi = keys_range(p["riseY"])
     avoid.append(union([box(f, p["pos"][0], p["pos"][1] + y) for f in p["frames"] for y in (lo, hi)]))
-    pr = d["prompt"]
-    half = sum(font.get(ord(c), 0) for c in pr["text"]) / 2
-    avoid.append([pr["pos"][0] - half, pr["pos"][1] - 4, pr["pos"][0] + half, pr["pos"][1] + 4])
 
     def clear(x, y, half):
         """A star `half` px from its center to its edge fits at (x, y)."""

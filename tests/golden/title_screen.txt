@@ -2,5 +2,5 @@
 title_start 7:b4f08f052e814560
 title_logo_landing 7:e14c68ac59f0073c
 title_prompt 27:4d7c767c5125944b
-title_rising 109:c044b85c62af43af
-title_stars_in 108:570eb5e004f6f84f
+title_rising 109:de1a4911d41f27eb
+title_stars_in 108:07e480fec3bf3523
