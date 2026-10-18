@@ -217,6 +217,7 @@ void TitleMenu::move(int dx, int dy) {
 }
 
 TitleMenu::Action TitleMenu::activate(Widget w) {
+    clicked_ = true;
     Action a;
     if (w == CONTINUE) {
         a.kind = Action::Kind::Play;
@@ -278,6 +279,7 @@ TitleMenu::Action TitleMenu::update(const plat::Input& in) {
     const Page page = page_;
     const bool locked = lockout_ > 0;
     Action action;
+    clicked_ = false;
     if (locked) {
         lockout_--;
         tap_.update(in, S, [](int, int) { return -1; }); // (a touch that goes down now is on nothing)

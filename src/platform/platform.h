@@ -106,4 +106,25 @@ FrameStats lastFrameStats();
 // Monotonic time in milliseconds (sub-millisecond resolution), for timing code.
 double nowMs();
 
+// ---- Audio ----
+// The game mixes (game/audio) and the backend only plays: stereo int16 blocks at AUDIO_RATE, in
+// order. audioBlocksWanted() is how many more blocks it wants now: it keeps a short queue filled, so
+// a frame that runs long doesn't starve it (0 when audio is unavailable: nothing to mix).
+constexpr int AUDIO_RATE = 32000;
+constexpr int AUDIO_BLOCK = 512; // frames per block (16 ms)
+int audioBlocksWanted();
+void queueAudioBlock(const int16_t* stereo); // AUDIO_BLOCK frames, interleaved L R
+
+// Ogg Vorbis files among the assets (paths as readFile's), decoded as they're read.
+struct Ogg; // opaque, backend-specific
+Ogg* openOgg(const char* path); // nullptr if missing or not Ogg Vorbis
+void closeOgg(Ogg* ogg);
+int oggChannels(const Ogg* ogg);
+int oggRate(const Ogg* ogg);
+int64_t oggFrames(const Ogg* ogg); // the length, in frames
+// Decodes up to `frames` frames (interleaved int16) from the current position; returns how many
+// (fewer only at the end, 0 there).
+int readOgg(Ogg* ogg, int16_t* out, int frames);
+bool seekOgg(Ogg* ogg, int64_t frame); // exact (the next read starts at that frame)
+
 } // namespace plat

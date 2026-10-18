@@ -221,6 +221,7 @@ int PauseMenu::itemAt(int x, int y) const {
 
 PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
     if (def.act != Act::Quit) confirmQuit_ = false;
+    if (def.kind != Kind::Slider) clicked_ = true;
     if (def.kind == Kind::Toggle) settings.*def.flag = !(settings.*def.flag);
     switch (def.act) {
     case Act::None: break; // (an option; a slider moves with left / right or the stylus)
@@ -241,11 +242,15 @@ PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
 }
 
 void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
-    if (def.kind == Kind::Toggle) settings.*def.flag = !(settings.*def.flag);
+    if (def.kind == Kind::Toggle) {
+        settings.*def.flag = !(settings.*def.flag);
+        clicked_ = true;
+    }
     if (def.kind == Kind::Slider) settings.*def.value = Settings::snap(settings.*def.value + dir / (float)Settings::STEPS);
 }
 
 PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
+    clicked_ = false;
     if (!open_) return Action::None;
     const Action action = handleInput(in, settings);
     bounce_.update((int)page_ * ITEM_COUNT + cursor_);

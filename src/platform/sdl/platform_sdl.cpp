@@ -4,8 +4,11 @@
 // Keys (Citra/Azahar defaults): arrows = D-pad, X = A, Z = B, S = X, A = Y,
 // Q = L, W = R, Enter = START, Backspace = SELECT.
 //
+// Audio: SDL's queue (SDL_QueueAudio) at AUDIO_RATE, kept AUDIO_QUEUE_BLOCKS ahead; no device (or
+// the screenshot hook below) = silent.
+//
 // Dev hook: if SLIDER3DS_SCREENSHOT=<file.bmp> is set, the window is saved there after
-// SCREENSHOT_FRAME frames and the app quits (lets tools verify rendering headlessly).
+// SCREENSHOT_FRAME frames and the app quits (lets tools verify rendering headlessly), without audio.
 #include "platform/platform.h"
 
 #include <SDL.h>
@@ -41,6 +44,8 @@ constexpr int BOTTOM_Y = TOP_H;
 
 SDL_Window* g_window = nullptr;
 SDL_Renderer* g_renderer = nullptr;
+SDL_AudioDeviceID g_audio = 0;
+constexpr int AUDIO_QUEUE_BLOCKS = 4; // ~64 ms
 bool g_quit = false;
 uint32_t g_prevHeld = 0;
 
@@ -93,10 +98,22 @@ bool init() {
         SDL_Log("IMG_Init failed: %s", IMG_GetError());
         return false;
     }
+    if (!std::getenv("SLIDER3DS_SCREENSHOT")) {
+        SDL_AudioSpec want{};
+        want.freq = AUDIO_RATE;
+        want.format = AUDIO_S16SYS;
+        want.channels = 2;
+        want.samples = AUDIO_BLOCK;
+        if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0 || !(g_audio = SDL_OpenAudioDevice(nullptr, 0, &want, nullptr, 0)))
+            SDL_Log("No audio: %s", SDL_GetError()); // (plays on silently)
+        else
+            SDL_PauseAudioDevice(g_audio, 0);
+    }
     return true;
 }
 
 void shutdown() {
+    if (g_audio) SDL_CloseAudioDevice(g_audio);
     IMG_Quit();
     SDL_DestroyRenderer(g_renderer);
     SDL_DestroyWindow(g_window);
@@ -332,6 +349,16 @@ void endFrame() {
     }
     SDL_RenderPresent(g_renderer);
     paceFrame();
+}
+
+int audioBlocksWanted() {
+    if (!g_audio) return 0;
+    const int queued = (int)(SDL_GetQueuedAudioSize(g_audio) / (AUDIO_BLOCK * 2 * sizeof(int16_t)));
+    return queued < AUDIO_QUEUE_BLOCKS ? AUDIO_QUEUE_BLOCKS - queued : 0;
+}
+
+void queueAudioBlock(const int16_t* stereo) {
+    if (g_audio) SDL_QueueAudio(g_audio, stereo, AUDIO_BLOCK * 2 * sizeof(int16_t));
 }
 
 } // namespace plat

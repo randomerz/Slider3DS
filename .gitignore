@@ -48,3 +48,4 @@ preview/
 # Generated RomFS content (Makefile builds it from assets/)
 romfs/gfx/
 romfs/*/*.json
+romfs/audio/

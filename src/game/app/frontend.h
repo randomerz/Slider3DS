@@ -12,10 +12,13 @@
 // directly (dev) plays a temporary profile that is never written (Unity editor's "Boomo", index -1).
 // The player's Settings (owned by main) are saved when a menu that may change them closes, and when
 // the app closes with them changed.
+// What to play (audio()) gathers the World's cues with the title's music (MainMenuManager: "Main
+// Menu", MainMenuActivated set at StartMainMenu) and the menus' clicks; main plays them.
 // Every switch between screens releases the stylus held across it, so a touch never carries over
 // as a tap or a drag.
 #pragma once
 
+#include "game/audio/audio_cues.h"
 #include "game/save/profile.h"
 #include "game/save/settings.h"
 #include "game/ui/artifact_ui.h"
@@ -63,6 +66,8 @@ public:
     const TitleScreen& titleScreen() const { return screen_; }
     const PauseMenu& pauseMenu() const { return pause_; }
     const ArtifactUI& artifactUI() const { return artifactUI_; }
+    // What's asked of AudioManager since main last took it.
+    AudioCues& audio() { return audio_; }
 
 private:
     void startGame(SaveProfile profile, int slot);
@@ -80,6 +85,7 @@ private:
     PauseMenu pause_;
     ArtifactUI artifactUI_;
     Mode mode_ = Mode::Title;
+    AudioCues audio_;
     SaveProfile profile_;
     int slot_ = -1;
 };

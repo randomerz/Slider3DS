@@ -81,13 +81,13 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lcitro2d -lcitro3d -lctru -lm
+LIBS	:= -lvorbisidec -logg -lcitro2d -lcitro3d -lctru -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CTRULIB)
+LIBDIRS	:= $(PORTLIBS) $(CTRULIB)
 
 
 #---------------------------------------------------------------------------------
@@ -193,19 +193,22 @@ endif
 #   assets/sheets/<name>.png -> romfs/gfx/<name>.t3x   (tex3ds, in the lossless format named by
 #                               assets/sheets/<name>.fmt: la8 for gray sheets, else rgba8; incl. the
 #                               font atlas, tools/make_font.py)
-#   assets/<dir>/*.json      -> romfs/<dir>/*.json    (copied: areas, fonts)
+#   assets/<dir>/*.json      -> romfs/<dir>/*.json    (copied: areas, fonts, audio/audio.json)
+#   assets/audio/*.ogg       -> romfs/audio/*.ogg     (copied: tools/make_audio.py's renders)
 # The .3dsx embeds RomFS, so it is rebuilt when any of these change.
 #---------------------------------------------------------------------------------
 SHEET_PNGS	:=	$(wildcard assets/sheets/*.png)
 ROMFS_SHEETS	:=	$(patsubst assets/sheets/%.png,$(ROMFS)/gfx/%.t3x,$(SHEET_PNGS))
 AREA_JSONS	:=	$(wildcard assets/*/*.json)
 ROMFS_JSONS	:=	$(patsubst assets/%,$(ROMFS)/%,$(AREA_JSONS))
-export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS))
+AUDIO_OGGS	:=	$(wildcard assets/audio/*.ogg)
+ROMFS_OGGS	:=	$(patsubst assets/%,$(ROMFS)/%,$(AUDIO_OGGS))
+export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_OGGS))
 
 .PHONY: all clean
 
 #---------------------------------------------------------------------------------
-all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS)
+all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_OGGS)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 $(BUILD):
@@ -224,7 +227,7 @@ endif
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS)/gfx $(ROMFS)/*/*.json
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS)/gfx $(ROMFS)/*/*.json $(ROMFS)/audio
 
 #---------------------------------------------------------------------------------
 $(ROMFS)/gfx/%.t3x	:	assets/sheets/%.png assets/sheets/%.fmt
@@ -235,6 +238,12 @@ $(ROMFS)/gfx/%.t3x	:	assets/sheets/%.png assets/sheets/%.fmt
 
 #---------------------------------------------------------------------------------
 $(ROMFS)/%.json	:	assets/%.json
+#---------------------------------------------------------------------------------
+	@mkdir -p $(dir $@)
+	@cp $< $@
+
+#---------------------------------------------------------------------------------
+$(ROMFS)/audio/%.ogg	:	assets/audio/%.ogg
 #---------------------------------------------------------------------------------
 	@mkdir -p $(dir $@)
 	@cp $< $@

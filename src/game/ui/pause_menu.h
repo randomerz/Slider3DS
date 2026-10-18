@@ -49,6 +49,8 @@ public:
     };
 
     bool isOpen() const { return open_; }
+    // A button or toggle was used this frame (its UIClick: the click sound; sliders make none).
+    bool clicked() const { return clicked_; }
     // Opens on `start` (its first item selected): Paused in the game, Options from the title screen.
     // Backing out of the page it opened on closes it (Resume).
     void open(Page start = Page::Paused);
@@ -82,6 +84,7 @@ private:
     Page root_ = Page::Paused; // the page it opened on
     int cursor_ = 0; // index on the page
     bool confirmQuit_ = false;
+    bool clicked_ = false;
     MenuTap tap_; // stylus taps on the page's items (indices)
     bool sliding_ = false; // the touch went down on the pressed item's slider: it drags it
     BracketBounce bounce_;

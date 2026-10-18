@@ -6,7 +6,8 @@
 //   Cutscenes (the intro's camera dolly): hold A to skip
 //   Bottom screen in the game: the Artifact (tap a tile, then a highlighted slot, or drag it there)
 // The new-game start is the Default spawn inside tile 1's house. The player's Settings live here,
-// loaded at start (the Frontend saves them when they change).
+// loaded at start (the Frontend saves them when they change). Audio (game/audio) plays what the
+// Frontend asks each frame, at the Settings' volumes.
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) add a perf overlay
 // (game/dev/dev_overlay; SELECT toggles it), R on the title screen (boot the Village directly,
 // outdoors on tile 1, on a temporary profile that is never written) and in the game:
@@ -20,6 +21,7 @@
 
 #include "dev_controls.h"
 #include "game/app/frontend.h"
+#include "game/audio/audio.h"
 #include "game/data/area.h"
 #include "game/dev/dev_overlay.h"
 #include "game/render/area_view.h"
@@ -58,9 +60,10 @@ int main(int, char**) {
     Font font;
     MenuSkin menuSkin;
     TitleArt titleArt;
+    Audio audio;
     std::string error;
     if (!loadArea("village/village.json", area, &error) || !sheets.load(area) || !font.load("fonts/dialogue.json", &error) ||
-        !menuSkin.load(&error) || !titleArt.load(&error)) {
+        !menuSkin.load(&error) || !titleArt.load(&error) || !audio.load(&error)) {
         printf("Failed to load village: %s\n", error.c_str());
         showLoadError();
         plat::shutdown();
@@ -96,6 +99,10 @@ int main(int, char**) {
             }
             if (!front.update(in, moveX, moveY, DEV && dev.noclip)) break;
         }
+        audio.setVolumes(settings);
+        audio.setPaused(front.mode() == Frontend::Mode::Game && front.pauseMenu().isOpen()); // (AudioManager.SetPaused)
+        audio.run(front.audio().take());
+        audio.pump();
         const float updateMs = (float)(plat::nowMs() - updateStart);
 
         plat::beginFrame();
@@ -112,6 +119,7 @@ int main(int, char**) {
     }
     front.shutdown();
 
+    audio.unload();
     titleArt.unload();
     menuSkin.unload();
     font.unload();

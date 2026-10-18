@@ -5,6 +5,7 @@
 #include <string>
 
 #include "game/app/frontend.h"
+#include "game/audio/sounds.h"
 #include "game/render/area_view.h"
 #include "game/render/font.h"
 #include "game/render/sprite_sheets.h"
@@ -408,4 +409,43 @@ TEST(title_art_rejects_a_menu_slide_longer_than_the_lockout) {
     CHECK(!art.load(&error) && error.find("lockout") != std::string::npos);
     testSetFile("ui/title.json", original);
     CHECK(art.load());
+}
+
+namespace {
+
+int countCues(const std::vector<AudioCue>& cues, AudioCue::Kind kind, const std::string& name, float value = -1) {
+    int n = 0;
+    for (const AudioCue& c : cues) n += c.kind == kind && c.name == name && (value < 0 || c.value == value) ? 1 : 0;
+    return n;
+}
+
+} // namespace
+
+TEST(frontend_asks_for_the_title_music_the_clicks_and_the_villages_music) {
+    testUserFiles().clear();
+    Settings settings;
+    Frontend f(villageArea(), titleArt(), settings);
+    using K = AudioCue::Kind;
+    // MainMenuManager.Start: its music (not restarted if playing), the full arrangement held back.
+    std::vector<AudioCue> cues = f.audio().take();
+    CHECK(cues.size() == 2 && cues[0].kind == K::PlayMusic && cues[0].name == tracks::MAIN_MENU && !cues[0].restart);
+    CHECK(countCues(cues, K::SetParameter, audio_params::MAIN_MENU_ACTIVATED, 0) == 1);
+    showMenu(f); // (StartMainMenu)
+    cues = f.audio().take();
+    CHECK(countCues(cues, K::SetParameter, audio_params::MAIN_MENU_ACTIVATED, 1) == 1 &&
+          countCues(cues, K::Play, sounds::UI_CLICK) == 0);
+    newGame(f); // (three taps: Play, a key, Done)
+    cues = f.audio().take();
+    CHECK(countCues(cues, K::Play, sounds::UI_CLICK) == 3);
+    CHECK(!cues.empty() && cues.back().kind == K::PlayMusic && cues.back().name == tracks::VILLAGE); // (VillageGrid.Start)
+    // Pause > Quit (asked twice: two clicks) and the title's music again.
+    f.update(buttons(plat::BTN_START), 0, 0);
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    f.update(buttons(plat::BTN_A), 0, 0);
+    f.update(buttons(plat::BTN_A), 0, 0);
+    cues = f.audio().take();
+    CHECK(f.mode() == Frontend::Mode::Title && countCues(cues, K::Play, sounds::UI_CLICK) == 2 &&
+          countCues(cues, K::PlayMusic, tracks::MAIN_MENU) == 1);
+    testUserFiles().clear();
 }

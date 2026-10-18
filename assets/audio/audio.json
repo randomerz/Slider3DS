@@ -1,0 +1,38 @@
+{
+ "rate": 32000,
+ "sounds": {
+  "UI Click": {
+   "clips": ["sfx_ui_click.ogg"],
+   "volume": 0.0,
+   "pitchRandom": 2.0833,
+   "pitchParam": true,
+   "canPause": false
+  }
+ },
+ "music": {
+  "Main Menu": {
+   "file": "music_main_menu.ogg",
+   "volume": -19.209,
+   "attack": 0,
+   "release": 0,
+   "length": 3552653,
+   "jumps": [
+    [204800, 102400, "MainMenuActivated", 0, 0],
+    [3481600, 3552653],
+    [3629453, 76800]
+   ]
+  },
+  "Village": {
+   "file": "music_village.ogg",
+   "volume": -8.0,
+   "attack": 1.0,
+   "release": 1.0,
+   "length": 8384261,
+   "jumps": [
+    [8294400, 8384261],
+    [8441861, 57600]
+   ]
+  }
+ },
+ "ambience": {}
+}

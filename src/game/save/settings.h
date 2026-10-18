@@ -17,9 +17,11 @@ struct Settings {
     // Settings.ScreenShake, 0-1: scales CameraShake's amounts.
     float screenShake = 0.5f;
     // Not read yet (the options menu shows and saves them): Settings.ScreenVisualEffects (flashes),
-    // BigTextEnabled, and the volumes (Master, SFX "Sound", Music, Ambience) for when audio lands.
+    // BigTextEnabled.
     float screenEffects = 1.0f;
     bool bigText = false;
+    // The buses' volumes, 0-1, linear (AudioManager.SetMasterVolume / SFX "Sound" / Music /
+    // Ambience): game/audio's Audio::setVolumes.
     float masterVolume = 0.5f, sfxVolume = 0.5f, musicVolume = 0.5f, ambienceVolume = 0.5f;
     // (A new setting: add it to FIELDS in settings.cpp too, or it's neither saved nor compared; a
     // member count there stops the build until it is.)

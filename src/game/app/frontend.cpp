@@ -5,6 +5,7 @@
 #include <ctime>
 #include <utility>
 
+#include "game/audio/sounds.h"
 #include "game/render/area_view.h"
 #include "game/render/sprite_sheets.h"
 #include "game/ui/hud.h"
@@ -25,6 +26,7 @@ void Frontend::startGame(SaveProfile profile, int slot) {
     artifactUI_.init(area_, world_.artifact);
     artifactUI_.releaseStylus(); // (the touch that started it isn't a press on the Artifact)
     mode_ = Mode::Game;
+    audio_.takeFrom(world_.audio); // (the scene's Starts: its music)
     saveGame(); // (GameSaver.Start)
 }
 
@@ -47,6 +49,10 @@ void Frontend::toTitle() {
     mode_ = Mode::Title;
     screen_.start(art_); // (MainMenu reloads: its intro again)
     title_.open();       // (the profiles re-read; the held touch released)
+    // MainMenuManager.Start: the title's music (it plays on from the Options), its full arrangement
+    // held back until the menu opens.
+    audio_.playMusic(tracks::MAIN_MENU, false);
+    audio_.setParameter(audio_params::MAIN_MENU_ACTIVATED, 0);
 }
 
 void Frontend::shutdown() {
@@ -57,6 +63,7 @@ void Frontend::shutdown() {
 bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool noclip) {
     if (pause_.isOpen()) {
         const PauseMenu::Action action = pause_.update(in, settings_);
+        if (pause_.clicked()) audio_.play(sounds::UI_CLICK);
         if (action != PauseMenu::Action::None) saveSettingsIfChanged();
         if (action == PauseMenu::Action::Quit) { // (QuitHandler: save, then the main menu)
             saveGame();
@@ -69,10 +76,13 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
     }
     if (mode_ == Mode::Title) {
         const bool wasShown = screen_.menuShown();
-        if (screen_.update(area_.cameraShake, in, FRAME_DT, settings_.screenShake))
+        if (screen_.update(area_.cameraShake, in, FRAME_DT, settings_.screenShake)) {
             title_.lockOut(MENU_LOCKOUT_FRAMES); // (StartMainMenu: the buttons come in; the key that shows it isn't theirs)
+            audio_.setParameter(audio_params::MAIN_MENU_ACTIVATED, 1);
+        }
         if (!wasShown) return true;
         const TitleMenu::Action a = title_.update(in);
+        if (title_.clicked()) audio_.play(sounds::UI_CLICK);
         switch (a.kind) {
         case TitleMenu::Action::Kind::None: break;
         case TitleMenu::Action::Kind::Play: {
@@ -97,6 +107,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
     FrameInput frame{moveX, moveY, (in.held & plat::BTN_A) != 0};
     if (in.pressed & plat::BTN_A) world_.action();
     world_.update(FRAME_DT, frame, noclip);
+    audio_.takeFrom(world_.audio);
     if (world_.saveRequested) {
         world_.saveRequested = false;
         saveGame();

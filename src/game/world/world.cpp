@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "game/audio/sounds.h"
 #include "game/events/events.h"
 #include "game/physics/physics.h"
 #include "game/save/profile.h"
@@ -139,6 +140,7 @@ void World::reloadObjects() {
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
     starts.reset(area);
     runStarts();
+    audio.playMusic(tracks::VILLAGE); // VillageGrid.Start
     finale.start(*this); // VillageGrid.Start (after every Awake; CheckHole may hide the fragment)
     abduction.start(*this); // CatAbductionController.Start
     runStarts();

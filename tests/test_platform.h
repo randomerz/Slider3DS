@@ -22,3 +22,8 @@ struct DrawCall {
 };
 const std::vector<DrawCall>& testDrawCalls();
 void testResetDrawCalls();
+
+// Audio: audioBlocksWanted() answers `blocks` (0 until set); queued blocks are kept, in order
+// (interleaved stereo, plat::AUDIO_BLOCK frames each), until the next set.
+void testSetAudioWanted(int blocks);
+const std::vector<int16_t>& testAudioQueued();

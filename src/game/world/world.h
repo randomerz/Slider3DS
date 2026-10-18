@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "game/anim/animators.h"
+#include "game/audio/audio_cues.h"
 #include "game/cutscene/camera_dolly.h"
 #include "game/data/area.h"
 #include "game/fx/particles.h"
@@ -190,6 +191,8 @@ public:
     // A script asked for the game to be saved (SaveSystem.SaveGame: a collectible's pick-up); the
     // frontend saves and clears it.
     bool saveRequested = false;
+    // What scripts asked AudioManager for; the frontend passes it on each frame.
+    AudioCues audio;
 
 private:
     // Objects may have become active: their Animators enable (rebind), Awake, then their components Start.

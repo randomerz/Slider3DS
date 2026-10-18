@@ -1,5 +1,6 @@
-// 3DS backend: libctru + citro2d.
+// 3DS backend: libctru + citro2d (audio: audio_ctr.cpp).
 #include "platform/platform.h"
+#include "platform/ctr/audio_ctr.h"
 #include "platform/ctr/dev_update.h"
 
 #include <3ds.h>
@@ -76,10 +77,12 @@ bool init() {
     g_top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
     g_bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
     romfsInit();
+    initAudio();
     return true;
 }
 
 void shutdown() {
+    exitAudio();
     romfsExit();
     C2D_Fini();
     C3D_Fini();

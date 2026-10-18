@@ -1,5 +1,6 @@
 // Headless platform backend for tests: files come from in-memory fixtures or the asset root,
-// sheets are named placeholders, and draw calls are recorded instead of rendered.
+// sheets are named placeholders, and draw calls and audio blocks are recorded instead of played
+// (Ogg decoding is the PC build's: src/platform/stb/ogg_stb.cpp).
 #include "test_platform.h"
 
 #include <cmath>
@@ -18,6 +19,8 @@ namespace {
 std::map<std::string, std::string> g_files;
 std::map<std::string, std::string> g_userFiles;
 std::vector<DrawCall> g_draws;
+int g_audioWanted = 0;
+std::vector<int16_t> g_audio;
 } // namespace
 
 void testSetFile(const std::string& path, const std::string& contents) { g_files[path] = contents; }
@@ -25,6 +28,11 @@ void testClearFiles() { g_files.clear(); }
 std::map<std::string, std::string>& testUserFiles() { return g_userFiles; }
 const std::vector<DrawCall>& testDrawCalls() { return g_draws; }
 void testResetDrawCalls() { g_draws.clear(); }
+void testSetAudioWanted(int blocks) {
+    g_audioWanted = blocks;
+    g_audio.clear();
+}
+const std::vector<int16_t>& testAudioQueued() { return g_audio; }
 
 namespace plat {
 
@@ -88,5 +96,11 @@ void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, 
 void endFrame() {}
 FrameStats lastFrameStats() { return {}; }
 double nowMs() { return 0; }
+
+int audioBlocksWanted() { return g_audioWanted; }
+void queueAudioBlock(const int16_t* stereo) {
+    g_audio.insert(g_audio.end(), stereo, stereo + AUDIO_BLOCK * 2);
+    if (g_audioWanted > 0) g_audioWanted--;
+}
 
 } // namespace plat
