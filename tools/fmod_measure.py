@@ -10,12 +10,16 @@ stream thread keeps up. Each level is the render's RMS over the source's, both o
   "ahdsr": the AHDSR's shape (shape 0, from 0 dB to -80): dB at x = 0, 0.05 .. 1 of its time — the
       Village music's release after a stop (its attack is the same curve, mirrored);
   "curves": {"<event>|<parameter>": {"points": the automation points measured ([[x, dB], ...] as the
-      project has them, so make_audio can tell they're unchanged), "levels": [[value, dB], ...]}}.
+      project has them, so make_audio can tell they're unchanged), "levels": [[value, dB], ...]}};
+  "indoorMusicEq": AudioManager's IndoorMusic3Eq (its global parameters on the Music bus's ThreeEQ,
+      set while the player is in a house): the music's change per band, measured, and the port's
+      3-band EQ gains fitted to it ("lowHz"/"highHz" crossovers, "lowDb"/"highDb").
 Needs Windows (the plugin's x86_64 DLL), numpy, soundfile, ffmpeg.
 """
 import ctypes as C
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -138,12 +142,84 @@ def measure_curve(dll, tmp, event, param, points):
     return {'points': points, 'levels': levels}
 
 
+# AudioManager's IndoorMusic3Eq (SetListenerIsIndoor): global parameters on the Music bus's ThreeEQ.
+INDOOR_ASSET = os.path.join(UNITY, 'Audio', 'Modifiers', 'IndoorMusic3Eq.asset')
+EQ_LOW_HZ, EQ_HIGH_HZ = 280, 1650  # the Music bus ThreeEQ's crossovers (its slope 0: 12 dB / octave)
+BANDS = [(40, 150), (150, 280), (280, 600), (600, 1650), (1650, 3000), (3000, 6000), (6000, 16000)]
+
+
+def band_db(x, rate):
+    X = np.abs(np.fft.rfft(x)) ** 2
+    f = np.fft.rfftfreq(len(x), 1 / rate)
+    return np.array([10 * np.log10(X[(f >= lo) & (f < hi)].sum() + 1e-20) for lo, hi in BANDS])
+
+
+def biquad(x, b, a):
+    """Direct form I, as the port's mixer runs it."""
+    y = np.zeros_like(x)
+    x1 = x2 = y1 = y2 = 0.0
+    for i in range(len(x)):
+        y[i] = b[0] * x[i] + b[1] * x1 + b[2] * x2 - a[1] * y1 - a[2] * y2
+        x2, x1, y2, y1 = x1, x[i], y1, y[i]
+    return y
+
+
+def rbj(kind, hz, rate):
+    """RBJ cookbook low / high pass, Q = 1/sqrt(2) (game/audio/mixer.cpp's Biquad::pass)."""
+    w = 2 * np.pi * hz / rate
+    alpha = np.sin(w) / (2 * np.sqrt(0.5))
+    c = np.cos(w)
+    b = [(1 - c) / 2, 1 - c, (1 - c) / 2] if kind == 'low' else [(1 + c) / 2, -(1 + c), (1 + c) / 2]
+    a0 = 1 + alpha
+    return [v / a0 for v in b], [1, -2 * c / a0, (1 - alpha) / a0]
+
+
+def port_eq(x, rate, low_db, high_db):
+    """The port's split: low = LP(x), high = HP(x - low), mid = the rest (flat at 0 dB)."""
+    low = biquad(x, *rbj('low', EQ_LOW_HZ, rate))
+    rest = x - low
+    high = biquad(rest, *rbj('high', EQ_HIGH_HZ, rate))
+    return low * 10 ** (low_db / 20) + (rest - high) + high * 10 ** (high_db / 20)
+
+
+def measure_indoor_eq(dll, tmp):
+    """The Village music with IndoorMusic3Eq's values against without, band by band; the port's EQ
+    gains fitted to the same changes."""
+    text = open(INDOOR_ASSET, encoding='utf-8').read()
+    params = {k: float(v) for k, v in re.findall(r'parameter: (\S+)\s+value: (\S+)', text)}
+    out_wav, in_wav = os.path.join(tmp, 'eq_out.wav'), os.path.join(tmp, 'eq_in.wav')
+    render(dll, 'event:/Music/Village BGM', 7, out_wav)
+    render(dll, 'event:/Music/Village BGM', 7, in_wav, params=params)
+    a, _ = sf.read(out_wav, dtype='float32')
+    b, _ = sf.read(in_wav, dtype='float32')
+    target = band_db(b[2 * RATE:6 * RATE, 0], RATE) - band_db(a[2 * RATE:6 * RATE, 0], RATE)
+    # The fit, at the port's rate on a stretch of the source (band changes don't depend on the level).
+    rate = 32000
+    raw = subprocess.run(['ffmpeg', '-v', 'error', '-ss', '2', '-t', '1.5', '-i',
+                          os.path.join(PROJECT_ASSETS, 'Music', 'Connection - Eclipse _イクリプス.mp3'),
+                          '-f', 'f32le', '-ac', '1', '-ar', str(rate), '-'], capture_output=True, check=True).stdout
+    src = np.frombuffer(raw, dtype=np.float32).astype(np.float64)
+    base = band_db(src, rate)
+    lowpass = biquad(src, *rbj('low', EQ_LOW_HZ, rate))
+    highpass = biquad(src - lowpass, *rbj('high', EQ_HIGH_HZ, rate))
+    best = None
+    for low_db in np.arange(-15, 0.01, 0.25):
+        for high_db in np.arange(-30, 0.01, 0.25):
+            y = lowpass * 10 ** (low_db / 20) + (src - lowpass - highpass) + highpass * 10 ** (high_db / 20)
+            err = float(((band_db(y, rate) - base - target) ** 2).sum())
+            if best is None or err < best[0]:
+                best = (err, float(low_db), float(high_db))
+    print(f'indoor EQ {params}: measured {np.round(target, 2).tolist()} -> low {best[1]} dB, high {best[2]} dB (err {best[0]:.2f})')
+    return {'parameters': params, 'lowHz': EQ_LOW_HZ, 'highHz': EQ_HIGH_HZ, 'lowDb': best[1], 'highDb': best[2],
+            'measured': [round(float(t), 2) for t in target]}
+
+
 def main():
     if sys.platform != 'win32':
         sys.exit('fmod_measure: needs Windows (FMOD\'s x86_64 DLL)')
     dll = C.WinDLL(DLL)
     tmp = tempfile.mkdtemp(prefix='slider3ds_measure_')
-    data = {'fmod': '2.02.13', 'ahdsr': measure_ahdsr(dll, tmp), 'curves': {}}
+    data = {'fmod': '2.02.13', 'ahdsr': measure_ahdsr(dll, tmp), 'curves': {}, 'indoorMusicEq': measure_indoor_eq(dll, tmp)}
     for event, param, points in CURVES:
         data['curves'][f'{event}|{param}'] = measure_curve(dll, tmp, event, param, points)
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:

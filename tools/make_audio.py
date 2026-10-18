@@ -17,6 +17,8 @@ audio.json (the port's game/audio/audio_bank reads it):
   {"rate": 32000, "ahdsrShape": the AHDSR's curve, dB at each 5% of its time from 0 to -80 (a release;
        an attack is the same, mirrored; measured: tools/fmod_measure.py), "dampenCurve": AudioManager.soundDampenCurve's keys [t, v, in, out, inWeight,
        outWeight] (DampenMusic: the music's volume goes lerp(amount, 1, curve(t / length))),
+   "indoorMusicEq": {"lowHz", "highHz", "lowDb", "highDb"} (IndoorMusic3Eq: the music bus's 3-band EQ
+       while the player is in a house, fitted to FMOD's: tools/fmod_measure.py),
    "sounds": {name: {"clips": [file, ...] (a multi instrument's playlist: one picked at random),
        "volume": dB (the event's master volume), "pitchRandom": semitones (FMOD's randomizer: a
        random pitch within +-half of it), "pitchParam": the "Pitch" parameter (0.5-2) sets the pitch,
@@ -471,7 +473,9 @@ def main():
     for f in os.listdir(OUT):
         if f.endswith('.ogg'):
             os.remove(os.path.join(OUT, f))
-    bank = {'rate': RATE, 'ahdsrShape': MEASURED['ahdsr'], 'dampenCurve': dampen_curve(), 'sounds': {}, 'music': {},
+    eq = MEASURED['indoorMusicEq']
+    bank = {'rate': RATE, 'ahdsrShape': MEASURED['ahdsr'], 'dampenCurve': dampen_curve(),
+            'indoorMusicEq': {k: eq[k] for k in ('lowHz', 'highHz', 'lowDb', 'highDb')}, 'sounds': {}, 'music': {},
             'ambience': {}}
     try:
         for table, name in wanted:

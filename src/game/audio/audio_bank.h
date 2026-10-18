@@ -56,6 +56,13 @@ struct AhdsrShape {
     float attack(float x) const { return release(1 - x); } // dB below full at `x` of the attack
 };
 
+// IndoorMusic3Eq: the music bus's 3-band EQ while the player is in a house (fitted to FMOD's ThreeEQ
+// as the modifier sets it: tools/fmod_measure.py).
+struct IndoorEq {
+    float lowHz = 280, highHz = 1650; // crossovers
+    float lowDb = 0, highDb = 0;      // below / above them
+};
+
 class AudioBank {
 public:
     // audio/audio.json, every sound's clips decoded. False (and `error`) if anything is missing or
@@ -69,8 +76,10 @@ public:
     // AudioManager.soundDampenCurve: DampenMusic's shape, 1 -> 0 -> 1 over its length.
     const std::vector<CurveKey>& dampenCurve() const { return dampenCurve_; }
     const AhdsrShape& ahdsr() const { return ahdsr_; }
+    const IndoorEq& indoorEq() const { return indoorEq_; }
 
 private:
+    IndoorEq indoorEq_;
     AhdsrShape ahdsr_;
     std::vector<CurveKey> dampenCurve_;
     std::map<std::string, SoundDef, std::less<>> sounds_;

@@ -102,5 +102,24 @@
     ]
    ]
   }
+ },
+ "indoorMusicEq": {
+  "parameters": {
+   "Music_EqHigh": 0.85,
+   "Music_EqLow": 0.95
+  },
+  "lowHz": 280,
+  "highHz": 1650,
+  "lowDb": -4.5,
+  "highDb": -14.75,
+  "measured": [
+   -4.22,
+   -2.96,
+   -1.42,
+   -2.04,
+   -6.01,
+   -8.86,
+   -12.14
+  ]
  }
 }

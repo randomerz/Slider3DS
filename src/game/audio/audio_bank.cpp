@@ -66,6 +66,9 @@ bool AudioBank::load(std::string* error) {
     const Json& shape = doc["ahdsrShape"];
     if (shape.size() != AhdsrShape::POINTS) return fail("audio/audio.json: no ahdsrShape");
     for (int i = 0; i < AhdsrShape::POINTS; i++) ahdsr_.db[i] = shape.at(i).asFloat();
+    const Json& eq = doc["indoorMusicEq"];
+    if (!eq.has("lowHz") || !eq.has("highHz")) return fail("audio/audio.json: no indoorMusicEq");
+    indoorEq_ = {eq["lowHz"].asFloat(), eq["highHz"].asFloat(), eq["lowDb"].asFloat(), eq["highDb"].asFloat()};
 
     for (const auto& [name, j] : doc["sounds"].members()) {
         SoundDef& s = sounds_[name];
@@ -124,6 +127,7 @@ bool AudioBank::load(std::string* error) {
 void AudioBank::unload() {
     dampenCurve_.clear();
     ahdsr_ = {};
+    indoorEq_ = {};
     sounds_.clear();
     music_.clear();
     ambience_.clear();

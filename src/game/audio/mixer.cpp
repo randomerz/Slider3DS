@@ -75,6 +75,27 @@ bool Mixer::playing(Voice voice) const {
 }
 
 void Mixer::setBusVolume(Bus bus, float volume) { bus_[(int)bus] = volume; }
+
+Mixer::Biquad Mixer::Biquad::pass(bool low, float hz) {
+    const float w = 2 * 3.14159265f * hz / plat::AUDIO_RATE, alpha = std::sin(w) / (2 * std::sqrt(0.5f)), c = std::cos(w);
+    const float a0 = 1 + alpha;
+    Biquad q;
+    q.b0 = (low ? (1 - c) / 2 : (1 + c) / 2) / a0;
+    q.b1 = (low ? 1 - c : -(1 + c)) / a0;
+    q.b2 = q.b0;
+    q.a1 = -2 * c / a0;
+    q.a2 = (1 - alpha) / a0;
+    return q;
+}
+
+void Mixer::setMusicEq(float lowHz, float highHz, float lowGain, float highGain) {
+    if (eqGain_[0] == 1 && eqGain_[1] == 1 && eqMixed_[0] == 1 && eqMixed_[1] == 1) { // (off: fresh filters)
+        eqLow_ = Biquad::pass(true, lowHz);
+        eqHigh_ = Biquad::pass(false, highHz);
+    }
+    eqGain_[0] = lowGain;
+    eqGain_[1] = highGain;
+}
 void Mixer::setMasterVolume(float volume) { master_ = volume; }
 void Mixer::setPaused(bool paused) { paused_ = paused; }
 
@@ -195,6 +216,9 @@ void Mixer::mix(int16_t* out) {
                                 }),
                  clips_.end());
 
+    // The music bus through its EQ: only while it isn't flat (or is ramping to flat).
+    const bool eq = eqGain_[0] != 1 || eqGain_[1] != 1 || eqMixed_[0] != 1 || eqMixed_[1] != 1;
+    if (eq) musicAcc_.assign(N * 2, 0.0f);
     decoded_.resize(N * 2);
     for (StreamVoice& s : streams_) {
         if (s.ended) continue;
@@ -203,11 +227,25 @@ void Mixer::mix(int16_t* out) {
         const int n = readStream(s, decoded_.data(), N);
         if (n < N) s.ended = true;
         const float g0 = from[(int)s.def->bus] * e0 * s.def->gain, g1 = to[(int)s.def->bus] * e1 * s.def->gain;
+        std::vector<float>& into = eq && s.def->bus == Bus::Music ? musicAcc_ : acc_;
         for (int i = 0; i < n; i++) {
             const float g = g0 + (g1 - g0) * (i / (float)N);
-            acc_[2 * i] += decoded_[2 * i] * g;
-            acc_[2 * i + 1] += decoded_[2 * i + 1] * g;
+            into[2 * i] += decoded_[2 * i] * g;
+            into[2 * i + 1] += decoded_[2 * i + 1] * g;
         }
+    }
+    if (eq) {
+        for (int i = 0; i < N; i++) {
+            const float k = i / (float)N;
+            const float gl = eqMixed_[0] + (eqGain_[0] - eqMixed_[0]) * k, gh = eqMixed_[1] + (eqGain_[1] - eqMixed_[1]) * k;
+            for (int ch = 0; ch < 2; ch++) {
+                const float x = musicAcc_[2 * i + ch];
+                const float low = eqLow_.run(x, ch), rest = x - low, high = eqHigh_.run(rest, ch);
+                acc_[2 * i + ch] += low * gl + (rest - high) + high * gh;
+            }
+        }
+        eqMixed_[0] = eqGain_[0];
+        eqMixed_[1] = eqGain_[1];
     }
     for (StreamVoice& s : streams_)
         if (s.ended) closeStream(s);

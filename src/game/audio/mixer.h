@@ -4,8 +4,9 @@
 //   streams: a music / ambience track decoded from its Ogg as it plays, following its jumps (the
 //            global parameters decide the conditional ones), faded in / out by its AHDSR (on
 //            FMOD's shape) and at the volume its parameter sets (an ambience's distance).
-// Each through its bus's volume and the master's. Every gain change ramps across a block, so
-// nothing clicks. Single-threaded: the app mixes on its own loop (Audio::pump).
+// Each through its bus's volume and the master's; the music bus can also run a 3-band EQ (the
+// indoor one: below / above two crossovers turned down; flat, and skipped, at unity). Every gain
+// change ramps across a block, so nothing clicks. Single-threaded: the app mixes on its own loop (Audio::pump).
 #pragma once
 
 #include <cstdint>
@@ -46,6 +47,8 @@ public:
     void setBusVolume(Bus bus, float volume); // linear (FMOD's Bus.setVolume)
     void setMasterVolume(float volume);
     void setPaused(bool paused);
+    // The music bus's EQ: linear gains below `lowHz` and above `highHz` (1, 1: off).
+    void setMusicEq(float lowHz, float highHz, float lowGain, float highGain);
     void setParameter(std::string_view name, float value); // a global parameter (stream jumps)
     float parameter(std::string_view name) const;           // (0 if never set)
 
@@ -80,6 +83,21 @@ private:
         bool ended = false;
     };
 
+    // A 2nd-order low / high pass (RBJ, Q = 1/sqrt 2), state per channel; tools/fmod_measure.py
+    // fits the indoor EQ's gains to these exact filters.
+    struct Biquad {
+        float b0 = 1, b1 = 0, b2 = 0, a1 = 0, a2 = 0;
+        float x1[2] = {}, x2[2] = {}, y1[2] = {}, y2[2] = {};
+        static Biquad pass(bool low, float hz);
+        float run(float x, int ch) {
+            const float y = b0 * x + b1 * x1[ch] + b2 * x2[ch] - a1 * y1[ch] - a2 * y2[ch];
+            x2[ch] = x1[ch];
+            x1[ch] = x;
+            y2[ch] = y1[ch];
+            y1[ch] = y;
+            return y;
+        }
+    };
     Voice nextId();
     bool full() const { return clips_.size() + streams_.size() >= MAX_VOICES; }
     int readStream(StreamVoice& s, int16_t* out, int frames); // fewer than asked: it ended
@@ -94,6 +112,9 @@ private:
     float master_ = 1, masterMixed_ = 1;
     bool paused_ = false;
     const AhdsrShape* ahdsr_ = nullptr;
+    Biquad eqLow_, eqHigh_;
+    float eqGain_[2] = {1, 1}, eqMixed_[2] = {1, 1}; // low, high: set / as the last block ended
+    std::vector<float> musicAcc_;                     // the music bus's block, while its EQ runs
     Voice lastId_ = 0;
     std::vector<float> acc_;       // the block being mixed
     std::vector<int16_t> decoded_; // a stream's frames for the block

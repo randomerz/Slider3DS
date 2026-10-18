@@ -297,3 +297,47 @@ TEST(mixer_attack_follows_fmods_shape) {
     AudioBank bank;
     CHECK(bank.load() && bank.ahdsr().db[0] == 0 && bank.ahdsr().db[AhdsrShape::POINTS - 1] == -80);
 }
+
+namespace {
+double energy(const std::vector<int16_t>& x) {
+    double e = 0;
+    for (int16_t v : x) e += (double)v * v;
+    return e;
+}
+} // namespace
+
+TEST(mixer_music_eq_cuts_and_goes_flat_again) {
+    Mixer m;
+    const StreamDef d = stream(1000000, {});
+    m.playStream(d);
+    m.setMusicEq(280, 1650, 0.5f, 0.2f);
+    mixBlocks(m, 1); // (the gains ramp in)
+    const std::vector<int16_t> cut = mixBlocks(m, 2);
+    CHECK(energy(cut) < 0.8 * energy(decoded(N, 2 * N)));
+    // Back to flat: one block's ramp, then exactly the stream again (the filters are skipped).
+    m.setMusicEq(280, 1650, 1, 1);
+    mixBlocks(m, 1);
+    const std::vector<int16_t> flat = mixBlocks(m, 1);
+    CHECK(same(flat, 0, decoded(4 * N, N), 0, N));
+}
+
+TEST(audio_muffles_the_music_in_a_house) {
+    // IndoorMusic3Eq: the same music, quieter in its lows and highs while the listener is indoors.
+    std::vector<int16_t> out[2];
+    for (int indoor = 0; indoor < 2; indoor++) {
+        Audio audio;
+        CHECK(audio.load());
+        Listener l;
+        l.indoor = indoor != 0;
+        audio.setListener(l);
+        AudioCues cues;
+        cues.playMusic(tracks::VILLAGE);
+        audio.run(cues.take());
+        std::vector<int16_t> block(N * 2);
+        for (int i = 0; i < 160; i++) { // (past its fade-in)
+            audio.mixBlock(block.data());
+            if (i >= 100) out[indoor].insert(out[indoor].end(), block.begin(), block.end());
+        }
+    }
+    CHECK(energy(out[1]) < 0.9 * energy(out[0]) && energy(out[1]) > 0);
+}

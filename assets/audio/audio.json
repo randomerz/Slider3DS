@@ -6,6 +6,12 @@
   [0.5, 0.0, -0.011236, -0.011236, 1.0, 1.0],
   [1.0, 1.0, 2.0, 2.0, 0.333333, 0.333333]
  ],
+ "indoorMusicEq": {
+  "lowHz": 280,
+  "highHz": 1650,
+  "lowDb": -4.5,
+  "highDb": -14.75
+ },
  "sounds": {
   "UI Click": {
    "clips": ["sfx_ui_click.ogg"],

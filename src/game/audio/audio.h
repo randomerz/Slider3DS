@@ -9,7 +9,8 @@
 //   sound in a house heard outside (or the other way) is moved by the housing offset and turned
 //   down (indoorMuteDB). Each is placed once, as it starts (the port's sounds are short).
 //   Music: PlayMusic stops the other tracks; DampenMusic dips the music bus along the bank's curve
-//   (the lowest of those running; held while paused).
+//   (the lowest of those running; held while paused); in a house the music bus is muffled
+//   (IndoorMusic3Eq: the bank's EQ).
 #pragma once
 
 #include <cstdint>
@@ -34,7 +35,7 @@ public:
     bool load(std::string* error = nullptr); // the bank (see AudioBank::load)
     void unload();
 
-    void setListener(const Listener& listener) { listener_ = listener; }
+    void setListener(const Listener& listener); // (in a house: the indoor music EQ)
     void run(const std::vector<AudioCue>& cues);
     void setVolumes(const Settings& settings);
     void setPaused(bool paused); // spatial sounds hold (the pause menu; AudioManager.SetPaused)

@@ -20,6 +20,16 @@ bool Audio::load(std::string* error) {
     return true;
 }
 
+void Audio::setListener(const Listener& listener) {
+    // SetListenerIsIndoor: IndoorMusic3Eq in a house (its parameters on the music bus's EQ).
+    if (listener.indoor != listener_.indoor) {
+        const IndoorEq& eq = bank_.indoorEq();
+        const auto gain = [](float db) { return std::pow(10.0f, db / 20); };
+        mixer_.setMusicEq(eq.lowHz, eq.highHz, listener.indoor ? gain(eq.lowDb) : 1, listener.indoor ? gain(eq.highDb) : 1);
+    }
+    listener_ = listener;
+}
+
 void Audio::unload() {
     mixer_.stopAll();
     music_.clear();
