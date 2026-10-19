@@ -21,8 +21,8 @@ struct Settings {
     float screenEffects = 1.0f;
     bool bigText = false;
     // The buses' volumes, 0-1, linear (AudioManager.SetMasterVolume / SFX "Sound" / Music /
-    // Ambience): game/audio's Audio::setVolumes.
-    float masterVolume = 0.5f, sfxVolume = 0.5f, musicVolume = 0.5f, ambienceVolume = 0.5f;
+    // Ambience): game/audio's Audio::setVolumes. Port: max by default (Unity: 0.5), as the 3DS has a volume slider.
+    float masterVolume = 1, sfxVolume = 1, musicVolume = 1, ambienceVolume = 1;
     // (A new setting: add it to FIELDS in settings.cpp too, or it's neither saved nor compared; a
     // member count there stops the build until it is.)
 

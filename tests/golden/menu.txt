@@ -2,7 +2,7 @@
 pause_menu_paused 56:38b9a5a6e1995ccd
 pause_menu_bounced 56:0c64cbddcf54d435
 pause_menu_options 56:e6225dbd666ee788
-pause_menu_sound 54:e50165161091ebbe
+pause_menu_sound 54:71b397c27b27af1c
 pause_menu_general 71:ce6ac004948af6be
 pause_menu_general_min 71:55384a0f7fe33a58
 pause_menu_general_max 71:e3e647590edc4d84

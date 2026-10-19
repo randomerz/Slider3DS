@@ -54,7 +54,7 @@ bool near(float a, float b) { return std::abs(a - b) < 1e-6f; }
 TEST(settings_round_trip) {
     Settings s;
     CHECK(!s.autoMove && s.screenShake == 0.5f && s.screenEffects == 1.0f && !s.bigText); // SettingsManager's defaults
-    CHECK(s.masterVolume == 0.5f && s.sfxVolume == 0.5f && s.musicVolume == 0.5f && s.ambienceVolume == 0.5f);
+    CHECK(s.masterVolume == 1 && s.sfxVolume == 1 && s.musicVolume == 1 && s.ambienceVolume == 1); // (port: max, not 0.5: the 3DS has its own volume slider)
     s.autoMove = true;
     s.bigText = true;
     s.setScreenShake(0.3f);
@@ -136,8 +136,8 @@ TEST(pause_menu_buttons) {
     CHECK(menu.page() == Menu::Page::Sound && menu.cursor() == Menu::MASTER_VOLUME);
     menu.update(press(plat::BTN_DOWN), s);
     menu.update(press(plat::BTN_DOWN), s);
-    menu.update(press(plat::BTN_RIGHT), s); // Music
-    CHECK(near(s.musicVolume, 0.6f) && s.masterVolume == 0.5f && s.sfxVolume == 0.5f && s.ambienceVolume == 0.5f);
+    menu.update(press(plat::BTN_LEFT), s); // Music
+    CHECK(near(s.musicVolume, 0.9f) && s.masterVolume == 1 && s.sfxVolume == 1 && s.ambienceVolume == 1);
     menu.update(press(plat::BTN_UP), s);
     menu.update(press(plat::BTN_UP), s);
     menu.update(press(plat::BTN_UP), s); // (stops at the top: no wrap)
