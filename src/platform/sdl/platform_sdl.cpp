@@ -86,7 +86,7 @@ bool init() {
         SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
         return false;
     }
-    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED); // paced in endFrame()
+    g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED); // paced in beginFrame()
     if (!g_renderer) {
         SDL_Log("SDL_CreateRenderer failed: %s", SDL_GetError());
         return false;
@@ -255,7 +255,23 @@ void freeSheet(Texture* tex) {
     delete tex;
 }
 
+// The game steps a fixed 1/60 s per frame (like the 3DS's 60 Hz vblank), so hold the PC loop to
+// 60 Hz whatever the monitor's refresh rate: sleep, then spin the last ~2 ms, toward an absolute
+// schedule. If we fall far behind (breakpoint, window drag), resync instead of fast-forwarding.
+static void paceFrame() {
+    static Uint64 next = 0;
+    const Uint64 freq = SDL_GetPerformanceFrequency(), period = freq / 60;
+    Uint64 now = SDL_GetPerformanceCounter();
+    if (next == 0 || now > next + 4 * period) next = now;
+    next += period;
+    while ((now = SDL_GetPerformanceCounter()) < next) {
+        Uint64 msLeft = (next - now) * 1000 / freq;
+        if (msLeft > 2) SDL_Delay((Uint32)(msLeft - 2));
+    }
+}
+
 void beginFrame() {
+    paceFrame(); // (here, not in endFrame: endFrame is timed by the dev profiler)
     const Uint64 now = SDL_GetPerformanceCounter();
     if (g_frameStart) g_stats.frameMs = (float)((now - g_frameStart) * 1000.0 / SDL_GetPerformanceFrequency());
     g_frameStart = now;
@@ -320,23 +336,7 @@ FrameStats lastFrameStats() { return g_stats; }
 
 double nowMs() { return SDL_GetPerformanceCounter() * 1000.0 / SDL_GetPerformanceFrequency(); }
 
-// The game steps a fixed 1/60 s per frame (like the 3DS's 60 Hz vblank), so hold the PC loop to
-// 60 Hz whatever the monitor's refresh rate: sleep, then spin the last ~2 ms, toward an absolute
-// schedule. If we fall far behind (breakpoint, window drag), resync instead of fast-forwarding.
-static void paceFrame() {
-    static Uint64 next = 0;
-    const Uint64 freq = SDL_GetPerformanceFrequency(), period = freq / 60;
-    Uint64 now = SDL_GetPerformanceCounter();
-    if (next == 0 || now > next + 4 * period) next = now;
-    next += period;
-    while ((now = SDL_GetPerformanceCounter()) < next) {
-        Uint64 msLeft = (next - now) * 1000 / freq;
-        if (msLeft > 2) SDL_Delay((Uint32)(msLeft - 2));
-    }
-}
-
 void endFrame() {
-    g_stats.cpuMs = (float)((SDL_GetPerformanceCounter() - g_frameStart) * 1000.0 / SDL_GetPerformanceFrequency());
     const char* shot = std::getenv("SLIDER3DS_SCREENSHOT");
     if (shot && ++g_frame == SCREENSHOT_FRAME) {
         SDL_RenderSetViewport(g_renderer, nullptr);
@@ -349,7 +349,6 @@ void endFrame() {
         g_quit = true;
     }
     SDL_RenderPresent(g_renderer);
-    paceFrame();
 }
 
 bool audioAvailable() { return g_audio != 0; }
@@ -409,13 +408,13 @@ int audioUnderruns() { return SDL_AtomicGet(&g_audioUnderruns); }
 int audioBlocksWanted() {
     if (!g_audio) return 0;
     const Uint32 bytes = SDL_GetQueuedAudioSize(g_audio);
-    if (bytes == 0 && g_audioStarted) SDL_AtomicIncRef(&g_audioUnderruns);
     const int queued = (int)(bytes / (AUDIO_BLOCK * 2 * sizeof(int16_t)));
     return queued < AUDIO_QUEUE_BLOCKS ? AUDIO_QUEUE_BLOCKS - queued : 0;
 }
 
 void queueAudioBlock(const int16_t* stereo) {
     if (!g_audio) return;
+    if (g_audioStarted && SDL_GetQueuedAudioSize(g_audio) == 0) SDL_AtomicIncRef(&g_audioUnderruns); // (ran dry: a gap)
     SDL_QueueAudio(g_audio, stereo, AUDIO_BLOCK * 2 * sizeof(int16_t));
     g_audioStarted = true;
 }

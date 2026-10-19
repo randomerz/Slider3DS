@@ -30,6 +30,7 @@
 
 #include "game/audio/audio_bank.h"
 #include "game/audio/audio_cues.h"
+#include "game/audio/busy_log.h"
 #include "game/audio/mixer.h"
 
 struct Settings;
@@ -62,18 +63,19 @@ public:
     Mixer& mixer() { return mixer_; }
     float musicDampening() const; // the music bus's dip now, 0-1 (1: none)
     // The audio thread's busy share of its time over about the last second, 0-1 (dev overlay; all
-    // 0: no thread): in all, decoding streams, decoding clips (the rest: mixing, cues); its core.
+    // 0: no thread): in all, decoding streams, decoding clips (the rest: mixing, cues), and the part
+    // of those spent reading the files (io). Wall time: waits (file reads, locks) count as busy.
     struct ThreadLoad {
         bool running = false;
-        float total = 0, streams = 0, clips = 0;
+        float total = 0, streams = 0, clips = 0, io = 0;
         int core = -1; // (-1: unknown)
         int underruns = 0; // the output ran dry (plat::audioUnderruns)
     };
     ThreadLoad threadLoad() const;
-    // ms the audio thread was busy within [t0, t1] (plat::nowMs times; the last BUSY_LOG services):
-    // the profiler's stolen time when it shares the game's core.
+    // ms the audio thread was busy within [t0, t1] (plat::nowMs times; its last BusyLog::SIZE
+    // services; wall time): the profiler's stolen time when it shares the game's core.
     double threadBusyBetween(double t0, double t1) const;
-    static double threadBusyBetween(double t0, double t1, void* self) {
+    static double threadBusyCallback(double t0, double t1, void* self) { // (prof::setStolenTime's)
         return static_cast<const Audio*>(self)->threadBusyBetween(t0, t1);
     }
     // The gains a spatial sound gets at (x, y) (each side; the event's volume not included).
@@ -124,12 +126,7 @@ private:
     bool threaded_ = false;
     Inbox inbox_;                        // (guarded by plat::lockAudio)
     std::vector<AudioCue> taken_;        // the audio thread's: the cues taken from the inbox
-    double loadStart_ = 0, busyMs_ = 0, streamMs_ = 0, clipMs_ = 0; // the audio thread's: this second's
+    double loadStart_ = 0, busyMs_ = 0, streamMs_ = 0, clipMs_ = 0, ioMs_ = 0; // the audio thread's: this second's
     ThreadLoad load_;                    // (guarded by plat::lockAudio) the last second's
-    static constexpr int BUSY_LOG = 64;  // services remembered (~0.25 s)
-    struct Busy {
-        double start = 0, end = 0;
-    };
-    Busy busyLog_[BUSY_LOG];             // (guarded by plat::lockAudio) a ring: the latest services
-    int busyNext_ = 0;
+    BusyLog busyLog_;                    // (guarded by plat::lockAudio) the latest services
 };

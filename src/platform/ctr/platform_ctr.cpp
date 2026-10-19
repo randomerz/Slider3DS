@@ -224,6 +224,6 @@ void endFrame() { C3D_FrameEnd(0); }
 
 double nowMs() { return svcGetSystemTick() * 1000.0 / SYSCLOCK_ARM11; }
 
-FrameStats lastFrameStats() { return {C3D_GetProcessingTime(), C3D_GetDrawingTime(), g_frameMs}; }
+FrameStats lastFrameStats() { return {C3D_GetDrawingTime(), g_frameMs}; }
 
 } // namespace plat

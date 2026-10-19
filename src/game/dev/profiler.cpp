@@ -16,8 +16,11 @@ void* g_busyUser = nullptr;
 // took: AudioThread's) and restarts the mark.
 void charge() {
     const double now = plat::nowMs();
-    const double stolen = g_busyBetween && g_mark > 0 ? std::min(g_busyBetween(g_mark, now, g_busyUser), now - g_mark) : 0;
-    if (g_current >= 0) g_ms[g_current] += (float)(now - g_mark - stolen);
+    const double span = now - g_mark;
+    const double stolen = g_busyBetween && g_mark > 0 && span <= prof::MAX_STOLEN_SPAN_MS
+                              ? std::min(g_busyBetween(g_mark, now, g_busyUser), span)
+                              : 0;
+    if (g_current >= 0) g_ms[g_current] += (float)(span - stolen);
     g_ms[(int)ProfSection::AudioThread] += (float)stolen;
     g_mark = now;
 }

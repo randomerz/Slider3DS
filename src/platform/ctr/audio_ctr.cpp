@@ -8,6 +8,7 @@
 #include <3ds.h>
 #include <tremor/ivorbisfile.h>
 
+#include <atomic>
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -25,8 +26,8 @@ bool g_ready = false;
 int16_t* g_pcm = nullptr; // RING blocks, linear memory (the DSP reads it)
 ndspWaveBuf g_bufs[RING];
 int g_next = 0; // the next buffer to fill
-bool g_started = false; // a block was queued
-int g_underruns = 0;
+bool g_started = false; // a block was queued (the audio thread's)
+std::atomic<int> g_underruns{0}; // (read by the game thread)
 
 bool queued(const ndspWaveBuf& b) { return b.status == NDSP_WBUF_QUEUED || b.status == NDSP_WBUF_PLAYING; }
 
@@ -85,13 +86,12 @@ void exitAudio() {
 
 bool audioAvailable() { return g_ready; }
 
-int audioUnderruns() { return g_underruns; }
+int audioUnderruns() { return g_underruns.load(); }
 
 int audioBlocksWanted() {
     if (!g_ready) return 0;
     int n = 0;
     for (const ndspWaveBuf& b : g_bufs) n += queued(b) ? 1 : 0;
-    if (n == 0 && g_started) g_underruns++; // (it ran dry: the next block starts after a gap)
     // (the next buffer must be free too: the ring is longer than the queue, so it is)
     return n < QUEUE_BLOCKS && !queued(g_bufs[g_next]) ? QUEUE_BLOCKS - n : 0;
 }
@@ -100,6 +100,9 @@ void queueAudioBlock(const int16_t* stereo) {
     if (!g_ready) return;
     ndspWaveBuf& b = g_bufs[g_next];
     if (queued(b)) return; // (asked for more than audioBlocksWanted: dropped)
+    bool playing = false; // (nothing queued or playing: it ran dry, this block starts after a gap)
+    for (const ndspWaveBuf& w : g_bufs) playing = playing || queued(w);
+    if (g_started && !playing) g_underruns++;
     memcpy(b.data_pcm16, stereo, AUDIO_BLOCK * 2 * sizeof(int16_t));
     DSP_FlushDataCache(b.data_pcm16, AUDIO_BLOCK * 2 * sizeof(int16_t));
     ndspChnWaveBufAdd(CHANNEL, &b);
@@ -153,6 +156,26 @@ void unlockAudio() {
     if (g_ready) LightLock_Unlock(&g_lock);
 }
 
+// The file's reads and seeks, timed (Tremor reads through these: the IO share of the audio thread).
+double g_oggIoMs = 0;
+
+size_t timedRead(void* out, size_t size, size_t count, void* file) {
+    const u64 t = svcGetSystemTick();
+    const size_t n = fread(out, size, count, (FILE*)file);
+    g_oggIoMs += (svcGetSystemTick() - t) * 1000.0 / SYSCLOCK_ARM11;
+    return n;
+}
+
+int timedSeek(void* file, ogg_int64_t offset, int whence) {
+    const u64 t = svcGetSystemTick();
+    const int r = fseek((FILE*)file, (long)offset, whence);
+    g_oggIoMs += (svcGetSystemTick() - t) * 1000.0 / SYSCLOCK_ARM11;
+    return r;
+}
+
+int closeFile(void* file) { return fclose((FILE*)file); }
+long tellFile(void* file) { return ftell((FILE*)file); }
+
 struct Ogg {
     OggVorbis_File vf;
     int channels = 0, rate = 0;
@@ -164,7 +187,8 @@ Ogg* openOgg(const char* path) {
     if (!f) return nullptr;
     Ogg* ogg = new Ogg;
     setvbuf(f, nullptr, _IOFBF, OGG_FILE_BUFFER); // (Tremor reads in small pieces: fewer trips to the FS service)
-    if (ov_open(f, &ogg->vf, nullptr, 0) != 0) { // (on success the decoder owns the file)
+    const ov_callbacks io = {timedRead, timedSeek, closeFile, tellFile};
+    if (ov_open_callbacks(f, &ogg->vf, nullptr, 0, io) != 0) { // (on success the decoder owns the file)
         fclose(f);
         delete ogg;
         return nullptr;
@@ -198,5 +222,11 @@ int readOgg(Ogg* ogg, int16_t* out, int frames) {
 }
 
 bool seekOgg(Ogg* ogg, int64_t frame) { return ov_pcm_seek(&ogg->vf, frame) == 0; }
+
+double takeOggIoMs() {
+    const double ms = g_oggIoMs;
+    g_oggIoMs = 0;
+    return ms;
+}
 
 } // namespace plat

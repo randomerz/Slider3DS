@@ -99,10 +99,11 @@ int main(int, char**) {
     DevOverlay overlay;
     overlay.setBoot(initS, areaS, sheetsS, uiS, audioS, gameS);
     // The audio thread on the game's core (an Old 3DS): its time comes out of the sections it
-    // interrupts (elsewhere it runs alongside: nothing to take out).
-    if (DEV && audio.threadLoad().core == 0) prof::setStolenTime(&Audio::threadBusyBetween, &audio);
+    // interrupts (elsewhere it runs alongside: nothing to take out). Only while the overlay shows.
+    const bool audioSharesCore = DEV && audio.threadLoad().core == 0;
 
     while (plat::mainLoop()) {
+        prof::setStolenTime(audioSharesCore && dev.showPerf ? &Audio::threadBusyCallback : nullptr, &audio);
         prof::beginFrame();
         { // (the update: Logic, with its sections nested; closes before the draw)
             const ProfScope logic(ProfSection::Logic);
@@ -145,7 +146,10 @@ int main(int, char**) {
                 overlay.draw(); // (the frames before this one)
             }
         }
-        plat::endFrame(); // (not timed either: the PC paces frames in it)
+        {
+            const ProfScope end(ProfSection::FrameEnd);
+            plat::endFrame();
+        }
         if (DEV) overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, audio.threadLoad());
     }
     front.shutdown();

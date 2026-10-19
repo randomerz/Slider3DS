@@ -73,13 +73,14 @@ Audio::ThreadLoad Audio::threadLoad() const {
 
 double Audio::threadBusyBetween(double t0, double t1) const {
     if (!threaded_) return 0;
-    double ms = 0;
     plat::lockAudio();
-    for (const Busy& b : busyLog_) ms += std::max(0.0, std::min(b.end, t1) - std::max(b.start, t0));
+    const double ms = busyLog_.between(t0, t1);
     plat::unlockAudio();
     return ms;
 }
 
+// The audio thread's (never use a ProfScope in here or below: the profiler is the game thread's,
+// and its stolen-time query takes plat::lockAudio).
 void Audio::service() {
     const double start = plat::nowMs();
     if (loadStart_ == 0) loadStart_ = start;
@@ -89,8 +90,9 @@ void Audio::service() {
         load_.total = (float)(busyMs_ / span);
         load_.streams = (float)(streamMs_ / span);
         load_.clips = (float)(clipMs_ / span);
+        load_.io = (float)(ioMs_ / span);
         loadStart_ = start;
-        busyMs_ = streamMs_ = clipMs_ = 0;
+        busyMs_ = streamMs_ = clipMs_ = ioMs_ = 0;
     }
     taken_.swap(inbox_.cues); // (taken_ is empty: applied last time)
     const Listener listener = inbox_.listener;
@@ -109,9 +111,9 @@ void Audio::service() {
     const double end = plat::nowMs();
     clipMs_ += end - clipStart;
     busyMs_ += end - start;
+    ioMs_ += plat::takeOggIoMs();
     plat::lockAudio();
-    busyLog_[busyNext_] = {start, end};
-    busyNext_ = (busyNext_ + 1) % BUSY_LOG;
+    busyLog_.add(start, end);
     plat::unlockAudio();
 }
 

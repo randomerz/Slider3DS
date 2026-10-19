@@ -58,7 +58,6 @@ struct Texture; // opaque, backend-specific
 
 // Timing of the previous frame, for on-screen perf readouts.
 struct FrameStats {
-    float cpuMs = 0; // time spent between beginFrame() and endFrame()
     float gpuMs = 0; // GPU drawing time (0 where the backend can't measure it)
     float frameMs = 0; // time from the previous beginFrame() to the last one (1000 / fps)
 };
@@ -115,7 +114,7 @@ constexpr int AUDIO_RATE = 32000;
 constexpr int AUDIO_BLOCK = 512; // frames per block (16 ms)
 bool audioAvailable();
 int audioBlocksWanted();
-int audioUnderruns(); // times the output ran dry since start (a stutter each; dev overlay)
+int audioUnderruns(); // gaps since start: blocks queued after the output had run dry (dev overlay)
 void queueAudioBlock(const int16_t* stereo); // AUDIO_BLOCK frames, interleaved L R
 // The audio thread: calls `service(user)` every few ms until stopped (it mixes what's wanted, so
 // mixing and decoding never hold up a frame). 3DS: a New 3DS's third core, else the game's own
@@ -140,5 +139,8 @@ int64_t oggFrames(const Ogg* ogg); // the length, in frames
 // (fewer only at the end, 0 there).
 int readOgg(Ogg* ogg, int16_t* out, int frames);
 bool seekOgg(Ogg* ogg, int64_t frame); // exact (the next read starts at that frame)
+// ms the calling thread spent reading / seeking Ogg files since its last call (the audio thread's
+// IO share: dev overlay; 0 where the backend doesn't time it). One thread's: the audio thread's.
+double takeOggIoMs();
 
 } // namespace plat
