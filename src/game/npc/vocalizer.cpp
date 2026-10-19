@@ -118,6 +118,7 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
     const float mult = textSpeedMultiplier > 0 ? textSpeedMultiplier : 1;
     bool low = false; // VocalRandomizationContext.isCurrentWordLow (carries over)
     float lastVowelOpenness = 0; // VocalizationContext.vowelOpenness (the pauses wait times it)
+    int clauseIndex = -1;
     for (const std::string& clause : voiceClauses(text)) {
         if (clause.size() <= 1) continue;
         // SentenceVocalizer: its words and punctuation.
@@ -145,6 +146,7 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
             words.push_back(spokenWord(clause.substr(runs[r].first, runs[r].second - runs[r].first), random));
         }
         if (punctuation == 0) punctuation = '.';
+        clauseIndex++; // (a clause with words: one of SentenceVocalizer.Parse's)
         const int wordCount = (int)words.size() + 1; // (and the clause's ending pause)
         Intonation intonation = Intonation::Flat;
         if (punctuation == '?') {
@@ -158,9 +160,10 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
         } else if (punctuation == '.' || punctuation == '!') {
             intonation = wordCount <= 3 && random.value() < 0.5f ? Intonation::Up : Intonation::Down;
         }
-        if (p.intonation >= 0) intonation = (Intonation)p.intonation;
-        const float intonated = intonation == Intonation::Up ? p.pitch * (1 + p.up)
-                                : intonation == Intonation::Down ? p.pitch * (1 - p.down) : p.pitch;
+        // (GetBasePitchFromIntonation reads the override; the last word's low / high, the clause's own.)
+        const Intonation peakIntonation = p.intonation >= 0 ? (Intonation)p.intonation : intonation;
+        const float intonated = peakIntonation == Intonation::Up ? p.pitch * (1 + p.up)
+                                : peakIntonation == Intonation::Down ? p.pitch * (1 - p.down) : p.pitch;
 
         // RandomizeVocalization, word by word (PreRandomize sets each word's pitch frame).
         for (size_t w = 0; w <= words.size(); w++) {
@@ -175,6 +178,7 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
             }
             if (pause) { // PauseVocalizer: the clause gap, waited out times the vowel openness
                 VoiceStep s;
+                s.clause = clauseIndex;
                 s.duration = p.clauseGap / mult * lastVowelOpenness;
                 line.steps.push_back(s);
                 line.totalDuration += p.clauseGap / mult;
@@ -188,6 +192,7 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
                 auto jitter = [&] { return p.syllables ? 1.0f : 1 + (random.value() - 0.5f) * 0.1f; };
                 VoiceStep s;
                 s.sound = true;
+                s.clause = clauseIndex;
                 s.duration = each * cluster.size();
                 s.vowel = cluster[0] == 'y' ? 'i' : cluster[0];
                 s.pitchStart = std::clamp(lastPitch, 0.5f, 2.0f);

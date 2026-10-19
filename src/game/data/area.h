@@ -452,17 +452,15 @@ struct NpcEmoteDef {
     static const char* name(int emote); // the Animator state an emote plays ("" for None)
 };
 
-// An NPC (NPC.cs): conditionals with dialogue chains, typed above it while the player is in its
-// dialogue trigger (whose OnTriggerEnter calls NpcTriggerEnter / Exit). Its position and owner are
-// its object's.
 // An NPC's voice: its DialogueDisplay's VocalizableParagraph preset (VocalizerParameters), what
-// game/npc/vocalizer reads its lines with.
+// game/npc/vocalizer reads its lines with. (Per-clause presets aren't ported: the loader refuses
+// them; the vowel lerp's smoothness and the fade-out cap aren't needed: a syllable ends on the
+// synth's own release.)
 struct VoiceDef {
     bool present = false;  // (none: the NPC types silently, at the default speed)
     std::string event;     // the FMOD synth (audio.json's "voices")
-    bool perClause = false, syllables = true;
-    float fadeout = 0.5f;  // maximumFadeout
-    float pitch = 1, duration = 0.1f, volume = 1, volumeDb = 0, smoothness = 1;
+    bool syllables = true;
+    float pitch = 1, duration = 0.1f, volume = 1, volumeDb = 0;
     float wordIntonation = 0, speedup = 0, lowToHigh = 0, highToLow = 0;
     float clauseGap = 0.1f, up = 0, down = 0;
     int intonation = -1;   // an override: 0 flat, 1 up, 2 down; -1 = none
@@ -474,6 +472,9 @@ struct VoiceDef {
     std::vector<Mod> emotes;
 };
 
+// An NPC (NPC.cs): conditionals with dialogue chains, typed above it while the player is in its
+// dialogue trigger (whose OnTriggerEnter calls NpcTriggerEnter / Exit). Its position and owner are
+// its object's.
 struct NpcDef {
     int object = 0;
     std::string name;   // characterName

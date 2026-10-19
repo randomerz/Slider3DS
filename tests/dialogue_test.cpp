@@ -938,3 +938,26 @@ TEST(npcs_voice_reads_the_line_and_paces_the_typing) {
     for (const AudioCue& c : world.audio.take()) stopped = stopped || (c.kind == AudioCue::Kind::StopVoice && c.key == 1);
     CHECK(stopped);
 }
+
+TEST(npcs_voice_carries_on_through_a_skipped_line) {
+    // Skipping on while the voice still reads (A twice): the new line's typing starts, but the
+    // voice finishes the clause it's in and goes on with the new line's later clauses — none here
+    // ("Bye" is one clause): it isn't restarted.
+    Area area = npcArea();
+    for (const NpcDef& n : villageArea().npcs)
+        if (n.name == "Romeo") area.npcs[0].voice = n.voice;
+    World world(area, DEFAULT_SETTINGS);
+    standAt(world, 10, 0);
+    standAt(world, 0, 0);
+    int syllables = 0, first = 0;
+    for (const VoiceStep& s : world.npcs.voiceLine(0).steps) first += s.sound ? 1 : 0;
+    for (const AudioCue& c : world.audio.take()) syllables += c.kind == AudioCue::Kind::PlayVoice ? 1 : 0;
+    world.interact(); // (skips the typing)
+    world.update(DT, 0, 0, true);
+    world.interact(); // (the next line)
+    for (int i = 0; i < 300; i++) {
+        for (const AudioCue& c : world.audio.take()) syllables += c.kind == AudioCue::Kind::PlayVoice ? 1 : 0;
+        world.update(DT, 0, 0, true);
+    }
+    CHECK(world.npcs.lineIndex(0) == 1 && syllables == first);
+}

@@ -64,9 +64,8 @@ void Audio::run(const std::vector<AudioCue>& cues) {
             break;
         case AudioCue::Kind::PlayVoice: playVoice(c); break;
         case AudioCue::Kind::StopVoice:
+            // (its music dip runs out: DialogueDisplay keys it by itself, which StopDampen<VocalizableParagraph> never matches)
             stopVoices(c.key);
-            dampens_.erase(std::remove_if(dampens_.begin(), dampens_.end(), [&](const Dampen& d) { return d.key == c.key; }),
-                           dampens_.end()); // (StopDampen<VocalizableParagraph>: its talking's dip)
             break;
         }
     }

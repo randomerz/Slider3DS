@@ -6,8 +6,9 @@
 //     rise half the time; , stays flat);
 //   - a word's vowel clusters get stress at random; it sounds its stressed ones (else its first),
 //     each a syllable of `duration` a letter (shorter on a high word: `speedup`), its pitch gliding
-//     from the last word's end through the word's peak to its base; words go low / high at random
-//     (a clause's first and last word by its length and intonation);
+//     from the word's base (its last syllable's end, within a word) through the word's peak to its
+//     base; words go low / high at random (a clause's first and last word by its length and
+//     intonation; a preset's intonation override changes only the last word's peak);
 //   - each clause ends in its gap (waited out times the last vowel's openness).
 // The line's emote adds its modifier (pitch, volume, duration, intonation). Not ported (the
 // port's simplifications): the vowel formants as they glide (a syllable plays the rendered clip of
@@ -26,6 +27,7 @@ struct VoiceStep {
     float duration = 0; // s it lasts: the syllable, or the pause's wait
     char vowel = 'a';   // the syllable's clip: 'a', 'e', 'i', 'o' or 'u'
     float pitchStart = 1, pitchMid = 1, pitchEnd = 1; // over its first half, then its second
+    int clause = 0;     // which clause it reads (a line replaced mid-way goes on from the next)
 };
 
 struct VoiceLine {

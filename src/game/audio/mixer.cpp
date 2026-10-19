@@ -225,7 +225,8 @@ void Mixer::mix(int16_t* out) {
         const bool loops = sh.loopEnd > sh.loopStart && sh.loopStart >= 0;
         const float g0 = from[(int)c.bus] * fade0, g1 = to[(int)c.bus] * fade1;
         for (int i = 0; i < N; i++, c.pos += rate) {
-            if (loops && c.pos >= sh.loopEnd) c.pos -= sh.loopEnd - sh.loopStart;
+            // (a loop window ending with the clip: its last sample's interval wraps too)
+            if (loops && (c.pos >= sh.loopEnd || c.pos > last)) c.pos -= sh.loopEnd - sh.loopStart;
             if (c.pos > last) break;
             const size_t k = (size_t)c.pos;
             const float f = (float)(c.pos - (double)k);

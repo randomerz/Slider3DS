@@ -232,14 +232,7 @@ class Event:
             kind = fx['entity']
             if kind == 'SpatialiserEffect':
                 p = fx['props']
-                if p['distanceRolloffType'] != 0:
-                    raise Fail(f'{path}: a spatializer rolloff other than linear squared')
-                # The port models distance and side only: anything else set differently fails.
-                defaults = {'bypass': False, 'extentMode': 0, 'soundSize': 0, 'minimumExtent': 0, 'panBlend': 1,
-                            'occlusionEnabled': True, 'LFEUpmixEnabled': False}
-                changed = [k for k, v in defaults.items() if k in p and p[k] != v]
-                if changed:
-                    raise Fail(f'{path}: spatializer settings the port does not model: {changed}')
+                check_spatializer(p, path)
                 self.spatial = [p['minimumDistance'], p['maximumDistance']] if p['overrideRange'] else \
                     [props['minimumDistance'], props['maximumDistance']]
             elif kind == 'PitchShifterEffect':
@@ -462,7 +455,7 @@ VOWELS = {'a': (1.0, 0.6), 'e': (0.3, 0.8), 'i': (0.0, 1.0), 'o': (0.3, 0.5), 'u
 VOICE_LOOP = (0.25, 0.65)  # s of a sustained render the port loops (FMOD's own loop region holds it; short: decoded at boot)
 VOICE_SEAM = 0.04          # s of crossfade baked at the loop's end, so the jump back is seamless
 VOICE_RENDERS = 16         # plays of a one-shot voice (a multi instrument's variants: one each)
-VOICE_SPACING = 1.0        # s between them
+VOICE_SPACING = 2.0        # s between them (each plays out, starting a little late)
 
 
 def reachable(proj, root):
@@ -484,9 +477,22 @@ def voice_spatial(proj, ev):
     for o in reachable(proj, ev):
         if o['entity'] == 'SpatialiserEffect':
             p = o['props']
+            check_spatializer(p, f'voice {ev["props"]["name"]}')
             return [p['minimumDistance'], p['maximumDistance']] if p['overrideRange'] else \
                 [props['minimumDistance'], props['maximumDistance']]
     return None
+
+
+def check_spatializer(p, what):
+    """Fails on a spatializer the port doesn't model: only linear-squared rolloff over a distance
+    range, the rest as FMOD's defaults (the measured model)."""
+    if p['distanceRolloffType'] != 0:
+        raise Fail(f'{what}: a spatializer rolloff other than linear squared')
+    defaults = {'bypass': False, 'extentMode': 0, 'soundSize': 0, 'minimumExtent': 0, 'panBlend': 1,
+                'occlusionEnabled': True, 'LFEUpmixEnabled': False}
+    changed = [k for k, v in defaults.items() if k in p and p[k] != v]
+    if changed:
+        raise Fail(f'{what}: spatializer settings the port does not model: {changed}')
 
 
 def voice_events():
@@ -551,22 +557,42 @@ def render_voices(proj, events):
             # (a multi instrument picks one at random each time: it's played a few times over, in
             # one run — FMOD's random sequence starts the same in every new system)
             wav = os.path.join(tmp, 'voice.wav')
-            fmod_measure.render(dll, path, VOICE_RENDERS * VOICE_SPACING, wav, restart_every=VOICE_SPACING, place=place)
+            fmod_measure.render(dll, path, VOICE_RENDERS * VOICE_SPACING + 1, wav, restart_every=VOICE_SPACING, place=place)
             x, rate = soundfile.read(wav, dtype='float32')
             x = x.mean(axis=1) * undo
             clips = {}
-            every = int(VOICE_SPACING * rate / fmod_measure.BLOCK) * fmod_measure.BLOCK
-            for k in range(VOICE_RENDERS):
-                seg = x[k * every:(k + 1) * every]
-                loud = np.nonzero(np.abs(seg) > 1e-5)[0]
-                if len(loud) == 0:
+            # Each play, cut at the silences around it (FMOD starts one a little late, by a varying
+            # time); one like a play already kept (the same playlist entry) is left out.
+            floor = float(np.abs(x).max()) * 1e-3
+            loud = np.abs(x) > floor
+            gap = int(0.4 * rate)  # (longer than the pauses inside a play: the signs type with gaps)
+            k, n = 0, len(x)
+            while k < n:
+                if not loud[k]:
+                    k += 1
                     continue
-                seg = seg[loud[0]:loud[-1] + 1]
+                end = k
+                quiet = 0
+                while end < n and quiet < gap:
+                    quiet = 0 if loud[end] else quiet + 1
+                    end += 1
+                seg = x[k:end - quiet]
+                k = end
+                if quiet < gap:
+                    break  # (cut off by the render's end)
                 raw = subprocess.run(['ffmpeg', '-v', 'error', '-f', 'f32le', '-ar', str(rate), '-ac', '1', '-i', '-',
-                                      '-f', 'f32le', '-ar', str(RATE), '-'], input=seg.tobytes(),
+                                      '-f', 'f32le', '-ar', str(RATE), '-'], input=seg.astype(np.float32).tobytes(),
                                      capture_output=True, check=True).stdout
                 seg = np.frombuffer(raw, dtype=np.float32).copy()
-                if not any(len(c) == len(seg) and np.allclose(c[:, 0], seg, atol=1e-3) for c in clips.values()):
+
+                def same(c):
+                    m = min(len(c), len(seg))
+                    if abs(len(c) - len(seg)) > 0.02 * max(len(c), len(seg)):
+                        return False
+                    a, b = c[:m, 0], seg[:m]
+                    return float(np.dot(a, b)) > 0.98 * float(np.sqrt(np.dot(a, a) * np.dot(b, b)))
+
+                if not any(same(c) for c in clips.values()):
                     clips[str(len(clips))] = seg[:, None]
         gain = headroom(list(clips.values()))
         entry = {'volume': round(-gain, 3)}

@@ -227,9 +227,9 @@
  },
  "voices": {
   "event:/Dialogue/Sign_Vocal": {
-   "volume": -0.0,
+   "volume": 2.707,
    "spatial": [1, 20],
-   "clips": ["voice_sign_vocal_0.ogg", "voice_sign_vocal_1.ogg", "voice_sign_vocal_2.ogg", "voice_sign_vocal_3.ogg", "voice_sign_vocal_4.ogg", "voice_sign_vocal_5.ogg", "voice_sign_vocal_6.ogg", "voice_sign_vocal_7.ogg", "voice_sign_vocal_8.ogg", "voice_sign_vocal_9.ogg", "voice_sign_vocal_10.ogg", "voice_sign_vocal_11.ogg", "voice_sign_vocal_12.ogg", "voice_sign_vocal_13.ogg", "voice_sign_vocal_14.ogg", "voice_sign_vocal_15.ogg"]
+   "clips": ["voice_sign_vocal_0.ogg"]
   },
   "event:/Dialogue/archaeologist": {
    "volume": -0.0,
@@ -274,7 +274,7 @@
    "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
-   "clips": ["voice_fish_0.ogg", "voice_fish_1.ogg", "voice_fish_2.ogg", "voice_fish_3.ogg", "voice_fish_4.ogg", "voice_fish_5.ogg", "voice_fish_6.ogg", "voice_fish_7.ogg", "voice_fish_8.ogg", "voice_fish_9.ogg", "voice_fish_10.ogg", "voice_fish_11.ogg", "voice_fish_12.ogg", "voice_fish_13.ogg", "voice_fish_14.ogg", "voice_fish_15.ogg"]
+   "clips": ["voice_fish_0.ogg", "voice_fish_1.ogg", "voice_fish_2.ogg", "voice_fish_3.ogg", "voice_fish_4.ogg", "voice_fish_5.ogg", "voice_fish_6.ogg", "voice_fish_7.ogg", "voice_fish_8.ogg"]
   },
   "event:/Dialogue/gal_generic": {
    "volume": -0.0,

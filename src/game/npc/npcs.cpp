@@ -185,6 +185,18 @@ void Npcs::typeCurrent(World& world, int npc) {
             st.voiceWait = 0;
             st.speaking = true;
             speak(world, npc); // (its first syllable at once: StartCoroutine runs to its first wait)
+        } else {
+            // Still reading: the paragraph's sentences are replaced under the running coroutine —
+            // it finishes the clause it's in, then goes on with the new line's next clauses.
+            const int clause = st.voiceStep > 0 ? st.voice.steps[st.voiceStep - 1].clause : -1;
+            std::vector<VoiceStep> next;
+            for (size_t k = st.voiceStep; k < st.voice.steps.size() && st.voice.steps[k].clause == clause; k++)
+                next.push_back(st.voice.steps[k]);
+            for (const VoiceStep& s : read.steps)
+                if (s.clause > clause) next.push_back(s);
+            st.voice.steps = std::move(next);
+            st.voice.totalDuration = read.totalDuration;
+            st.voiceStep = 0;
         }
     }
     st.typer.start(st.text, speed);

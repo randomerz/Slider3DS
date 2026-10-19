@@ -29,7 +29,7 @@ struct AudioCue {
     bool alwaysOutdoor = false; // Play: IndoorStatus.AlwaysOutdoor (else by its y: a house below)
     // PlayVoice (a vocalizer's syllable: `name` its synth, `value` its starting pitch, `volume`,
     // x / y its speaker) / StopVoice: the speaker it belongs to; DampenMusic: a later one with the
-    // same key replaces it, a StopVoice ends it (0: neither).
+    // same key replaces it (0: none).
     int key = 0;
     char vowel = 'a';                 // PlayVoice: the synth's clip
     float pitchMid = 1, pitchEnd = 1; // PlayVoice: the pitch over its first half, then its second
@@ -88,7 +88,7 @@ public:
         c.y = y;
         add(std::move(c));
     }
-    // The speaker stops talking (VocalizableParagraph.Stop: its syllables fade, its dip ends).
+    // The speaker stops talking (VocalizableParagraph.Stop: its syllables fade; its dip runs out).
     void stopVoice(int key) {
         AudioCue c{AudioCue::Kind::StopVoice, ""};
         c.key = key;

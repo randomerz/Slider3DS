@@ -1,5 +1,6 @@
 // What the World asks AudioManager for (World::audio): slides, collectibles, the exported sound
 // calls, the sound props, the final puzzle's shuffle, footsteps and the ambience.
+#include <cmath>
 #include <functional>
 #include <string>
 #include <vector>
@@ -206,12 +207,28 @@ TEST(world_footsteps_follow_the_run_and_the_surface) {
         w.update(DT, FrameInput{1, 0});
         steps += count(w.audio.take(), K::Play, "Footstep wood");
     }
-    CHECK(steps >= 1 && steps <= 3); // (two a run cycle: at 0.25 and 0.75 of it)
+    // Two a run cycle (at 0.25 and 0.75 s of it).
+    float cycle = 0;
+    for (const AnimatorStateDef& st : villageArea().animatorControllers[w.animators.controller(villageArea().player.animator)].states)
+        if (!st.events.empty()) cycle = st.length;
+    CHECK(cycle > 0 && std::abs(steps - (int)std::floor(60 * DT / cycle * 2 + 0.25f)) <= 1);
+    // Held (a cutscene): no steps.
+    w.lockPlayer(LOCK_DOLLY, true);
+    w.audio.take();
+    for (int i = 0; i < 60; i++) w.update(DT, FrameInput{1, 0});
+    CHECK(count(w.audio.take(), K::Play, "Footstep wood") == 0);
+    w.lockPlayer(LOCK_DOLLY, false);
     // Standing still: none.
     for (int i = 0; i < 30; i++) w.update(DT, FrameInput{});
     w.audio.take();
     for (int i = 0; i < 60; i++) w.update(DT, FrameInput{});
     CHECK(count(w.audio.take(), K::Play, "Footstep wood") == 0);
+    // Outside, on tile 1: its surface map (not its house's wood).
+    w.player.inHouse = false;
+    w.player.stile = 1;
+    float tx, ty;
+    w.grid.ownerBase(1, tx, ty);
+    CHECK(WorldSounds::surfaceAt(w, tx, ty) != "wood");
     // Off every map: the fallback.
     w.player.inHouse = false;
     w.player.stile = 0;

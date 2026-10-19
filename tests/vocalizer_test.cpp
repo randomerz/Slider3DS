@@ -2,6 +2,7 @@
 // the emote's modifier; and the bank's rendered synths, played as syllables.
 #include <cmath>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "game/audio/audio.h"
@@ -95,4 +96,93 @@ TEST(audio_bank_has_every_npc_voice) {
     CHECK(bank.load());
     for (const NpcDef& n : villageArea().npcs)
         check(!n.voice.present || bank.voice(n.voice.event) != nullptr, n.name + "'s voice " + n.voice.event);
+}
+
+namespace {
+
+VoiceDef shapedVoice() {
+    VoiceDef v = plainVoice();
+    v.up = 0.2f;
+    v.down = 0.2f;
+    v.wordIntonation = 0.1f;
+    return v;
+}
+
+// The last syllable of a line.
+VoiceStep lastSyllable(const VoiceLine& line) {
+    VoiceStep last;
+    for (const VoiceStep& s : line.steps)
+        if (s.sound) last = s;
+    return last;
+}
+
+} // namespace
+
+TEST(vocalizer_question_rises_to_its_peak_and_an_override_moves_only_the_peak) {
+    // "Is it?": a question (not a who / what ...) rises: the last word goes high (x1.1), its peak at
+    // the raised pitch (x1.2), ending at its base.
+    VoiceRandom a;
+    const VoiceStep up = lastSyllable(vocalize(shapedVoice(), 0, "Is it?", 1, a));
+    CHECK(std::fabs(up.pitchMid - 1.2f * 1.1f) < 1e-5f && std::fabs(up.pitchEnd - 1.1f) < 1e-5f);
+    // A flat override: the peak no longer rises, the word stays high (the clause's own intonation).
+    VoiceDef flat = shapedVoice();
+    flat.intonation = 0;
+    VoiceRandom b;
+    const VoiceStep f = lastSyllable(vocalize(flat, 0, "Is it?", 1, b));
+    CHECK(std::fabs(f.pitchMid - 1.1f) < 1e-5f && std::fabs(f.pitchEnd - 1.1f) < 1e-5f);
+}
+
+TEST(vocalizer_intonation_odds_are_unitys) {
+    // "Who is it?" falls 3 times in 4 (the last word low: ends at x0.9); a 2-word "." clause rises
+    // half the time.
+    int down = 0, rise = 0;
+    for (uint32_t seed = 1; seed <= 400; seed++) {
+        VoiceRandom r(seed * 2654435761u);
+        down += lastSyllable(vocalize(shapedVoice(), 0, "Who is it?", 1, r)).pitchEnd < 1 ? 1 : 0;
+        VoiceRandom r2(seed * 40503u + 7);
+        rise += lastSyllable(vocalize(shapedVoice(), 0, "It is.", 1, r2)).pitchEnd > 1 ? 1 : 0;
+    }
+    CHECK(down > 260 && down < 340);
+    CHECK(rise > 160 && rise < 240);
+}
+
+TEST(vocalizer_numbers_its_clauses) {
+    VoiceRandom r;
+    const VoiceLine line = vocalize(plainVoice(), 0, "Hi there. Bye now!", 1, r);
+    CHECK(!line.steps.empty() && line.steps.front().clause == 0 && line.steps.back().clause == 1);
+}
+
+TEST(mixer_clip_loops_and_glides) {
+    // A 400 Hz tone, 0.5 s, looping its last 0.4 s.
+    Clip tone;
+    for (int i = 0; i < plat::AUDIO_RATE / 2; i++) tone.pcm.push_back((int16_t)(8000 * std::sin(2 * 3.14159265 * 400 * i / plat::AUDIO_RATE)));
+    tone.frames = (int64_t)tone.pcm.size();
+    Mixer m;
+    ClipShape shape;
+    shape.loopStart = plat::AUDIO_RATE / 10;
+    shape.loopEnd = (int)tone.pcm.size();
+    shape.stopAfter = 2;
+    shape.rateMid = 2; // (from 1 to 2 over the first second, then held at 2)
+    shape.rateEnd = 2;
+    shape.glide = 2;
+    m.playClip(tone, Bus::Sfx, 1, 1, 1, false, shape);
+    std::vector<int16_t> block(plat::AUDIO_BLOCK * 2);
+    auto crossings = [&](int blocks) {
+        int n = 0;
+        double energy = 0;
+        for (int b = 0; b < blocks; b++) {
+            m.mix(block.data());
+            for (int i = 1; i < plat::AUDIO_BLOCK; i++) {
+                n += (block[2 * i - 2] < 0) != (block[2 * i] < 0) ? 1 : 0;
+                energy += (double)block[2 * i] * block[2 * i];
+            }
+        }
+        return std::make_pair(n, energy);
+    };
+    const int perTenth = plat::AUDIO_RATE / plat::AUDIO_BLOCK / 10;
+    const auto first = crossings(perTenth);           // (0-0.1 s: ~400 Hz)
+    crossings(perTenth * 14);                         // (to 1.5 s: well past the clip, looping)
+    const auto late = crossings(perTenth);            // (1.5-1.6 s: ~800 Hz, still sounding)
+    CHECK(late.second > 0.5 * first.second);
+    CHECK(late.first > 1.7 * first.first && late.first < 2.3 * first.first);
 }

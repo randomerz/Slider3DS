@@ -505,14 +505,11 @@ static NpcDef readNpc(const Json& j, Area& out) {
         VoiceDef& d = n.voice;
         d.present = true;
         d.event = v["event"].asString();
-        d.perClause = v["perClause"].asBool();
         d.syllables = v["syllables"].asBool(true);
-        d.fadeout = v["fadeout"].asFloat();
         d.pitch = v["pitch"].asFloat(1);
         d.duration = v["duration"].asFloat();
         d.volume = v["volume"].asFloat(1);
         d.volumeDb = v["volumeDb"].asFloat();
-        d.smoothness = v["smoothness"].asFloat(1);
         d.wordIntonation = v["wordIntonation"].asFloat();
         d.speedup = v["speedup"].asFloat();
         d.lowToHigh = v["lowToHigh"].asFloat();
@@ -1089,7 +1086,10 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.collectibles.push_back({c["object"].asInt(-1), c["name"].asString(), c["area"].asString(),
                                     c["disableAtStart"].asBool(), c["sprite"].asInt(-1), readCalls(c["onCollect"], out)});
     for (const Json& c : doc["animatorControllers"].items()) out.animatorControllers.push_back(readController(c));
-    for (const Json& n : doc["npcs"].items()) out.npcs.push_back(readNpc(n, out));
+    for (const Json& n : doc["npcs"].items()) {
+        if (n["voice"]["perClause"].asBool()) return fail(error, "NPC " + n["name"].asString() + ": a per-clause voice (not ported)");
+        out.npcs.push_back(readNpc(n, out));
+    }
     for (const Json& j : doc["items"].items()) {
         ItemDef d;
         d.object = j["object"].asInt(-1);
