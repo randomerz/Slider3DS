@@ -29,138 +29,195 @@
  },
  "sounds": {
   "UI Click": {
-   "clips": ["sfx_ui_click.ogg"],
+   "clips": [
+    [0, 200]
+   ],
    "volume": 0.0,
    "pitchRandom": 2.0833,
    "pitchParam": true,
    "canPause": false
   },
   "Village Pick Up": {
-   "clips": ["sfx_village_pick_up.ogg"],
+   "clips": [
+    ["sfx_village_pick_up.ogg", 56000]
+   ],
    "volume": 0.0,
    "canPause": true
   },
   "Puzzle Complete": {
-   "clips": ["sfx_puzzle_complete.ogg"],
+   "clips": [
+    ["sfx_puzzle_complete.ogg", 13938]
+   ],
    "volume": 0.0,
    "pitchRandom": 4.1667,
    "pitchParam": true,
    "canPause": true
   },
   "Hat Click": {
-   "clips": ["sfx_hat_click.ogg"],
+   "clips": [
+    [200, 2474]
+   ],
    "volume": 0.0,
    "pitchParam": true,
    "canPause": true
   },
   "Slide Rumble": {
-   "clips": ["sfx_slide_rumble.ogg"],
+   "clips": [
+    [2674, 60190]
+   ],
    "volume": 0.0,
    "pitchRandom": 4.1667,
    "spatial": [1, 300],
    "canPause": true
   },
   "Slide Explosion": {
-   "clips": ["sfx_slide_explosion.ogg"],
+   "clips": [
+    [62864, 21573]
+   ],
    "volume": -0.5,
    "pitchRandom": 4.1667,
    "spatial": [1, 300],
    "canPause": true
   },
   "TFT Bell": {
-   "clips": ["sfx_tft_bell.ogg"],
+   "clips": [
+    ["sfx_tft_bell.ogg", 178051]
+   ],
    "volume": 0.0,
    "spatial": [1, 150],
    "canPause": true
   },
   "MagicChimes1": {
-   "clips": ["sfx_magicchimes1.ogg"],
+   "clips": [
+    ["sfx_magicchimes1.ogg", 129624]
+   ],
    "volume": 0.0,
    "spatial": [1, 150],
    "canPause": true
   },
   "Meow": {
-   "clips": ["sfx_meow.ogg"],
+   "clips": [
+    ["sfx_meow.ogg", 37035]
+   ],
    "volume": 0.0,
    "pitchRandom": 4,
    "spatial": [1, 20],
    "canPause": true
   },
   "Pop": {
-   "clips": ["sfx_pop.ogg"],
+   "clips": [
+    ["sfx_pop.ogg", 6700]
+   ],
    "volume": 0.0,
    "pitchParam": true,
    "canPause": true
   },
   "Fall": {
-   "clips": ["sfx_fall.ogg"],
+   "clips": [
+    ["sfx_fall.ogg", 18506]
+   ],
    "volume": 0.0,
    "spatial": [1, 300],
    "canPause": false
   },
   "Hurt": {
-   "clips": ["sfx_hurt.ogg"],
+   "clips": [
+    ["sfx_hurt.ogg", 8713]
+   ],
    "volume": 0.0,
    "pitchRandom": 4.1667,
    "spatial": [1, 150],
    "canPause": true
   },
   "Artifact Error": {
-   "clips": ["sfx_artifact_error.ogg"],
+   "clips": [
+    [84437, 9448]
+   ],
    "volume": 0.0,
    "pitchRandom": 4.1667,
    "canPause": true
   },
   "Cow Moo": {
-   "clips": ["sfx_cow_moo_0.ogg", "sfx_cow_moo_1.ogg"],
+   "clips": [
+    ["sfx_cow_moo_0.ogg", 84739],
+    ["sfx_cow_moo_1.ogg", 44899]
+   ],
    "volume": 0.0,
    "spatial": [1, 20],
    "canPause": true
   },
   "Dog Bark 1": {
-   "clips": ["sfx_dog_bark_1.ogg"],
+   "clips": [
+    ["sfx_dog_bark_1.ogg", 12800]
+   ],
    "volume": 1.051,
    "spatial": [1, 20],
    "canPause": true
   },
   "Dog Bark 2": {
-   "clips": ["sfx_dog_bark_2.ogg"],
+   "clips": [
+    ["sfx_dog_bark_2.ogg", 10881]
+   ],
    "volume": 0.222,
    "spatial": [1, 20],
    "canPause": true
   },
   "Footstep grass": {
-   "clips": ["sfx_footstep_grass_0.ogg", "sfx_footstep_grass_1.ogg", "sfx_footstep_grass_2.ogg", "sfx_footstep_grass_3.ogg"],
+   "clips": [
+    [93885, 9600],
+    [103485, 9600],
+    [113085, 9600],
+    [122685, 9600]
+   ],
    "volume": 0.0,
    "spatial": [1, 20],
    "canPause": true
   },
   "Footstep wood": {
-   "clips": ["sfx_footstep_wood_0.ogg", "sfx_footstep_wood_1.ogg", "sfx_footstep_wood_2.ogg"],
+   "clips": [
+    [132285, 8799],
+    [141084, 8122],
+    [149206, 7579]
+   ],
    "volume": 0.0,
    "spatial": [1, 20],
    "canPause": true
   },
   "Footstep concrete": {
-   "clips": ["sfx_footstep_concrete_0.ogg", "sfx_footstep_concrete_1.ogg", "sfx_footstep_concrete_2.ogg"],
+   "clips": [
+    [156785, 4480],
+    [161265, 4480],
+    [165745, 4480]
+   ],
    "volume": 0.0,
    "spatial": [1, 20],
    "canPause": true
   },
   "Footstep sand": {
-   "clips": ["sfx_footstep_sand_0.ogg", "sfx_footstep_sand_1.ogg", "sfx_footstep_sand_2.ogg"],
+   "clips": [
+    [170225, 16000],
+    [186225, 11274],
+    [197499, 16000]
+   ],
    "volume": 0.0,
    "spatial": [1, 20],
    "canPause": true
   },
   "Footstep puddle": {
-   "clips": ["sfx_footstep_puddle_0.ogg", "sfx_footstep_puddle_1.ogg"],
+   "clips": [
+    [213499, 6400],
+    [219899, 6400]
+   ],
    "volume": 0.0,
    "spatial": [1, 20],
    "canPause": true
   },
   "Footstep water": {
-   "clips": ["sfx_footstep_water_0.ogg", "sfx_footstep_water_1.ogg", "sfx_footstep_water_2.ogg"],
+   "clips": [
+    [226299, 25132],
+    [251431, 20614],
+    [272045, 27310]
+   ],
    "volume": 0.0,
    "spatial": [1, 20],
    "canPause": true
@@ -229,18 +286,20 @@
   "event:/Dialogue/Sign_Vocal": {
    "volume": 2.707,
    "spatial": [1, 20],
-   "clips": ["voice_sign_vocal_0.ogg"]
+   "clips": [
+    [299355, 25587]
+   ]
   },
   "event:/Dialogue/archaeologist": {
    "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_archaeologist_a.ogg",
-    "e": "voice_archaeologist_e.ogg",
-    "i": "voice_archaeologist_i.ogg",
-    "o": "voice_archaeologist_o.ogg",
-    "u": "voice_archaeologist_u.ogg"
+    "a": [324942, 20800],
+    "e": [345742, 20800],
+    "i": [366542, 20800],
+    "o": [387342, 20800],
+    "u": [408142, 20800]
    },
    "loop": [8000, 20800]
   },
@@ -249,11 +308,11 @@
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_chad_a.ogg",
-    "e": "voice_chad_e.ogg",
-    "i": "voice_chad_i.ogg",
-    "o": "voice_chad_o.ogg",
-    "u": "voice_chad_u.ogg"
+    "a": [428942, 20800],
+    "e": [449742, 20800],
+    "i": [470542, 20800],
+    "o": [491342, 20800],
+    "u": [512142, 20800]
    },
    "loop": [8000, 20800]
   },
@@ -262,11 +321,11 @@
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_fezziwig_a.ogg",
-    "e": "voice_fezziwig_e.ogg",
-    "i": "voice_fezziwig_i.ogg",
-    "o": "voice_fezziwig_o.ogg",
-    "u": "voice_fezziwig_u.ogg"
+    "a": [532942, 20800],
+    "e": [553742, 20800],
+    "i": [574542, 20800],
+    "o": [595342, 20800],
+    "u": [616142, 20800]
    },
    "loop": [8000, 20800]
   },
@@ -274,18 +333,28 @@
    "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
-   "clips": ["voice_fish_0.ogg", "voice_fish_1.ogg", "voice_fish_2.ogg", "voice_fish_3.ogg", "voice_fish_4.ogg", "voice_fish_5.ogg", "voice_fish_6.ogg", "voice_fish_7.ogg", "voice_fish_8.ogg"]
+   "clips": [
+    [636942, 683],
+    [637625, 683],
+    [638308, 683],
+    [638991, 855],
+    [639846, 683],
+    [640529, 683],
+    [641212, 683],
+    [641895, 1047],
+    [642942, 1423]
+   ]
   },
   "event:/Dialogue/gal_generic": {
    "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_gal_generic_a.ogg",
-    "e": "voice_gal_generic_e.ogg",
-    "i": "voice_gal_generic_i.ogg",
-    "o": "voice_gal_generic_o.ogg",
-    "u": "voice_gal_generic_u.ogg"
+    "a": [644365, 20800],
+    "e": [665165, 20800],
+    "i": [685965, 20800],
+    "o": [706765, 20800],
+    "u": [727565, 20800]
    },
    "loop": [8000, 20800]
   },
@@ -294,11 +363,11 @@
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_guy_generic_a.ogg",
-    "e": "voice_guy_generic_e.ogg",
-    "i": "voice_guy_generic_i.ogg",
-    "o": "voice_guy_generic_o.ogg",
-    "u": "voice_guy_generic_u.ogg"
+    "a": [748365, 20800],
+    "e": [769165, 20800],
+    "i": [789965, 20800],
+    "o": [810765, 20800],
+    "u": [831565, 20800]
    },
    "loop": [8000, 20800]
   },
@@ -307,11 +376,11 @@
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_juliet_a.ogg",
-    "e": "voice_juliet_e.ogg",
-    "i": "voice_juliet_i.ogg",
-    "o": "voice_juliet_o.ogg",
-    "u": "voice_juliet_u.ogg"
+    "a": [852365, 20800],
+    "e": [873165, 20800],
+    "i": [893965, 20800],
+    "o": [914765, 20800],
+    "u": [935565, 20800]
    },
    "loop": [8000, 20800]
   },
@@ -320,11 +389,11 @@
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_old_guy_a.ogg",
-    "e": "voice_old_guy_e.ogg",
-    "i": "voice_old_guy_i.ogg",
-    "o": "voice_old_guy_o.ogg",
-    "u": "voice_old_guy_u.ogg"
+    "a": [956365, 20800],
+    "e": [977165, 20800],
+    "i": [997965, 20800],
+    "o": [1018765, 20800],
+    "u": [1039565, 20800]
    },
    "loop": [8000, 20800]
   },
@@ -333,11 +402,11 @@
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
-    "a": "voice_romeo_a.ogg",
-    "e": "voice_romeo_e.ogg",
-    "i": "voice_romeo_i.ogg",
-    "o": "voice_romeo_o.ogg",
-    "u": "voice_romeo_u.ogg"
+    "a": [1060365, 20800],
+    "e": [1081165, 20800],
+    "i": [1101965, 20800],
+    "o": [1122765, 20800],
+    "u": [1143565, 20800]
    },
    "loop": [8000, 20800]
   }

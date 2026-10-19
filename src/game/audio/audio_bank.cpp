@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 
 #include "game/data/json.h"
 #include "platform/platform.h"
@@ -28,15 +30,20 @@ float AhdsrShape::release(float x) const {
 
 namespace {
 
-// `path` as a clip, its header checked (mono at the port's rate, not empty); not decoded yet.
-bool checkClip(const std::string& path, Clip& clip) {
-    plat::Ogg* ogg = plat::openOgg(path.c_str());
-    if (!ogg) return false;
-    clip.path = path;
-    clip.frames = plat::oggFrames(ogg);
-    const bool ok = plat::oggChannels(ogg) == 1 && plat::oggRate(ogg) == plat::AUDIO_RATE && clip.frames > 0;
-    plat::closeOgg(ogg);
-    return ok;
+// A clip's entry: [offset, frames] into clips.pcm (`pcm`, its bytes), copied out; or [file, frames],
+// an Ogg left for later.
+bool readClip(const Json& j, const std::string& pcm, Clip& clip) {
+    clip.frames = (int64_t)j.at(1).asNumber();
+    if (j.size() != 2 || clip.frames <= 0) return false;
+    if (j.at(0).type() == Json::Type::String) {
+        clip.path = "audio/" + j.at(0).asString();
+        return true;
+    }
+    const int64_t offset = (int64_t)j.at(0).asNumber(-1);
+    if (offset < 0 || (offset + clip.frames) * 2 > (int64_t)pcm.size()) return false;
+    clip.pcm.resize((size_t)clip.frames);
+    std::memcpy(clip.pcm.data(), pcm.data() + offset * 2, (size_t)clip.frames * 2); // (little-endian, as the 3DS and PCs)
+    return true;
 }
 
 // A stream's file opens as stereo at the port's rate, long enough for its jumps.
@@ -63,6 +70,8 @@ bool AudioBank::load(std::string* error) {
     Json doc;
     if (!plat::readFile("audio/audio.json", text) || !Json::parse(text, doc, error)) return fail("can't read audio/audio.json");
     if (doc["rate"].asInt() != plat::AUDIO_RATE) return fail("audio/audio.json: not at the port's rate");
+    std::string pcm; // (freed when load returns: each clip keeps its own copy)
+    if (!plat::readFile("audio/clips.pcm", pcm)) return fail("can't read audio/clips.pcm");
     for (const Json& k : doc["dampenCurve"].items()) {
         if (k.size() != 6) return fail("audio/audio.json: a bad dampenCurve key");
         dampenCurve_.push_back({k.at(0).asFloat(), k.at(1).asFloat(), k.at(2).asFloat(), k.at(3).asFloat(), k.at(4).asFloat(),
@@ -84,9 +93,9 @@ bool AudioBank::load(std::string* error) {
 
     for (const auto& [name, j] : doc["sounds"].members()) {
         SoundDef& s = sounds_[name];
-        for (const Json& f : j["clips"].items()) {
+        for (const Json& c : j["clips"].items()) {
             s.clips.emplace_back();
-            if (!checkClip("audio/" + f.asString(), s.clips.back())) return fail("audio/" + f.asString() + ": not a mono clip");
+            if (!readClip(c, pcm, s.clips.back())) return fail("audio/audio.json: a bad clip in sound " + name);
         }
         if (s.clips.empty()) return fail("audio/audio.json: sound " + name + " has no clips");
         s.gain = dbToGain(j["volume"].asFloat());
@@ -108,7 +117,7 @@ bool AudioBank::load(std::string* error) {
             for (const char* c = VoiceSynth::VOWELS; *c; c++) {
                 const char key[2] = {*c, 0};
                 v.clips.emplace_back();
-                if (!checkClip("audio/" + vowels[key].asString(), v.clips.back())) return fail("audio: " + event + "'s " + key + " clip");
+                if (!readClip(vowels[key], pcm, v.clips.back())) return fail("audio: " + event + "'s " + key + " clip");
             }
             v.loopStart = j["loop"].at(0).asInt();
             v.loopEnd = j["loop"].at(1).asInt();
@@ -116,9 +125,9 @@ bool AudioBank::load(std::string* error) {
                 if (v.loopStart <= 0 || v.loopEnd <= v.loopStart || v.loopEnd > c.frames)
                     return fail("audio: " + event + "'s loop is outside its clips");
         } else {
-            for (const Json& f : j["clips"].items()) {
+            for (const Json& c : j["clips"].items()) {
                 v.clips.emplace_back();
-                if (!checkClip("audio/" + f.asString(), v.clips.back())) return fail("audio/" + f.asString() + ": not a mono clip");
+                if (!readClip(c, pcm, v.clips.back())) return fail("audio: a bad clip in voice " + event);
             }
             if (v.clips.empty()) return fail("audio: voice " + event + " has no clips");
         }
@@ -164,21 +173,24 @@ bool AudioBank::load(std::string* error) {
             if (!checkStream(s)) return fail("audio/" + s.file + ": not a stereo stream matching its entry");
         }
     }
-    // Everything to decode, the voices first (the earliest to be needed: the first NPC line).
     for (auto& [name, s] : sounds_)
-        for (const Clip& c : s.clips) undecoded_.push_back(&c);
+        for (const Clip& c : s.clips)
+            if (c.pcm.empty()) undecoded_.push_back(&c);
     for (auto& [name, v] : voices_)
-        for (const Clip& c : v.clips) undecoded_.push_back(&c);
+        for (const Clip& c : v.clips)
+            if (c.pcm.empty()) undecoded_.push_back(&c);
     return true;
 }
 
 void AudioBank::decode(const Clip& clip) {
     if (!clip.pcm.empty()) return;
     plat::Ogg* ogg = plat::openOgg(clip.path.c_str());
-    if (!ogg) return;
-    clip.pcm.resize((size_t)clip.frames);
-    clip.pcm.resize((size_t)plat::readOgg(ogg, clip.pcm.data(), (int)clip.pcm.size()));
-    plat::closeOgg(ogg);
+    clip.pcm.assign((size_t)clip.frames, 0); // (a bad file plays as silence, once: it isn't retried)
+    if (ogg && plat::oggChannels(ogg) == 1 && plat::oggRate(ogg) == plat::AUDIO_RATE && plat::oggFrames(ogg) == clip.frames)
+        plat::readOgg(ogg, clip.pcm.data(), (int)clip.frames);
+    else
+        printf("%s: not a mono clip of its entry's length\n", clip.path.c_str());
+    if (ogg) plat::closeOgg(ogg);
 }
 
 bool AudioBank::decodeSome(double budgetMs) {

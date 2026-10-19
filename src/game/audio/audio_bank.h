@@ -1,8 +1,9 @@
-// The exported sounds: assets/audio/audio.json + its Ogg files, from tools/make_audio.py (the FMOD
-// events the port plays, rendered; its docstring has the format). A sound's clips are decoded whole
-// before they first play — a little each frame from load on (decodeSome: the title screen's intro
-// gives it seconds), else at once (decode) — so the boot doesn't pay for all of them (an Old 3DS
-// takes seconds); music and ambience stream from their files as they play.
+// The exported sounds: assets/audio/audio.json + clips.pcm + its Ogg files, from tools/make_audio.py
+// (the FMOD events the port plays, rendered; its docstring has the format). The clips played all the
+// time (footsteps, slides, clicks, the voices) are raw PCM, read in one go at load. The rare ones are
+// Ogg, not even opened at load (Tremor's setup per file costs an Old 3DS a lot): they're decoded
+// whole a clip a frame after it (decodeSome: the title screen's intro gives it seconds), or at once
+// if one plays before that (decode). Music and ambience stream from their files as they play.
 #pragma once
 
 #include <cstdint>
@@ -18,9 +19,9 @@
 enum class Bus { Sfx, Music, Ambience };
 
 struct Clip {
-    std::string path;     // its Ogg (checked at load: mono, at plat::AUDIO_RATE)
+    std::string path;     // its Ogg (checked when decoded: mono, at plat::AUDIO_RATE, `frames` long); empty: raw
     int64_t frames = 0;   // its length
-    mutable std::vector<int16_t> pcm; // the decoded frames (a cache: empty until AudioBank decodes it)
+    mutable std::vector<int16_t> pcm; // its frames (an Ogg's: empty until AudioBank decodes it)
 };
 
 // An AudioManager sound.
@@ -90,8 +91,8 @@ struct IndoorEq {
 
 class AudioBank {
 public:
-    // audio/audio.json, every sound's clips decoded. False (and `error`) if anything is missing or
-    // doesn't match its entry: they're part of the build.
+    // audio/audio.json and the raw clips. False (and `error`) if anything is missing or doesn't
+    // match its entry: they're part of the build. (An Ogg clip is checked when it's decoded.)
     bool load(std::string* error = nullptr);
     void unload();
 
@@ -101,7 +102,7 @@ public:
     const VoiceSynth* voice(std::string_view event) const;
     // Decodes `clip` (one of the bank's) if it isn't yet.
     void decode(const Clip& clip);
-    // Decodes clips not yet decoded for about `budgetMs` (at least one); false once all are.
+    // Decodes Ogg clips not yet decoded for about `budgetMs` (at least one); false once all are.
     bool decodeSome(double budgetMs);
     void decodeAll() { while (decodeSome(1e9)) {} }
     // AudioManager.soundDampenCurve: DampenMusic's shape, 1 -> 0 -> 1 over its length.

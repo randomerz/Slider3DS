@@ -194,21 +194,21 @@ endif
 #                               assets/sheets/<name>.fmt: la8 for gray sheets, else rgba8; incl. the
 #                               font atlas, tools/make_font.py)
 #   assets/<dir>/*.json      -> romfs/<dir>/*.json    (copied: areas, fonts, audio/audio.json)
-#   assets/audio/*.ogg       -> romfs/audio/*.ogg     (copied: tools/make_audio.py's renders)
+#   assets/audio/*.ogg, *.pcm -> romfs/audio/        (copied: tools/make_audio.py's renders)
 # The .3dsx embeds RomFS, so it is rebuilt when any of these change.
 #---------------------------------------------------------------------------------
 SHEET_PNGS	:=	$(wildcard assets/sheets/*.png)
 ROMFS_SHEETS	:=	$(patsubst assets/sheets/%.png,$(ROMFS)/gfx/%.t3x,$(SHEET_PNGS))
 AREA_JSONS	:=	$(wildcard assets/*/*.json)
 ROMFS_JSONS	:=	$(patsubst assets/%,$(ROMFS)/%,$(AREA_JSONS))
-AUDIO_OGGS	:=	$(wildcard assets/audio/*.ogg)
-ROMFS_OGGS	:=	$(patsubst assets/%,$(ROMFS)/%,$(AUDIO_OGGS))
-export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_OGGS))
+AUDIO_FILES	:=	$(wildcard assets/audio/*.ogg assets/audio/*.pcm)
+ROMFS_AUDIO	:=	$(patsubst assets/%,$(ROMFS)/%,$(AUDIO_FILES))
+export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_AUDIO))
 
 .PHONY: all clean
 
 #---------------------------------------------------------------------------------
-all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_OGGS)
+all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_AUDIO)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 $(BUILD):
@@ -243,7 +243,7 @@ $(ROMFS)/%.json	:	assets/%.json
 	@cp $< $@
 
 #---------------------------------------------------------------------------------
-$(ROMFS)/audio/%.ogg	:	assets/audio/%.ogg
+$(ROMFS)/audio/%	:	assets/audio/%
 #---------------------------------------------------------------------------------
 	@mkdir -p $(dir $@)
 	@cp $< $@

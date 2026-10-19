@@ -64,9 +64,24 @@ TEST(audio_bank_has_every_sound_the_port_plays) {
     for (const char* name : tracks::ALL_MUSIC) check(bank.music(name) != nullptr, std::string("music ") + name);
     // (UI Click: the "Pitch" parameter and a random pitch, as its FMOD event; not paused with the game)
     const SoundDef* click = bank.sound(sounds::UI_CLICK);
-    CHECK(click && click->pitchParam && click->pitchRandom > 0 && !click->canPause && click->clips[0].pcm.empty());
-    bank.decodeAll(); // (decoded later, not at load)
-    CHECK(!click->clips[0].pcm.empty() && (int64_t)click->clips[0].pcm.size() == click->clips[0].frames);
+    CHECK(click && click->pitchParam && click->pitchRandom > 0 && !click->canPause);
+    // A raw clip is there at load; an Ogg one is decoded later, and every one is what its entry says.
+    CHECK(click && click->clips[0].path.empty() && (int64_t)click->clips[0].pcm.size() == click->clips[0].frames);
+    const SoundDef* moo = bank.sound(sounds::COW_MOO);
+    CHECK(moo && !moo->clips[0].path.empty() && moo->clips[0].pcm.empty());
+    bank.decodeAll();
+    CHECK(moo && moo->clips[0].pcm.size() == (size_t)moo->clips[0].frames);
+    for (const char* name : sounds::ALL)
+        if (const SoundDef* s = bank.sound(name))
+            for (const Clip& c : s->clips) {
+                plat::Ogg* ogg = c.path.empty() ? nullptr : plat::openOgg(c.path.c_str());
+                check(c.path.empty() || (ogg && plat::oggChannels(ogg) == 1 && plat::oggFrames(ogg) == c.frames),
+                      std::string(name) + "'s Ogg matches its entry");
+                if (ogg) plat::closeOgg(ogg);
+                int16_t peak = 0;
+                for (int16_t v : c.pcm) peak = std::max<int16_t>(peak, (int16_t)std::abs(v));
+                check(peak > 1000, std::string(name) + " isn't silent");
+            }
     // (the Village's music loops through a crossfade past its timeline, back near its start)
     const StreamDef* v = bank.music(tracks::VILLAGE);
     CHECK(v && v->attack == 1 && v->release == 1 && v->jumps.size() == 2 && v->jumps[1].at > v->length &&

@@ -1,4 +1,4 @@
-"""Renders the Village's FMOD events to Ogg Vorbis for the port: assets/audio/*.ogg + audio.json.
+"""Renders the Village's FMOD events for the port: assets/audio/*.ogg + clips.pcm + audio.json.
 
     python tools/make_audio.py [--keep-export]
 
@@ -21,7 +21,9 @@ audio.json (the port's game/audio/audio_bank reads it):
        sound's constant-power split, its angle by the azimuth; tools/fmod_measure.py),
    "indoorMusicEq": {"lowHz", "highHz", "lowDb", "highDb"} (IndoorMusic3Eq: the music bus's 3-band EQ
        while the player is in a house, fitted to FMOD's: tools/fmod_measure.py),
-   "sounds": {name: {"clips": [file, ...] (a multi instrument's playlist: one picked at random),
+   "sounds": {name: {"clips": [clip, ...] (a multi instrument's playlist: one picked at random; a
+       clip is [offset, frames] into clips.pcm (raw: RAW_SOUNDS and the voices) or [file, frames] (an
+       Ogg, decoded after the boot)),
        "volume": dB (the event's master volume), "pitchRandom": semitones (FMOD's randomizer: a
        random pitch within +-half of it), "pitchParam": the "Pitch" parameter (0.5-2) sets the pitch,
        "spatial": [min, max] distance (the spatializer, linear-squared rolloff; absent: 2D),
@@ -33,10 +35,12 @@ audio.json (the port's game/audio/audio_bank reads it):
        playback reaches `at` (landing there by a jump doesn't count), it continues from `to` if the
        global parameter is in [min, max]; the first such jump wins), "volumeParam": [parameter,
        [[value, dB], ...]] (absent: none; the volume by a global parameter, measured)}},
-   "voices": {synth event: {"vowels": {"a" .. "u": file} + "loop": [start, end] frames (a held
+   "voices": {synth event: {"vowels": {"a" .. "u": clip} + "loop": [start, end] frames (a held
        synth: played from its start, looping in the window while a syllable lasts), or "clips":
-       [file, ...] (one at random, played as it is), "volume": dB, "pitched": the "Pitch" parameter
+       [clip, ...] (one at random, played as it is), "volume": dB, "pitched": the "Pitch" parameter
        changes it (absent: it doesn't), "spatial": [min, max]}} (the NPCs' vocalizer synths, rendered: render_voices)}
+clips.pcm: the raw clips, mono int16 little-endian at the rate, back to back (read whole at the boot:
+nothing to decode for the sounds played all the time; the rare ones stay Ogg, a tenth of the size).
 Clips are mono (sounds are spatialized or centered); streams are stereo. Track and instrument
 volumes, trims and fades are baked; the event's master volume is data (less whatever a render
 had to be turned down by to fit, so it plays as loud). A transition with a
@@ -73,6 +77,8 @@ MUSIC = ['Main Menu', 'Village']
 # Player Footstep Mapping's events, played as sounds named "Footstep <surface>".
 FOOTSTEPS = ['grass', 'wood', 'concrete', 'sand', 'puddle', 'water']
 AMBIENCE = ['Waterfall']
+# The sounds played all the time, kept raw in clips.pcm (with every voice); the rest are Ogg.
+RAW_SOUNDS = {'UI Click', 'Hat Click', 'Slide Rumble', 'Slide Explosion', 'Artifact Error'} | {f'Footstep {f}' for f in FOOTSTEPS}
 
 # Effects that change nothing by default, and the bus faders.
 NEUTRAL_EFFECTS = {'MixerBusFader'}
@@ -207,6 +213,22 @@ def encode(samples, path, quality):
 
 def frames(t):
     return int(round(t * RATE))
+
+
+class Clips:
+    """The clips as audio.json lists them: raw ones appended to clips.pcm, the rest encoded to Ogg."""
+
+    def __init__(self):
+        self.pcm = bytearray()
+
+    def add(self, samples, file, raw):
+        if raw:
+            q = np.clip(np.round(samples[:, 0] * 32767), -32768, 32767).astype('<i2')
+            entry = [len(self.pcm) // 2, len(q)]
+            self.pcm += q.tobytes()
+            return entry
+        encode(samples, os.path.join(OUT, file), QUALITY['sounds'])
+        return [file, len(samples)]
 
 
 class Event:
@@ -501,7 +523,7 @@ def voice_events():
     return sorted({n['voice']['event'] for n in area['npcs'] if 'voice' in n})
 
 
-def render_voices(proj, events):
+def render_voices(proj, events, store):
     """The NPCs' voices, rendered with the game's FMOD runtime (tools/fmod_measure.py's): their
     flangers, multiband EQs and pitch shifters can't be modelled. A synth that holds while playing
     (a loop region; stopped, it leaves for its End marker) becomes one sustained clip per vowel
@@ -604,18 +626,14 @@ def render_voices(proj, events):
             entry['pitched'] = True
         if spatial:
             entry['spatial'] = spatial
-        files = {}
-        for vowel, clip in clips.items():
-            f = f'voice_{name}_{vowel}.ogg'
-            encode(clip * db(gain), os.path.join(OUT, f), QUALITY['sounds'])
-            files[vowel] = f
+        files = {vowel: store.add(clip * db(gain), None, True) for vowel, clip in clips.items()}
         if loops:
             entry['vowels'] = files
             entry['loop'] = [frames(VOICE_LOOP[0]), frames(VOICE_LOOP[1])]
         else:
             entry['clips'] = list(files.values())
         out[path] = entry
-        print(f'voice    {path} -> {", ".join(files.values())}')
+        print(f'voice    {path} -> {len(files)} raw clips')
     return out
 
 
@@ -641,8 +659,9 @@ def main():
 
     os.makedirs(OUT, exist_ok=True)
     for f in os.listdir(OUT):
-        if f.endswith('.ogg'):
+        if f.endswith('.ogg') or f == 'clips.pcm':
             os.remove(os.path.join(OUT, f))
+    store = Clips()
     eq = MEASURED['indoorMusicEq']
     bank = {'rate': RATE, 'ahdsrShape': MEASURED['ahdsr'], 'dampenCurve': dampen_curve(), 'spatial': MEASURED['spatial'],
             'indoorMusicEq': {k: eq[k] for k in ('lowHz', 'highHz', 'lowDb', 'highDb')}, 'sounds': {}, 'music': {},
@@ -657,11 +676,8 @@ def main():
             if table == 'sounds':
                 clips = ev.sound_clips()
                 gain = headroom(clips)
-                files = []
-                for i, clip in enumerate(clips):
-                    f = file_name(table, name, i if len(clips) > 1 else None)
-                    encode(clip * db(gain), os.path.join(OUT, f), QUALITY[table])
-                    files.append(f)
+                files = [store.add(clip * db(gain), file_name(table, name, i if len(clips) > 1 else None), name in RAW_SOUNDS)
+                         for i, clip in enumerate(clips)]
                 entry = {'clips': files, 'volume': round(ev.volume - gain, 3)}
                 if ev.pitch_random: entry['pitchRandom'] = round(ev.pitch_random, 4)
                 if ev.pitch_param: entry['pitchParam'] = True
@@ -679,8 +695,8 @@ def main():
                          'length': length, 'jumps': jumps}
                 if ev.volume_param: entry['volumeParam'] = ev.volume_param
             bank[table][name] = entry
-            print(f'{table:8} {name:12} -> {entry.get("file") or ", ".join(entry["clips"])}')
-        bank['voices'] = render_voices(proj, voices)
+            print(f'{table:8} {name:12} -> {entry.get("file") or entry["clips"]}')
+        bank['voices'] = render_voices(proj, voices, store)
     except Fail as e:
         sys.exit(f'make_audio: {e}')
     text = json.dumps(bank, indent=1, ensure_ascii=False)
@@ -688,6 +704,8 @@ def main():
     text = re.sub(r'\[[^\[\]{}]*\]', lambda m: re.sub(r'\s+', ' ', m.group(0)).replace('[ ', '[').replace(' ]', ']'), text)
     with open(os.path.join(OUT, 'audio.json'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(text + '\n')
+    with open(os.path.join(OUT, 'clips.pcm'), 'wb') as f:
+        f.write(store.pcm)
     for w in proj.warnings:
         print('warning:', w)
     total = sum(os.path.getsize(os.path.join(OUT, f)) for f in os.listdir(OUT))
