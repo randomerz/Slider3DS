@@ -42,7 +42,8 @@ struct StreamDef {
         std::string param;      // ...always (empty), or while this global parameter is in [min, max]
         float min = 0, max = 0;
     };
-    std::string file; // under audio/ (stereo, plat::AUDIO_RATE)
+    std::string file; // under audio/ (plat::AUDIO_RATE)
+    int channels = 2; // its file's: 2, or 1 (played the same on both sides)
     Bus bus = Bus::Music;
     float gain = 1;
     float attack = 0, release = 0; // s, in from / out to silence (on the bank's AHDSR shape; 0: at once)

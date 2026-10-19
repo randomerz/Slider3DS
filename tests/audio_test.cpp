@@ -83,6 +83,9 @@ TEST(audio_bank_has_every_sound_the_port_plays) {
                 check(peak > 1000, std::string(name) + " isn't silent");
             }
     // (the Village's music loops through a crossfade past its timeline, back near its start)
+    // (the Waterfall's ambience is mono: half the decoding; the music keeps its stereo)
+    const StreamDef* waterfall = bank.ambience("Waterfall");
+    CHECK(waterfall && waterfall->channels == 1 && bank.music(tracks::VILLAGE)->channels == 2);
     const StreamDef* v = bank.music(tracks::VILLAGE);
     CHECK(v && v->attack == 1 && v->release == 1 && v->jumps.size() == 2 && v->jumps[1].at > v->length &&
           v->jumps[1].to < plat::AUDIO_RATE * 2);
@@ -101,6 +104,27 @@ TEST(mixer_stream_jumps_and_ends_at_its_length) {
     CHECK(same(out, 0, decoded(0, 1024), 0, 1024));
     CHECK(same(out, 1024, decoded(2048, 952), 0, 952));
     CHECK(silent(out, 1976, 2048 - 1976) && !m.playing(v));
+}
+
+TEST(mixer_mono_stream_plays_its_frames_on_both_sides) {
+    StreamDef d;
+    d.file = "amb_waterfall.ogg";
+    d.channels = 1;
+    d.length = 4096;
+    Mixer m;
+    m.playStream(d);
+    const std::vector<int16_t> out = mixBlocks(m, 2); // (1024 frames)
+    std::vector<int16_t> ref(1024);
+    plat::Ogg* ogg = plat::openOgg("audio/amb_waterfall.ogg");
+    CHECK(ogg && plat::oggChannels(ogg) == 1 && plat::readOgg(ogg, ref.data(), 1024) == 1024);
+    if (ogg) plat::closeOgg(ogg);
+    bool sides = true, asDecoded = true, sound = false;
+    for (int i = 0; i < 1024; i++) {
+        sides = sides && out[2 * i] == out[2 * i + 1];
+        asDecoded = asDecoded && std::abs(out[2 * i] - ref[i]) <= 1;
+        sound = sound || ref[i] != 0;
+    }
+    CHECK(sides && asDecoded && sound);
 }
 
 TEST(mixer_conditional_jump_reads_the_global_parameter) {

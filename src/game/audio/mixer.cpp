@@ -184,7 +184,7 @@ int Mixer::readStream(StreamVoice& s, int16_t* out, int frames) {
             continue;
         }
         const int want = (int)std::min<int64_t>(frames - done, next - s.pos);
-        const int got = plat::readOgg(s.ogg, out + done * 2, want);
+        const int got = plat::readOgg(s.ogg, out + done * d.channels, want);
         if (got > 0) {
             s.pos += got;
             s.checked = false;
@@ -257,10 +257,18 @@ void Mixer::mix(int16_t* out) {
         if (n < N) s.ended = true;
         const float g0 = from[(int)s.def->bus] * e0 * s.def->gain, g1 = to[(int)s.def->bus] * e1 * s.def->gain;
         std::vector<float>& into = eq && s.def->bus == Bus::Music ? musicAcc_ : acc_;
-        for (int i = 0; i < n; i++) {
-            const float g = g0 + (g1 - g0) * (i / (float)N);
-            into[2 * i] += decoded_[2 * i] * g;
-            into[2 * i + 1] += decoded_[2 * i + 1] * g;
+        if (s.def->channels == 1) {
+            for (int i = 0; i < n; i++) {
+                const float x = decoded_[i] * (g0 + (g1 - g0) * (i / (float)N));
+                into[2 * i] += x;
+                into[2 * i + 1] += x;
+            }
+        } else {
+            for (int i = 0; i < n; i++) {
+                const float g = g0 + (g1 - g0) * (i / (float)N);
+                into[2 * i] += decoded_[2 * i] * g;
+                into[2 * i + 1] += decoded_[2 * i + 1] * g;
+            }
         }
     }
     if (eq) {

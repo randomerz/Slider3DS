@@ -46,12 +46,15 @@ bool readClip(const Json& j, const std::string& pcm, Clip& clip) {
     return true;
 }
 
-// A stream's file opens as stereo at the port's rate, long enough for its jumps.
-bool checkStream(const StreamDef& def) {
+// A stream's file opens as mono or stereo (its channels kept) at the port's rate, long enough for
+// its jumps.
+bool checkStream(StreamDef& def) {
     plat::Ogg* ogg = plat::openOgg(("audio/" + def.file).c_str());
     if (!ogg) return false;
     const int64_t frames = plat::oggFrames(ogg);
-    bool ok = plat::oggChannels(ogg) == 2 && plat::oggRate(ogg) == plat::AUDIO_RATE && def.length > 0 && def.length <= frames;
+    def.channels = plat::oggChannels(ogg);
+    bool ok = (def.channels == 1 || def.channels == 2) && plat::oggRate(ogg) == plat::AUDIO_RATE && def.length > 0 &&
+              def.length <= frames;
     for (const StreamDef::Jump& j : def.jumps) ok = ok && j.at > 0 && j.at <= frames && j.to >= 0 && j.to < frames;
     plat::closeOgg(ogg);
     return ok;
@@ -170,7 +173,7 @@ bool AudioBank::load(std::string* error) {
                 for (const Json& l : j["volumeParam"].at(1).items()) s.volumeLevels.push_back({l.at(0).asFloat(), l.at(1).asFloat()});
                 if (s.volumeParam.empty() || s.volumeLevels.size() < 2) return fail("audio/audio.json: a bad volumeParam in " + name);
             }
-            if (!checkStream(s)) return fail("audio/" + s.file + ": not a stereo stream matching its entry");
+            if (!checkStream(s)) return fail("audio/" + s.file + ": not a stream matching its entry");
         }
     }
     for (auto& [name, s] : sounds_)

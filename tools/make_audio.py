@@ -41,7 +41,8 @@ audio.json (the port's game/audio/audio_bank reads it):
        changes it (absent: it doesn't), "spatial": [min, max]}} (the NPCs' vocalizer synths, rendered: render_voices)}
 clips.pcm: the raw clips, mono int16 little-endian at the rate, back to back (read whole at the boot:
 nothing to decode for the sounds played all the time; the rare ones stay Ogg, a tenth of the size).
-Clips are mono (sounds are spatialized or centered); streams are stereo. Track and instrument
+Clips are mono (sounds are spatialized or centered); streams are stereo, but MONO_STREAMS (mixed
+down, kept as loud: half the decoding). Track and instrument
 volumes, trims and fades are baked; the event's master volume is data (less whatever a render
 had to be turned down by to fit, so it plays as loud). A transition with a
 crossfade is baked too: the stream jumps at its marker into the crossfade, rendered past the
@@ -77,6 +78,8 @@ MUSIC = ['Main Menu', 'Village']
 # Player Footstep Mapping's events, played as sounds named "Footstep <surface>".
 FOOTSTEPS = ['grass', 'wood', 'concrete', 'sand', 'puddle', 'water']
 AMBIENCE = ['Waterfall']
+# Streams that don't need their stereo (a waterfall's noise): mono files, half the decoding.
+MONO_STREAMS = {'Waterfall'}
 # The sounds played all the time, kept raw in clips.pcm (with every voice); the rest are Ogg.
 RAW_SOUNDS = {'UI Click', 'Hat Click', 'Slide Rumble', 'Slide Explosion', 'Artifact Error'} | {f'Footstep {f}' for f in FOOTSTEPS}
 
@@ -688,6 +691,9 @@ def main():
                 if ev.spatial or ev.pitch_param or ev.pitch_random:
                     raise Fail(f'{path}: a spatial or pitched stream')
                 audio, length, jumps = ev.stream()
+                if name in MONO_STREAMS: # (mixed down at the same loudness: the sides' RMS)
+                    mono = audio.mean(axis=1, keepdims=True)
+                    audio = mono * float(np.sqrt(np.mean(audio ** 2)) / max(np.sqrt(np.mean(mono ** 2)), 1e-9))
                 f = file_name(table, name)
                 gain = headroom([audio])
                 encode(audio * db(gain), os.path.join(OUT, f), QUALITY[table])
