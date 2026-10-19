@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "game/audio/sounds.h"
+#include "game/dev/profiler.h"
 #include "game/events/events.h"
 #include "game/physics/physics.h"
 #include "game/world/slide_effects.h"
@@ -250,6 +251,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
         player.y += dy;
     } else {
         // Also with no input: Box2D pushes a resting player out of whatever it overlaps.
+        const ProfScope scope(ProfSection::Physics);
         moveWithCollision(*this, player.hitbox(area), player.x, player.y, dx, dy, player.onWater);
     }
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
@@ -260,11 +262,20 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     // Start runs before an object's first update (here: before triggers can touch it), and again
     // for what calls activated. Each skips when nothing became active.
     runStarts();
-    triggers.update(*this);
+    {
+        const ProfScope scope(ProfSection::Physics);
+        triggers.update(*this);
+    }
     runStarts();
-    npcs.update(*this, dt);
+    {
+        const ProfScope scope(ProfSection::Npcs);
+        npcs.update(*this, dt);
+    }
     runStarts();
-    walks.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
+    {
+        const ProfScope scope(ProfSection::Npcs);
+        walks.coroutines(*this, dt); // (coroutines resume after the scripts' Update, before the Animator)
+    }
     chad.coroutines(*this, dt);
     finale.coroutines(*this, dt);
     intro.coroutines(*this, dt);
@@ -272,11 +283,17 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     props.coroutines(*this, dt);
     dollies.update(*this, dt, in.actionHeld);
     runStarts(); // (the final Slider may have appeared)
-    animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
+    {
+        const ProfScope scope(ProfSection::Anim);
+        animators.update(*this, dt); // (Unity: the animation update follows the scripts' Update)
+    }
     sfx.update(*this);            // (its clip events: footsteps; DistanceBasedAmbience's LateUpdate)
     items.follow(*this);          // (the carried item is a child of the item holder the Animator moves)
     ruins.update(*this, dt);
-    particles.update(*this, dt);
+    {
+        const ProfScope scope(ProfSection::Fx);
+        particles.update(*this, dt);
+    }
     knots.update(*this); // (KnotBox.LateUpdate)
     const EffectCallbacks due = effects.update(area, dt, settings.screenShake, frame);
     effectDone(due.flashMiddle);

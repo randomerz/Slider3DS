@@ -24,6 +24,7 @@
 #include "game/audio/audio.h"
 #include "game/data/area.h"
 #include "game/dev/dev_overlay.h"
+#include "game/dev/profiler.h"
 #include "game/render/area_view.h"
 #include "game/render/font.h"
 #include "game/render/sprite_sheets.h"
@@ -53,7 +54,16 @@ void showLoadError() {
 } // namespace
 
 int main(int, char**) {
+    // The boot's steps, timed for the dev overlay: s since the last lap.
+    double lapStart = plat::nowMs();
+    auto lap = [&lapStart]() {
+        const double now = plat::nowMs();
+        const float s = (float)(now - lapStart) / 1000;
+        lapStart = now;
+        return s;
+    };
     if (!plat::init()) return 1;
+    const float initS = lap();
 
     Area area;
     SpriteSheets sheets;
@@ -62,8 +72,15 @@ int main(int, char**) {
     TitleArt titleArt;
     Audio audio;
     std::string error;
-    if (!loadArea("village/village.json", area, &error) || !sheets.load(area) || !font.load("fonts/dialogue.json", &error) ||
-        !menuSkin.load(&error) || !titleArt.load(&error) || !audio.load(&error)) {
+    bool loaded = loadArea("village/village.json", area, &error);
+    const float areaS = lap();
+    loaded = loaded && sheets.load(area);
+    const float sheetsS = lap();
+    loaded = loaded && font.load("fonts/dialogue.json", &error) && menuSkin.load(&error) && titleArt.load(&error);
+    const float uiS = lap();
+    loaded = loaded && audio.load(&error);
+    const float audioS = lap();
+    if (!loaded) {
         printf("Failed to load village: %s\n", error.c_str());
         showLoadError();
         plat::shutdown();
@@ -78,33 +95,37 @@ int main(int, char**) {
     dev.showPerf = DEV;
     if (const int start = front.world().startSpawn(); start >= 0) dev.spawnIndex = start;
     DevOverlay overlay;
+    overlay.setBoot(initS, areaS, sheetsS, uiS, audioS);
 
     while (plat::mainLoop()) {
-        const double updateStart = plat::nowMs();
-        const plat::Input in = plat::pollInput();
-        bool devSliding = false;
-        if (DEV && front.mode() == Frontend::Mode::Title && !front.pauseMenu().isOpen() && (in.pressed & plat::BTN_R)) {
-            front.bootDirect(); // (outdoors on tile 1)
-            float x, y;
-            front.world().grid.ownerBase(1, x, y);
-            front.world().placeNear(x, y);
-        } else {
-            if (DEV && front.playing()) devSliding = dev.update(in, front.world());
-            float moveX = 0, moveY = 0;
-            if (!devSliding) {
-                if (in.held & plat::BTN_LEFT) moveX -= 1;
-                if (in.held & plat::BTN_RIGHT) moveX += 1;
-                if (in.held & plat::BTN_UP) moveY += 1;
-                if (in.held & plat::BTN_DOWN) moveY -= 1;
+        prof::beginFrame();
+        { // (the update: Logic, with its sections nested; closes before the draw)
+            const ProfScope logic(ProfSection::Logic);
+            const plat::Input in = plat::pollInput();
+            bool devSliding = false;
+            if (DEV && front.mode() == Frontend::Mode::Title && !front.pauseMenu().isOpen() && (in.pressed & plat::BTN_R)) {
+                front.bootDirect(); // (outdoors on tile 1)
+                float x, y;
+                front.world().grid.ownerBase(1, x, y);
+                front.world().placeNear(x, y);
+            } else {
+                if (DEV && front.playing()) devSliding = dev.update(in, front.world());
+                float moveX = 0, moveY = 0;
+                if (!devSliding) {
+                    if (in.held & plat::BTN_LEFT) moveX -= 1;
+                    if (in.held & plat::BTN_RIGHT) moveX += 1;
+                    if (in.held & plat::BTN_UP) moveY += 1;
+                    if (in.held & plat::BTN_DOWN) moveY -= 1;
+                }
+                if (!front.update(in, moveX, moveY, DEV && dev.noclip)) break;
             }
-            if (!front.update(in, moveX, moveY, DEV && dev.noclip)) break;
+            const ProfScope sound(ProfSection::Audio);
+            audio.setVolumes(settings);
+            audio.setPaused(front.audioPaused());
+            audio.setListener(front.listener());
+            audio.run(front.audio().take());
+            audio.pump();
         }
-        audio.setVolumes(settings);
-        audio.setPaused(front.audioPaused());
-        audio.setListener(front.listener());
-        audio.run(front.audio().take());
-        audio.pump();
-        const float updateMs = (float)(plat::nowMs() - updateStart);
 
         plat::beginFrame();
         const bool inGame = front.mode() == Frontend::Mode::Game;
@@ -113,7 +134,7 @@ int main(int, char**) {
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
         front.drawBottom(sheets, menuSkin);
         if (DEV) {
-            overlay.record(plat::lastFrameStats(), updateMs, inGame ? view.lastSpriteCount() : 0);
+            overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0);
             if (dev.showPerf) overlay.draw();
         }
         plat::endFrame();
