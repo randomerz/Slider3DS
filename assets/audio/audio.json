@@ -304,7 +304,7 @@
    "loop": [8000, 20800]
   },
   "event:/Dialogue/chad": {
-   "volume": -0.0,
+   "volume": 5.159,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
@@ -385,7 +385,7 @@
    "loop": [8000, 20800]
   },
   "event:/Dialogue/old_guy": {
-   "volume": -0.0,
+   "volume": 1.811,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {

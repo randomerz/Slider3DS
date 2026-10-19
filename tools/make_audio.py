@@ -559,7 +559,7 @@ def render_voices(proj, events, store):
             wav = os.path.join(tmp, 'voice.wav')
             fmod_measure.render(dll, path, seconds, wav, instance_params=params, place=place)
             x, rate = soundfile.read(wav, dtype='float32')
-            x = x.mean(axis=1) * undo
+            x = (x.mean(axis=1) * undo).astype(np.float32)  # (undo is a float64: ffmpeg reads f32le)
             start = int(np.argmax(np.abs(x) > 1e-4))  # (FMOD starts it a little late)
             raw = subprocess.run(['ffmpeg', '-v', 'error', '-f', 'f32le', '-ar', str(rate), '-ac', '1', '-i', '-',
                                   '-f', 'f32le', '-ar', str(RATE), '-'], input=x[start:].tobytes(),

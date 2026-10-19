@@ -96,6 +96,17 @@ TEST(audio_bank_has_every_npc_voice) {
     CHECK(bank.load());
     for (const NpcDef& n : villageArea().npcs)
         check(!n.voice.present || bank.voice(n.voice.event) != nullptr, n.name + "'s voice " + n.voice.event);
+    // Each clip sounds like a voice, not a broken render: mostly well below full scale (an export
+    // once piped float64 samples to ffmpeg as float32: full-scale noise).
+    for (const NpcDef& n : villageArea().npcs) {
+        const VoiceSynth* v = n.voice.present ? bank.voice(n.voice.event) : nullptr;
+        if (!v) continue;
+        for (const Clip& c : v->clips) {
+            int loud = 0;
+            for (int16_t x : c.pcm) loud += std::abs(x) > 29000 ? 1 : 0;
+            check(!c.pcm.empty() && loud < (int)c.pcm.size() / 20, n.name + "'s voice clips aren't saturated");
+        }
+    }
 }
 
 namespace {
