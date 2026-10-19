@@ -11,7 +11,8 @@
 //     sheets, UI fonts + menus + title art, AU audio, GA settings + the
 //     Frontend: the World, the save profiles); above that the audio thread: its core (C0 the
 //     game's, C1 the system core, C2 a New 3DS's), its busy share and how much of it went to
-//     decoding streams (STR) and clips (CLP) — the rest mixes (AUD in the legend is only the main
+//     decoding streams (STR) and clips (CLP) — the rest mixes — and DRY, the times the output ran
+//     dry (stutters) (AUD in the legend is only the main
 //     loop's part: handing the cues over).
 // DRW = the platform's time between beginFrame and endFrame (building and submitting the draws),
 // from the frame before.

@@ -67,6 +67,7 @@ public:
         bool running = false;
         float total = 0, streams = 0, clips = 0;
         int core = -1; // (-1: unknown)
+        int underruns = 0; // the output ran dry (plat::audioUnderruns)
     };
     ThreadLoad threadLoad() const;
     // The gains a spatial sound gets at (x, y) (each side; the event's volume not included).

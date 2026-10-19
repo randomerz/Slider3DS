@@ -399,14 +399,25 @@ void unlockAudio() {
     if (g_audioLock) SDL_UnlockMutex(g_audioLock);
 }
 
+namespace {
+bool g_audioStarted = false;
+SDL_atomic_t g_audioUnderruns;
+} // namespace
+
+int audioUnderruns() { return SDL_AtomicGet(&g_audioUnderruns); }
+
 int audioBlocksWanted() {
     if (!g_audio) return 0;
-    const int queued = (int)(SDL_GetQueuedAudioSize(g_audio) / (AUDIO_BLOCK * 2 * sizeof(int16_t)));
+    const Uint32 bytes = SDL_GetQueuedAudioSize(g_audio);
+    if (bytes == 0 && g_audioStarted) SDL_AtomicIncRef(&g_audioUnderruns);
+    const int queued = (int)(bytes / (AUDIO_BLOCK * 2 * sizeof(int16_t)));
     return queued < AUDIO_QUEUE_BLOCKS ? AUDIO_QUEUE_BLOCKS - queued : 0;
 }
 
 void queueAudioBlock(const int16_t* stereo) {
-    if (g_audio) SDL_QueueAudio(g_audio, stereo, AUDIO_BLOCK * 2 * sizeof(int16_t));
+    if (!g_audio) return;
+    SDL_QueueAudio(g_audio, stereo, AUDIO_BLOCK * 2 * sizeof(int16_t));
+    g_audioStarted = true;
 }
 
 } // namespace plat

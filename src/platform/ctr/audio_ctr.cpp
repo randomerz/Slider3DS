@@ -25,6 +25,8 @@ bool g_ready = false;
 int16_t* g_pcm = nullptr; // RING blocks, linear memory (the DSP reads it)
 ndspWaveBuf g_bufs[RING];
 int g_next = 0; // the next buffer to fill
+bool g_started = false; // a block was queued
+int g_underruns = 0;
 
 bool queued(const ndspWaveBuf& b) { return b.status == NDSP_WBUF_QUEUED || b.status == NDSP_WBUF_PLAYING; }
 
@@ -84,10 +86,13 @@ void exitAudio() {
 
 bool audioAvailable() { return g_ready; }
 
+int audioUnderruns() { return g_underruns; }
+
 int audioBlocksWanted() {
     if (!g_ready) return 0;
     int n = 0;
     for (const ndspWaveBuf& b : g_bufs) n += queued(b) ? 1 : 0;
+    if (n == 0 && g_started) g_underruns++; // (it ran dry: the next block starts after a gap)
     // (the next buffer must be free too: the ring is longer than the queue, so it is)
     return n < QUEUE_BLOCKS && !queued(g_bufs[g_next]) ? QUEUE_BLOCKS - n : 0;
 }
@@ -99,6 +104,7 @@ void queueAudioBlock(const int16_t* stereo) {
     memcpy(b.data_pcm16, stereo, AUDIO_BLOCK * 2 * sizeof(int16_t));
     DSP_FlushDataCache(b.data_pcm16, AUDIO_BLOCK * 2 * sizeof(int16_t));
     ndspChnWaveBufAdd(CHANNEL, &b);
+    g_started = true;
     g_next = (g_next + 1) % RING;
 }
 

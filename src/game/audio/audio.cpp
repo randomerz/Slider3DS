@@ -67,6 +67,7 @@ Audio::ThreadLoad Audio::threadLoad() const {
     plat::unlockAudio();
     load.running = true;
     load.core = plat::audioThreadCore();
+    load.underruns = plat::audioUnderruns();
     return load;
 }
 

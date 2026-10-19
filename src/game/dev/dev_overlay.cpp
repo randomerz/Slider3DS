@@ -69,8 +69,8 @@ void DevOverlay::draw() const {
     char text[32];
     plat::drawRect(4, PANEL_Y - BOOT_H, 312, PANEL_H + BOOT_H, plat::rgba(0x1a, 0x1a, 0x1a, 0xc0));
     char line[64];
-    snprintf(line, sizeof line, "AUDIO THREAD C%d %.0f%%  STR %.0f%%  CLP %.0f%%", audio_.core, audio_.total * 100,
-             audio_.streams * 100, audio_.clips * 100);
+    snprintf(line, sizeof line, "AUDIO THREAD C%d %.0f%%  STR %.0f%%  CLP %.0f%%  DRY %d", audio_.core, audio_.total * 100,
+             audio_.streams * 100, audio_.clips * 100, audio_.underruns);
     drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, audio_.running ? line : "AUDIO THREAD NONE", COLORS[(int)ProfSection::Audio], 1);
     drawDebugText(BAR_X, PANEL_Y - BOOT_H / 2 + 1, boot_, WHITE, 1);
 

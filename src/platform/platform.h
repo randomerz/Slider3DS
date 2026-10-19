@@ -115,6 +115,7 @@ constexpr int AUDIO_RATE = 32000;
 constexpr int AUDIO_BLOCK = 512; // frames per block (16 ms)
 bool audioAvailable();
 int audioBlocksWanted();
+int audioUnderruns(); // times the output ran dry since start (a stutter each; dev overlay)
 void queueAudioBlock(const int16_t* stereo); // AUDIO_BLOCK frames, interleaved L R
 // The audio thread: calls `service(user)` every few ms until stopped (it mixes what's wanted, so
 // mixing and decoding never hold up a frame). 3DS: a New 3DS's third core, else the system core
