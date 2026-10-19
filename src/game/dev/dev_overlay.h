@@ -9,12 +9,15 @@
 //     (red near the draw budget);
 //   - the boot above it: total s, then each step's (IN platform init, AR the area, SH sprite
 //     sheets, UI fonts + menus + title art, AU audio, GA settings + the
-//     Frontend: the World, the save profiles); then the audio thread's busy share (AUD
-//     above is only the main loop's part: handing the cues over).
+//     Frontend: the World, the save profiles); above that the audio thread: its core (C0 the
+//     game's, C1 the system core, C2 a New 3DS's), its busy share and how much of it went to
+//     decoding streams (STR) and clips (CLP) — the rest mixes (AUD in the legend is only the main
+//     loop's part: handing the cues over).
 // DRW = the platform's time between beginFrame and endFrame (building and submitting the draws),
 // from the frame before.
 #pragma once
 
+#include "game/audio/audio.h"
 #include "game/dev/profiler.h"
 #include "platform/platform.h"
 
@@ -25,7 +28,7 @@ public:
 
     // Once per frame, after its update: the profiler's times, the previous frame's platform stats,
     // sprites drawn.
-    void record(const plat::FrameStats& stats, int sprites, float audioThreadLoad);
+    void record(const plat::FrameStats& stats, int sprites, const Audio::ThreadLoad& audioThread);
     void draw() const;
     void setBoot(float init, float area, float sheets, float ui, float audio, float game); // s each
 
@@ -34,6 +37,6 @@ private:
     float history_[HISTORY][SECTIONS] = {};
     int next_ = 0; // the oldest column (the next one written)
     char boot_[64] = {};
-    float audioLoad_ = 0;
+    Audio::ThreadLoad audio_;
     float gpuMs_ = 0, frameMs_ = 1000.0f / 60.0f, sprites_ = 0;
 };

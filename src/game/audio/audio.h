@@ -44,7 +44,7 @@ public:
 
     bool load(std::string* error = nullptr); // the bank (see AudioBank::load)
     void unload();                           // (stops the thread first)
-    void startThread();                      // (after load; nothing if the platform has none)
+    void startThread(bool appCore = false);  // (after load; nothing if the platform has none)
     void stopThread();
 
     void setListener(const Listener& listener); // (in a house: the indoor music EQ)
@@ -61,9 +61,14 @@ public:
     const Mixer& mixer() const { return mixer_; }
     Mixer& mixer() { return mixer_; }
     float musicDampening() const; // the music bus's dip now, 0-1 (1: none)
-    // The audio thread's busy share of its time, 0-1, over about the last second (dev overlay; 0:
-    // no thread).
-    float threadLoad() const;
+    // The audio thread's busy share of its time over about the last second, 0-1 (dev overlay; all
+    // 0: no thread): in all, decoding streams, decoding clips (the rest: mixing, cues); its core.
+    struct ThreadLoad {
+        bool running = false;
+        float total = 0, streams = 0, clips = 0;
+        int core = -1; // (-1: unknown)
+    };
+    ThreadLoad threadLoad() const;
     // The gains a spatial sound gets at (x, y) (each side; the event's volume not included).
     void spatialGains(const SoundDef& s, bool positioned, float x, float y, bool alwaysOutdoor, float& left,
                       float& right) const;
@@ -112,6 +117,6 @@ private:
     bool threaded_ = false;
     Inbox inbox_;                        // (guarded by plat::lockAudio)
     std::vector<AudioCue> taken_;        // the audio thread's: the cues taken from the inbox
-    double loadStart_ = 0, busyMs_ = 0;  // the audio thread's: the current second, its busy time
-    float load_ = 0;                     // (guarded by plat::lockAudio) the last second's busy share
+    double loadStart_ = 0, busyMs_ = 0, streamMs_ = 0, clipMs_ = 0; // the audio thread's: this second's
+    ThreadLoad load_;                    // (guarded by plat::lockAudio) the last second's
 };

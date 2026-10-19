@@ -259,7 +259,9 @@ void Mixer::mix(int16_t* out) {
         if (s.ended) continue;
         const float e0 = s.gainMixed, e1 = envelope(s, BLOCK_S) * paramGain(*s.def);
         s.gainMixed = e1;
+        const double decodeStart = plat::nowMs();
         const int n = readStream(s, decoded_.data(), N);
+        streamMs_ += plat::nowMs() - decodeStart;
         if (n < N) s.ended = true;
         const float g0 = from[(int)s.def->bus] * e0 * s.def->gain, g1 = to[(int)s.def->bus] * e1 * s.def->gain;
         std::vector<float>& into = eq && s.def->bus == Bus::Music ? musicAcc_ : acc_;

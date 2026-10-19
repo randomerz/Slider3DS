@@ -118,10 +118,12 @@ int audioBlocksWanted();
 void queueAudioBlock(const int16_t* stereo); // AUDIO_BLOCK frames, interleaved L R
 // The audio thread: calls `service(user)` every few ms until stopped (it mixes what's wanted, so
 // mixing and decoding never hold up a frame). 3DS: a New 3DS's third core, else the system core
-// (the app's share of it raised); PC: an SDL thread. False (nothing started): no output or no
-// threads (tests): the caller services audio itself. lockAudio / unlockAudio guard what the game
-// thread and the audio thread share: hold it only briefly (handing over, never while mixing).
-bool startAudioThread(void (*service)(void* user), void* user);
+// (the app's share of it raised), or with `appCore` the game's own core at a higher priority;
+// PC: an SDL thread. False (nothing started): no output or no threads (tests): the caller
+// services audio itself. lockAudio / unlockAudio guard what the game thread and the audio thread
+// share: hold it only briefly (handing over, never while mixing).
+bool startAudioThread(void (*service)(void* user), void* user, bool appCore = false);
+int audioThreadCore(); // the core it runs on (-1: none or unknown)
 void stopAudioThread();
 void lockAudio();
 void unlockAudio();

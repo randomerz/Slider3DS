@@ -9,7 +9,7 @@ namespace {
 
 constexpr float SMOOTHING = 1.0f / 30.0f; // exponential average over ~half a second at 60 fps
 constexpr int TEXT_SCALE = 2;
-constexpr float PANEL_Y = 126, PANEL_H = 110, BOOT_H = 8; // (the boot line above the panel)
+constexpr float PANEL_Y = 126, PANEL_H = 110, BOOT_H = 16; // (the audio thread's and the boot's lines above the panel)
 // The graph: a column per frame, 1.5 px per ms (50 px: 33.3 ms).
 constexpr float GRAPH_X = 10, GRAPH_Y = 130, GRAPH_H = 50, COL_W = 3, GRAPH_MS_PX = 1.5f;
 // The rows below it: the CPU stack, GPU, then the legend's two rows.
@@ -48,8 +48,8 @@ void drawStack(float x, float y, float thickness, const float (&ms)[DevOverlay::
 
 } // namespace
 
-void DevOverlay::record(const plat::FrameStats& stats, int sprites, float audioThreadLoad) {
-    audioLoad_ = audioThreadLoad;
+void DevOverlay::record(const plat::FrameStats& stats, int sprites, const Audio::ThreadLoad& audioThread) {
+    audio_ = audioThread;
     float* frame = history_[next_];
     for (int s = 0; s < (int)ProfSection::Count; s++) frame[s] = prof::ms((ProfSection)s);
     frame[SECTIONS - 1] = stats.cpuMs;
@@ -68,9 +68,11 @@ void DevOverlay::setBoot(float init, float area, float sheets, float ui, float a
 void DevOverlay::draw() const {
     char text[32];
     plat::drawRect(4, PANEL_Y - BOOT_H, 312, PANEL_H + BOOT_H, plat::rgba(0x1a, 0x1a, 0x1a, 0xc0));
-    const float afterBoot = drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, boot_, WHITE, 1);
-    snprintf(text, sizeof text, "AUDIO THREAD %.0f%%", audioLoad_ * 100);
-    drawDebugText(afterBoot + 16, PANEL_Y - BOOT_H + 2, text, COLORS[(int)ProfSection::Audio], 1);
+    char line[64];
+    snprintf(line, sizeof line, "AUDIO THREAD C%d %.0f%%  STR %.0f%%  CLP %.0f%%", audio_.core, audio_.total * 100,
+             audio_.streams * 100, audio_.clips * 100);
+    drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, audio_.running ? line : "AUDIO THREAD NONE", COLORS[(int)ProfSection::Audio], 1);
+    drawDebugText(BAR_X, PANEL_Y - BOOT_H / 2 + 1, boot_, WHITE, 1);
 
     // The graph, oldest column on the left.
     float worst = 0;

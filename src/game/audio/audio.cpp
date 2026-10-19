@@ -21,8 +21,8 @@ bool Audio::load(std::string* error) {
     return true;
 }
 
-void Audio::startThread() {
-    if (!threaded_) threaded_ = plat::startAudioThread(&Audio::serviceThread, this);
+void Audio::startThread(bool appCore) {
+    if (!threaded_) threaded_ = plat::startAudioThread(&Audio::serviceThread, this, appCore);
 }
 
 void Audio::stopThread() {
@@ -60,11 +60,13 @@ void Audio::setPaused(bool paused) {
     plat::unlockAudio();
 }
 
-float Audio::threadLoad() const {
-    if (!threaded_) return 0;
+Audio::ThreadLoad Audio::threadLoad() const {
+    if (!threaded_) return {};
     plat::lockAudio();
-    const float load = load_;
+    ThreadLoad load = load_;
     plat::unlockAudio();
+    load.running = true;
+    load.core = plat::audioThreadCore();
     return load;
 }
 
@@ -72,10 +74,13 @@ void Audio::service() {
     const double start = plat::nowMs();
     if (loadStart_ == 0) loadStart_ = start;
     plat::lockAudio();
-    if (start - loadStart_ >= 1000) { // (a second's busy share)
-        load_ = (float)(busyMs_ / (start - loadStart_));
+    if (start - loadStart_ >= 1000) { // (a second's busy shares)
+        const double span = start - loadStart_;
+        load_.total = (float)(busyMs_ / span);
+        load_.streams = (float)(streamMs_ / span);
+        load_.clips = (float)(clipMs_ / span);
         loadStart_ = start;
-        busyMs_ = 0;
+        busyMs_ = streamMs_ = clipMs_ = 0;
     }
     taken_.swap(inbox_.cues); // (taken_ is empty: applied last time)
     const Listener listener = inbox_.listener;
@@ -88,8 +93,12 @@ void Audio::service() {
     applyCues(taken_);
     taken_.clear();
     fill();
+    streamMs_ += mixer_.takeStreamMs();
+    const double clipStart = plat::nowMs();
     bank_.decodeSome(DECODE_BUDGET_MS);
-    busyMs_ += plat::nowMs() - start;
+    const double end = plat::nowMs();
+    clipMs_ += end - clipStart;
+    busyMs_ += end - start;
 }
 
 void Audio::applyListener(const Listener& listener) {

@@ -19,6 +19,7 @@ namespace {
 constexpr int RING = 8;         // wave buffers
 constexpr int QUEUE_BLOCKS = 6; // queued ahead, ~96 ms (room for the audio thread to fall behind a little)
 constexpr int CHANNEL = 0;
+constexpr size_t OGG_FILE_BUFFER = 64 * 1024;
 
 bool g_ready = false;
 int16_t* g_pcm = nullptr; // RING blocks, linear memory (the DSP reads it)
@@ -101,7 +102,9 @@ void queueAudioBlock(const int16_t* stereo) {
     g_next = (g_next + 1) % RING;
 }
 
-bool startAudioThread(void (*service)(void*), void* user) {
+int g_core = -1;
+
+bool startAudioThread(void (*service)(void*), void* user, bool appCore) {
     if (!g_ready || g_thread) return false;
     g_service = service;
     g_user = user;
@@ -110,17 +113,28 @@ bool startAudioThread(void (*service)(void*), void* user) {
     svcGetThreadPriority(&priority, CUR_THREAD_HANDLE);
     bool n3ds = false;
     APT_CheckNew3DS(&n3ds);
-    if (n3ds) g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 2, false);
+    if (appCore) {
+        g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 0, false);
+        g_core = 0;
+    }
+    if (!g_thread && n3ds) {
+        g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 2, false);
+        g_core = 2;
+    }
     if (!g_thread) {
         APT_SetAppCpuTimeLimit(SYSCORE_PERCENT);
         g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 1, false);
+        g_core = 1;
     }
     if (!g_thread) {
         printf("No audio thread: audio mixes on the main loop\n");
         g_running = false;
+        g_core = -1;
     }
     return g_thread != nullptr;
 }
+
+int audioThreadCore() { return g_core; }
 
 void stopAudioThread() {
     if (!g_thread) return;
@@ -128,6 +142,7 @@ void stopAudioThread() {
     threadJoin(g_thread, U64_MAX);
     threadFree(g_thread);
     g_thread = nullptr;
+    g_core = -1;
 }
 
 void lockAudio() {
@@ -148,6 +163,7 @@ Ogg* openOgg(const char* path) {
     FILE* f = fopen((std::string("romfs:/") + path).c_str(), "rb");
     if (!f) return nullptr;
     Ogg* ogg = new Ogg;
+    setvbuf(f, nullptr, _IOFBF, OGG_FILE_BUFFER); // (Tremor reads in small pieces: fewer trips to the FS service)
     if (ov_open(f, &ogg->vf, nullptr, 0) != 0) { // (on success the decoder owns the file)
         fclose(f);
         delete ogg;

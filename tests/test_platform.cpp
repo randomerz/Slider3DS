@@ -107,7 +107,8 @@ FrameStats lastFrameStats() { return {}; }
 double nowMs() { return 0; }
 
 bool audioAvailable() { return g_audioAvailable; }
-bool startAudioThread(void (*service)(void*), void* user) {
+int audioThreadCore() { return -1; }
+bool startAudioThread(void (*service)(void*), void* user, bool) {
     if (!g_audioThreadOn) return false; // (most tests mix by hand)
     g_audioService = service;
     g_audioUser = user;

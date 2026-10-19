@@ -68,6 +68,12 @@ public:
 
     int64_t streamPosition(Voice voice) const; // the frame a stream plays next (tests; -1: not a stream)
     int voices() const { return (int)(clips_.size() + streams_.size()); } // (ended ones go at the next block)
+    // ms spent decoding streams since the last call (the audio thread's load breakdown).
+    double takeStreamMs() {
+        const double ms = streamMs_;
+        streamMs_ = 0;
+        return ms;
+    }
 
 private:
     struct ClipVoice {
@@ -132,5 +138,6 @@ private:
     std::vector<float> musicAcc_;                     // the music bus's block, while its EQ runs
     Voice lastId_ = 0;
     std::vector<float> acc_;       // the block being mixed
+    double streamMs_ = 0;
     std::vector<int16_t> decoded_; // a stream's frames for the block
 };
