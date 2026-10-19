@@ -28,3 +28,7 @@ void testResetDrawCalls();
 void testSetAudioWanted(int blocks);
 void testSetAudioAvailable(bool available); // (true until set)
 const std::vector<int16_t>& testAudioQueued();
+// The audio thread: off until set (startAudioThread fails); on, it starts "running" but never runs
+// by itself — testRunAudioThread calls its service once, as the thread would.
+void testSetAudioThread(bool on);
+void testRunAudioThread();

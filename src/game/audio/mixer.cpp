@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 
 #include "platform/platform.h"
 
@@ -40,6 +41,11 @@ Mixer::Voice Mixer::playStream(const StreamDef& def) {
     if (full()) return 0;
     plat::Ogg* ogg = plat::openOgg(("audio/" + def.file).c_str());
     if (!ogg) return 0;
+    if (plat::oggChannels(ogg) != def.channels || plat::oggRate(ogg) != plat::AUDIO_RATE || plat::oggFrames(ogg) != def.frames) {
+        printf("audio/%s doesn't match its entry\n", def.file.c_str());
+        plat::closeOgg(ogg);
+        return 0;
+    }
     StreamVoice s;
     s.id = nextId();
     s.def = &def;

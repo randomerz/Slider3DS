@@ -90,13 +90,14 @@ int main(int, char**) {
     audio.startThread(); // (mixing and decoding off the main loop, where the platform has a thread for it)
     Settings settings = Settings::load();
     Frontend front(area, titleArt, settings);
+    const float gameS = lap(); // (the settings, the World, the save profiles' headers)
     AreaView view;
     view.setFont(&font);
     DevControls dev;
     dev.showPerf = DEV;
     if (const int start = front.world().startSpawn(); start >= 0) dev.spawnIndex = start;
     DevOverlay overlay;
-    overlay.setBoot(initS, areaS, sheetsS, uiS, audioS);
+    overlay.setBoot(initS, areaS, sheetsS, uiS, audioS, gameS);
 
     while (plat::mainLoop()) {
         prof::beginFrame();

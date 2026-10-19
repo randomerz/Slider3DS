@@ -1,9 +1,10 @@
 // The exported sounds: assets/audio/audio.json + clips.pcm + its Ogg files, from tools/make_audio.py
 // (the FMOD events the port plays, rendered; its docstring has the format). The clips played all the
 // time (footsteps, slides, clicks, the voices) are raw PCM, read in one go at load. The rare ones are
-// Ogg, not even opened at load (Tremor's setup per file costs an Old 3DS a lot): they're decoded
-// whole a clip a frame after it (decodeSome: the title screen's intro gives it seconds), or at once
-// if one plays before that (decode). Music and ambience stream from their files as they play.
+// Ogg, not even opened at load (Tremor's setup per file costs an Old 3DS a lot): the audio thread
+// decodes them a slice at a time after it (decodeSome: the title screen's intro gives it seconds; a
+// clip becomes playable once whole), or the rest at once if one plays before that (decode). Music
+// and ambience stream from their files as they play.
 #pragma once
 
 #include <cstdint>
@@ -14,6 +15,7 @@
 #include <vector>
 
 #include "game/data/curve.h"
+#include "platform/platform.h"
 
 // The buses under Master whose volumes are the player's (Settings).
 enum class Bus { Sfx, Music, Ambience };
@@ -44,6 +46,7 @@ struct StreamDef {
     };
     std::string file; // under audio/ (plat::AUDIO_RATE)
     int channels = 2; // its file's: 2, or 1 (played the same on both sides)
+    int64_t frames = 0; // its file's length (the file is checked against both as it opens)
     Bus bus = Bus::Music;
     float gain = 1;
     float attack = 0, release = 0; // s, in from / out to silence (on the bank's AHDSR shape; 0: at once)
@@ -96,6 +99,10 @@ public:
     // match its entry: they're part of the build. (An Ogg clip is checked when it's decoded.)
     bool load(std::string* error = nullptr);
     void unload();
+    AudioBank() = default;
+    AudioBank(const AudioBank&) = delete;
+    AudioBank& operator=(const AudioBank&) = delete;
+    ~AudioBank() { unload(); }
 
     const SoundDef* sound(std::string_view name) const;
     const StreamDef* music(std::string_view name) const;
@@ -103,8 +110,11 @@ public:
     const VoiceSynth* voice(std::string_view event) const;
     // Decodes `clip` (one of the bank's) if it isn't yet.
     void decode(const Clip& clip);
-    // Decodes Ogg clips not yet decoded for about `budgetMs` (at least one); false once all are.
+    // Decodes Ogg clips not yet decoded for about `budgetMs` — at least a slice (DECODE_SLICE
+    // frames; a clip's first also opens it) — false once all are.
     bool decodeSome(double budgetMs);
+    static constexpr int DECODE_SLICE = 4096;
+    const Clip* decoding() const { return partialOgg_ ? undecoded_.back() : nullptr; } // (half decoded; tests)
     void decodeAll() { while (decodeSome(1e9)) {} }
     // AudioManager.soundDampenCurve: DampenMusic's shape, 1 -> 0 -> 1 over its length.
     const std::vector<CurveKey>& dampenCurve() const { return dampenCurve_; }
@@ -117,7 +127,10 @@ private:
     SpatialModel spatial_;
     AhdsrShape ahdsr_;
     std::vector<CurveKey> dampenCurve_;
-    std::vector<const Clip*> undecoded_; // (the maps' nodes don't move)
+    std::vector<const Clip*> undecoded_; // (the maps' nodes don't move; the last one is decoding)
+    plat::Ogg* partialOgg_ = nullptr;    // the last undecoded clip's, open while it's decoding
+    std::vector<int16_t> partial_;       // its frames so far (moved into the clip when whole)
+    int64_t partialDone_ = 0;
     std::map<std::string, SoundDef, std::less<>> sounds_;
     std::map<std::string, StreamDef, std::less<>> music_, ambience_;
     std::map<std::string, VoiceSynth, std::less<>> voices_;

@@ -34,10 +34,17 @@ float drawDebugText(float x, float y, const char* text, uint32_t color, int scal
     for (; *text; text++, x += 4 * scale) {
         const Glyph* g = findGlyph(*text);
         if (!g) continue;
-        for (int row = 0; row < 5; row++)
-            for (int col = 0; col < 3; col++)
-                if (g->rows[row] & (4 >> col))
-                    plat::drawRect(x + col * scale, y + row * scale, (float)scale, (float)scale, color);
+        for (int row = 0; row < 5; row++) // (a rect per run of lit pixels: the overlay draws ~1k glyph rows)
+            for (int col = 0; col < 3;) {
+                if (!(g->rows[row] & (4 >> col))) {
+                    col++;
+                    continue;
+                }
+                int end = col + 1;
+                while (end < 3 && (g->rows[row] & (4 >> end))) end++;
+                plat::drawRect(x + col * scale, y + row * scale, (float)((end - col) * scale), (float)scale, color);
+                col = end;
+            }
     }
     return x;
 }

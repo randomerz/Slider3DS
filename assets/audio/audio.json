@@ -234,7 +234,9 @@
     [204800, 102400, "MainMenuActivated", 0, 0],
     [3481600, 3552653],
     [3629453, 76800]
-   ]
+   ],
+   "channels": 2,
+   "frames": 3629453
   },
   "Village": {
    "file": "music_village.ogg",
@@ -245,7 +247,9 @@
    "jumps": [
     [8294400, 8384261],
     [8441861, 57600]
-   ]
+   ],
+   "channels": 2,
+   "frames": 8441861
   }
  },
  "ambience": {
@@ -259,6 +263,8 @@
     [4160000, 4288000],
     [4320000, 288000]
    ],
+   "channels": 1,
+   "frames": 4320000,
    "volumeParam": [
     "AmbienceDistToWater",
     [

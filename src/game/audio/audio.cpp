@@ -300,7 +300,7 @@ void Audio::mixBlock(int16_t* out) {
 void Audio::pump() {
     if (threaded_) return; // (the thread does it)
     fill();
-    bank_.decodeSome(DECODE_BUDGET_MS); // (the clips not decoded yet, a few each frame)
+    if (plat::audioAvailable()) bank_.decodeSome(DECODE_BUDGET_MS); // (without an output nothing plays them)
 }
 
 void Audio::fill() {

@@ -60,9 +60,9 @@ void DevOverlay::record(const plat::FrameStats& stats, int sprites, float audioT
     sprites_ += (sprites - sprites_) * SMOOTHING;
 }
 
-void DevOverlay::setBoot(float init, float area, float sheets, float ui, float audio) {
-    snprintf(boot_, sizeof boot_, "BOOT %.1f IN%.1f AR%.1f SH%.1f UI%.1f AU%.1f", init + area + sheets + ui + audio, init,
-             area, sheets, ui, audio);
+void DevOverlay::setBoot(float init, float area, float sheets, float ui, float audio, float game) {
+    snprintf(boot_, sizeof boot_, "BOOT %.1f IN%.1f AR%.1f SH%.1f UI%.1f AU%.1f GA%.1f", init + area + sheets + ui + audio + game,
+             init, area, sheets, ui, audio, game);
 }
 
 void DevOverlay::draw() const {

@@ -28,7 +28,8 @@ audio.json (the port's game/audio/audio_bank reads it):
        random pitch within +-half of it), "pitchParam": the "Pitch" parameter (0.5-2) sets the pitch,
        "spatial": [min, max] distance (the spatializer, linear-squared rolloff; absent: 2D),
        "canPause"}},
-   "music" / "ambience": {name: {"file", "volume": dB, "attack" / "release": s (the volume AHDSR:
+   "music" / "ambience": {name: {"file", "channels", "frames" (its file's: checked as it opens, so the
+       boot opens no Ogg), "volume": dB, "attack" / "release": s (the volume AHDSR:
        in from / out to silence, linear in dB; 0: none), "length": the timeline's frames (playing
        up to it ends the event; the file goes on with the crossfades, reached only by jumps),
        "jumps": [[at, to] or [at, to, parameter, min, max], ...] (frames, in order of `at`: when
@@ -698,7 +699,7 @@ def main():
                 gain = headroom([audio])
                 encode(audio * db(gain), os.path.join(OUT, f), QUALITY[table])
                 entry = {'file': f, 'volume': round(ev.volume - gain, 3), 'attack': ev.attack, 'release': ev.release,
-                         'length': length, 'jumps': jumps}
+                         'length': length, 'jumps': jumps, 'channels': audio.shape[1], 'frames': len(audio)}
                 if ev.volume_param: entry['volumeParam'] = ev.volume_param
             bank[table][name] = entry
             print(f'{table:8} {name:12} -> {entry.get("file") or entry["clips"]}')

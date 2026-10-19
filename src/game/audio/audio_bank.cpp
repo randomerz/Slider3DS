@@ -46,17 +46,12 @@ bool readClip(const Json& j, const std::string& pcm, Clip& clip) {
     return true;
 }
 
-// A stream's file opens as mono or stereo (its channels kept) at the port's rate, long enough for
-// its jumps.
-bool checkStream(StreamDef& def) {
-    plat::Ogg* ogg = plat::openOgg(("audio/" + def.file).c_str());
-    if (!ogg) return false;
-    const int64_t frames = plat::oggFrames(ogg);
-    def.channels = plat::oggChannels(ogg);
-    bool ok = (def.channels == 1 || def.channels == 2) && plat::oggRate(ogg) == plat::AUDIO_RATE && def.length > 0 &&
-              def.length <= frames;
+// A stream's entry: mono or stereo, long enough for its length and jumps. (Its file isn't opened
+// here: Tremor's setup costs the boot; Mixer::playStream checks it against the entry.)
+bool checkStream(const StreamDef& def) {
+    const int64_t frames = def.frames;
+    bool ok = (def.channels == 1 || def.channels == 2) && def.length > 0 && def.length <= frames;
     for (const StreamDef::Jump& j : def.jumps) ok = ok && j.at > 0 && j.at <= frames && j.to >= 0 && j.to < frames;
-    plat::closeOgg(ogg);
     return ok;
 }
 
@@ -152,6 +147,8 @@ bool AudioBank::load(std::string* error) {
             s.attack = j["attack"].asFloat();
             s.release = j["release"].asFloat();
             s.length = (int64_t)j["length"].asNumber();
+            s.channels = j["channels"].asInt();
+            s.frames = (int64_t)j["frames"].asNumber();
             int64_t last = 0;
             for (const Json& jj : j["jumps"].items()) {
                 StreamDef::Jump jump;
@@ -173,7 +170,7 @@ bool AudioBank::load(std::string* error) {
                 for (const Json& l : j["volumeParam"].at(1).items()) s.volumeLevels.push_back({l.at(0).asFloat(), l.at(1).asFloat()});
                 if (s.volumeParam.empty() || s.volumeLevels.size() < 2) return fail("audio/audio.json: a bad volumeParam in " + name);
             }
-            if (!checkStream(s)) return fail("audio/" + s.file + ": not a stream matching its entry");
+            if (!checkStream(s)) return fail("audio/audio.json: a bad stream entry " + name);
         }
     }
     for (auto& [name, s] : sounds_)
@@ -185,28 +182,75 @@ bool AudioBank::load(std::string* error) {
     return true;
 }
 
+namespace {
+
+// A clip's Ogg, open and checked against its entry (nullptr: missing or not matching).
+plat::Ogg* openClip(const Clip& clip) {
+    plat::Ogg* ogg = plat::openOgg(clip.path.c_str());
+    if (ogg && plat::oggChannels(ogg) == 1 && plat::oggRate(ogg) == plat::AUDIO_RATE && plat::oggFrames(ogg) == clip.frames)
+        return ogg;
+    printf("%s: not a mono clip of its entry's length\n", clip.path.c_str());
+    if (ogg) plat::closeOgg(ogg);
+    return nullptr;
+}
+
+} // namespace
+
 void AudioBank::decode(const Clip& clip) {
     if (!clip.pcm.empty()) return;
-    plat::Ogg* ogg = plat::openOgg(clip.path.c_str());
+    if (partialOgg_ && undecoded_.back() == &clip) { // (half done: the rest)
+        plat::readOgg(partialOgg_, partial_.data() + partialDone_, (int)(clip.frames - partialDone_));
+        plat::closeOgg(partialOgg_);
+        partialOgg_ = nullptr;
+        clip.pcm.swap(partial_);
+        partial_ = {};
+        undecoded_.pop_back();
+        return;
+    }
     clip.pcm.assign((size_t)clip.frames, 0); // (a bad file plays as silence, once: it isn't retried)
-    if (ogg && plat::oggChannels(ogg) == 1 && plat::oggRate(ogg) == plat::AUDIO_RATE && plat::oggFrames(ogg) == clip.frames)
+    if (plat::Ogg* ogg = openClip(clip)) {
         plat::readOgg(ogg, clip.pcm.data(), (int)clip.frames);
-    else
-        printf("%s: not a mono clip of its entry's length\n", clip.path.c_str());
-    if (ogg) plat::closeOgg(ogg);
+        plat::closeOgg(ogg);
+    }
 }
 
 bool AudioBank::decodeSome(double budgetMs) {
     const double start = plat::nowMs();
     while (!undecoded_.empty()) {
-        decode(*undecoded_.back());
-        undecoded_.pop_back();
+        const Clip& clip = *undecoded_.back();
+        if (!clip.pcm.empty()) { // (decoded on demand meanwhile)
+            undecoded_.pop_back();
+            continue;
+        }
+        if (!partialOgg_) {
+            partialOgg_ = openClip(clip);
+            if (!partialOgg_) {
+                clip.pcm.assign((size_t)clip.frames, 0); // (as decode: silence, not retried)
+                undecoded_.pop_back();
+                continue;
+            }
+            partial_.assign((size_t)clip.frames, 0);
+            partialDone_ = 0;
+        }
+        const int want = (int)std::min<int64_t>(DECODE_SLICE, clip.frames - partialDone_);
+        const int got = plat::readOgg(partialOgg_, partial_.data() + partialDone_, want);
+        partialDone_ += got;
+        if (got < want || partialDone_ >= clip.frames) { // (whole; or the file ended early: the rest silent)
+            plat::closeOgg(partialOgg_);
+            partialOgg_ = nullptr;
+            clip.pcm.swap(partial_);
+            partial_ = {};
+            undecoded_.pop_back();
+        }
         if (plat::nowMs() - start >= budgetMs) break;
     }
     return !undecoded_.empty();
 }
 
 void AudioBank::unload() {
+    if (partialOgg_) plat::closeOgg(partialOgg_);
+    partialOgg_ = nullptr;
+    partial_ = {};
     undecoded_.clear();
     dampenCurve_.clear();
     ahdsr_ = {};

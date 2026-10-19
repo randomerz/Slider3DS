@@ -45,9 +45,22 @@ bool silent(const std::vector<int16_t>& a, int from, int frames) {
     return true;
 }
 
-StreamDef stream(int64_t length, std::vector<StreamDef::Jump> jumps) {
+// A stream entry for `file` as the bank would have it (its channels and frames).
+StreamDef entryFor(const char* file) {
     StreamDef d;
-    d.file = FILE_NAME;
+    d.file = file;
+    plat::Ogg* ogg = plat::openOgg((std::string("audio/") + file).c_str());
+    check(ogg != nullptr, std::string(file) + " opens");
+    if (ogg) {
+        d.channels = plat::oggChannels(ogg);
+        d.frames = plat::oggFrames(ogg);
+        plat::closeOgg(ogg);
+    }
+    return d;
+}
+
+StreamDef stream(int64_t length, std::vector<StreamDef::Jump> jumps) {
+    StreamDef d = entryFor(FILE_NAME);
     d.length = length;
     d.jumps = std::move(jumps);
     return d;
@@ -69,7 +82,27 @@ TEST(audio_bank_has_every_sound_the_port_plays) {
     CHECK(click && click->clips[0].path.empty() && (int64_t)click->clips[0].pcm.size() == click->clips[0].frames);
     const SoundDef* moo = bank.sound(sounds::COW_MOO);
     CHECK(moo && !moo->clips[0].path.empty() && moo->clips[0].pcm.empty());
+    // Decoded a slice at a time: one call's least is a slice, and a clip is only there once whole.
+    CHECK(bank.decodeSome(0));
+    int calls = 1;
+    while (moo->clips[0].pcm.empty() && bank.decodeSome(0)) calls++;
+    CHECK(calls > 1); // (every Ogg clip is longer than a slice)
+    // One played half-way through decoding gets the rest at once: the same frames as a whole decode.
+    AudioBank fresh;
+    CHECK(fresh.load());
+    fresh.decodeSome(0);
+    const Clip* half = fresh.decoding();
+    CHECK(half && half->pcm.empty());
     bank.decodeAll();
+    if (half) {
+        fresh.decode(*half);
+        bool matched = false;
+        for (const char* name : sounds::ALL)
+            if (const SoundDef* s = bank.sound(name))
+                for (const Clip& c : s->clips)
+                    if (c.path == half->path) matched = c.pcm == half->pcm && !c.pcm.empty();
+        CHECK(matched && fresh.decoding() == nullptr);
+    }
     CHECK(moo && moo->clips[0].pcm.size() == (size_t)moo->clips[0].frames);
     for (const char* name : sounds::ALL)
         if (const SoundDef* s = bank.sound(name))
@@ -86,6 +119,15 @@ TEST(audio_bank_has_every_sound_the_port_plays) {
     // (the Waterfall's ambience is mono: half the decoding; the music keeps its stereo)
     const StreamDef* waterfall = bank.ambience("Waterfall");
     CHECK(waterfall && waterfall->channels == 1 && bank.music(tracks::VILLAGE)->channels == 2);
+    // (each stream's file is what its entry says: the boot doesn't open them, playStream checks)
+    for (const StreamDef* s : {bank.music(tracks::MAIN_MENU), bank.music(tracks::VILLAGE), waterfall}) {
+        const StreamDef file = entryFor(s->file.c_str());
+        check(file.channels == s->channels && file.frames == s->frames, s->file + " matches its entry");
+    }
+    StreamDef wrong = *waterfall;
+    wrong.frames--;
+    Mixer m;
+    CHECK(m.playStream(wrong) == 0); // (refused as it opens)
     const StreamDef* v = bank.music(tracks::VILLAGE);
     CHECK(v && v->attack == 1 && v->release == 1 && v->jumps.size() == 2 && v->jumps[1].at > v->length &&
           v->jumps[1].to < plat::AUDIO_RATE * 2);
@@ -107,9 +149,7 @@ TEST(mixer_stream_jumps_and_ends_at_its_length) {
 }
 
 TEST(mixer_mono_stream_plays_its_frames_on_both_sides) {
-    StreamDef d;
-    d.file = "amb_waterfall.ogg";
-    d.channels = 1;
+    StreamDef d = entryFor("amb_waterfall.ogg");
     d.length = 4096;
     Mixer m;
     m.playStream(d);
@@ -125,6 +165,54 @@ TEST(mixer_mono_stream_plays_its_frames_on_both_sides) {
         sound = sound || ref[i] != 0;
     }
     CHECK(sides && asDecoded && sound);
+}
+
+TEST(audio_thread_applies_what_the_game_thread_handed_over) {
+    testSetAudioThread(true);
+    testSetAudioWanted(0);
+    Audio audio;
+    CHECK(audio.load());
+    audio.startThread();
+    AudioCues cues;
+    // Two frames handed over before one service: the cues in order (the second PlayMusic stops the
+    // first track), the latest pause (open then closed: voices keep playing), nothing applied yet.
+    cues.playMusic(tracks::MAIN_MENU);
+    cues.playVoice("event:/Dialogue/romeo", 1, 'a', 5, 1, 1, 1, 1, 0, 0);
+    audio.run(cues.take());
+    audio.setPaused(true);
+    cues.playMusic(tracks::VILLAGE);
+    audio.run(cues.take());
+    audio.setPaused(false);
+    CHECK(audio.music(tracks::MAIN_MENU) == 0 && audio.mixer().voices() == 0);
+    testRunAudioThread();
+    const Mixer::Voice menu = audio.music(tracks::MAIN_MENU), village = audio.music(tracks::VILLAGE);
+    CHECK(menu != 0 && village != 0 && audio.mixer().voices() == 3);
+    // Each cue once: another service plays nothing new; a sound handed over once plays once.
+    testRunAudioThread();
+    CHECK(audio.mixer().voices() == 3);
+    cues.play(sounds::UI_CLICK);
+    audio.run(cues.take());
+    testRunAudioThread();
+    testRunAudioThread();
+    CHECK(audio.mixer().voices() == 4);
+    // The service mixes what the platform wants (the test platform counts its wants down as blocks
+    // are queued: each service is asked again).
+    const auto service = [](int blocks) {
+        testSetAudioWanted(blocks);
+        testRunAudioThread();
+    };
+    service(2);
+    CHECK(testAudioQueued().size() == 2 * 2 * (size_t)plat::AUDIO_BLOCK);
+    // A pause handed over stops the voice (dialogue stops for good). After ~1.3 s (the click and
+    // the menu track's release over): the Village music and the voice; then only the music.
+    for (int i = 0; i < 40; i++) service(2);
+    CHECK(audio.mixer().voices() == 2 && audio.mixer().playing(village));
+    audio.setPaused(true);
+    for (int i = 0; i < 8; i++) service(2); // (its 0.1 s fade)
+    CHECK(audio.mixer().voices() == 1 && audio.mixer().playing(village));
+    audio.unload(); // (stops the thread)
+    testSetAudioThread(false);
+    testSetAudioWanted(0);
 }
 
 TEST(mixer_conditional_jump_reads_the_global_parameter) {

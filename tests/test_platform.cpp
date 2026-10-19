@@ -22,6 +22,9 @@ std::vector<DrawCall> g_draws;
 int g_audioWanted = 0;
 bool g_audioAvailable = true;
 std::vector<int16_t> g_audio;
+bool g_audioThreadOn = false;
+void (*g_audioService)(void*) = nullptr;
+void* g_audioUser = nullptr;
 } // namespace
 
 void testSetFile(const std::string& path, const std::string& contents) { g_files[path] = contents; }
@@ -35,6 +38,10 @@ void testSetAudioWanted(int blocks) {
 }
 const std::vector<int16_t>& testAudioQueued() { return g_audio; }
 void testSetAudioAvailable(bool available) { g_audioAvailable = available; }
+void testSetAudioThread(bool on) { g_audioThreadOn = on; }
+void testRunAudioThread() {
+    if (g_audioService) g_audioService(g_audioUser);
+}
 
 namespace plat {
 
@@ -100,8 +107,13 @@ FrameStats lastFrameStats() { return {}; }
 double nowMs() { return 0; }
 
 bool audioAvailable() { return g_audioAvailable; }
-bool startAudioThread(void (*)(void*), void*) { return false; } // (tests mix by hand)
-void stopAudioThread() {}
+bool startAudioThread(void (*service)(void*), void* user) {
+    if (!g_audioThreadOn) return false; // (most tests mix by hand)
+    g_audioService = service;
+    g_audioUser = user;
+    return true;
+}
+void stopAudioThread() { g_audioService = nullptr; }
 void lockAudio() {}
 void unlockAudio() {}
 int audioBlocksWanted() { return g_audioWanted; }

@@ -8,11 +8,11 @@
 
 enum class ProfSection : uint8_t {
     Logic,   // the frame's update outside the sections below (input, frontend, scripts)
-    Physics, // the player's collision + trigger contacts
+    Physics, // the player's collision + trigger contacts (with the calls they run)
     Npcs,    // NPCs: conditionals, dialogue + voices, walks
     Anim,    // the Animators
     Fx,      // particles
-    Audio,   // Audio::pump and the cues (mixing + decoding on the main thread)
+    Audio,   // Audio's main-loop part: handing the cues over (all of it without an audio thread)
     Count
 };
 
