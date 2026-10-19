@@ -9,18 +9,18 @@ namespace {
 
 constexpr float SMOOTHING = 1.0f / 30.0f; // exponential average over ~half a second at 60 fps
 constexpr int TEXT_SCALE = 2;
-constexpr float PANEL_Y = 126, PANEL_H = 110, BOOT_H = 16; // (the audio thread's and the boot's lines above the panel)
+constexpr float PANEL_Y = 112, PANEL_H = 126, BOOT_H = 16; // (the audio thread's and the boot's lines above the panel)
 // The graph: a column per frame, 1.5 px per ms (50 px: 33.3 ms).
-constexpr float GRAPH_X = 10, GRAPH_Y = 130, GRAPH_H = 50, COL_W = 3, GRAPH_MS_PX = 1.5f;
-// The rows below it: the CPU stack, GPU, then the legend's two rows.
-constexpr float ROW_Y[4] = {184, 196, 208, 220}, ROW_H = 10, BAR_X = 10, MS_PX = 10, TEXT_X = 190;
+constexpr float GRAPH_X = 10, GRAPH_Y = 116, GRAPH_H = 50, COL_W = 3, GRAPH_MS_PX = 1.5f;
+// The rows below it: the CPU stack, GPU, then the legend's three rows.
+constexpr float ROW_Y[5] = {170, 182, 196, 208, 220}, ROW_H = 10, BAR_X = 10, MS_PX = 10, TEXT_X = 190;
 constexpr int WORST_FRAMES = 60; // MAX: the worst over the last second
 
-const char* const LABELS[DevOverlay::SECTIONS] = {"LOG", "PHY", "NPC", "ANI", "FX", "AUD", "DRW"};
+const char* const LABELS[DevOverlay::SECTIONS] = {"LOG", "PHY", "NPC", "ANI", "FX", "AUD", "DRW", "DEV", "ATH"};
 const uint32_t COLORS[DevOverlay::SECTIONS] = {
     plat::rgba(0x60, 0xd0, 0x70), plat::rgba(0xe0, 0xa0, 0x40), plat::rgba(0xd0, 0x70, 0xc0),
     plat::rgba(0xe0, 0xe0, 0x60), plat::rgba(0x60, 0xd0, 0xd0), plat::rgba(0xa0, 0x70, 0xf0),
-    plat::rgba(0x60, 0x90, 0xe0),
+    plat::rgba(0x60, 0x90, 0xe0), plat::rgba(0x80, 0x80, 0x80), plat::rgba(0xf0, 0x60, 0xa0),
 };
 const uint32_t WHITE = plat::rgba(0xff, 0xff, 0xff), RED = plat::rgba(0xe0, 0x50, 0x50);
 
@@ -51,8 +51,7 @@ void drawStack(float x, float y, float thickness, const float (&ms)[DevOverlay::
 void DevOverlay::record(const plat::FrameStats& stats, int sprites, const Audio::ThreadLoad& audioThread) {
     audio_ = audioThread;
     float* frame = history_[next_];
-    for (int s = 0; s < (int)ProfSection::Count; s++) frame[s] = prof::ms((ProfSection)s);
-    frame[SECTIONS - 1] = stats.cpuMs;
+    for (int s = 0; s < SECTIONS; s++) frame[s] = prof::ms((ProfSection)s);
     for (int s = 0; s < SECTIONS; s++) avg_[s] += (frame[s] - avg_[s]) * SMOOTHING;
     next_ = (next_ + 1) % HISTORY;
     gpuMs_ += (stats.gpuMs - gpuMs_) * SMOOTHING;
@@ -71,15 +70,19 @@ void DevOverlay::draw() const {
     char line[64];
     snprintf(line, sizeof line, "AUDIO THREAD C%d %.0f%%  STR %.0f%%  CLP %.0f%%  DRY %d", audio_.core, audio_.total * 100,
              audio_.streams * 100, audio_.clips * 100, audio_.underruns);
-    drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, audio_.running ? line : "AUDIO THREAD NONE", COLORS[(int)ProfSection::Audio], 1);
+    drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, audio_.running ? line : "AUDIO THREAD NONE", COLORS[(int)ProfSection::AudioThread], 1);
     drawDebugText(BAR_X, PANEL_Y - BOOT_H / 2 + 1, boot_, WHITE, 1);
 
     // The graph, oldest column on the left.
     float worst = 0;
+    int worstSection = 0; // (the worst frame's biggest)
     for (int i = 0; i < HISTORY; i++) {
         const auto& frame = history_[(next_ + i) % HISTORY];
         drawStack(GRAPH_X + i * COL_W, GRAPH_Y + GRAPH_H, COL_W, frame, GRAPH_MS_PX, GRAPH_H, true);
-        if (i >= HISTORY - WORST_FRAMES) worst = std::max(worst, total(frame));
+        if (i >= HISTORY - WORST_FRAMES && total(frame) > worst) {
+            worst = total(frame);
+            worstSection = (int)(std::max_element(std::begin(frame), std::end(frame)) - std::begin(frame));
+        }
     }
     const float graphW = HISTORY * COL_W;
     plat::drawRect(GRAPH_X, GRAPH_Y + GRAPH_H - 16.7f * GRAPH_MS_PX, graphW, 1, RED);
@@ -93,13 +96,16 @@ void DevOverlay::draw() const {
     snprintf(text, sizeof text, "%.0fFPS", frameMs_ > 0 ? 1000.0f / frameMs_ : 0.0f);
     drawDebugText(after + 4 * TEXT_SCALE, ROW_Y[0], text, WHITE, TEXT_SCALE);
 
-    // GPU, and the worst frame.
+    // GPU.
     const uint32_t gray = plat::rgba(0xa0, 0xa0, 0xa0);
     plat::drawRect(BAR_X, ROW_Y[1], std::min(gpuMs_ * MS_PX, TEXT_X - 2 * BAR_X), ROW_H, gray);
     snprintf(text, sizeof text, "GPU %.1f", gpuMs_);
-    const float afterGpu = drawDebugText(TEXT_X, ROW_Y[1], text, gray, TEXT_SCALE);
+    drawDebugText(TEXT_X, ROW_Y[1], text, gray, TEXT_SCALE);
+    // The worst frame, in the graph's corner: its ms and biggest section.
+    plat::drawRect(GRAPH_X, GRAPH_Y, 92, 12, plat::rgba(0x1a, 0x1a, 0x1a, 0xe0));
     snprintf(text, sizeof text, "MAX %.0f", worst);
-    drawDebugText(afterGpu + 4 * TEXT_SCALE, ROW_Y[1], text, worst > 16.7f ? RED : WHITE, TEXT_SCALE);
+    const float afterMax = drawDebugText(GRAPH_X + 1, GRAPH_Y + 1, text, worst > 16.7f ? RED : WHITE, TEXT_SCALE);
+    if (worst > 0) drawDebugText(afterMax + 4 * TEXT_SCALE, GRAPH_Y + 1, LABELS[worstSection], COLORS[worstSection], TEXT_SCALE);
 
     // The legend: four entries a row, the last slot SPR.
     for (int i = 0; i <= SECTIONS; i++) {

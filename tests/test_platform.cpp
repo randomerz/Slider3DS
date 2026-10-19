@@ -23,6 +23,7 @@ int g_audioWanted = 0;
 bool g_audioAvailable = true;
 std::vector<int16_t> g_audio;
 bool g_audioThreadOn = false;
+double g_nowMs = 0;
 void (*g_audioService)(void*) = nullptr;
 void* g_audioUser = nullptr;
 } // namespace
@@ -39,6 +40,7 @@ void testSetAudioWanted(int blocks) {
 const std::vector<int16_t>& testAudioQueued() { return g_audio; }
 void testSetAudioAvailable(bool available) { g_audioAvailable = available; }
 void testSetAudioThread(bool on) { g_audioThreadOn = on; }
+void testSetNowMs(double ms) { g_nowMs = ms; }
 void testRunAudioThread() {
     if (g_audioService) g_audioService(g_audioUser);
 }
@@ -104,7 +106,7 @@ void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, 
 }
 void endFrame() {}
 FrameStats lastFrameStats() { return {}; }
-double nowMs() { return 0; }
+double nowMs() { return g_nowMs; }
 
 bool audioAvailable() { return g_audioAvailable; }
 int audioThreadCore() { return -1; }

@@ -70,6 +70,12 @@ public:
         int underruns = 0; // the output ran dry (plat::audioUnderruns)
     };
     ThreadLoad threadLoad() const;
+    // ms the audio thread was busy within [t0, t1] (plat::nowMs times; the last BUSY_LOG services):
+    // the profiler's stolen time when it shares the game's core.
+    double threadBusyBetween(double t0, double t1) const;
+    static double threadBusyBetween(double t0, double t1, void* self) {
+        return static_cast<const Audio*>(self)->threadBusyBetween(t0, t1);
+    }
     // The gains a spatial sound gets at (x, y) (each side; the event's volume not included).
     void spatialGains(const SoundDef& s, bool positioned, float x, float y, bool alwaysOutdoor, float& left,
                       float& right) const;
@@ -120,4 +126,10 @@ private:
     std::vector<AudioCue> taken_;        // the audio thread's: the cues taken from the inbox
     double loadStart_ = 0, busyMs_ = 0, streamMs_ = 0, clipMs_ = 0; // the audio thread's: this second's
     ThreadLoad load_;                    // (guarded by plat::lockAudio) the last second's
+    static constexpr int BUSY_LOG = 64;  // services remembered (~0.25 s)
+    struct Busy {
+        double start = 0, end = 0;
+    };
+    Busy busyLog_[BUSY_LOG];             // (guarded by plat::lockAudio) a ring: the latest services
+    int busyNext_ = 0;
 };

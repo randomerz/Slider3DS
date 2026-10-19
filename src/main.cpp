@@ -98,6 +98,9 @@ int main(int, char**) {
     if (const int start = front.world().startSpawn(); start >= 0) dev.spawnIndex = start;
     DevOverlay overlay;
     overlay.setBoot(initS, areaS, sheetsS, uiS, audioS, gameS);
+    // The audio thread on the game's core (an Old 3DS): its time comes out of the sections it
+    // interrupts (elsewhere it runs alongside: nothing to take out).
+    if (DEV && audio.threadLoad().core == 0) prof::setStolenTime(&Audio::threadBusyBetween, &audio);
 
     while (plat::mainLoop()) {
         prof::beginFrame();
@@ -129,17 +132,21 @@ int main(int, char**) {
             audio.pump();
         }
 
-        plat::beginFrame();
+        plat::beginFrame(); // (its wait for the GPU isn't timed)
         const bool inGame = front.mode() == Frontend::Mode::Game;
-        front.drawTop(view, sheets, menuSkin, DEV && dev.showInactive);
-        if (inGame && DEV && dev.noclip) // the position point the player moves by (the camera follows it)
-            plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
-        front.drawBottom(sheets, menuSkin);
-        if (DEV) {
-            overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, audio.threadLoad());
-            if (dev.showPerf) overlay.draw();
+        {
+            const ProfScope draw(ProfSection::Draw);
+            front.drawTop(view, sheets, menuSkin, DEV && dev.showInactive);
+            if (inGame && DEV && dev.noclip) // the position point the player moves by (the camera follows it)
+                plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
+            front.drawBottom(sheets, menuSkin);
+            if (DEV && dev.showPerf) {
+                const ProfScope self(ProfSection::Dev);
+                overlay.draw(); // (the frames before this one)
+            }
         }
-        plat::endFrame();
+        plat::endFrame(); // (not timed either: the PC paces frames in it)
+        if (DEV) overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, audio.threadLoad());
     }
     front.shutdown();
 

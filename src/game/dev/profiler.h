@@ -2,6 +2,9 @@
 // nest, and each section counts only its own time (an inner scope pauses the outer one), so the
 // sections add up to the time spent inside scopes. Always compiled: a clock read per scope edge, a
 // handful per frame (release builds just never show it). Single-threaded: the main loop's only.
+// Another thread on the main thread's core (the Old 3DS's audio thread) runs while a scope is open
+// and would count as that scope's: with setStolenTime, its busy time is taken out of whatever it
+// interrupted and charged to AudioThread instead (also between scopes: the frame's whole share).
 #pragma once
 
 #include <cstdint>
@@ -13,6 +16,9 @@ enum class ProfSection : uint8_t {
     Anim,    // the Animators
     Fx,      // particles
     Audio,   // Audio's main-loop part: handing the cues over (all of it without an audio thread)
+    Draw,    // building the frame's draws (plat::beginFrame / endFrame excluded: their waits, the PC's pacing)
+    Dev,     // the dev overlay drawing itself (inside Draw)
+    AudioThread, // the audio thread's time taken from this core (setStolenTime; 0 on its own core)
     Count
 };
 
@@ -20,6 +26,9 @@ namespace prof {
 
 void beginFrame();          // zeroes the frame's times (call before the frame's first scope)
 float ms(ProfSection s);    // this frame's time in `s` so far
+// `busyBetween(t0, t1, user)`: ms another thread on this core was busy within [t0, t1] (plat::nowMs
+// times); nullptr: none.
+void setStolenTime(double (*busyBetween)(double t0, double t1, void* user), void* user);
 
 } // namespace prof
 

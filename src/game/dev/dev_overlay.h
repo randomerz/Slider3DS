@@ -1,10 +1,11 @@
 // Dev perf overlay for the bottom screen:
-//   - a history graph of the last frames: one column per frame, CPU time stacked by section
-//     (game/dev/profiler's, plus DRW), lines at 16.7 ms (60 fps) and 33.3 ms (30 fps), so spikes
-//     and what caused them show;
+//   - a history graph of the last frames: one column per frame, CPU time stacked by
+//     game/dev/profiler's sections (DRW the draws, DEV this overlay, ATH the audio thread's time
+//     taken from the game's core), lines at 16.7 ms (60 fps) and 33.3 ms (30 fps), so spikes and
+//     what caused them show;
 //   - CPU: the same stack averaged over about half a second, its total and the FPS;
 //   - GPU (drawing; 0 where the backend can't measure it) and MAX, the worst frame's CPU over the
-//     last second;
+//     last second, with its biggest section;
 //   - a legend: each section's averaged ms in its color, and SPR, sprites drawn on the top screen
 //     (red near the draw budget);
 //   - the boot above it: total s, then each step's (IN platform init, AR the area, SH sprite
@@ -14,8 +15,6 @@
 //     decoding streams (STR) and clips (CLP) — the rest mixes — and DRY, the times the output ran
 //     dry (stutters) (AUD in the legend is only the main
 //     loop's part: handing the cues over).
-// DRW = the platform's time between beginFrame and endFrame (building and submitting the draws),
-// from the frame before.
 #pragma once
 
 #include "game/audio/audio.h"
@@ -24,10 +23,10 @@
 
 class DevOverlay {
 public:
-    static constexpr int SECTIONS = (int)ProfSection::Count + 1; // the profiler's, then DRW
-    static constexpr int HISTORY = 100;                          // frames in the graph
+    static constexpr int SECTIONS = (int)ProfSection::Count;
+    static constexpr int HISTORY = 100; // frames in the graph
 
-    // Once per frame, after its update: the profiler's times, the previous frame's platform stats,
+    // Once per frame, after it (its draws submitted): the profiler's times, the platform's stats,
     // sprites drawn.
     void record(const plat::FrameStats& stats, int sprites, const Audio::ThreadLoad& audioThread);
     void draw() const;

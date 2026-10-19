@@ -31,4 +31,6 @@ const std::vector<int16_t>& testAudioQueued();
 // The audio thread: off until set (startAudioThread fails); on, it starts "running" but never runs
 // by itself — testRunAudioThread calls its service once, as the thread would.
 void testSetAudioThread(bool on);
+// plat::nowMs (0 until set: the clock stands still; set it back to 0 after).
+void testSetNowMs(double ms);
 void testRunAudioThread();

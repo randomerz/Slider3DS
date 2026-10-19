@@ -71,6 +71,15 @@ Audio::ThreadLoad Audio::threadLoad() const {
     return load;
 }
 
+double Audio::threadBusyBetween(double t0, double t1) const {
+    if (!threaded_) return 0;
+    double ms = 0;
+    plat::lockAudio();
+    for (const Busy& b : busyLog_) ms += std::max(0.0, std::min(b.end, t1) - std::max(b.start, t0));
+    plat::unlockAudio();
+    return ms;
+}
+
 void Audio::service() {
     const double start = plat::nowMs();
     if (loadStart_ == 0) loadStart_ = start;
@@ -100,6 +109,10 @@ void Audio::service() {
     const double end = plat::nowMs();
     clipMs_ += end - clipStart;
     busyMs_ += end - start;
+    plat::lockAudio();
+    busyLog_[busyNext_] = {start, end};
+    busyNext_ = (busyNext_ + 1) % BUSY_LOG;
+    plat::unlockAudio();
 }
 
 void Audio::applyListener(const Listener& listener) {
