@@ -227,13 +227,17 @@ TEST(audio_spatial_sounds_fall_off_pan_and_cross_the_house_line) {
     l.housingOffset = -150;
     audio.setListener(l);
     float left, right;
-    // At the listener: 10 units below it (ZLevel), centered; linear squared from 1 to 20.
+    // At the listener: 10 units below it (ZLevel), centered at FMOD's measured gain; linear squared
+    // from 1 to 20.
     audio.spatialGains(s, false, 0, 0, false, left, right);
-    const float k = (20 - 10) / 19.0f;
-    CHECK(std::fabs(left - right) < 1e-5f && std::fabs(left * left + right * right - k * k * k * k) < 1e-4f);
-    // To the right: louder right; past the max distance: silent.
-    audio.spatialGains(s, true, 15, 5, false, left, right);
-    CHECK(right > left && left > 0);
+    const float k = (20 - 10) / 19.0f, g = 1.6847f;
+    CHECK(std::fabs(left - right) < 1e-5f && std::fabs(left * left + right * right - k * k * k * k * g * g) < 1e-3f);
+    // 10 to the right (45 deg): FMOD's measured split (left 0.712, right 1.527 before the rolloff).
+    audio.spatialGains(s, true, 20, 5, false, left, right);
+    const float d = std::sqrt(200.0f), r = ((20 - d) / 19) * ((20 - d) / 19);
+    CHECK(std::fabs(left / r - 0.712f) < 0.01f && std::fabs(right / r - 1.527f) < 0.01f);
+    audio.spatialGains(s, true, 0, 5, false, left, right); // (and mirrored to the left)
+    CHECK(std::fabs(right / r - 0.712f) < 0.01f && std::fabs(left / r - 1.527f) < 0.01f);
     audio.spatialGains(s, true, 40, 5, false, left, right);
     CHECK(left == 0 && right == 0);
     // In a house (y <= -75) heard from outside: moved up by the housing offset, and quieter.

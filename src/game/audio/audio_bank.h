@@ -68,6 +68,15 @@ struct VoiceSynth {
     float minDistance = 1, maxDistance = 20;
 };
 
+// FMOD's spatializer as Slider's listener hears it (measured: tools/fmod_measure.py): a mono sound
+// splits over the two sides at constant power, `gain` in all, at an angle (45 deg centered, 90 hard
+// right) that follows its azimuth (its side over the listener's height).
+struct SpatialModel {
+    float gain = 1.6847f;
+    std::vector<std::pair<float, float>> pan = {{0.0f, 45.0f}, {90.0f, 90.0f}}; // [azimuth, angle] deg, rising
+    float angle(float azimuthDeg) const;                             // (by |azimuth|; mirrored left)
+};
+
 // IndoorMusic3Eq: the music bus's 3-band EQ while the player is in a house (fitted to FMOD's ThreeEQ
 // as the modifier sets it: tools/fmod_measure.py).
 struct IndoorEq {
@@ -90,9 +99,11 @@ public:
     const std::vector<CurveKey>& dampenCurve() const { return dampenCurve_; }
     const AhdsrShape& ahdsr() const { return ahdsr_; }
     const IndoorEq& indoorEq() const { return indoorEq_; }
+    const SpatialModel& spatial() const { return spatial_; }
 
 private:
     IndoorEq indoorEq_;
+    SpatialModel spatial_;
     AhdsrShape ahdsr_;
     std::vector<CurveKey> dampenCurve_;
     std::map<std::string, SoundDef, std::less<>> sounds_;

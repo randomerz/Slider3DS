@@ -17,6 +17,8 @@ audio.json (the port's game/audio/audio_bank reads it):
   {"rate": 32000, "ahdsrShape": the AHDSR's curve, dB at each 5% of its time from 0 to -80 (a release;
        an attack is the same, mirrored; measured: tools/fmod_measure.py), "dampenCurve": AudioManager.soundDampenCurve's keys [t, v, in, out, inWeight,
        outWeight] (DampenMusic: the music's volume goes lerp(amount, 1, curve(t / length))),
+   "spatial": {"gain", "pan": [[azimuth, theta], ...]} (FMOD's spatializer as measured: a mono
+       sound's constant-power split, its angle by the azimuth; tools/fmod_measure.py),
    "indoorMusicEq": {"lowHz", "highHz", "lowDb", "highDb"} (IndoorMusic3Eq: the music bus's 3-band EQ
        while the player is in a house, fitted to FMOD's: tools/fmod_measure.py),
    "sounds": {name: {"clips": [file, ...] (a multi instrument's playlist: one picked at random),
@@ -476,6 +478,17 @@ def reachable(proj, root):
             todo.extend(proj.objects[i] for i in ids if i in proj.objects)
 
 
+def voice_spatial(proj, ev):
+    """A voice event's spatializer range, [min, max] (None: 2D)."""
+    props = proj.one(ev, 'automatableProperties')['props']
+    for o in reachable(proj, ev):
+        if o['entity'] == 'SpatialiserEffect':
+            p = o['props']
+            return [p['minimumDistance'], p['maximumDistance']] if p['overrideRange'] else \
+                [props['minimumDistance'], props['maximumDistance']]
+    return None
+
+
 def voice_events():
     """The synth events the Village NPCs' vocalizer presets play (the area export's "voice"s)."""
     area = json.load(open(os.path.join(ROOT, 'assets', 'village', 'village.json'), encoding='utf-8'))
@@ -502,12 +515,20 @@ def render_voices(proj, events):
         markers = proj.rel(proj.one(ev, 'timeline'), 'markers')
         loops = any(m['entity'] == 'LoopRegion' for m in markers)
         name = re.sub(r'[^a-z0-9]+', '_', path.split('/')[-1].lower()).strip('_')
+        # Rendered as the game hears one at the listener (straight below it), the spatializer's gain
+        # there divided out: the port's spatial gains put it back wherever the speaker is.
+        spatial = voice_spatial(proj, ev)
+        place = (0, 0) if spatial else None
+        undo = 1.0
+        if spatial:
+            undo = 1 / (MEASURED['spatial']['gain'] * np.sqrt(0.5) *
+                        fmod_measure.rolloff(fmod_measure.LISTENER_Z, spatial[0], spatial[1]))
 
         def take(params, seconds):
             wav = os.path.join(tmp, 'voice.wav')
-            fmod_measure.render(dll, path, seconds, wav, instance_params=params)
+            fmod_measure.render(dll, path, seconds, wav, instance_params=params, place=place)
             x, rate = soundfile.read(wav, dtype='float32')
-            x = x.mean(axis=1)
+            x = x.mean(axis=1) * undo
             start = int(np.argmax(np.abs(x) > 1e-4))  # (FMOD starts it a little late)
             raw = subprocess.run(['ffmpeg', '-v', 'error', '-f', 'f32le', '-ar', str(rate), '-ac', '1', '-i', '-',
                                   '-f', 'f32le', '-ar', str(RATE), '-'], input=x[start:].tobytes(),
@@ -530,9 +551,9 @@ def render_voices(proj, events):
             # (a multi instrument picks one at random each time: it's played a few times over, in
             # one run — FMOD's random sequence starts the same in every new system)
             wav = os.path.join(tmp, 'voice.wav')
-            fmod_measure.render(dll, path, VOICE_RENDERS * VOICE_SPACING, wav, restart_every=VOICE_SPACING)
+            fmod_measure.render(dll, path, VOICE_RENDERS * VOICE_SPACING, wav, restart_every=VOICE_SPACING, place=place)
             x, rate = soundfile.read(wav, dtype='float32')
-            x = x.mean(axis=1)
+            x = x.mean(axis=1) * undo
             clips = {}
             every = int(VOICE_SPACING * rate / fmod_measure.BLOCK) * fmod_measure.BLOCK
             for k in range(VOICE_RENDERS):
@@ -555,11 +576,8 @@ def render_voices(proj, events):
         if any(o['entity'] == 'AutomationCurve' and proj.parameter_names.get((o['rels'].get('parameter') or [''])[0]) == 'Pitch'
                for o in reach):
             entry['pitched'] = True
-        props = proj.one(ev, 'automatableProperties')['props']
-        for o in reach:
-            if o['entity'] == 'SpatialiserEffect':
-                p = o['props']
-                entry['spatial'] = [p['minimumDistance'], p['maximumDistance']] if p['overrideRange'] else                     [props['minimumDistance'], props['maximumDistance']]
+        if spatial:
+            entry['spatial'] = spatial
         files = {}
         for vowel, clip in clips.items():
             f = f'voice_{name}_{vowel}.ogg'
@@ -600,7 +618,7 @@ def main():
         if f.endswith('.ogg'):
             os.remove(os.path.join(OUT, f))
     eq = MEASURED['indoorMusicEq']
-    bank = {'rate': RATE, 'ahdsrShape': MEASURED['ahdsr'], 'dampenCurve': dampen_curve(),
+    bank = {'rate': RATE, 'ahdsrShape': MEASURED['ahdsr'], 'dampenCurve': dampen_curve(), 'spatial': MEASURED['spatial'],
             'indoorMusicEq': {k: eq[k] for k in ('lowHz', 'highHz', 'lowDb', 'highDb')}, 'sounds': {}, 'music': {},
             'ambience': {}}
     try:

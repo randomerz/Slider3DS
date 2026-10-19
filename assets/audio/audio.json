@@ -1,11 +1,26 @@
 {
  "rate": 32000,
- "ahdsrShape": [0.0, -1.37, -2.9, -5.38, -7.3, -10.11, -11.77, -13.87, -16.03, -18.11, -20.3, -23.18, -26.36, -29.45, -33.16, -37.48, -41.59, -47.74, -53.16, -60.49, -80.0],
+ "ahdsrShape": [0.0, -1.26, -2.91, -5.53, -7.3, -10.03, -11.68, -13.91, -16.11, -18.02, -20.21, -23.1, -25.82, -29.2, -33.24, -37.24, -41.49, -47.67, -53.03, -60.14, -80.0],
  "dampenCurve": [
   [0.0, 1.0, -2.0, -2.0, 0.333333, 0.333333],
   [0.5, 0.0, -0.011236, -0.011236, 1.0, 1.0],
   [1.0, 1.0, 2.0, 2.0, 0.333333, 0.333333]
  ],
+ "spatial": {
+  "gain": 1.6847,
+  "pan": [
+   [0.0, 45.0],
+   [14.036, 50.198],
+   [26.565, 55.317],
+   [36.87, 60.268],
+   [45.0, 64.999],
+   [56.31, 73.635],
+   [63.435, 81.052],
+   [71.565, 89.091],
+   [75.964, 86.737],
+   [90.0, 90.0]
+  ]
+ },
  "indoorMusicEq": {
   "lowHz": 280,
   "highHz": 1650,
@@ -212,9 +227,9 @@
  },
  "voices": {
   "event:/Dialogue/Sign_Vocal": {
-   "volume": 0.562,
+   "volume": -0.0,
    "spatial": [1, 20],
-   "clips": ["voice_sign_vocal_0.ogg", "voice_sign_vocal_1.ogg"]
+   "clips": ["voice_sign_vocal_0.ogg", "voice_sign_vocal_1.ogg", "voice_sign_vocal_2.ogg", "voice_sign_vocal_3.ogg", "voice_sign_vocal_4.ogg", "voice_sign_vocal_5.ogg", "voice_sign_vocal_6.ogg", "voice_sign_vocal_7.ogg", "voice_sign_vocal_8.ogg", "voice_sign_vocal_9.ogg", "voice_sign_vocal_10.ogg", "voice_sign_vocal_11.ogg", "voice_sign_vocal_12.ogg", "voice_sign_vocal_13.ogg", "voice_sign_vocal_14.ogg", "voice_sign_vocal_15.ogg"]
   },
   "event:/Dialogue/archaeologist": {
    "volume": -0.0,
@@ -230,7 +245,7 @@
    "loop": [8000, 20800]
   },
   "event:/Dialogue/chad": {
-   "volume": 0.347,
+   "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
@@ -243,7 +258,7 @@
    "loop": [8000, 20800]
   },
   "event:/Dialogue/fezziwig": {
-   "volume": 0.319,
+   "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
@@ -259,7 +274,7 @@
    "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
-   "clips": ["voice_fish_0.ogg", "voice_fish_1.ogg", "voice_fish_2.ogg", "voice_fish_3.ogg", "voice_fish_4.ogg", "voice_fish_5.ogg", "voice_fish_6.ogg", "voice_fish_7.ogg", "voice_fish_8.ogg"]
+   "clips": ["voice_fish_0.ogg", "voice_fish_1.ogg", "voice_fish_2.ogg", "voice_fish_3.ogg", "voice_fish_4.ogg", "voice_fish_5.ogg", "voice_fish_6.ogg", "voice_fish_7.ogg", "voice_fish_8.ogg", "voice_fish_9.ogg", "voice_fish_10.ogg", "voice_fish_11.ogg", "voice_fish_12.ogg", "voice_fish_13.ogg", "voice_fish_14.ogg", "voice_fish_15.ogg"]
   },
   "event:/Dialogue/gal_generic": {
    "volume": -0.0,
@@ -275,7 +290,7 @@
    "loop": [8000, 20800]
   },
   "event:/Dialogue/guy_generic": {
-   "volume": 0.284,
+   "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
@@ -301,7 +316,7 @@
    "loop": [8000, 20800]
   },
   "event:/Dialogue/old_guy": {
-   "volume": 0.371,
+   "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {
@@ -314,7 +329,7 @@
    "loop": [8000, 20800]
   },
   "event:/Dialogue/romeo": {
-   "volume": 0.261,
+   "volume": -0.0,
    "pitched": true,
    "spatial": [1, 20],
    "vowels": {

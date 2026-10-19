@@ -3,9 +3,10 @@
 // / Music / Ambience buses, linear as FMOD's Bus.setVolume), and feeds the platform. Main owns it:
 // load at start; every frame the listener, the Frontend's cues, then pump. Unloaded, or without an
 // audio output, it plays nothing.
-//   Spatial sounds: FMOD's spatializer as AudioManager sets it up — the listener 10 units off the
-//   plane above the camera's target (ZLevel; distance attenuation from there too), linear-squared
-//   rolloff between the event's min and max distance, panned by the side the source is on; a
+//   2D sounds: full on both sides (FMOD's mono upmix, measured). Spatial sounds: FMOD's spatializer
+//   as AudioManager sets it up — the listener 10 units off the plane above the camera's target
+//   (ZLevel; distance attenuation from there too), linear-squared rolloff between the event's min
+//   and max distance, split by side on the bank's measured SpatialModel; a
 //   sound in a house heard outside (or the other way) is moved by the housing offset and turned
 //   down (indoorMuteDB). Each is placed once, as it starts (the port's sounds are short).
 //   Voices: a vocalizer's syllables (PlayVoice) on its rendered synth clips — the syllable's vowel,

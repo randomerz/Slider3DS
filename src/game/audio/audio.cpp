@@ -90,11 +90,14 @@ void Audio::spatialGains(const SoundDef& s, bool positioned, float x, float y, b
         const float k = std::max(0.0f, (s.maxDistance - d) / (s.maxDistance - s.minDistance));
         gain *= k * k;
     }
-    // Panned by the side (constant power): straight below the listener, centered.
-    const float pan = dx / std::sqrt(dx * dx + LISTENER_Z * LISTENER_Z); // -1 left .. 1 right
-    const float angle = (pan + 1) * 0.25f * 3.14159265f;
-    left = gain * std::cos(angle);
-    right = gain * std::sin(angle);
+    // Split by its side at constant power, as FMOD's spatializer does (measured: the angle by the
+    // azimuth; its height on screen only adds distance).
+    const SpatialModel& model = bank_.spatial();
+    const float azimuth = std::atan2(dx, LISTENER_Z) * 57.29578f;
+    float angle = model.angle(azimuth) / 57.29578f;
+    if (dx < 0) angle = 3.14159265f / 2 - angle;
+    left = gain * model.gain * std::cos(angle);
+    right = gain * model.gain * std::sin(angle);
 }
 
 void Audio::play(const AudioCue& cue) {
@@ -109,8 +112,8 @@ void Audio::play(const AudioCue& cue) {
     float left, right;
     if (s->spatial) {
         spatialGains(*s, cue.positioned, cue.x, cue.y, cue.alwaysOutdoor, left, right);
-    } else { // 2D: a mono source at -3 dB a side (constant power, centered)
-        left = right = std::sqrt(0.5f);
+    } else { // 2D: a mono source at full on both sides (measured: FMOD's upmix)
+        left = right = 1;
     }
     const float g = s->gain * cue.volume;
     // Unity's SetPaused reaches only managed (spatial) instances: 2D one-shots play on.
@@ -142,7 +145,7 @@ void Audio::playVoice(const AudioCue& cue) {
         shape.rateEnd = cue.pitchEnd;
         shape.glide = cue.duration;
     }
-    float left = std::sqrt(0.5f), right = left;
+    float left = 1, right = 1;
     if (v->spatial) {
         SoundDef s;
         s.minDistance = v->minDistance;

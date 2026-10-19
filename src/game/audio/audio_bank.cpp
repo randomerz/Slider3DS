@@ -12,6 +12,14 @@ float dbToGain(float db) { return std::pow(10.0f, db / 20); }
 
 } // namespace
 
+float SpatialModel::angle(float azimuthDeg) const {
+    const float a = std::fabs(azimuthDeg);
+    for (size_t i = 1; i < pan.size(); i++)
+        if (a <= pan[i].first)
+            return pan[i - 1].second + (pan[i].second - pan[i - 1].second) * (a - pan[i - 1].first) / (pan[i].first - pan[i - 1].first);
+    return pan.back().second;
+}
+
 float AhdsrShape::release(float x) const {
     const float f = std::clamp(x, 0.0f, 1.0f) * (POINTS - 1);
     const int i = std::min((int)f, POINTS - 2);
@@ -66,6 +74,12 @@ bool AudioBank::load(std::string* error) {
     const Json& shape = doc["ahdsrShape"];
     if (shape.size() != AhdsrShape::POINTS) return fail("audio/audio.json: no ahdsrShape");
     for (int i = 0; i < AhdsrShape::POINTS; i++) ahdsr_.db[i] = shape.at(i).asFloat();
+    const Json& spatial = doc["spatial"];
+    if (!spatial.has("gain") || spatial["pan"].size() < 2) return fail("audio/audio.json: no spatial model");
+    spatial_.gain = spatial["gain"].asFloat();
+    spatial_.pan.clear();
+    for (const Json& p : spatial["pan"].items()) // (kept rising: a measurement's wobble near hard right flattens)
+        spatial_.pan.push_back({p.at(0).asFloat(), std::max(p.at(1).asFloat(), spatial_.pan.empty() ? 45.0f : spatial_.pan.back().second)});
     const Json& eq = doc["indoorMusicEq"];
     if (!eq.has("lowHz") || !eq.has("highHz")) return fail("audio/audio.json: no indoorMusicEq");
     indoorEq_ = {eq["lowHz"].asFloat(), eq["highHz"].asFloat(), eq["lowDb"].asFloat(), eq["highDb"].asFloat()};
@@ -159,6 +173,7 @@ void AudioBank::unload() {
     dampenCurve_.clear();
     ahdsr_ = {};
     indoorEq_ = {};
+    spatial_ = {};
     sounds_.clear();
     music_.clear();
     ambience_.clear();

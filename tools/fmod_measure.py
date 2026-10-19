@@ -13,7 +13,10 @@ stream thread keeps up. Each level is the render's RMS over the source's, both o
       project has them, so make_audio can tell they're unchanged), "levels": [[value, dB], ...]}};
   "indoorMusicEq": AudioManager's IndoorMusic3Eq (its global parameters on the Music bus's ThreeEQ,
       set while the player is in a house): the music's change per band, measured, and the port's
-      3-band EQ gains fitted to it ("lowHz"/"highHz" crossovers, "lowDb"/"highDb").
+      3-band EQ gains fitted to it ("lowHz"/"highHz" crossovers, "lowDb"/"highDb");
+  "spatial": the spatializer as Slider places its listener: {"gain": a mono sound's total over its
+      two sides (constant power), "pan": [[azimuth, theta], ...] deg (theta: the split's angle, 45
+      centered, 90 hard right; azimuth: the sound's side over the listener's height)}.
 Needs Windows (the plugin's x86_64 DLL), numpy, soundfile, ffmpeg.
 """
 import ctypes as C
@@ -49,10 +52,22 @@ def ok(r, what):
         raise RuntimeError(f'{what}: FMOD error {r}')
 
 
-def render(dll, event, seconds, out, params=None, stop_at=None, instance_params=None, restart_every=None):
+class Vec(C.Structure):
+    _fields_ = [('x', C.c_float), ('y', C.c_float), ('z', C.c_float)]
+
+
+class Attributes3D(C.Structure):  # FMOD_3D_ATTRIBUTES
+    _fields_ = [('position', Vec), ('velocity', Vec), ('forward', Vec), ('up', Vec)]
+
+
+LISTENER_Z = 10  # AudioManager.ZLevel: the listener this far off the plane (Unity's camera axes)
+
+
+def render(dll, event, seconds, out, params=None, stop_at=None, instance_params=None, restart_every=None, place=None):
     """`event` rendered for `seconds` (stopped, fading out, at `stop_at`) to `out`, with global
     `params` and the instance's own `instance_params` (`restart_every` s: a new instance starts,
-    as a game playing it again); returns the frame the stop happened at."""
+    as a game playing it again; `place` (dx, dy): the listener LISTENER_Z off the plane, facing it
+    as Slider's does, the sound at (dx, dy) on it); returns the frame the stop happened at."""
     sysh = C.c_void_p()
     ok(dll.FMOD_Studio_System_Create(C.byref(sysh), VERSION), 'create')
     core = C.c_void_p()
@@ -69,6 +84,12 @@ def render(dll, event, seconds, out, params=None, stop_at=None, instance_params=
     ok(dll.FMOD_Studio_System_FlushSampleLoading(sysh), 'flush')
     inst = C.c_void_p()
     ok(dll.FMOD_Studio_EventDescription_CreateInstance(desc, C.byref(inst)), 'instance')
+    if place is not None:
+        listener = Attributes3D(Vec(0, 0, LISTENER_Z), Vec(0, 0, 0), Vec(0, 0, 1), Vec(0, 1, 0))
+        ok(dll.FMOD_Studio_System_SetListenerAttributes(sysh, 0, C.byref(listener), None), 'listener')
+    source = Attributes3D(Vec(*(place or (0, 0)), 0), Vec(0, 0, 0), Vec(0, 0, 1), Vec(0, 1, 0))
+    if place is not None:
+        ok(dll.FMOD_Studio_EventInstance_Set3DAttributes(inst, C.byref(source)), '3d')
     for k, v in (params or {}).items():
         ok(dll.FMOD_Studio_System_SetParameterByName(sysh, k.encode(), C.c_float(v), 1), k)
     for k, v in (instance_params or {}).items(): # (one the event doesn't have is left out)
@@ -79,6 +100,8 @@ def render(dll, event, seconds, out, params=None, stop_at=None, instance_params=
     for i in range(int(seconds * RATE / BLOCK)):
         if every and i > 0 and i % every == 0:
             ok(dll.FMOD_Studio_EventDescription_CreateInstance(desc, C.byref(inst)), 'instance')
+            if place is not None:
+                ok(dll.FMOD_Studio_EventInstance_Set3DAttributes(inst, C.byref(source)), '3d')
             ok(dll.FMOD_Studio_EventInstance_Start(inst), 'start')
         if i == stop_block:
             ok(dll.FMOD_Studio_EventInstance_Stop(inst, 0), 'stop')  # FMOD_STUDIO_STOP_ALLOWFADEOUT
@@ -221,12 +244,40 @@ def measure_indoor_eq(dll, tmp):
             'measured': [round(float(t), 2) for t in target]}
 
 
+def rolloff(d, lo, hi):
+    """The spatializer's linear-squared distance attenuation."""
+    return 1.0 if d <= lo else max(0.0, (hi - d) / (hi - lo)) ** 2
+
+
+def measure_spatial(dll, tmp):
+    """A mono sound placed on the plane, the listener above it (as Slider sets it up): each side's
+    gain against the dry source, the distance attenuation divided out. FMOD's split is constant
+    power (`gain` the total) at an angle (theta: 45 deg centered, 90 hard right) that follows the
+    source's azimuth (its side over the listener's height; its height on screen doesn't pan it)."""
+    event, lo, hi = 'event:/SFX/SFXR/Fall', 1, 300  # (mono, no randomizer, only the spatializer)
+    src = decode(os.path.join(PROJECT_ASSETS, 'SFX', 'sfxr', 'fall.wav'))[:, 0]
+    ref = float(np.abs(src).max())
+    gains, pan = [], []
+    for dx in [0, 2.5, 5, 7.5, 10, 15, 20, 30, 40]:
+        wav = os.path.join(tmp, 'spatial.wav')
+        render(dll, event, 1, wav, place=(dx, 0))
+        x, _ = sf.read(wav, dtype='float32')
+        r = rolloff((dx * dx + LISTENER_Z ** 2) ** 0.5, lo, hi)
+        left, right = float(np.abs(x[:, 0]).max()) / ref / r, float(np.abs(x[:, 1]).max()) / ref / r
+        gains.append((left * left + right * right) ** 0.5)
+        pan.append([round(float(np.degrees(np.arctan2(dx, LISTENER_Z))), 3), round(float(np.degrees(np.arctan2(right, left))), 3)])
+    gain = float(np.median(gains))
+    print(f'spatial: gain {gain:.4f} (each {np.round(gains, 3).tolist()}), pan (azimuth, theta) {pan}')
+    return {'gain': round(gain, 4), 'pan': pan + [[90.0, 90.0]]}
+
+
 def main():
     if sys.platform != 'win32':
         sys.exit('fmod_measure: needs Windows (FMOD\'s x86_64 DLL)')
     dll = C.WinDLL(DLL)
     tmp = tempfile.mkdtemp(prefix='slider3ds_measure_')
-    data = {'fmod': '2.02.13', 'ahdsr': measure_ahdsr(dll, tmp), 'curves': {}, 'indoorMusicEq': measure_indoor_eq(dll, tmp)}
+    data = {'fmod': '2.02.13', 'ahdsr': measure_ahdsr(dll, tmp), 'curves': {}, 'indoorMusicEq': measure_indoor_eq(dll, tmp),
+            'spatial': measure_spatial(dll, tmp)}
     for event, param, points in CURVES:
         data['curves'][f'{event}|{param}'] = measure_curve(dll, tmp, event, param, points)
     with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
