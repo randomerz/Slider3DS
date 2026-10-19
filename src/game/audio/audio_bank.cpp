@@ -28,17 +28,15 @@ float AhdsrShape::release(float x) const {
 
 namespace {
 
-// A whole Ogg file as mono int16 at the port's rate; false if it isn't one.
-bool decodeClip(const std::string& path, Clip& clip) {
+// `path` as a clip, its header checked (mono at the port's rate, not empty); not decoded yet.
+bool checkClip(const std::string& path, Clip& clip) {
     plat::Ogg* ogg = plat::openOgg(path.c_str());
     if (!ogg) return false;
-    const bool ok = plat::oggChannels(ogg) == 1 && plat::oggRate(ogg) == plat::AUDIO_RATE;
-    if (ok) {
-        clip.pcm.resize((size_t)plat::oggFrames(ogg));
-        clip.pcm.resize((size_t)plat::readOgg(ogg, clip.pcm.data(), (int)clip.pcm.size()));
-    }
+    clip.path = path;
+    clip.frames = plat::oggFrames(ogg);
+    const bool ok = plat::oggChannels(ogg) == 1 && plat::oggRate(ogg) == plat::AUDIO_RATE && clip.frames > 0;
     plat::closeOgg(ogg);
-    return ok && !clip.pcm.empty();
+    return ok;
 }
 
 // A stream's file opens as stereo at the port's rate, long enough for its jumps.
@@ -88,7 +86,7 @@ bool AudioBank::load(std::string* error) {
         SoundDef& s = sounds_[name];
         for (const Json& f : j["clips"].items()) {
             s.clips.emplace_back();
-            if (!decodeClip("audio/" + f.asString(), s.clips.back())) return fail("audio/" + f.asString() + ": not a mono clip");
+            if (!checkClip("audio/" + f.asString(), s.clips.back())) return fail("audio/" + f.asString() + ": not a mono clip");
         }
         if (s.clips.empty()) return fail("audio/audio.json: sound " + name + " has no clips");
         s.gain = dbToGain(j["volume"].asFloat());
@@ -110,17 +108,17 @@ bool AudioBank::load(std::string* error) {
             for (const char* c = VoiceSynth::VOWELS; *c; c++) {
                 const char key[2] = {*c, 0};
                 v.clips.emplace_back();
-                if (!decodeClip("audio/" + vowels[key].asString(), v.clips.back())) return fail("audio: " + event + "'s " + key + " clip");
+                if (!checkClip("audio/" + vowels[key].asString(), v.clips.back())) return fail("audio: " + event + "'s " + key + " clip");
             }
             v.loopStart = j["loop"].at(0).asInt();
             v.loopEnd = j["loop"].at(1).asInt();
             for (const Clip& c : v.clips)
-                if (v.loopStart <= 0 || v.loopEnd <= v.loopStart || v.loopEnd > (int)c.pcm.size())
+                if (v.loopStart <= 0 || v.loopEnd <= v.loopStart || v.loopEnd > c.frames)
                     return fail("audio: " + event + "'s loop is outside its clips");
         } else {
             for (const Json& f : j["clips"].items()) {
                 v.clips.emplace_back();
-                if (!decodeClip("audio/" + f.asString(), v.clips.back())) return fail("audio/" + f.asString() + ": not a mono clip");
+                if (!checkClip("audio/" + f.asString(), v.clips.back())) return fail("audio/" + f.asString() + ": not a mono clip");
             }
             if (v.clips.empty()) return fail("audio: voice " + event + " has no clips");
         }
@@ -166,10 +164,35 @@ bool AudioBank::load(std::string* error) {
             if (!checkStream(s)) return fail("audio/" + s.file + ": not a stereo stream matching its entry");
         }
     }
+    // Everything to decode, the voices first (the earliest to be needed: the first NPC line).
+    for (auto& [name, s] : sounds_)
+        for (const Clip& c : s.clips) undecoded_.push_back(&c);
+    for (auto& [name, v] : voices_)
+        for (const Clip& c : v.clips) undecoded_.push_back(&c);
     return true;
 }
 
+void AudioBank::decode(const Clip& clip) {
+    if (!clip.pcm.empty()) return;
+    plat::Ogg* ogg = plat::openOgg(clip.path.c_str());
+    if (!ogg) return;
+    clip.pcm.resize((size_t)clip.frames);
+    clip.pcm.resize((size_t)plat::readOgg(ogg, clip.pcm.data(), (int)clip.pcm.size()));
+    plat::closeOgg(ogg);
+}
+
+bool AudioBank::decodeSome(double budgetMs) {
+    const double start = plat::nowMs();
+    while (!undecoded_.empty()) {
+        decode(*undecoded_.back());
+        undecoded_.pop_back();
+        if (plat::nowMs() - start >= budgetMs) break;
+    }
+    return !undecoded_.empty();
+}
+
 void AudioBank::unload() {
+    undecoded_.clear();
     dampenCurve_.clear();
     ahdsr_ = {};
     indoorEq_ = {};

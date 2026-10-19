@@ -36,6 +36,7 @@ public:
     static constexpr float LISTENER_Z = 10; // AudioManager.ZLevel
     static constexpr float INDOOR_Y = -75;  // SoundWrapper.IsActuallyIndoor: at or below it, in a house
     static constexpr float INDOOR_MUTE_DB = 5; // AudioManager.indoorMuteDB
+    static constexpr double DECODE_BUDGET_MS = 2; // per frame, on decoding the bank's clips
     static constexpr float VOICE_RELEASE = 0.1f; // a held synth's End: its last 0.1 s fading as a syllable stops
 
     bool load(std::string* error = nullptr); // the bank (see AudioBank::load)

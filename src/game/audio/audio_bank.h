@@ -1,6 +1,8 @@
 // The exported sounds: assets/audio/audio.json + its Ogg files, from tools/make_audio.py (the FMOD
 // events the port plays, rendered; its docstring has the format). A sound's clips are decoded whole
-// at load (they're short); music and ambience stream from their files as they play.
+// before they first play — a little each frame from load on (decodeSome: the title screen's intro
+// gives it seconds), else at once (decode) — so the boot doesn't pay for all of them (an Old 3DS
+// takes seconds); music and ambience stream from their files as they play.
 #pragma once
 
 #include <cstdint>
@@ -16,7 +18,9 @@
 enum class Bus { Sfx, Music, Ambience };
 
 struct Clip {
-    std::vector<int16_t> pcm; // mono, plat::AUDIO_RATE
+    std::string path;     // its Ogg (checked at load: mono, at plat::AUDIO_RATE)
+    int64_t frames = 0;   // its length
+    mutable std::vector<int16_t> pcm; // the decoded frames (a cache: empty until AudioBank decodes it)
 };
 
 // An AudioManager sound.
@@ -95,6 +99,11 @@ public:
     const StreamDef* music(std::string_view name) const;
     const StreamDef* ambience(std::string_view name) const;
     const VoiceSynth* voice(std::string_view event) const;
+    // Decodes `clip` (one of the bank's) if it isn't yet.
+    void decode(const Clip& clip);
+    // Decodes clips not yet decoded for about `budgetMs` (at least one); false once all are.
+    bool decodeSome(double budgetMs);
+    void decodeAll() { while (decodeSome(1e9)) {} }
     // AudioManager.soundDampenCurve: DampenMusic's shape, 1 -> 0 -> 1 over its length.
     const std::vector<CurveKey>& dampenCurve() const { return dampenCurve_; }
     const AhdsrShape& ahdsr() const { return ahdsr_; }
@@ -106,6 +115,7 @@ private:
     SpatialModel spatial_;
     AhdsrShape ahdsr_;
     std::vector<CurveKey> dampenCurve_;
+    std::vector<const Clip*> undecoded_; // (the maps' nodes don't move)
     std::map<std::string, SoundDef, std::less<>> sounds_;
     std::map<std::string, StreamDef, std::less<>> music_, ambience_;
     std::map<std::string, VoiceSynth, std::less<>> voices_;

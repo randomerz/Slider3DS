@@ -64,7 +64,9 @@ TEST(audio_bank_has_every_sound_the_port_plays) {
     for (const char* name : tracks::ALL_MUSIC) check(bank.music(name) != nullptr, std::string("music ") + name);
     // (UI Click: the "Pitch" parameter and a random pitch, as its FMOD event; not paused with the game)
     const SoundDef* click = bank.sound(sounds::UI_CLICK);
-    CHECK(click && click->pitchParam && click->pitchRandom > 0 && !click->canPause && !click->clips[0].pcm.empty());
+    CHECK(click && click->pitchParam && click->pitchRandom > 0 && !click->canPause && click->clips[0].pcm.empty());
+    bank.decodeAll(); // (decoded later, not at load)
+    CHECK(!click->clips[0].pcm.empty() && (int64_t)click->clips[0].pcm.size() == click->clips[0].frames);
     // (the Village's music loops through a crossfade past its timeline, back near its start)
     const StreamDef* v = bank.music(tracks::VILLAGE);
     CHECK(v && v->attack == 1 && v->release == 1 && v->jumps.size() == 2 && v->jumps[1].at > v->length &&

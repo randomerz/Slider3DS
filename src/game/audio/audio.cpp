@@ -107,6 +107,7 @@ void Audio::play(const AudioCue& cue) {
         return;
     }
     const Clip& clip = s->clips[std::min((size_t)(random01() * s->clips.size()), s->clips.size() - 1)];
+    bank_.decode(clip);
     float rate = std::pow(2.0f, (random01() - 0.5f) * s->pitchRandom / 12);
     if (s->pitchParam && cue.value > 0) rate *= std::clamp(cue.value, 0.5f, 2.0f);
     float left, right;
@@ -137,6 +138,7 @@ void Audio::playVoice(const AudioCue& cue) {
     } else {
         clip = &v->clips[std::min((size_t)(random01() * v->clips.size()), v->clips.size() - 1)];
     }
+    bank_.decode(*clip);
     shape.stopAfter = cue.duration;
     float rate = 1;
     if (v->pitched) {
@@ -225,6 +227,7 @@ void Audio::mixBlock(int16_t* out) {
 }
 
 void Audio::pump() {
+    bank_.decodeSome(DECODE_BUDGET_MS); // (the clips not decoded yet, a few each frame)
     int16_t block[plat::AUDIO_BLOCK * 2];
     for (int n = plat::audioBlocksWanted(); n > 0; n--) {
         mixBlock(block);
