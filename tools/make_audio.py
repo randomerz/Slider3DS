@@ -43,7 +43,8 @@ audio.json (the port's game/audio/audio_bank reads it):
 clips.pcm: the raw clips, mono int16 little-endian at the rate, back to back (read whole at the boot:
 nothing to decode for the sounds played all the time; the rare ones stay Ogg, a tenth of the size).
 Clips are mono (sounds are spatialized or centered); streams are stereo, but MONO_STREAMS (mixed
-down, kept as loud: half the decoding). Track and instrument
+down, kept as loud: half the decoding); SHORT_LOOPS keep their intro and a few seconds of their
+loop (short_loop). Track and instrument
 volumes, trims and fades are baked; the event's master volume is data (less whatever a render
 had to be turned down by to fit, so it plays as loud). A transition with a
 crossfade is baked too: the stream jumps at its marker into the crossfade, rendered past the
@@ -81,6 +82,10 @@ FOOTSTEPS = ['grass', 'wood', 'concrete', 'sand', 'puddle', 'water']
 AMBIENCE = ['Waterfall']
 # Streams that don't need their stereo (a waterfall's noise): mono files, half the decoding.
 MONO_STREAMS = {'Waterfall'}
+# Streams whose loop is cut to this many seconds (a steady noise: the original's long loop sounds no
+# different, but costs file size): short_loop.
+SHORT_LOOPS = {'Waterfall': 10}
+SHORT_LOOP_FADE = 1.0 # s: the cut loop's end crossfades into what precedes its start
 # The sounds played all the time, kept raw in clips.pcm (with every voice); the rest are Ogg.
 RAW_SOUNDS = {'UI Click', 'Hat Click', 'Slide Rumble', 'Slide Explosion', 'Artifact Error'} | {f'Footstep {f}' for f in FOOTSTEPS}
 
@@ -641,6 +646,24 @@ def render_voices(proj, events, store):
     return out
 
 
+def short_loop(audio, length, jumps, seconds, path):
+    """A stream cut to its intro + a loop of `seconds` from where its own loop returns to (its last
+    unconditional jump's destination): the loop's last SHORT_LOOP_FADE crossfades (equal power: a
+    noise) into the frames just before its start, so the jump back is seamless. The timeline then
+    ends with the loop (stopping fades as any stop does)."""
+    loops = [j for j in jumps if len(j) == 2 and j[1] < j[0]]
+    if not loops:
+        raise Fail(f'{path}: no loop to shorten')
+    start = loops[-1][1]
+    end, fade = start + frames(seconds), frames(SHORT_LOOP_FADE)
+    if start < fade or end > length:
+        raise Fail(f'{path}: a {seconds} s loop does not fit its timeline')
+    ramp = (np.arange(fade) / fade)[:, None].astype(np.float32)
+    out = audio[:end].copy()
+    out[end - fade:end] = audio[end - fade:end] * np.sqrt(1 - ramp) + audio[start - fade:start] * np.sqrt(ramp)
+    return out, end, [[end, start]]
+
+
 def file_name(table, name, variant=None):
     base = {'sounds': 'sfx', 'music': 'music', 'ambience': 'amb'}[table] + '_' + re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')
     return base + (f'_{variant}' if variant is not None else '') + '.ogg'
@@ -692,6 +715,8 @@ def main():
                 if ev.spatial or ev.pitch_param or ev.pitch_random:
                     raise Fail(f'{path}: a spatial or pitched stream')
                 audio, length, jumps = ev.stream()
+                if name in SHORT_LOOPS:
+                    audio, length, jumps = short_loop(audio, length, jumps, SHORT_LOOPS[name], path)
                 if name in MONO_STREAMS: # (mixed down at the same loudness: the sides' RMS)
                     mono = audio.mean(axis=1, keepdims=True)
                     audio = mono * float(np.sqrt(np.mean(audio ** 2)) / max(np.sqrt(np.mean(mono ** 2)), 1e-9))

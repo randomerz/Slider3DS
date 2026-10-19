@@ -258,13 +258,12 @@
    "volume": -16.0,
    "attack": 0,
    "release": 0,
-   "length": 4288000,
+   "length": 608000,
    "jumps": [
-    [4160000, 4288000],
-    [4320000, 288000]
+    [608000, 288000]
    ],
    "channels": 1,
-   "frames": 4320000,
+   "frames": 608000,
    "volumeParam": [
     "AmbienceDistToWater",
     [
