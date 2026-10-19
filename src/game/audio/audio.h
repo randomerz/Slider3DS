@@ -44,7 +44,7 @@ public:
 
     bool load(std::string* error = nullptr); // the bank (see AudioBank::load)
     void unload();                           // (stops the thread first)
-    void startThread(bool appCore = false);  // (after load; nothing if the platform has none)
+    void startThread();                      // (after load; nothing if the platform has none)
     void stopThread();
 
     void setListener(const Listener& listener); // (in a house: the indoor music EQ)

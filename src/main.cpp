@@ -87,9 +87,7 @@ int main(int, char**) {
         return 1;
     }
 
-    // (mixing and decoding off the main loop, where the platform has a thread for it; dev builds:
-    // hold L at launch for the game's own core, to compare)
-    audio.startThread(DEV && (plat::pollInput().held & plat::BTN_L));
+    audio.startThread(); // (mixing and decoding off the main loop, where the platform has a thread for it)
     Settings settings = Settings::load();
     Frontend front(area, titleArt, settings);
     const float gameS = lap(); // (the settings, the World, the save profiles' headers)

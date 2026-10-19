@@ -372,7 +372,7 @@ int audioThread(void*) {
 
 } // namespace
 
-bool startAudioThread(void (*service)(void*), void* user, bool) {
+bool startAudioThread(void (*service)(void*), void* user) {
     if (!g_audio || g_audioThread) return false;
     if (!g_audioLock && !(g_audioLock = SDL_CreateMutex())) return false;
     g_audioService = service;

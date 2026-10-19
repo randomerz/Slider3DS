@@ -33,7 +33,6 @@ bool queued(const ndspWaveBuf& b) { return b.status == NDSP_WBUF_QUEUED || b.sta
 // The audio thread.
 constexpr int THREAD_STACK = 128 * 1024; // (Tremor decodes on it: its alloca's)
 constexpr s64 SERVICE_NS = 4000000;      // between services (a block is 16 ms)
-constexpr u32 SYSCORE_PERCENT = 80;      // the app's share of the Old 3DS's system core
 Thread g_thread = nullptr;
 volatile bool g_running = false;
 void (*g_service)(void*) = nullptr;
@@ -110,7 +109,7 @@ void queueAudioBlock(const int16_t* stereo) {
 
 int g_core = -1;
 
-bool startAudioThread(void (*service)(void*), void* user, bool appCore) {
+bool startAudioThread(void (*service)(void*), void* user) {
     if (!g_ready || g_thread) return false;
     g_service = service;
     g_user = user;
@@ -119,18 +118,13 @@ bool startAudioThread(void (*service)(void*), void* user, bool appCore) {
     svcGetThreadPriority(&priority, CUR_THREAD_HANDLE);
     bool n3ds = false;
     APT_CheckNew3DS(&n3ds);
-    if (appCore) {
-        g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 0, false);
-        g_core = 0;
-    }
-    if (!g_thread && n3ds) {
+    if (n3ds) {
         g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 2, false);
         g_core = 2;
     }
-    if (!g_thread) {
-        APT_SetAppCpuTimeLimit(SYSCORE_PERCENT);
-        g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 1, false);
-        g_core = 1;
+    if (!g_thread) { // (it sleeps between services: the game gets the core back)
+        g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 0, false);
+        g_core = 0;
     }
     if (!g_thread) {
         printf("No audio thread: audio mixes on the main loop\n");

@@ -109,7 +109,7 @@ double nowMs() { return 0; }
 bool audioAvailable() { return g_audioAvailable; }
 int audioThreadCore() { return -1; }
 int audioUnderruns() { return 0; }
-bool startAudioThread(void (*service)(void*), void* user, bool) {
+bool startAudioThread(void (*service)(void*), void* user) {
     if (!g_audioThreadOn) return false; // (most tests mix by hand)
     g_audioService = service;
     g_audioUser = user;

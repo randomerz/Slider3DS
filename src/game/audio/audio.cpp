@@ -21,8 +21,8 @@ bool Audio::load(std::string* error) {
     return true;
 }
 
-void Audio::startThread(bool appCore) {
-    if (!threaded_) threaded_ = plat::startAudioThread(&Audio::serviceThread, this, appCore);
+void Audio::startThread() {
+    if (!threaded_) threaded_ = plat::startAudioThread(&Audio::serviceThread, this);
 }
 
 void Audio::stopThread() {
