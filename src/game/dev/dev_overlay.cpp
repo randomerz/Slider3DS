@@ -48,7 +48,8 @@ void drawStack(float x, float y, float thickness, const float (&ms)[DevOverlay::
 
 } // namespace
 
-void DevOverlay::record(const plat::FrameStats& stats, int sprites) {
+void DevOverlay::record(const plat::FrameStats& stats, int sprites, float audioThreadLoad) {
+    audioLoad_ = audioThreadLoad;
     float* frame = history_[next_];
     for (int s = 0; s < (int)ProfSection::Count; s++) frame[s] = prof::ms((ProfSection)s);
     frame[SECTIONS - 1] = stats.cpuMs;
@@ -67,7 +68,9 @@ void DevOverlay::setBoot(float init, float area, float sheets, float ui, float a
 void DevOverlay::draw() const {
     char text[32];
     plat::drawRect(4, PANEL_Y - BOOT_H, 312, PANEL_H + BOOT_H, plat::rgba(0x1a, 0x1a, 0x1a, 0xc0));
-    drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, boot_, WHITE, 1);
+    const float afterBoot = drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, boot_, WHITE, 1);
+    snprintf(text, sizeof text, "AUDIO THREAD %.0f%%", audioLoad_ * 100);
+    drawDebugText(afterBoot + 16, PANEL_Y - BOOT_H + 2, text, COLORS[(int)ProfSection::Audio], 1);
 
     // The graph, oldest column on the left.
     float worst = 0;

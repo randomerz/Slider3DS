@@ -6,7 +6,8 @@
 //            FMOD's shape) and at the volume its parameter sets (an ambience's distance).
 // Each through its bus's volume and the master's; the music bus can also run a 3-band EQ (the
 // indoor one: below / above two crossovers turned down; flat, and skipped, at unity). Every gain
-// change ramps across a block, so nothing clicks. Single-threaded: the app mixes on its own loop (Audio::pump).
+// change ramps across a block, so nothing clicks. Single-threaded: only Audio's thread (or the app's loop,
+// without one) touches it.
 #pragma once
 
 #include <cstdint>

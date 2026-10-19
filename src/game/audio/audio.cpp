@@ -21,7 +21,78 @@ bool Audio::load(std::string* error) {
     return true;
 }
 
+void Audio::startThread() {
+    if (!threaded_) threaded_ = plat::startAudioThread(&Audio::serviceThread, this);
+}
+
+void Audio::stopThread() {
+    if (!threaded_) return;
+    plat::stopAudioThread();
+    threaded_ = false;
+}
+
 void Audio::setListener(const Listener& listener) {
+    if (!threaded_) return applyListener(listener);
+    plat::lockAudio();
+    inbox_.listener = listener;
+    plat::unlockAudio();
+}
+
+void Audio::run(const std::vector<AudioCue>& cues) {
+    if (!threaded_) return applyCues(cues);
+    plat::lockAudio();
+    inbox_.cues.insert(inbox_.cues.end(), cues.begin(), cues.end());
+    plat::unlockAudio();
+}
+
+void Audio::setVolumes(const Settings& settings) {
+    const Volumes v{settings.masterVolume, settings.sfxVolume, settings.musicVolume, settings.ambienceVolume};
+    if (!threaded_) return applyVolumes(v);
+    plat::lockAudio();
+    inbox_.volumes = v;
+    plat::unlockAudio();
+}
+
+void Audio::setPaused(bool paused) {
+    if (!threaded_) return applyPaused(paused);
+    plat::lockAudio();
+    inbox_.paused = paused;
+    plat::unlockAudio();
+}
+
+float Audio::threadLoad() const {
+    if (!threaded_) return 0;
+    plat::lockAudio();
+    const float load = load_;
+    plat::unlockAudio();
+    return load;
+}
+
+void Audio::service() {
+    const double start = plat::nowMs();
+    if (loadStart_ == 0) loadStart_ = start;
+    plat::lockAudio();
+    if (start - loadStart_ >= 1000) { // (a second's busy share)
+        load_ = (float)(busyMs_ / (start - loadStart_));
+        loadStart_ = start;
+        busyMs_ = 0;
+    }
+    taken_.swap(inbox_.cues); // (taken_ is empty: applied last time)
+    const Listener listener = inbox_.listener;
+    const Volumes volumes = inbox_.volumes;
+    const bool paused = inbox_.paused;
+    plat::unlockAudio();
+    applyVolumes(volumes);
+    applyPaused(paused);
+    applyListener(listener);
+    applyCues(taken_);
+    taken_.clear();
+    fill();
+    bank_.decodeSome(DECODE_BUDGET_MS);
+    busyMs_ += plat::nowMs() - start;
+}
+
+void Audio::applyListener(const Listener& listener) {
     // SetListenerIsIndoor: IndoorMusic3Eq in a house (its parameters on the music bus's EQ).
     if (listener.indoor != listener_.indoor) {
         const IndoorEq& eq = bank_.indoorEq();
@@ -32,6 +103,7 @@ void Audio::setListener(const Listener& listener) {
 }
 
 void Audio::unload() {
+    stopThread();
     mixer_.stopAll();
     voices_.clear();
     music_.clear();
@@ -40,7 +112,7 @@ void Audio::unload() {
     bank_.unload();
 }
 
-void Audio::run(const std::vector<AudioCue>& cues) {
+void Audio::applyCues(const std::vector<AudioCue>& cues) {
     // Without an output nothing mixes, so nothing would ever end: only the parameters are kept.
     const bool output = plat::audioAvailable();
     for (const AudioCue& c : cues) {
@@ -195,14 +267,14 @@ Mixer::Voice Audio::ambience(std::string_view name) const {
     return it != ambience_.end() && mixer_.playing(it->second) ? it->second : 0;
 }
 
-void Audio::setVolumes(const Settings& settings) {
-    mixer_.setMasterVolume(settings.masterVolume);
-    mixer_.setBusVolume(Bus::Sfx, settings.sfxVolume);
-    musicVolume_ = settings.musicVolume; // (with the dampening, per block)
-    mixer_.setBusVolume(Bus::Ambience, settings.ambienceVolume);
+void Audio::applyVolumes(const Volumes& v) {
+    mixer_.setMasterVolume(v.master);
+    mixer_.setBusVolume(Bus::Sfx, v.sfx);
+    musicVolume_ = v.music; // (with the dampening, per block)
+    mixer_.setBusVolume(Bus::Ambience, v.ambience);
 }
 
-void Audio::setPaused(bool paused) {
+void Audio::applyPaused(bool paused) {
     if (paused && !paused_) stopVoices(0); // (ManagedInstance.SetPaused: dialogue stops for good)
     paused_ = paused;
     mixer_.setPaused(paused);
@@ -226,7 +298,12 @@ void Audio::mixBlock(int16_t* out) {
 }
 
 void Audio::pump() {
+    if (threaded_) return; // (the thread does it)
+    fill();
     bank_.decodeSome(DECODE_BUDGET_MS); // (the clips not decoded yet, a few each frame)
+}
+
+void Audio::fill() {
     int16_t block[plat::AUDIO_BLOCK * 2];
     for (int n = plat::audioBlocksWanted(); n > 0; n--) {
         mixBlock(block);

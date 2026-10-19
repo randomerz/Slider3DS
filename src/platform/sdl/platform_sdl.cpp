@@ -4,8 +4,8 @@
 // Keys (Citra/Azahar defaults): arrows = D-pad, X = A, Z = B, S = X, A = Y,
 // Q = L, W = R, Enter = START, Backspace = SELECT.
 //
-// Audio: SDL's queue (SDL_QueueAudio) at AUDIO_RATE, kept AUDIO_QUEUE_BLOCKS ahead; no device (or
-// the screenshot hook below) = silent.
+// Audio: SDL's queue (SDL_QueueAudio) at AUDIO_RATE, kept AUDIO_QUEUE_BLOCKS ahead, filled by the
+// audio thread (an SDL thread); no device (or the screenshot hook below) = silent.
 //
 // Dev hook: if SLIDER3DS_SCREENSHOT=<file.bmp> is set, the window is saved there after
 // SCREENSHOT_FRAME frames and the app quits (lets tools verify rendering headlessly), without audio.
@@ -113,6 +113,7 @@ bool init() {
 }
 
 void shutdown() {
+    stopAudioThread();
     if (g_audio) SDL_CloseAudioDevice(g_audio);
     IMG_Quit();
     SDL_DestroyRenderer(g_renderer);
@@ -352,6 +353,49 @@ void endFrame() {
 }
 
 bool audioAvailable() { return g_audio != 0; }
+
+namespace {
+
+SDL_Thread* g_audioThread = nullptr;
+SDL_mutex* g_audioLock = nullptr;
+SDL_atomic_t g_audioRunning;
+void (*g_audioService)(void*) = nullptr;
+void* g_audioUser = nullptr;
+
+int audioThread(void*) {
+    while (SDL_AtomicGet(&g_audioRunning)) {
+        g_audioService(g_audioUser);
+        SDL_Delay(4);
+    }
+    return 0;
+}
+
+} // namespace
+
+bool startAudioThread(void (*service)(void*), void* user) {
+    if (!g_audio || g_audioThread) return false;
+    if (!g_audioLock && !(g_audioLock = SDL_CreateMutex())) return false;
+    g_audioService = service;
+    g_audioUser = user;
+    SDL_AtomicSet(&g_audioRunning, 1);
+    g_audioThread = SDL_CreateThread(audioThread, "audio", nullptr);
+    return g_audioThread != nullptr;
+}
+
+void stopAudioThread() {
+    if (!g_audioThread) return;
+    SDL_AtomicSet(&g_audioRunning, 0);
+    SDL_WaitThread(g_audioThread, nullptr);
+    g_audioThread = nullptr;
+}
+
+void lockAudio() {
+    if (g_audioLock) SDL_LockMutex(g_audioLock);
+}
+
+void unlockAudio() {
+    if (g_audioLock) SDL_UnlockMutex(g_audioLock);
+}
 
 int audioBlocksWanted() {
     if (!g_audio) return 0;

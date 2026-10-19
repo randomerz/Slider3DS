@@ -17,7 +17,7 @@ namespace plat {
 namespace {
 
 constexpr int RING = 8;         // wave buffers
-constexpr int QUEUE_BLOCKS = 6; // queued ahead, ~96 ms (the game mixes on its main loop: room for a slow frame)
+constexpr int QUEUE_BLOCKS = 6; // queued ahead, ~96 ms (room for the audio thread to fall behind a little)
 constexpr int CHANNEL = 0;
 
 bool g_ready = false;
@@ -26,6 +26,23 @@ ndspWaveBuf g_bufs[RING];
 int g_next = 0; // the next buffer to fill
 
 bool queued(const ndspWaveBuf& b) { return b.status == NDSP_WBUF_QUEUED || b.status == NDSP_WBUF_PLAYING; }
+
+// The audio thread.
+constexpr int THREAD_STACK = 128 * 1024; // (Tremor decodes on it: its alloca's)
+constexpr s64 SERVICE_NS = 4000000;      // between services (a block is 16 ms)
+constexpr u32 SYSCORE_PERCENT = 80;      // the app's share of the Old 3DS's system core
+Thread g_thread = nullptr;
+volatile bool g_running = false;
+void (*g_service)(void*) = nullptr;
+void* g_user = nullptr;
+LightLock g_lock;
+
+void audioThread(void*) {
+    while (g_running) {
+        g_service(g_user);
+        svcSleepThread(SERVICE_NS);
+    }
+}
 
 } // namespace
 
@@ -51,10 +68,12 @@ void initAudio() {
         g_bufs[i].data_pcm16 = g_pcm + i * AUDIO_BLOCK * 2;
         g_bufs[i].nsamples = AUDIO_BLOCK;
     }
+    LightLock_Init(&g_lock);
     g_ready = true;
 }
 
 void exitAudio() {
+    stopAudioThread();
     if (!g_ready) return;
     ndspChnReset(CHANNEL);
     ndspExit();
@@ -80,6 +99,43 @@ void queueAudioBlock(const int16_t* stereo) {
     DSP_FlushDataCache(b.data_pcm16, AUDIO_BLOCK * 2 * sizeof(int16_t));
     ndspChnWaveBufAdd(CHANNEL, &b);
     g_next = (g_next + 1) % RING;
+}
+
+bool startAudioThread(void (*service)(void*), void* user) {
+    if (!g_ready || g_thread) return false;
+    g_service = service;
+    g_user = user;
+    g_running = true;
+    s32 priority = 0x30;
+    svcGetThreadPriority(&priority, CUR_THREAD_HANDLE);
+    bool n3ds = false;
+    APT_CheckNew3DS(&n3ds);
+    if (n3ds) g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 2, false);
+    if (!g_thread) {
+        APT_SetAppCpuTimeLimit(SYSCORE_PERCENT);
+        g_thread = threadCreate(audioThread, nullptr, THREAD_STACK, priority - 1, 1, false);
+    }
+    if (!g_thread) {
+        printf("No audio thread: audio mixes on the main loop\n");
+        g_running = false;
+    }
+    return g_thread != nullptr;
+}
+
+void stopAudioThread() {
+    if (!g_thread) return;
+    g_running = false;
+    threadJoin(g_thread, U64_MAX);
+    threadFree(g_thread);
+    g_thread = nullptr;
+}
+
+void lockAudio() {
+    if (g_ready) LightLock_Lock(&g_lock);
+}
+
+void unlockAudio() {
+    if (g_ready) LightLock_Unlock(&g_lock);
 }
 
 struct Ogg {

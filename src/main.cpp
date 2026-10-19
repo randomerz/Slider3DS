@@ -87,6 +87,7 @@ int main(int, char**) {
         return 1;
     }
 
+    audio.startThread(); // (mixing and decoding off the main loop, where the platform has a thread for it)
     Settings settings = Settings::load();
     Frontend front(area, titleArt, settings);
     AreaView view;
@@ -134,7 +135,7 @@ int main(int, char**) {
             plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
         front.drawBottom(sheets, menuSkin);
         if (DEV) {
-            overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0);
+            overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, audio.threadLoad());
             if (dev.showPerf) overlay.draw();
         }
         plat::endFrame();

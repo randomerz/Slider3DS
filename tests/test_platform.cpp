@@ -100,6 +100,10 @@ FrameStats lastFrameStats() { return {}; }
 double nowMs() { return 0; }
 
 bool audioAvailable() { return g_audioAvailable; }
+bool startAudioThread(void (*)(void*), void*) { return false; } // (tests mix by hand)
+void stopAudioThread() {}
+void lockAudio() {}
+void unlockAudio() {}
 int audioBlocksWanted() { return g_audioWanted; }
 void queueAudioBlock(const int16_t* stereo) {
     g_audio.insert(g_audio.end(), stereo, stereo + AUDIO_BLOCK * 2);

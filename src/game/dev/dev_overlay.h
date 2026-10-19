@@ -8,7 +8,8 @@
 //   - a legend: each section's averaged ms in its color, and SPR, sprites drawn on the top screen
 //     (red near the draw budget);
 //   - the boot above it: total s, then each step's (IN platform init, AR the area, SH sprite
-//     sheets, UI fonts + menus + title art, AU audio).
+//     sheets, UI fonts + menus + title art, AU audio); then the audio thread's busy share (AUD
+//     above is only the main loop's part: handing the cues over).
 // DRW = the platform's time between beginFrame and endFrame (building and submitting the draws),
 // from the frame before.
 #pragma once
@@ -23,7 +24,7 @@ public:
 
     // Once per frame, after its update: the profiler's times, the previous frame's platform stats,
     // sprites drawn.
-    void record(const plat::FrameStats& stats, int sprites);
+    void record(const plat::FrameStats& stats, int sprites, float audioThreadLoad);
     void draw() const;
     void setBoot(float init, float area, float sheets, float ui, float audio); // s each
 
@@ -32,5 +33,6 @@ private:
     float history_[HISTORY][SECTIONS] = {};
     int next_ = 0; // the oldest column (the next one written)
     char boot_[48] = {};
+    float audioLoad_ = 0;
     float gpuMs_ = 0, frameMs_ = 1000.0f / 60.0f, sprites_ = 0;
 };
