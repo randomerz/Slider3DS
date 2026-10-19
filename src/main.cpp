@@ -133,7 +133,10 @@ int main(int, char**) {
             audio.pump();
         }
 
-        plat::beginFrame(); // (its wait for the GPU isn't timed)
+        {
+            const ProfScope wait(ProfSection::Wait);
+            plat::beginFrame();
+        }
         const bool inGame = front.mode() == Frontend::Mode::Game;
         {
             const ProfScope draw(ProfSection::Draw);

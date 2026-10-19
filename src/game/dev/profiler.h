@@ -19,10 +19,11 @@ enum class ProfSection : uint8_t {
     Anim,    // the Animators
     Fx,      // particles
     Audio,   // Audio's main-loop part: handing the cues over (all of it without an audio thread)
-    Draw,    // building the frame's draws (plat::beginFrame / endFrame excluded: their waits, the PC's pacing)
+    Draw,    // building the frame's draws (plat::beginFrame / endFrame excluded: Wait, FrameEnd)
     Dev,     // the dev overlay drawing itself (inside Draw)
     FrameEnd, // plat::endFrame: submitting the frame (citro2d flushes its last batch there)
     AudioThread, // the audio thread's time taken from this core (setStolenTime; 0 on its own core)
+    Wait,    // plat::beginFrame: waiting on the display's pace and the GPU's last frame (the PC's pacing)
     Count
 };
 

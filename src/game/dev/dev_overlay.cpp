@@ -16,13 +16,15 @@ constexpr float GRAPH_X = 10, GRAPH_Y = 116, GRAPH_H = 50, COL_W = 3, GRAPH_MS_P
 constexpr float ROW_Y[5] = {170, 182, 196, 208, 220}, ROW_H = 10, BAR_X = 10, MS_PX = 10, TEXT_X = 190;
 constexpr int WORST_FRAMES = 60; // MAX: the worst over the last second
 
-const char* const LABELS[DevOverlay::SECTIONS] = {"LOG", "PHY", "NPC", "ANI", "FX", "AUD", "DRW", "DEV", "END", "ATH"};
+const char* const LABELS[DevOverlay::SECTIONS] = {"LOG", "PHY", "NPC", "ANI", "FX", "AUD", "DRW", "DEV", "END", "ATH", "WAI"};
 const uint32_t COLORS[DevOverlay::SECTIONS] = {
     plat::rgba(0x60, 0xd0, 0x70), plat::rgba(0xe0, 0xa0, 0x40), plat::rgba(0xd0, 0x70, 0xc0),
     plat::rgba(0xe0, 0xe0, 0x60), plat::rgba(0x60, 0xd0, 0xd0), plat::rgba(0xa0, 0x70, 0xf0),
     plat::rgba(0x60, 0x90, 0xe0), plat::rgba(0x80, 0x80, 0x80), plat::rgba(0x40, 0x60, 0xb0),
-    plat::rgba(0xf0, 0x60, 0xa0),
+    plat::rgba(0xf0, 0x60, 0xa0), plat::rgba(0x58, 0x58, 0x68),
 };
+constexpr int WAIT = (int)ProfSection::Wait;
+static_assert(WAIT == DevOverlay::SECTIONS - 1, "Wait stacks last: the CPU's sections, then the idle on top");
 constexpr int LEGEND_COLS = 4;
 static_assert((DevOverlay::SECTIONS + 1 + LEGEND_COLS - 1) / LEGEND_COLS <= 3, "the legend has three rows (ROW_Y[2..4])");
 const uint32_t WHITE = plat::rgba(0xff, 0xff, 0xff), RED = plat::rgba(0xe0, 0x50, 0x50);
@@ -84,17 +86,18 @@ void DevOverlay::draw() const {
         drawStack(GRAPH_X + i * COL_W, GRAPH_Y + GRAPH_H, COL_W, frame, GRAPH_MS_PX, GRAPH_H, true);
         if (i >= HISTORY - WORST_FRAMES && total(frame) > worst) {
             worst = total(frame);
-            worstSection = (int)(std::max_element(std::begin(frame), std::end(frame)) - std::begin(frame));
+            // (its biggest but WAI: a frame that overran waits out the rest of the next refresh)
+            worstSection = (int)(std::max_element(std::begin(frame), std::begin(frame) + WAIT) - std::begin(frame));
         }
     }
     const float graphW = HISTORY * COL_W;
     plat::drawRect(GRAPH_X, GRAPH_Y + GRAPH_H - 16.7f * GRAPH_MS_PX, graphW, 1, RED);
     plat::drawRect(GRAPH_X, GRAPH_Y + GRAPH_H - 33.3f * GRAPH_MS_PX, graphW, 1, plat::rgba(0xe0, 0x50, 0x50, 0x80));
 
-    // CPU: the averaged stack.
+    // CPU: the averaged stack (WAI on top: the frame, up to the display's pace; "CPU" leaves it out).
     drawStack(BAR_X, ROW_Y[0], ROW_H, avg_, MS_PX, TEXT_X - 2 * BAR_X, false);
     plat::drawRect(BAR_X + 16.7f * MS_PX, ROW_Y[0] - 2, 1, ROW_H + 4, RED);
-    snprintf(text, sizeof text, "CPU %.1f", total(avg_));
+    snprintf(text, sizeof text, "CPU %.1f", total(avg_) - avg_[WAIT]);
     const float after = drawDebugText(TEXT_X, ROW_Y[0], text, WHITE, TEXT_SCALE);
     snprintf(text, sizeof text, "%.0fFPS", frameMs_ > 0 ? 1000.0f / frameMs_ : 0.0f);
     drawDebugText(after + 4 * TEXT_SCALE, ROW_Y[0], text, WHITE, TEXT_SCALE);
