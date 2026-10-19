@@ -88,6 +88,37 @@ bool AudioBank::load(std::string* error) {
         s.canPause = j["canPause"].asBool(true);
     }
 
+    for (const auto& [event, j] : doc["voices"].members()) {
+        VoiceSynth& v = voices_[event];
+        const Json& vowels = j["vowels"];
+        v.held = vowels.has("a");
+        if (v.held) {
+            for (const char* c = VoiceSynth::VOWELS; *c; c++) {
+                const char key[2] = {*c, 0};
+                v.clips.emplace_back();
+                if (!decodeClip("audio/" + vowels[key].asString(), v.clips.back())) return fail("audio: " + event + "'s " + key + " clip");
+            }
+            v.loopStart = j["loop"].at(0).asInt();
+            v.loopEnd = j["loop"].at(1).asInt();
+            for (const Clip& c : v.clips)
+                if (v.loopStart <= 0 || v.loopEnd <= v.loopStart || v.loopEnd > (int)c.pcm.size())
+                    return fail("audio: " + event + "'s loop is outside its clips");
+        } else {
+            for (const Json& f : j["clips"].items()) {
+                v.clips.emplace_back();
+                if (!decodeClip("audio/" + f.asString(), v.clips.back())) return fail("audio/" + f.asString() + ": not a mono clip");
+            }
+            if (v.clips.empty()) return fail("audio: voice " + event + " has no clips");
+        }
+        v.gain = dbToGain(j["volume"].asFloat());
+        v.pitched = j["pitched"].asBool();
+        if (j.has("spatial")) {
+            v.spatial = true;
+            v.minDistance = j["spatial"].at(0).asFloat();
+            v.maxDistance = j["spatial"].at(1).asFloat();
+        }
+    }
+
     for (auto [table, bus, out] : {std::make_tuple("music", Bus::Music, &music_), std::make_tuple("ambience", Bus::Ambience, &ambience_)}) {
         for (const auto& [name, j] : doc[table].members()) {
             StreamDef& s = (*out)[name];
@@ -131,6 +162,7 @@ void AudioBank::unload() {
     sounds_.clear();
     music_.clear();
     ambience_.clear();
+    voices_.clear();
 }
 
 const SoundDef* AudioBank::sound(std::string_view name) const {
@@ -141,6 +173,11 @@ const SoundDef* AudioBank::sound(std::string_view name) const {
 const StreamDef* AudioBank::music(std::string_view name) const {
     auto it = music_.find(name);
     return it == music_.end() ? nullptr : &it->second;
+}
+
+const VoiceSynth* AudioBank::voice(std::string_view event) const {
+    auto it = voices_.find(event);
+    return it == voices_.end() ? nullptr : &it->second;
 }
 
 const StreamDef* AudioBank::ambience(std::string_view name) const {

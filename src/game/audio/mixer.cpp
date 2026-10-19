@@ -22,11 +22,18 @@ Mixer::Voice Mixer::nextId() {
     return lastId_;
 }
 
-Mixer::Voice Mixer::playClip(const Clip& clip, Bus bus, float rate, float left, float right, bool pausable) {
+Mixer::Voice Mixer::playClip(const Clip& clip, Bus bus, float rate, float left, float right, bool pausable,
+                            const ClipShape& shape) {
     if (full() || clip.pcm.empty()) return 0;
-    const Voice id = nextId();
-    clips_.push_back({id, &clip, bus, 0, rate, left, right, pausable, false});
-    return id;
+    ClipVoice c{nextId(), &clip, bus, 0, rate, left, right, pausable, shape};
+    clips_.push_back(c);
+    return c.id;
+}
+
+void Mixer::stopClip(ClipVoice& c) {
+    if (c.stopping) return;
+    c.stopping = true;
+    c.fadeTotal = c.fadeLeft = std::max(N, (int)(c.shape.fadeOut * plat::AUDIO_RATE));
 }
 
 Mixer::Voice Mixer::playStream(const StreamDef& def) {
@@ -50,7 +57,7 @@ void Mixer::closeStream(StreamVoice& s) {
 
 void Mixer::stop(Voice voice) {
     for (ClipVoice& c : clips_)
-        if (c.id == voice) c.stopping = true;
+        if (c.id == voice) stopClip(c);
     for (StreamVoice& s : streams_) {
         if (s.id != voice || s.releasing) continue;
         s.releasing = true; // (no release: down to silence over the next block, so it doesn't click)
@@ -198,10 +205,28 @@ void Mixer::mix(int16_t* out) {
 
     for (ClipVoice& c : clips_) {
         if (paused_ && c.pausable) continue;
+        const ClipShape& sh = c.shape;
+        if (sh.stopAfter >= 0 && c.played >= (int64_t)(sh.stopAfter * plat::AUDIO_RATE)) stopClip(c);
+        // The rate this block (a glide moves it at block steps: syllables last several).
+        float rate = c.rate;
+        if (sh.glide > 0) {
+            const float t = c.played / (float)plat::AUDIO_RATE, half = sh.glide / 2;
+            rate = t < half ? c.rate + (sh.rateMid - c.rate) * (t / half)
+                   : t < sh.glide ? sh.rateMid + (sh.rateEnd - sh.rateMid) * ((t - half) / half) : sh.rateEnd;
+        }
+        float fade0 = 1, fade1 = 1;
+        if (c.stopping) {
+            fade0 = c.fadeLeft / (float)c.fadeTotal;
+            c.fadeLeft = std::max(0, c.fadeLeft - N);
+            fade1 = c.fadeLeft / (float)c.fadeTotal;
+        }
         const std::vector<int16_t>& pcm = c.clip->pcm;
         const double last = (double)(pcm.size() - 1);
-        const float g0 = from[(int)c.bus], g1 = c.stopping ? 0 : to[(int)c.bus];
-        for (int i = 0; i < N && c.pos <= last; i++, c.pos += c.rate) {
+        const bool loops = sh.loopEnd > sh.loopStart && sh.loopStart >= 0;
+        const float g0 = from[(int)c.bus] * fade0, g1 = to[(int)c.bus] * fade1;
+        for (int i = 0; i < N; i++, c.pos += rate) {
+            if (loops && c.pos >= sh.loopEnd) c.pos -= sh.loopEnd - sh.loopStart;
+            if (c.pos > last) break;
             const size_t k = (size_t)c.pos;
             const float f = (float)(c.pos - (double)k);
             const float s = k + 1 < pcm.size() ? pcm[k] + (pcm[k + 1] - pcm[k]) * f : pcm[k];
@@ -209,10 +234,13 @@ void Mixer::mix(int16_t* out) {
             acc_[2 * i] += s * c.left * g;
             acc_[2 * i + 1] += s * c.right * g;
         }
+        c.played += N;
     }
     clips_.erase(std::remove_if(clips_.begin(), clips_.end(),
-                                [&](const ClipVoice& c) {
-                                    return c.pos > (double)(c.clip->pcm.size() - 1) || (c.stopping && !(paused_ && c.pausable));
+                                [&](const ClipVoice& c) { // (a looping one ends only by fading out)
+                                    const bool loops = c.shape.loopEnd > c.shape.loopStart && c.shape.loopStart >= 0;
+                                    return (!loops && c.pos > (double)(c.clip->pcm.size() - 1)) ||
+                                           (c.stopping && c.fadeLeft <= 0 && !(paused_ && c.pausable));
                                 }),
                  clips_.end());
 

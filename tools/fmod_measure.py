@@ -49,9 +49,10 @@ def ok(r, what):
         raise RuntimeError(f'{what}: FMOD error {r}')
 
 
-def render(dll, event, seconds, out, params=None, stop_at=None):
-    """`event` rendered for `seconds` (stopped, fading out, at `stop_at`) to `out`; returns the
-    frame the stop happened at."""
+def render(dll, event, seconds, out, params=None, stop_at=None, instance_params=None, restart_every=None):
+    """`event` rendered for `seconds` (stopped, fading out, at `stop_at`) to `out`, with global
+    `params` and the instance's own `instance_params` (`restart_every` s: a new instance starts,
+    as a game playing it again); returns the frame the stop happened at."""
     sysh = C.c_void_p()
     ok(dll.FMOD_Studio_System_Create(C.byref(sysh), VERSION), 'create')
     core = C.c_void_p()
@@ -59,7 +60,7 @@ def render(dll, event, seconds, out, params=None, stop_at=None):
     ok(dll.FMOD_System_SetOutput(core, 5), 'output')  # FMOD_OUTPUTTYPE_WAVWRITER_NRT
     ok(dll.FMOD_System_SetSoftwareFormat(core, RATE, 3, 0), 'format')  # stereo
     ok(dll.FMOD_Studio_System_Initialize(sysh, 256, 2, 0, C.c_char_p(out.encode())), 'init')  # SYNCHRONOUS_UPDATE
-    for b in ['Master.bank', 'Master.strings.bank', 'BGM.bank', 'Ambience.bank', 'SFX.bank']:
+    for b in ['Master.bank', 'Master.strings.bank', 'BGM.bank', 'Ambience.bank', 'SFX.bank', 'Dialogue.bank']:
         bank = C.c_void_p()
         ok(dll.FMOD_Studio_System_LoadBankFile(sysh, os.path.join(BANKS, b).encode(), 0, C.byref(bank)), b)
     desc = C.c_void_p()
@@ -70,9 +71,15 @@ def render(dll, event, seconds, out, params=None, stop_at=None):
     ok(dll.FMOD_Studio_EventDescription_CreateInstance(desc, C.byref(inst)), 'instance')
     for k, v in (params or {}).items():
         ok(dll.FMOD_Studio_System_SetParameterByName(sysh, k.encode(), C.c_float(v), 1), k)
+    for k, v in (instance_params or {}).items(): # (one the event doesn't have is left out)
+        dll.FMOD_Studio_EventInstance_SetParameterByName(inst, k.encode(), C.c_float(v), 1)
     ok(dll.FMOD_Studio_EventInstance_Start(inst), 'start')
     stop_block = int(stop_at * RATE / BLOCK) if stop_at is not None else -1
+    every = int(restart_every * RATE / BLOCK) if restart_every else 0
     for i in range(int(seconds * RATE / BLOCK)):
+        if every and i > 0 and i % every == 0:
+            ok(dll.FMOD_Studio_EventDescription_CreateInstance(desc, C.byref(inst)), 'instance')
+            ok(dll.FMOD_Studio_EventInstance_Start(inst), 'start')
         if i == stop_block:
             ok(dll.FMOD_Studio_EventInstance_Stop(inst, 0), 'stop')  # FMOD_STUDIO_STOP_ALLOWFADEOUT
         ok(dll.FMOD_Studio_System_Update(sysh), 'update')

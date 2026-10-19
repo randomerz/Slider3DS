@@ -21,6 +21,7 @@ Interactable offered(int npc) { return {Interactable::Kind::Npc, npc}; }
 
 void Npcs::reset(const Area& area) {
     s_.assign(area.npcs.size(), State());
+    random_ = VoiceRandom();
     for (size_t i = 0; i < s_.size(); i++) {
         const NpcDef& def = area.npcs[i];
         for (const NpcCondDef& c : def.conds)
@@ -170,7 +171,23 @@ void Npcs::typeCurrent(World& world, int npc) {
     const DialogueDef& l = *line(world.area, npc);
     // NPCConditionals.GetDialogueString: a line waiting for the player ends in a looping " ...".
     st.text = parseDialogue(l.waitForAction ? l.text + "<type> ...</type>" : l.text, world.state);
-    st.typer.start(st.text);
+    // DialogueDisplay.DisplaySentence: with a voice, the line types at its pace (its length over the
+    // text's), the music dips while it talks, and it starts reading — unless still reading the last.
+    float speed = Typer::TEXT_SPEED;
+    const VoiceDef& voice = world.area.npcs[npc].voice;
+    if (voice.present && !st.text.chars.empty()) {
+        VoiceLine read = vocalize(voice, l.emoteOnStart, st.text.chars, 1, random_);
+        speed = read.totalDuration / st.text.chars.size();
+        world.audio.dampenMusic(0.6f, read.totalDuration + 0.2f, npc + 1);
+        if (!st.speaking) {
+            st.voice = std::move(read);
+            st.voiceStep = 0;
+            st.voiceWait = 0;
+            st.speaking = true;
+            speak(world, npc); // (its first syllable at once: StartCoroutine runs to its first wait)
+        }
+    }
+    st.typer.start(st.text, speed);
     st.textVersion = ++textCounter_;
     setPing(world, npc, false); // DialogueDisplay.DisplaySentence
     st.typing = true;
@@ -227,6 +244,31 @@ void Npcs::finishLine(World& world, int npc) {
     if (index == (int)chain.size() - 1) world.withdraw(offered(npc));
 }
 
+void Npcs::speak(World& world, int npc) {
+    State& st = s_[npc];
+    const NpcDef& n = world.area.npcs[npc];
+    while (st.speaking && st.voiceWait <= 0) {
+        if (st.voiceStep >= st.voice.steps.size()) {
+            st.speaking = false;
+            break;
+        }
+        const VoiceStep& s = st.voice.steps[st.voiceStep++];
+        if (s.sound) {
+            float x, y;
+            world.objectPosition(n.object, x, y);
+            world.audio.playVoice(n.voice.event, npc + 1, s.vowel, s.duration, s.pitchStart, s.pitchMid, s.pitchEnd,
+                                  st.voice.volume, x, y);
+        }
+        st.voiceWait += s.duration;
+    }
+}
+
+void Npcs::stopVoice(World& world, int npc) {
+    if (!world.area.npcs[npc].voice.present) return;
+    s_[npc].speaking = false;
+    world.audio.stopVoice(npc + 1);
+}
+
 void Npcs::deactivate(World& world, int npc) {
     if (const DialogueDef* l = line(world.area, npc)) {
         playAnimation(world, npc, l->animationOnLeave);
@@ -237,6 +279,7 @@ void Npcs::deactivate(World& world, int npc) {
     st.delayPending = false;
     st.boxActive = false;
     st.typing = false;
+    stopVoice(world, npc); // (FadeAwayDialogue)
 }
 
 void Npcs::tryDeactivate(World& world, int npc) {
@@ -285,6 +328,7 @@ void Npcs::update(World& world, float dt) {
             // still skip it).
             st.delayPending = false;
             st.typer.halt();
+            stopVoice(world, i); // (its coroutine stops too)
         }
         st.wasActive = active;
         if (!active) continue;
@@ -308,5 +352,9 @@ void Npcs::update(World& world, float dt) {
             }
         }
         st.typer.tick(dt); // after the delay, so a line it starts waits from the next frame
+        if (st.speaking) {
+            st.voiceWait -= dt;
+            speak(world, i);
+        }
     }
 }

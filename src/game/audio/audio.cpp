@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 
 #include "game/save/settings.h"
 #include "platform/platform.h"
@@ -32,6 +33,7 @@ void Audio::setListener(const Listener& listener) {
 
 void Audio::unload() {
     mixer_.stopAll();
+    voices_.clear();
     music_.clear();
     ambience_.clear();
     dampens_.clear();
@@ -55,7 +57,16 @@ void Audio::run(const std::vector<AudioCue>& cues) {
             break;
         case AudioCue::Kind::SetParameter: mixer_.setParameter(c.name, c.value); break;
         case AudioCue::Kind::DampenMusic:
-            if (c.length > 0) dampens_.push_back({c.value, c.length, 0});
+            if (c.key != 0)
+                dampens_.erase(std::remove_if(dampens_.begin(), dampens_.end(), [&](const Dampen& d) { return d.key == c.key; }),
+                               dampens_.end());
+            if (c.length > 0) dampens_.push_back({c.value, c.length, 0, c.key});
+            break;
+        case AudioCue::Kind::PlayVoice: playVoice(c); break;
+        case AudioCue::Kind::StopVoice:
+            stopVoices(c.key);
+            dampens_.erase(std::remove_if(dampens_.begin(), dampens_.end(), [&](const Dampen& d) { return d.key == c.key; }),
+                           dampens_.end()); // (StopDampen<VocalizableParagraph>: its talking's dip)
             break;
         }
     }
@@ -106,6 +117,49 @@ void Audio::play(const AudioCue& cue) {
     mixer_.playClip(clip, Bus::Sfx, rate, left * g, right * g, s->canPause && s->spatial);
 }
 
+void Audio::playVoice(const AudioCue& cue) {
+    const VoiceSynth* v = bank_.voice(cue.name);
+    if (!v) {
+        printf("No voice %s\n", cue.name.c_str());
+        return;
+    }
+    const Clip* clip;
+    ClipShape shape;
+    if (v->held) {
+        const char* at = std::strchr(VoiceSynth::VOWELS, cue.vowel);
+        clip = &v->clips[at && *at ? at - VoiceSynth::VOWELS : 0];
+        shape.loopStart = v->loopStart;
+        shape.loopEnd = v->loopEnd;
+        shape.fadeOut = VOICE_RELEASE;
+    } else {
+        clip = &v->clips[std::min((size_t)(random01() * v->clips.size()), v->clips.size() - 1)];
+    }
+    shape.stopAfter = cue.duration;
+    float rate = 1;
+    if (v->pitched) {
+        rate = cue.value;
+        shape.rateMid = cue.pitchMid;
+        shape.rateEnd = cue.pitchEnd;
+        shape.glide = cue.duration;
+    }
+    float left = std::sqrt(0.5f), right = left;
+    if (v->spatial) {
+        SoundDef s;
+        s.minDistance = v->minDistance;
+        s.maxDistance = v->maxDistance;
+        spatialGains(s, cue.positioned, cue.x, cue.y, false, left, right);
+    }
+    const float g = v->gain * cue.volume;
+    voices_.erase(std::remove_if(voices_.begin(), voices_.end(), [&](const auto& kv) { return !mixer_.playing(kv.second); }),
+                  voices_.end());
+    voices_.push_back({cue.key, mixer_.playClip(*clip, Bus::Sfx, rate, left * g, right * g, false, shape)});
+}
+
+void Audio::stopVoices(int key) {
+    for (const auto& [k, voice] : voices_)
+        if (key == 0 || k == key) mixer_.stop(voice);
+}
+
 void Audio::playMusic(const AudioCue& cue) {
     const StreamDef* def = bank_.music(cue.name);
     if (!def) {
@@ -145,6 +199,7 @@ void Audio::setVolumes(const Settings& settings) {
 }
 
 void Audio::setPaused(bool paused) {
+    if (paused && !paused_) stopVoices(0); // (ManagedInstance.SetPaused: dialogue stops for good)
     paused_ = paused;
     mixer_.setPaused(paused);
 }

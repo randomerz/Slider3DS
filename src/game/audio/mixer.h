@@ -22,6 +22,15 @@ namespace plat {
 struct Ogg;
 }
 
+// How a clip plays besides its rate and gains (a vocalizer syllable uses all of it).
+struct ClipShape {
+    float rateMid = 0, rateEnd = 0; // > 0: the rate glides to rateMid over the first half of
+    float glide = 0;                //   `glide` s, then to rateEnd over the second
+    int loopStart = -1, loopEnd = -1; // frames: on reaching loopEnd it goes on from loopStart
+    float stopAfter = -1;             // s: then it fades out (as a stop())
+    float fadeOut = 0;                // s a stop fades over (0: one block)
+};
+
 class Mixer {
 public:
     using Voice = uint32_t; // 0 = none
@@ -35,11 +44,12 @@ public:
 
     // `clip` (which must outlive the voice) at `rate` (1 = as recorded), `left` / `right` gains.
     // `pausable`: held while paused (setPaused).
-    Voice playClip(const Clip& clip, Bus bus, float rate, float left, float right, bool pausable);
+    Voice playClip(const Clip& clip, Bus bus, float rate, float left, float right, bool pausable,
+                   const ClipShape& shape = {});
     // `def` (which must outlive the voice) from its start; 0 if its file won't open.
     Voice playStream(const StreamDef& def);
-    // A stream fades out over its release, then ends; a clip (or a stream without a release) fades
-    // out over the next block.
+    // A stream fades out over its release, then ends; a clip over its shape's fadeOut (a stream
+    // without a release, over the next block).
     void stop(Voice voice);
     void stopAll(); // everything, at once
     bool playing(Voice voice) const; // (false once it has ended, or for 0)
@@ -66,8 +76,12 @@ private:
         double pos = 0;
         float rate, left, right;
         bool pausable;
-        bool stopping = false; // fading out over this block, then gone
+        ClipShape shape;
+        int64_t played = 0;    // output frames so far
+        bool stopping = false; // fading out, then gone
+        int fadeLeft = 0, fadeTotal = 0; // output frames
     };
+    void stopClip(ClipVoice& c);
     struct StreamVoice {
         Voice id;
         const StreamDef* def;

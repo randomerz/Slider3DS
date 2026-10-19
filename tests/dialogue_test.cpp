@@ -899,3 +899,42 @@ TEST(npcs_emote_shown_again_mid_intro_restarts_it) {
     for (int i = 0; i < 8; i++) world.update(DT, 0, 0, true); // 18 frames since the first start: past 0.25 s
     check(world.npcs.emoteSprite(world, 0, e) && e.sprite == 0, "still the intro: it restarted");
 }
+
+TEST(npcs_voice_reads_the_line_and_paces_the_typing) {
+    // The fixture's NPC with Romeo's voice: its line is read (syllables at the NPC, the music dipped)
+    // and types at the voice's pace; leaving stops it.
+    Area area = npcArea();
+    for (const NpcDef& n : villageArea().npcs)
+        if (n.name == "Romeo") area.npcs[0].voice = n.voice;
+    check(area.npcs[0].voice.present, "Romeo has a voice");
+    World world(area, DEFAULT_SETTINGS);
+    standAt(world, 10, 0);
+    world.audio.take();
+    standAt(world, 0, 0);
+    std::vector<AudioCue> cues = world.audio.take();
+    int syllables = 0, dips = 0;
+    for (const AudioCue& c : cues) {
+        syllables += c.kind == AudioCue::Kind::PlayVoice && c.name == area.npcs[0].voice.event && c.key == 1 ? 1 : 0;
+        dips += c.kind == AudioCue::Kind::DampenMusic && c.key == 1 ? 1 : 0;
+    }
+    CHECK(syllables == 1 && dips == 1); // (the first syllable at once)
+    const VoiceLine& line = world.npcs.voiceLine(0);
+    int sounds = 0;
+    for (const VoiceStep& s : line.steps) sounds += s.sound ? 1 : 0;
+    int frames = 1;
+    while (frames < 600 && world.npcs.typer(0).typing()) {
+        world.update(DT, 0, 0, true);
+        frames++;
+        for (const AudioCue& c : world.audio.take()) syllables += c.kind == AudioCue::Kind::PlayVoice ? 1 : 0;
+    }
+    CHECK(syllables == sounds && sounds > 0);
+    // Typed at the voice's pace: a step every length / characters s (in whole frames, as
+    // WaitForSeconds), one a character, then the fade-in's last two.
+    const float speed = line.totalDuration / world.npcs.text(0).chars.size();
+    const int perStep = std::max(1, (int)std::ceil(speed / DT - 1e-3f));
+    CHECK(std::abs(frames - ((int)world.npcs.text(0).chars.size() + 2) * perStep) <= 2);
+    standAt(world, 10, 0);
+    bool stopped = false;
+    for (const AudioCue& c : world.audio.take()) stopped = stopped || (c.kind == AudioCue::Kind::StopVoice && c.key == 1);
+    CHECK(stopped);
+}

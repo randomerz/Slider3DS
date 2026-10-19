@@ -501,6 +501,29 @@ static NpcDef readNpc(const Json& j, Area& out) {
     n.sprite = j["sprite"].asInt(-1);
     n.text = readTextBox(j["text"]);
     n.pingObject = j["pingObject"].asInt(-1);
+    if (const Json& v = j["voice"]; v.has("event")) {
+        VoiceDef& d = n.voice;
+        d.present = true;
+        d.event = v["event"].asString();
+        d.perClause = v["perClause"].asBool();
+        d.syllables = v["syllables"].asBool(true);
+        d.fadeout = v["fadeout"].asFloat();
+        d.pitch = v["pitch"].asFloat(1);
+        d.duration = v["duration"].asFloat();
+        d.volume = v["volume"].asFloat(1);
+        d.volumeDb = v["volumeDb"].asFloat();
+        d.smoothness = v["smoothness"].asFloat(1);
+        d.wordIntonation = v["wordIntonation"].asFloat();
+        d.speedup = v["speedup"].asFloat();
+        d.lowToHigh = v["lowToHigh"].asFloat();
+        d.highToLow = v["highToLow"].asFloat();
+        d.clauseGap = v["clauseGap"].asFloat();
+        d.up = v["up"].asFloat();
+        d.down = v["down"].asFloat();
+        d.intonation = v["intonation"].asInt(-1);
+        for (const Json& m : v["emotes"].items())
+            d.emotes.push_back({m.at(0).asFloat(), m.at(1).asFloat(), m.at(2).asFloat(), m.at(3).asInt(-1)});
+    }
     if (j.has("animator")) {
         const Json& a = j["animator"];
         n.animator = (int)out.animators.size();

@@ -8,6 +8,10 @@
 //   rolloff between the event's min and max distance, panned by the side the source is on; a
 //   sound in a house heard outside (or the other way) is moved by the housing offset and turned
 //   down (indoorMuteDB). Each is placed once, as it starts (the port's sounds are short).
+//   Voices: a vocalizer's syllables (PlayVoice) on its rendered synth clips — the syllable's vowel,
+//   its pitch as the playback rate (gliding), held in the clip's loop while it lasts, then faded
+//   (the synth's End); StopVoice fades a speaker's out; pausing stops them all (ManagedInstance:
+//   dialogue hard-stops on pause).
 //   Music: PlayMusic stops the other tracks; DampenMusic dips the music bus along the bank's curve
 //   (the lowest of those running; held while paused); in a house the music bus is muffled
 //   (IndoorMusic3Eq: the bank's EQ).
@@ -31,6 +35,7 @@ public:
     static constexpr float LISTENER_Z = 10; // AudioManager.ZLevel
     static constexpr float INDOOR_Y = -75;  // SoundWrapper.IsActuallyIndoor: at or below it, in a house
     static constexpr float INDOOR_MUTE_DB = 5; // AudioManager.indoorMuteDB
+    static constexpr float VOICE_RELEASE = 0.1f; // a held synth's End: its last 0.1 s fading as a syllable stops
 
     bool load(std::string* error = nullptr); // the bank (see AudioBank::load)
     void unload();
@@ -57,8 +62,11 @@ public:
 private:
     struct Dampen {
         float amount, length, t;
+        int key;
     };
     void play(const AudioCue& cue);
+    void playVoice(const AudioCue& cue);
+    void stopVoices(int key); // key 0: all of them
     void playMusic(const AudioCue& cue);
     void playAmbience(const AudioCue& cue);
     float random01(); // [0, 1)
@@ -67,6 +75,7 @@ private:
     Mixer mixer_; // (after the bank: its voices point into it)
     std::map<std::string, Mixer::Voice, std::less<>> music_, ambience_;
     std::vector<Dampen> dampens_;
+    std::vector<std::pair<int, Mixer::Voice>> voices_; // speaker, syllable
     Listener listener_;
     float musicVolume_ = 1; // the setting (the bus also carries the dampening)
     bool paused_ = false;

@@ -136,7 +136,8 @@ void layoutDialogue(const FontDef& font, const DialogueText& text, const TextBox
     }
 }
 
-void Typer::start(const DialogueText& text) {
+void Typer::start(const DialogueText& text, float speed) {
+    speed_ = speed;
     const size_t n = text.chars.size();
     alpha_.assign(n, 0);
     visible_.resize(n);
@@ -182,7 +183,7 @@ void Typer::tick(float dt) {
     time_ += dt;
     if (running_) {
         wait_ += dt;
-        if (wait_ >= TEXT_SPEED - 1e-4f) {
+        if (wait_ >= speed_ - 1e-4f) {
             wait_ = 0;
             if (rangeMax_) {
                 running_ = false;

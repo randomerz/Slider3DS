@@ -30,7 +30,11 @@ audio.json (the port's game/audio/audio_bank reads it):
        "jumps": [[at, to] or [at, to, parameter, min, max], ...] (frames, in order of `at`: when
        playback reaches `at` (landing there by a jump doesn't count), it continues from `to` if the
        global parameter is in [min, max]; the first such jump wins), "volumeParam": [parameter,
-       [[value, dB], ...]] (absent: none; the volume by a global parameter, measured)}}}
+       [[value, dB], ...]] (absent: none; the volume by a global parameter, measured)}},
+   "voices": {synth event: {"vowels": {"a" .. "u": file} + "loop": [start, end] frames (a held
+       synth: played from its start, looping in the window while a syllable lasts), or "clips":
+       [file, ...] (one at random, played as it is), "volume": dB, "pitched": the "Pitch" parameter
+       changes it (absent: it doesn't), "spatial": [min, max]}} (the NPCs' vocalizer synths, rendered: render_voices)}
 Clips are mono (sounds are spatialized or centered); streams are stereo. Track and instrument
 volumes, trims and fades are baked; the event's master volume is data (less whatever a render
 had to be turned down by to fit, so it plays as loud). A transition with a
@@ -451,6 +455,126 @@ class Event:
             raise Fail(f'{self.path}: a transition without both a source and a destination')
         return ramps['TransitionSourceSound'], ramps['TransitionDestinationSound']
 
+# WordVocalizer.vowelDescriptionTable: (openness, forwardness) per vowel ('y' sounds as 'i').
+VOWELS = {'a': (1.0, 0.6), 'e': (0.3, 0.8), 'i': (0.0, 1.0), 'o': (0.3, 0.5), 'u': (0.0, 0.0)}
+VOICE_LOOP = (0.25, 0.65)  # s of a sustained render the port loops (FMOD's own loop region holds it; short: decoded at boot)
+VOICE_SEAM = 0.04          # s of crossfade baked at the loop's end, so the jump back is seamless
+VOICE_RENDERS = 16         # plays of a one-shot voice (a multi instrument's variants: one each)
+VOICE_SPACING = 1.0        # s between them
+
+
+def reachable(proj, root):
+    """Every exported object an event leads to."""
+    seen, todo = set(), [root]
+    while todo:
+        o = todo.pop()
+        if id(o) in seen:
+            continue
+        seen.add(id(o))
+        yield o
+        for ids in o['rels'].values():
+            todo.extend(proj.objects[i] for i in ids if i in proj.objects)
+
+
+def voice_events():
+    """The synth events the Village NPCs' vocalizer presets play (the area export's "voice"s)."""
+    area = json.load(open(os.path.join(ROOT, 'assets', 'village', 'village.json'), encoding='utf-8'))
+    return sorted({n['voice']['event'] for n in area['npcs'] if 'voice' in n})
+
+
+def render_voices(proj, events):
+    """The NPCs' voices, rendered with the game's FMOD runtime (tools/fmod_measure.py's): their
+    flangers, multiband EQs and pitch shifters can't be modelled. A synth that holds while playing
+    (a loop region; stopped, it leaves for its End marker) becomes one sustained clip per vowel
+    (VowelOpeness / VowelForwardness from WordVocalizer's table, Pitch 1), its loop window baked
+    seamless; any other (the signs' typing, the fish's bubbles) the clips it plays out as (its
+    playlist's, gathered over a few renders). Mono; the port changes the
+    rate for the vocalizer's pitch."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import ctypes
+    import soundfile
+    import fmod_measure
+    dll = ctypes.WinDLL(fmod_measure.DLL)
+    tmp = tempfile.mkdtemp(prefix='slider3ds_voices_')
+    out = {}
+    for path in events:
+        ev = proj.get(proj.events[path])
+        markers = proj.rel(proj.one(ev, 'timeline'), 'markers')
+        loops = any(m['entity'] == 'LoopRegion' for m in markers)
+        name = re.sub(r'[^a-z0-9]+', '_', path.split('/')[-1].lower()).strip('_')
+
+        def take(params, seconds):
+            wav = os.path.join(tmp, 'voice.wav')
+            fmod_measure.render(dll, path, seconds, wav, instance_params=params)
+            x, rate = soundfile.read(wav, dtype='float32')
+            x = x.mean(axis=1)
+            start = int(np.argmax(np.abs(x) > 1e-4))  # (FMOD starts it a little late)
+            raw = subprocess.run(['ffmpeg', '-v', 'error', '-f', 'f32le', '-ar', str(rate), '-ac', '1', '-i', '-',
+                                  '-f', 'f32le', '-ar', str(RATE), '-'], input=x[start:].tobytes(),
+                                 capture_output=True, check=True).stdout
+            return np.frombuffer(raw, dtype=np.float32).copy()
+
+        if loops:
+            clips = {}
+            for vowel, (openness, forwardness) in VOWELS.items():
+                x = take({'Pitch': 1, 'VolumeAdjustmentDb': 0, 'VowelOpeness': openness,
+                          'VowelForwardness': forwardness}, VOICE_LOOP[1] + 0.5)
+                a, b, seam = frames(VOICE_LOOP[0]), frames(VOICE_LOOP[1]), frames(VOICE_SEAM)
+                if len(x) < b:
+                    raise Fail(f'{path}: its render ends before the loop window')
+                x = x[:b]
+                r = np.arange(seam) / seam
+                x[b - seam:] = x[b - seam:] * (1 - r) + x[a - seam:a] * r
+                clips[vowel] = x[:, None]
+        else:
+            # (a multi instrument picks one at random each time: it's played a few times over, in
+            # one run — FMOD's random sequence starts the same in every new system)
+            wav = os.path.join(tmp, 'voice.wav')
+            fmod_measure.render(dll, path, VOICE_RENDERS * VOICE_SPACING, wav, restart_every=VOICE_SPACING)
+            x, rate = soundfile.read(wav, dtype='float32')
+            x = x.mean(axis=1)
+            clips = {}
+            every = int(VOICE_SPACING * rate / fmod_measure.BLOCK) * fmod_measure.BLOCK
+            for k in range(VOICE_RENDERS):
+                seg = x[k * every:(k + 1) * every]
+                loud = np.nonzero(np.abs(seg) > 1e-5)[0]
+                if len(loud) == 0:
+                    continue
+                seg = seg[loud[0]:loud[-1] + 1]
+                raw = subprocess.run(['ffmpeg', '-v', 'error', '-f', 'f32le', '-ar', str(rate), '-ac', '1', '-i', '-',
+                                      '-f', 'f32le', '-ar', str(RATE), '-'], input=seg.tobytes(),
+                                     capture_output=True, check=True).stdout
+                seg = np.frombuffer(raw, dtype=np.float32).copy()
+                if not any(len(c) == len(seg) and np.allclose(c[:, 0], seg, atol=1e-3) for c in clips.values()):
+                    clips[str(len(clips))] = seg[:, None]
+        gain = headroom(list(clips.values()))
+        entry = {'volume': round(-gain, 3)}
+        # Whether "Pitch" changes it (a held synth's pitch, the fish's pitch shifter; not the signs'
+        # typing), and its spatializer.
+        reach = list(reachable(proj, ev))
+        if any(o['entity'] == 'AutomationCurve' and proj.parameter_names.get((o['rels'].get('parameter') or [''])[0]) == 'Pitch'
+               for o in reach):
+            entry['pitched'] = True
+        props = proj.one(ev, 'automatableProperties')['props']
+        for o in reach:
+            if o['entity'] == 'SpatialiserEffect':
+                p = o['props']
+                entry['spatial'] = [p['minimumDistance'], p['maximumDistance']] if p['overrideRange'] else                     [props['minimumDistance'], props['maximumDistance']]
+        files = {}
+        for vowel, clip in clips.items():
+            f = f'voice_{name}_{vowel}.ogg'
+            encode(clip * db(gain), os.path.join(OUT, f), QUALITY['sounds'])
+            files[vowel] = f
+        if loops:
+            entry['vowels'] = files
+            entry['loop'] = [frames(VOICE_LOOP[0]), frames(VOICE_LOOP[1])]
+        else:
+            entry['clips'] = list(files.values())
+        out[path] = entry
+        print(f'voice    {path} -> {", ".join(files.values())}')
+    return out
+
+
 def file_name(table, name, variant=None):
     base = {'sounds': 'sfx', 'music': 'music', 'ambience': 'amb'}[table] + '_' + re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')
     return base + (f'_{variant}' if variant is not None else '') + '.ogg'
@@ -461,13 +585,15 @@ def main():
     tables = audio_manager_tables()
     # The player's footsteps aren't AudioManager's (MaterialSoundMapping's events, by surface): sounds too.
     tables['sounds'].update({f'Footstep {f}': [f'event:/SFX/Footsteps/player_footstep_{f}', True] for f in FOOTSTEPS})
-    wanted = [('sounds', n) for n in SOUNDS + [f'Footstep {f}' for f in FOOTSTEPS]] +              [('music', n) for n in MUSIC] + [('ambience', n) for n in AMBIENCE]
+    wanted = [('sounds', n) for n in SOUNDS + [f'Footstep {f}' for f in FOOTSTEPS]]
+    wanted += [('music', n) for n in MUSIC] + [('ambience', n) for n in AMBIENCE]
     paths = []
     for table, name in wanted:
         if name not in tables.get(table, {}):
             sys.exit(f'AudioManager has no {table} entry "{name}"')
         paths.append(tables[table][name][0])
-    proj = Project(fmod_export(sorted(set(paths)), keep))
+    voices = voice_events()
+    proj = Project(fmod_export(sorted(set(paths + voices)), keep))
 
     os.makedirs(OUT, exist_ok=True)
     for f in os.listdir(OUT):
@@ -510,6 +636,7 @@ def main():
                 if ev.volume_param: entry['volumeParam'] = ev.volume_param
             bank[table][name] = entry
             print(f'{table:8} {name:12} -> {entry.get("file") or ", ".join(entry["clips"])}')
+        bank['voices'] = render_voices(proj, voices)
     except Fail as e:
         sys.exit(f'make_audio: {e}')
     text = json.dumps(bank, indent=1, ensure_ascii=False)

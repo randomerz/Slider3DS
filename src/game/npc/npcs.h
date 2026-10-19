@@ -20,6 +20,7 @@
 
 #include "game/data/area.h"
 #include "game/npc/dialogue_text.h"
+#include "game/npc/vocalizer.h"
 
 class World;
 
@@ -49,6 +50,7 @@ public:
     bool textShown(int npc) const { return s_[npc].boxActive; }
     const DialogueText& text(int npc) const { return s_[npc].text; }
     const Typer& typer(int npc) const { return s_[npc].typer; }
+    const VoiceLine& voiceLine(int npc) const { return s_[npc].voice; } // what its voice read last (tests)
     // Identifies the line being shown: new for every line typed (also across reset()), for caches.
     uint32_t textVersion(int npc) const { return s_[npc].textVersion; }
     bool pingShown(const World& world, int npc) const;
@@ -76,6 +78,12 @@ private:
         bool emoteLeft = false;  // its side, decided when it was last set
         DialogueText text;
         Typer typer;
+        // Its voice reading the line (VocalizableParagraph's coroutine): the steps, the next one,
+        // the time left on the current one.
+        VoiceLine voice;
+        size_t voiceStep = 0;
+        float voiceWait = 0;
+        bool speaking = false;
     };
 
     const DialogueDef* line(const Area& area, int npc) const; // CurrentDialogue(), null if none
@@ -90,7 +98,10 @@ private:
     void deactivate(World& world, int npc);       // DeactivateDialogueBox
     void setEmote(World& world, int npc, int emote); // NPCEmotes.SetEmote
     void playAnimation(World& world, int npc, const std::string& state); // NPCAnimatorController.Play
+    void speak(World& world, int npc);     // the voice's steps that are due
+    void stopVoice(World& world, int npc); // VocalizableParagraph.Stop
 
     std::vector<State> s_;
+    VoiceRandom random_; // (the vocalizer's choices: stress, intonation)
     uint32_t textCounter_ = 0; // never reset: a cache keyed by textVersion can't see an old value again
 };

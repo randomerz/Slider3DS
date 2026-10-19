@@ -37,7 +37,7 @@ void layoutDialogue(const FontDef& font, const DialogueText& text, const TextBox
                     std::vector<GlyphPlace>& out);
 
 // TMPTextTyper with fadeTextIn (the NPC prefab's), and the TMPSpecialText effect clocks:
-//   - every TEXT_SPEED s one more character starts fading in (in steps of 127 alpha: rollover
+//   - every `speed` s (TEXT_SPEED, or the voice's pace) one more character starts fading in (in steps of 127 alpha: rollover
 //     spread 2); typing finishes one step after the last character is opaque;
 //   - <type>: once its characters are typed, they're retyped in a loop, one per TYPE_LOOP_SPEED s;
 //   - <wavy>: characters bob by WAVE_AMPLITUDE (world units) on a sine stepping every WAVE_STEP s.
@@ -50,8 +50,9 @@ public:
     static constexpr float WAVE_AMPLITUDE = 0.05f; // waveAmplitude 0.01 * 5
     static constexpr float WAVE_PERIOD = 0.5f;     // wavePeriod 1 * 0.5
 
-    // Starts typing `text` (its first character starts fading in at once).
-    void start(const DialogueText& text);
+    // Starts typing `text` (its first character starts fading in at once), a step every `speed` s
+    // (DialogueDisplay sets it to the voice's length over the text's, when the NPC has a voice).
+    void start(const DialogueText& text, float speed = TEXT_SPEED);
     // Advances the clocks by one frame. Unity's WaitForSeconds counts from the frame after it was
     // started, so the first tick after start() only marks that frame.
     void tick(float dt);
@@ -76,6 +77,7 @@ private:
     int start_ = 0, index_ = 0; // startingCharacterIndex, charIndex
     bool rangeMax_ = false, running_ = false, finished_ = false, fresh_ = false, halted_ = false;
     float wait_ = 0;        // since the last step
+    float speed_ = TEXT_SPEED;
     float time_ = 0;        // since start (effects)
     float loopFrom_ = -1;   // time the <type> range was all typed, -1 = not yet
 };

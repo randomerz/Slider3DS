@@ -56,6 +56,18 @@ struct AhdsrShape {
     float attack(float x) const { return release(1 - x); } // dB below full at `x` of the attack
 };
 
+// An NPC voice's synth (the vocalizer's), rendered with its effects (tools/make_audio.py).
+struct VoiceSynth {
+    static constexpr const char* VOWELS = "aeiou";
+    bool held = false;          // loops while a syllable lasts: clips[i] for VOWELS[i]; else one at random
+    std::vector<Clip> clips;
+    int loopStart = 0, loopEnd = 0; // held: frames
+    float gain = 1;
+    bool pitched = false;       // "Pitch" changes it
+    bool spatial = false;
+    float minDistance = 1, maxDistance = 20;
+};
+
 // IndoorMusic3Eq: the music bus's 3-band EQ while the player is in a house (fitted to FMOD's ThreeEQ
 // as the modifier sets it: tools/fmod_measure.py).
 struct IndoorEq {
@@ -73,6 +85,7 @@ public:
     const SoundDef* sound(std::string_view name) const;
     const StreamDef* music(std::string_view name) const;
     const StreamDef* ambience(std::string_view name) const;
+    const VoiceSynth* voice(std::string_view event) const;
     // AudioManager.soundDampenCurve: DampenMusic's shape, 1 -> 0 -> 1 over its length.
     const std::vector<CurveKey>& dampenCurve() const { return dampenCurve_; }
     const AhdsrShape& ahdsr() const { return ahdsr_; }
@@ -84,4 +97,5 @@ private:
     std::vector<CurveKey> dampenCurve_;
     std::map<std::string, SoundDef, std::less<>> sounds_;
     std::map<std::string, StreamDef, std::less<>> music_, ambience_;
+    std::map<std::string, VoiceSynth, std::less<>> voices_;
 };

@@ -209,5 +209,122 @@
     ]
    ]
   }
+ },
+ "voices": {
+  "event:/Dialogue/Sign_Vocal": {
+   "volume": 0.562,
+   "spatial": [1, 20],
+   "clips": ["voice_sign_vocal_0.ogg", "voice_sign_vocal_1.ogg"]
+  },
+  "event:/Dialogue/archaeologist": {
+   "volume": -0.0,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_archaeologist_a.ogg",
+    "e": "voice_archaeologist_e.ogg",
+    "i": "voice_archaeologist_i.ogg",
+    "o": "voice_archaeologist_o.ogg",
+    "u": "voice_archaeologist_u.ogg"
+   },
+   "loop": [8000, 20800]
+  },
+  "event:/Dialogue/chad": {
+   "volume": 0.347,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_chad_a.ogg",
+    "e": "voice_chad_e.ogg",
+    "i": "voice_chad_i.ogg",
+    "o": "voice_chad_o.ogg",
+    "u": "voice_chad_u.ogg"
+   },
+   "loop": [8000, 20800]
+  },
+  "event:/Dialogue/fezziwig": {
+   "volume": 0.319,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_fezziwig_a.ogg",
+    "e": "voice_fezziwig_e.ogg",
+    "i": "voice_fezziwig_i.ogg",
+    "o": "voice_fezziwig_o.ogg",
+    "u": "voice_fezziwig_u.ogg"
+   },
+   "loop": [8000, 20800]
+  },
+  "event:/Dialogue/fish": {
+   "volume": -0.0,
+   "pitched": true,
+   "spatial": [1, 20],
+   "clips": ["voice_fish_0.ogg", "voice_fish_1.ogg", "voice_fish_2.ogg", "voice_fish_3.ogg", "voice_fish_4.ogg", "voice_fish_5.ogg", "voice_fish_6.ogg", "voice_fish_7.ogg", "voice_fish_8.ogg"]
+  },
+  "event:/Dialogue/gal_generic": {
+   "volume": -0.0,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_gal_generic_a.ogg",
+    "e": "voice_gal_generic_e.ogg",
+    "i": "voice_gal_generic_i.ogg",
+    "o": "voice_gal_generic_o.ogg",
+    "u": "voice_gal_generic_u.ogg"
+   },
+   "loop": [8000, 20800]
+  },
+  "event:/Dialogue/guy_generic": {
+   "volume": 0.284,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_guy_generic_a.ogg",
+    "e": "voice_guy_generic_e.ogg",
+    "i": "voice_guy_generic_i.ogg",
+    "o": "voice_guy_generic_o.ogg",
+    "u": "voice_guy_generic_u.ogg"
+   },
+   "loop": [8000, 20800]
+  },
+  "event:/Dialogue/juliet": {
+   "volume": -0.0,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_juliet_a.ogg",
+    "e": "voice_juliet_e.ogg",
+    "i": "voice_juliet_i.ogg",
+    "o": "voice_juliet_o.ogg",
+    "u": "voice_juliet_u.ogg"
+   },
+   "loop": [8000, 20800]
+  },
+  "event:/Dialogue/old_guy": {
+   "volume": 0.371,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_old_guy_a.ogg",
+    "e": "voice_old_guy_e.ogg",
+    "i": "voice_old_guy_i.ogg",
+    "o": "voice_old_guy_o.ogg",
+    "u": "voice_old_guy_u.ogg"
+   },
+   "loop": [8000, 20800]
+  },
+  "event:/Dialogue/romeo": {
+   "volume": 0.261,
+   "pitched": true,
+   "spatial": [1, 20],
+   "vowels": {
+    "a": "voice_romeo_a.ogg",
+    "e": "voice_romeo_e.ogg",
+    "i": "voice_romeo_i.ogg",
+    "o": "voice_romeo_o.ogg",
+    "u": "voice_romeo_u.ogg"
+   },
+   "loop": [8000, 20800]
+  }
  }
 }

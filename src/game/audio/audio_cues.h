@@ -16,7 +16,7 @@ struct Listener {
 };
 
 struct AudioCue {
-    enum class Kind { Play, PlayMusic, StopMusic, PlayAmbience, StopAmbience, SetParameter, DampenMusic };
+    enum class Kind { Play, PlayMusic, StopMusic, PlayAmbience, StopAmbience, SetParameter, DampenMusic, PlayVoice, StopVoice };
     Kind kind;
     std::string name;    // AudioManager's sound / music / ambience name, or the parameter's
     float value = 0;     // SetParameter: the value; Play: the "Pitch" parameter (0: the event's own);
@@ -27,6 +27,13 @@ struct AudioCue {
     bool positioned = false; // Play: at (x, y) (WithAttachmentToTransform), else at the listener
     float x = 0, y = 0;      // world units
     bool alwaysOutdoor = false; // Play: IndoorStatus.AlwaysOutdoor (else by its y: a house below)
+    // PlayVoice (a vocalizer's syllable: `name` its synth, `value` its starting pitch, `volume`,
+    // x / y its speaker) / StopVoice: the speaker it belongs to; DampenMusic: a later one with the
+    // same key replaces it, a StopVoice ends it (0: neither).
+    int key = 0;
+    char vowel = 'a';                 // PlayVoice: the synth's clip
+    float pitchMid = 1, pitchEnd = 1; // PlayVoice: the pitch over its first half, then its second
+    float duration = 0;               // PlayVoice: s it sounds
 };
 
 class AudioCues {
@@ -58,10 +65,33 @@ public:
     void setParameter(std::string_view name, float value) {
         add({AudioCue::Kind::SetParameter, std::string(name), value});
     }
-    // AudioManager.DampenMusic: the music dips to `amount` and comes back over `length` s.
-    void dampenMusic(float amount, float length) {
+    // AudioManager.DampenMusic: the music dips to `amount` and comes back over `length` s (`key`:
+    // one of the speaker's, see AudioCue::key).
+    void dampenMusic(float amount, float length, int key = 0) {
         AudioCue c{AudioCue::Kind::DampenMusic, "", amount};
         c.length = length;
+        c.key = key;
+        add(std::move(c));
+    }
+    // A vocalizer syllable (PhonemeClusterVocalizer.Vocalize) of `synth`, said by speaker `key` at (x, y).
+    void playVoice(std::string_view synth, int key, char vowel, float duration, float pitchStart, float pitchMid,
+                   float pitchEnd, float volume, float x, float y) {
+        AudioCue c{AudioCue::Kind::PlayVoice, std::string(synth), pitchStart};
+        c.key = key;
+        c.vowel = vowel;
+        c.duration = duration;
+        c.pitchMid = pitchMid;
+        c.pitchEnd = pitchEnd;
+        c.volume = volume;
+        c.positioned = true;
+        c.x = x;
+        c.y = y;
+        add(std::move(c));
+    }
+    // The speaker stops talking (VocalizableParagraph.Stop: its syllables fade, its dip ends).
+    void stopVoice(int key) {
+        AudioCue c{AudioCue::Kind::StopVoice, ""};
+        c.key = key;
         add(std::move(c));
     }
 

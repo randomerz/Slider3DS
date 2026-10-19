@@ -7308,6 +7308,63 @@
         "order": 99
       },
       "pingObject": 150,
+      "voice": {
+        "event": "event:/Dialogue/romeo",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1.898,
+        "duration": 0.135,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 7.78,
+        "wordIntonation": 1,
+        "speedup": 0.112,
+        "lowToHigh": 0.823,
+        "highToLow": 0.353,
+        "clauseGap": 0.15,
+        "up": 0.864,
+        "down": 0.946,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 479,
         "sprite": 233,
@@ -7770,6 +7827,63 @@
         "order": 99
       },
       "pingObject": 173,
+      "voice": {
+        "event": "event:/Dialogue/archaeologist",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1.514,
+        "duration": 0.1453,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 7.94,
+        "wordIntonation": -0.004,
+        "speedup": 0.16,
+        "lowToHigh": 0.515,
+        "highToLow": 0.191,
+        "clauseGap": 0.15,
+        "up": 0.169,
+        "down": 0.206,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 486,
         "sprite": 233,
@@ -8733,6 +8847,63 @@
         "order": 99
       },
       "pingObject": 181,
+      "voice": {
+        "event": "event:/Dialogue/archaeologist",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1.633,
+        "duration": 0.0933,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 10,
+        "wordIntonation": 0.058,
+        "speedup": 0.031,
+        "lowToHigh": 0.649,
+        "highToLow": 0.205,
+        "clauseGap": 0.15,
+        "up": 0.169,
+        "down": 0.206,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 493,
         "sprite": 233,
@@ -9788,6 +9959,63 @@
         "order": 99
       },
       "pingObject": 205,
+      "voice": {
+        "event": "event:/Dialogue/old_guy",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 0.532,
+        "duration": 0.2249,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": 0.027,
+        "speedup": 0.2,
+        "lowToHigh": 0.3,
+        "highToLow": 0.78,
+        "clauseGap": 0.217,
+        "up": 0.423,
+        "down": 0.478,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 500,
         "sprite": 233,
@@ -10117,6 +10345,63 @@
         "order": 99
       },
       "pingObject": 243,
+      "voice": {
+        "event": "event:/Dialogue/old_guy",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 0.734,
+        "duration": 0.2038,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": 0.027,
+        "speedup": 0.2,
+        "lowToHigh": 0.3,
+        "highToLow": 0.787,
+        "clauseGap": 0.189,
+        "up": 0.565,
+        "down": 0.629,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 502,
         "sprite": 233,
@@ -10399,6 +10684,63 @@
         "order": 99
       },
       "pingObject": 252,
+      "voice": {
+        "event": "event:/Dialogue/juliet",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1.253,
+        "duration": 0.183,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": 1,
+        "speedup": 0.2,
+        "lowToHigh": 0.778,
+        "highToLow": 0.76,
+        "clauseGap": 0.15,
+        "up": 0.783,
+        "down": 0.583,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 504,
         "sprite": 233,
@@ -10633,6 +10975,63 @@
         "order": 99
       },
       "pingObject": 286,
+      "voice": {
+        "event": "event:/Dialogue/Sign_Vocal",
+        "perClause": false,
+        "syllables": false,
+        "fadeout": 0.5,
+        "pitch": 1,
+        "duration": 0.2,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 0.1,
+        "wordIntonation": 0,
+        "speedup": 0,
+        "lowToHigh": 0,
+        "highToLow": 0,
+        "clauseGap": 0.15,
+        "up": 0,
+        "down": 0,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 505,
         "sprite": 233,
@@ -10760,6 +11159,63 @@
         "order": 99
       },
       "pingObject": 289,
+      "voice": {
+        "event": "event:/Dialogue/guy_generic",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 0.655,
+        "duration": 0.158,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": 0.027,
+        "speedup": 0.2,
+        "lowToHigh": 0.035,
+        "highToLow": 0.864,
+        "clauseGap": 0.15,
+        "up": 0.022,
+        "down": 0.411,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 506,
         "sprite": 233,
@@ -11156,6 +11612,63 @@
         "order": 99
       },
       "pingObject": 310,
+      "voice": {
+        "event": "event:/Dialogue/gal_generic",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 0.859,
+        "duration": 0.158,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": 0.027,
+        "speedup": 0.2,
+        "lowToHigh": 0.035,
+        "highToLow": 0.864,
+        "clauseGap": 0.15,
+        "up": 0.022,
+        "down": 0.411,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 508,
         "sprite": 233,
@@ -11459,6 +11972,63 @@
         "order": 99
       },
       "pingObject": 330,
+      "voice": {
+        "event": "event:/Dialogue/chad",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 0.953,
+        "duration": 0.1586,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 5.09,
+        "wordIntonation": 0.112,
+        "speedup": 0.33,
+        "lowToHigh": 0.651,
+        "highToLow": 0.487,
+        "clauseGap": 0.073,
+        "up": 0.603,
+        "down": 0.681,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 512,
         "pos": [4,3.5],
@@ -11915,6 +12485,63 @@
         "order": 99
       },
       "pingObject": 371,
+      "voice": {
+        "event": "event:/Dialogue/guy_generic",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1.443,
+        "duration": 0.1178,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": 0.027,
+        "speedup": 0.2,
+        "lowToHigh": 0.375,
+        "highToLow": 0.194,
+        "clauseGap": 0.15,
+        "up": 0.169,
+        "down": 0.206,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 520,
         "sprite": 233,
@@ -12097,6 +12724,63 @@
         "order": 99
       },
       "pingObject": 403,
+      "voice": {
+        "event": "event:/Dialogue/gal_generic",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1.022,
+        "duration": 0.1486,
+        "volume": 0.928,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": -0.051,
+        "speedup": 0.004,
+        "lowToHigh": 0.226,
+        "highToLow": 0.194,
+        "clauseGap": 0.152,
+        "up": -0.014,
+        "down": 0.13,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 521,
         "sprite": 233,
@@ -12742,6 +13426,63 @@
         "order": 99
       },
       "pingObject": 440,
+      "voice": {
+        "event": "event:/Dialogue/gal_generic",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1.022,
+        "duration": 0.1486,
+        "volume": 0.928,
+        "volumeDb": 0,
+        "smoothness": 4.64,
+        "wordIntonation": -0.051,
+        "speedup": 0.004,
+        "lowToHigh": 0.226,
+        "highToLow": 0.194,
+        "clauseGap": 0.152,
+        "up": -0.014,
+        "down": 0.13,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 523,
         "sprite": 233,
@@ -13007,6 +13748,63 @@
         "order": 99
       },
       "pingObject": 43,
+      "voice": {
+        "event": "event:/Dialogue/Sign_Vocal",
+        "perClause": false,
+        "syllables": false,
+        "fadeout": 0.5,
+        "pitch": 1,
+        "duration": 0.2,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 0.1,
+        "wordIntonation": 0,
+        "speedup": 0,
+        "lowToHigh": 0,
+        "highToLow": 0,
+        "clauseGap": 0.15,
+        "up": 0,
+        "down": 0,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 524,
         "sprite": 233,
@@ -13086,6 +13884,63 @@
         "order": 99
       },
       "pingObject": 46,
+      "voice": {
+        "event": "event:/Dialogue/fish",
+        "perClause": false,
+        "syllables": false,
+        "fadeout": 0.5,
+        "pitch": 1,
+        "duration": 0.1025,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 10,
+        "wordIntonation": 0.14,
+        "speedup": 0,
+        "lowToHigh": 0.756,
+        "highToLow": 0.567,
+        "clauseGap": 0.054,
+        "up": 1,
+        "down": 1,
+        "intonation": 1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 525,
         "sprite": 233,
@@ -13380,6 +14235,63 @@
         "order": 99
       },
       "pingObject": 53,
+      "voice": {
+        "event": "event:/Dialogue/Sign_Vocal",
+        "perClause": false,
+        "syllables": false,
+        "fadeout": 0.5,
+        "pitch": 1,
+        "duration": 0.2,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 0.1,
+        "wordIntonation": 0,
+        "speedup": 0,
+        "lowToHigh": 0,
+        "highToLow": 0,
+        "clauseGap": 0.15,
+        "up": 0,
+        "down": 0,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 530,
         "sprite": 233,
@@ -13443,6 +14355,63 @@
         "order": 99
       },
       "pingObject": 130,
+      "voice": {
+        "event": "event:/Dialogue/fezziwig",
+        "perClause": false,
+        "syllables": true,
+        "fadeout": 0.5,
+        "pitch": 1,
+        "duration": 0.1775,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 0.72,
+        "wordIntonation": 1,
+        "speedup": 0,
+        "lowToHigh": 0.3,
+        "highToLow": 0.753,
+        "clauseGap": 0.152,
+        "up": 1,
+        "down": 1,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 531,
         "sprite": 233,
@@ -14040,6 +15009,63 @@
         "order": 99
       },
       "pingObject": 140,
+      "voice": {
+        "event": "event:/Dialogue/Sign_Vocal",
+        "perClause": false,
+        "syllables": false,
+        "fadeout": 0.5,
+        "pitch": 1,
+        "duration": 0.2,
+        "volume": 1,
+        "volumeDb": 0,
+        "smoothness": 0.1,
+        "wordIntonation": 0,
+        "speedup": 0,
+        "lowToHigh": 0,
+        "highToLow": 0,
+        "clauseGap": 0.15,
+        "up": 0,
+        "down": 0,
+        "intonation": -1,
+        "emotes": [
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0.15,
+            5,
+            -0.025,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      },
       "emote": {
         "object": 533,
         "sprite": 233,
