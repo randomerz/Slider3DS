@@ -1,7 +1,7 @@
 // Mixes what plays into the platform's blocks (plat::AUDIO_BLOCK stereo frames at AUDIO_RATE):
 //   clips:   a sound's decoded clip at a playback rate (its pitch; linear interpolation), with a
 //            gain per side;
-//   streams: a music / ambience track decoded from its Ogg as it plays, following its jumps (the
+//   streams: a music / ambience track decoded from its file (game/audio/adpcm) as it plays, following its jumps (the
 //            global parameters decide the conditional ones), faded in / out by its AHDSR (on
 //            FMOD's shape) and at the volume its parameter sets (an ambience's distance).
 // Each through its bus's volume and the master's; the music bus can also run a 3-band EQ (the
@@ -13,15 +13,13 @@
 #include <cstdint>
 #include <functional> // (std::less<>)
 #include <map>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "game/audio/adpcm.h"
 #include "game/audio/audio_bank.h"
-
-namespace plat {
-struct Ogg;
-}
 
 // How a clip plays besides its rate and gains (a vocalizer syllable uses all of it).
 struct ClipShape {
@@ -92,7 +90,7 @@ private:
     struct StreamVoice {
         Voice id;
         const StreamDef* def;
-        plat::Ogg* ogg;
+        std::unique_ptr<AdpcmStream> file;
         int64_t pos = 0;
         bool checked = false;   // the jumps at `pos` were seen (or it landed there by one)
         float levelDb = -80;    // the AHDSR's level, dB

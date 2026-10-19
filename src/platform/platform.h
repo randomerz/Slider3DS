@@ -139,8 +139,17 @@ int64_t oggFrames(const Ogg* ogg); // the length, in frames
 // (fewer only at the end, 0 there).
 int readOgg(Ogg* ogg, int16_t* out, int frames);
 bool seekOgg(Ogg* ogg, int64_t frame); // exact (the next read starts at that frame)
-// ms the calling thread spent reading / seeking Ogg files since its last call (the audio thread's
-// IO share: dev overlay; 0 where the backend doesn't time it). One thread's: the audio thread's.
-double takeOggIoMs();
+
+// Asset files read a piece at a time (streams; paths as readFile's).
+struct AssetFile; // opaque, backend-specific
+AssetFile* openAsset(const char* path); // nullptr if missing
+void closeAsset(AssetFile* file);
+int64_t assetSize(const AssetFile* file);
+// Reads up to `bytes` bytes at `offset`; returns how many (fewer only at the end).
+int readAsset(AssetFile* file, int64_t offset, void* out, int bytes);
+
+// ms the calling thread spent reading / seeking Ogg and asset files since its last call (the audio
+// thread's IO share: dev overlay; 0 where the backend doesn't time it). One thread's: the audio thread's.
+double takeFileIoMs();
 
 } // namespace plat

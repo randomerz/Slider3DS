@@ -55,6 +55,6 @@ int readOgg(Ogg* ogg, int16_t* out, int frames) {
 
 bool seekOgg(Ogg* ogg, int64_t frame) { return stb_vorbis_seek(ogg->vorbis, (unsigned int)frame) != 0; }
 
-double takeOggIoMs() { return 0; } // (not timed: PC files are read whole)
+double takeFileIoMs() { return 0; } // (not timed: PC files are read whole)
 
 } // namespace plat

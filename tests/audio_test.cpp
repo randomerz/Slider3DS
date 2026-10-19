@@ -15,14 +15,14 @@
 namespace {
 
 constexpr int N = plat::AUDIO_BLOCK;
-const char* const FILE_NAME = "music_main_menu.ogg"; // (any stereo stream will do)
+const char* const FILE_NAME = "music_main_menu.adp"; // (any stereo stream will do)
 
 // The file's frames from `from`, as decoded directly.
-std::vector<int16_t> decoded(int64_t from, int frames) {
-    std::vector<int16_t> out(frames * 2);
-    plat::Ogg* ogg = plat::openOgg((std::string("audio/") + FILE_NAME).c_str());
-    check(ogg && plat::seekOgg(ogg, from) && plat::readOgg(ogg, out.data(), frames) == frames, "the file decodes");
-    plat::closeOgg(ogg);
+std::vector<int16_t> decoded(int64_t from, int frames, const char* file = FILE_NAME) {
+    AdpcmStream s;
+    const bool open = s.open((std::string("audio/") + file).c_str());
+    std::vector<int16_t> out(frames * std::max(1, s.channels()));
+    check(open && s.seek(from) && s.read(out.data(), frames) == frames, "the file decodes");
     return out;
 }
 
@@ -49,13 +49,10 @@ bool silent(const std::vector<int16_t>& a, int from, int frames) {
 StreamDef entryFor(const char* file) {
     StreamDef d;
     d.file = file;
-    plat::Ogg* ogg = plat::openOgg((std::string("audio/") + file).c_str());
-    check(ogg != nullptr, std::string(file) + " opens");
-    if (ogg) {
-        d.channels = plat::oggChannels(ogg);
-        d.frames = plat::oggFrames(ogg);
-        plat::closeOgg(ogg);
-    }
+    AdpcmStream s;
+    check(s.open((std::string("audio/") + file).c_str()), std::string(file) + " opens");
+    d.channels = s.channels();
+    d.frames = s.frames();
     return d;
 }
 
@@ -134,6 +131,54 @@ TEST(audio_bank_has_every_sound_the_port_plays) {
     // (the title's music holds its intro until the menu opens: a jump while MainMenuActivated is 0)
     const StreamDef* mm = bank.music(tracks::MAIN_MENU);
     CHECK(mm && mm->jumps[0].param == audio_params::MAIN_MENU_ACTIVATED && mm->jumps[0].max == 0);
+    // (the Waterfall's loop is cut short (make_audio's SHORT_LOOPS): one jump, at its length, back
+    // past its intro — it must loop there, never end)
+    CHECK(waterfall->jumps.size() == 1 && waterfall->jumps[0].at == waterfall->length &&
+          waterfall->length == waterfall->frames && waterfall->jumps[0].to > 0 &&
+          waterfall->jumps[0].to < waterfall->length && waterfall->jumps[0].param.empty());
+}
+
+TEST(adpcm_packet_decodes_as_the_exporter_writes_it) {
+    // One packet: predictor 1000, step index 0, nibbles 0-15 then 24 x 7 and 24 x 15 (both clamps).
+    // Expected values: tools/adpcm.py's decoder (the exporter's reference) on the same bytes.
+    uint8_t packet[adpcm::PACKET_BYTES] = {0xe8, 0x03, 0, 0, 0x10, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe};
+    for (int i = 12; i < 24; i++) packet[i] = 0x77;
+    for (int i = 24; i < adpcm::PACKET_BYTES; i++) packet[i] = 0xff;
+    const int16_t first[21] = {1000, 1001, 1004, 1008, 1015, 1027, 1047, 1088, 1082, 1066, 1041,
+                               1010, 972,  916,  819,  620,  1050, 1975, 3962, 8222, 17353};
+    int16_t out[adpcm::PACKET_FRAMES * 2] = {};
+    adpcm::decodePacket(packet, out + 1, 2); // (every other sample: the right channel's)
+    bool asWritten = true;
+    for (int i = 0; i < 21; i++) asWritten = asWritten && out[1 + 2 * i] == first[i];
+    CHECK(asWritten && out[1 + 2 * 21] == 32767 && out[1 + 2 * 39] == 32767);
+    CHECK(out[1 + 2 * 40] == -28669 && out[1 + 2 * 63] == -32768 && out[0] == 0 && out[2] == 0);
+}
+
+TEST(adpcm_stream_seeks_exactly) {
+    // A seek lands mid-packet and across loads: the frames are those a straight read gives.
+    const std::vector<int16_t> all = decoded(0, 5000);
+    for (int64_t at : {0, 1, 63, 64, 1000, 1023, 1024, 3001}) {
+        const std::vector<int16_t> part = decoded(at, 1500);
+        check(std::equal(part.begin(), part.end(), all.begin() + at * 2), "seek to " + std::to_string(at));
+    }
+    AdpcmStream s;
+    CHECK(s.open("audio/amb_waterfall.adp") && s.channels() == 1 && !s.seek(s.frames() + 1) && s.seek(s.frames()));
+    int16_t tail[64];
+    CHECK(s.read(tail, 64) == 0); // (at the end: nothing more)
+    CHECK(s.seek(s.frames() - 10) && s.read(tail, 64) == 10);
+    testSetFile("audio/cut.adp", std::string("SADP\x01\x01\0\0", 8) + std::string("\x00\x01\0\0\0\x7d\0\0", 8));
+    CHECK(!s.open("audio/cut.adp")); // (256 frames promised, no packets: refused)
+}
+
+TEST(mixer_stream_jump_at_its_length_loops) {
+    // A jump at the very frame the timeline ends wins over the end (the Waterfall's loop).
+    Mixer m;
+    const StreamDef d = stream(2048, {{2048, 512}}); // (outlives the voice)
+    const Mixer::Voice v = m.playStream(d);
+    const std::vector<int16_t> out = mixBlocks(m, 6); // (3072 frames)
+    CHECK(same(out, 0, decoded(0, 2048), 0, 2048));
+    CHECK(same(out, 2048, decoded(512, 1024), 0, 1024));
+    CHECK(m.playing(v));
 }
 
 TEST(mixer_stream_jumps_and_ends_at_its_length) {
@@ -149,15 +194,13 @@ TEST(mixer_stream_jumps_and_ends_at_its_length) {
 }
 
 TEST(mixer_mono_stream_plays_its_frames_on_both_sides) {
-    StreamDef d = entryFor("amb_waterfall.ogg");
+    StreamDef d = entryFor("amb_waterfall.adp");
     d.length = 4096;
     Mixer m;
     m.playStream(d);
     const std::vector<int16_t> out = mixBlocks(m, 2); // (1024 frames)
-    std::vector<int16_t> ref(1024);
-    plat::Ogg* ogg = plat::openOgg("audio/amb_waterfall.ogg");
-    CHECK(ogg && plat::oggChannels(ogg) == 1 && plat::readOgg(ogg, ref.data(), 1024) == 1024);
-    if (ogg) plat::closeOgg(ogg);
+    const std::vector<int16_t> ref = decoded(0, 1024, "amb_waterfall.adp");
+    CHECK(d.channels == 1 && ref.size() == 1024);
     bool sides = true, asDecoded = true, sound = false;
     for (int i = 0; i < 1024; i++) {
         sides = sides && out[2 * i] == out[2 * i + 1];

@@ -1,6 +1,7 @@
 // 3DS audio: ndsp plays the game's mixed blocks on one stereo channel (a ring of wave buffers in
-// linear memory, kept QUEUE_BLOCKS ahead); Ogg Vorbis decodes with libvorbisidec (Tremor) straight
-// from RomFS. ndspInit needs the DSP firmware (sdmc:/3ds/dspfirm.cdc, dumped by DSP1): without it
+// linear memory, kept QUEUE_BLOCKS ahead); Ogg Vorbis (the rare clips) decodes with libvorbisidec
+// (Tremor) straight from RomFS, and the streams' asset files are read from it a piece at a time (both
+// timed: takeFileIoMs). ndspInit needs the DSP firmware (sdmc:/3ds/dspfirm.cdc, dumped by DSP1): without it
 // the game plays silently.
 #include "platform/ctr/audio_ctr.h"
 #include "platform/platform.h"
@@ -20,7 +21,7 @@ namespace {
 constexpr int RING = 8;         // wave buffers
 constexpr int QUEUE_BLOCKS = 6; // queued ahead, ~96 ms (room for the audio thread to fall behind a little)
 constexpr int CHANNEL = 0;
-constexpr size_t OGG_FILE_BUFFER = 64 * 1024;
+constexpr size_t FILE_BUFFER = 64 * 1024;
 
 bool g_ready = false;
 int16_t* g_pcm = nullptr; // RING blocks, linear memory (the DSP reads it)
@@ -157,19 +158,19 @@ void unlockAudio() {
 }
 
 // The file's reads and seeks, timed (Tremor reads through these: the IO share of the audio thread).
-double g_oggIoMs = 0;
+double g_fileIoMs = 0;
 
 size_t timedRead(void* out, size_t size, size_t count, void* file) {
     const u64 t = svcGetSystemTick();
     const size_t n = fread(out, size, count, (FILE*)file);
-    g_oggIoMs += (svcGetSystemTick() - t) * 1000.0 / SYSCLOCK_ARM11;
+    g_fileIoMs += (svcGetSystemTick() - t) * 1000.0 / SYSCLOCK_ARM11;
     return n;
 }
 
 int timedSeek(void* file, ogg_int64_t offset, int whence) {
     const u64 t = svcGetSystemTick();
     const int r = fseek((FILE*)file, (long)offset, whence);
-    g_oggIoMs += (svcGetSystemTick() - t) * 1000.0 / SYSCLOCK_ARM11;
+    g_fileIoMs += (svcGetSystemTick() - t) * 1000.0 / SYSCLOCK_ARM11;
     return r;
 }
 
@@ -186,7 +187,7 @@ Ogg* openOgg(const char* path) {
     FILE* f = fopen((std::string("romfs:/") + path).c_str(), "rb");
     if (!f) return nullptr;
     Ogg* ogg = new Ogg;
-    setvbuf(f, nullptr, _IOFBF, OGG_FILE_BUFFER); // (Tremor reads in small pieces: fewer trips to the FS service)
+    setvbuf(f, nullptr, _IOFBF, FILE_BUFFER); // (Tremor reads in small pieces: fewer trips to the FS service)
     const ov_callbacks io = {timedRead, timedSeek, closeFile, tellFile};
     if (ov_open_callbacks(f, &ogg->vf, nullptr, 0, io) != 0) { // (on success the decoder owns the file)
         fclose(f);
@@ -223,9 +224,39 @@ int readOgg(Ogg* ogg, int16_t* out, int frames) {
 
 bool seekOgg(Ogg* ogg, int64_t frame) { return ov_pcm_seek(&ogg->vf, frame) == 0; }
 
-double takeOggIoMs() {
-    const double ms = g_oggIoMs;
-    g_oggIoMs = 0;
+struct AssetFile {
+    FILE* f = nullptr;
+    int64_t size = 0, pos = 0; // (pos: where the stdio position is, so a sequential read seeks nothing)
+};
+
+AssetFile* openAsset(const char* path) {
+    FILE* f = fopen((std::string("romfs:/") + path).c_str(), "rb");
+    if (!f) return nullptr;
+    setvbuf(f, nullptr, _IOFBF, FILE_BUFFER);
+    AssetFile* file = new AssetFile{f};
+    if (timedSeek(f, 0, SEEK_END) == 0) file->size = ftell(f);
+    timedSeek(f, 0, SEEK_SET);
+    return file;
+}
+
+void closeAsset(AssetFile* file) {
+    if (!file) return;
+    fclose(file->f);
+    delete file;
+}
+
+int64_t assetSize(const AssetFile* file) { return file->size; }
+
+int readAsset(AssetFile* file, int64_t offset, void* out, int bytes) {
+    if (offset != file->pos && timedSeek(file->f, offset, SEEK_SET) != 0) return 0;
+    const int n = (int)timedRead(out, 1, bytes, file->f);
+    file->pos = offset + n;
+    return n;
+}
+
+double takeFileIoMs() {
+    const double ms = g_fileIoMs;
+    g_fileIoMs = 0;
     return ms;
 }
 

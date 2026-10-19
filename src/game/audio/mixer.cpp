@@ -39,26 +39,24 @@ void Mixer::stopClip(ClipVoice& c) {
 
 Mixer::Voice Mixer::playStream(const StreamDef& def) {
     if (full()) return 0;
-    plat::Ogg* ogg = plat::openOgg(("audio/" + def.file).c_str());
-    if (!ogg) return 0;
-    if (plat::oggChannels(ogg) != def.channels || plat::oggRate(ogg) != plat::AUDIO_RATE || plat::oggFrames(ogg) != def.frames) {
+    auto file = std::make_unique<AdpcmStream>();
+    if (!file->open(("audio/" + def.file).c_str())) return 0;
+    if (file->channels() != def.channels || file->rate() != plat::AUDIO_RATE || file->frames() != def.frames) {
         printf("audio/%s doesn't match its entry\n", def.file.c_str());
-        plat::closeOgg(ogg);
         return 0;
     }
     StreamVoice s;
     s.id = nextId();
     s.def = &def;
-    s.ogg = ogg;
+    s.file = std::move(file);
     s.levelDb = def.attack > 0 ? SILENT_DB : 0;
     s.gainMixed = level(s.levelDb) * paramGain(def);
-    streams_.push_back(s);
-    return s.id;
+    streams_.push_back(std::move(s));
+    return streams_.back().id;
 }
 
 void Mixer::closeStream(StreamVoice& s) {
-    plat::closeOgg(s.ogg);
-    s.ogg = nullptr;
+    s.file.reset();
 }
 
 void Mixer::stop(Voice voice) {
@@ -182,7 +180,7 @@ int Mixer::readStream(StreamVoice& s, int16_t* out, int frames) {
                 }
             }
             if (jump) {
-                if (!plat::seekOgg(s.ogg, jump->to)) return done;
+                if (!s.file->seek(jump->to)) return done;
                 s.pos = jump->to;
             } else if (s.pos == d.length) {
                 return done; // (the event's end)
@@ -190,7 +188,7 @@ int Mixer::readStream(StreamVoice& s, int16_t* out, int frames) {
             continue;
         }
         const int want = (int)std::min<int64_t>(frames - done, next - s.pos);
-        const int got = plat::readOgg(s.ogg, out + done * d.channels, want);
+        const int got = s.file->read(out + done * d.channels, want);
         if (got > 0) {
             s.pos += got;
             s.checked = false;

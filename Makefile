@@ -194,14 +194,14 @@ endif
 #                               assets/sheets/<name>.fmt: la8 for gray sheets, else rgba8; incl. the
 #                               font atlas, tools/make_font.py)
 #   assets/<dir>/*.json      -> romfs/<dir>/*.json    (copied: areas, fonts, audio/audio.json)
-#   assets/audio/*.ogg, *.pcm -> romfs/audio/        (copied: tools/make_audio.py's renders)
+#   assets/audio/*.ogg, *.adp, *.pcm -> romfs/audio/  (copied: tools/make_audio.py's renders)
 # The .3dsx embeds RomFS, so it is rebuilt when any of these change.
 #---------------------------------------------------------------------------------
 SHEET_PNGS	:=	$(wildcard assets/sheets/*.png)
 ROMFS_SHEETS	:=	$(patsubst assets/sheets/%.png,$(ROMFS)/gfx/%.t3x,$(SHEET_PNGS))
 AREA_JSONS	:=	$(wildcard assets/*/*.json)
 ROMFS_JSONS	:=	$(patsubst assets/%,$(ROMFS)/%,$(AREA_JSONS))
-AUDIO_FILES	:=	$(wildcard assets/audio/*.ogg assets/audio/*.pcm)
+AUDIO_FILES	:=	$(wildcard assets/audio/*.ogg assets/audio/*.adp assets/audio/*.pcm)
 ROMFS_AUDIO	:=	$(patsubst assets/%,$(ROMFS)/%,$(AUDIO_FILES))
 export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_AUDIO))
 
@@ -209,6 +209,8 @@ export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMF
 
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_AUDIO)
+	@stale=$$(for f in $(ROMFS)/audio/*; do [ -e "assets/audio/$${f##*/}" ] || echo "$$f"; done); \
+	if [ -n "$$stale" ]; then echo "removing stale" $$stale; rm -f $$stale $(TARGET).3dsx; fi # (renders make_audio no longer writes)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 $(BUILD):

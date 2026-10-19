@@ -1,4 +1,4 @@
-"""Renders the Village's FMOD events for the port: assets/audio/*.ogg + clips.pcm + audio.json.
+"""Renders the Village's FMOD events for the port: assets/audio/*.ogg + *.adp + clips.pcm + audio.json.
 
     python tools/make_audio.py [--keep-export]
 
@@ -28,8 +28,8 @@ audio.json (the port's game/audio/audio_bank reads it):
        random pitch within +-half of it), "pitchParam": the "Pitch" parameter (0.5-2) sets the pitch,
        "spatial": [min, max] distance (the spatializer, linear-squared rolloff; absent: 2D),
        "canPause"}},
-   "music" / "ambience": {name: {"file", "channels", "frames" (its file's: checked as it opens, so the
-       boot opens no Ogg), "volume": dB, "attack" / "release": s (the volume AHDSR:
+   "music" / "ambience": {name: {"file" (.adp: IMA ADPCM, tools/adpcm.py), "channels", "frames" (its
+       file's: checked as it opens, so the boot opens no stream), "volume": dB, "attack" / "release": s (the volume AHDSR:
        in from / out to silence, linear in dB; 0: none), "length": the timeline's frames (playing
        up to it ends the event; the file goes on with the crossfades, reached only by jumps),
        "jumps": [[at, to] or [at, to, parameter, min, max], ...] (frames, in order of `at`: when
@@ -42,8 +42,9 @@ audio.json (the port's game/audio/audio_bank reads it):
        changes it (absent: it doesn't), "spatial": [min, max]}} (the NPCs' vocalizer synths, rendered: render_voices)}
 clips.pcm: the raw clips, mono int16 little-endian at the rate, back to back (read whole at the boot:
 nothing to decode for the sounds played all the time; the rare ones stay Ogg, a tenth of the size).
-Clips are mono (sounds are spatialized or centered); streams are stereo, but MONO_STREAMS (mixed
-down, kept as loud: half the decoding); SHORT_LOOPS keep their intro and a few seconds of their
+Clips are mono (sounds are spatialized or centered); streams are ADPCM (Vorbis cost an Old 3DS ~15%
+of a core to decode; ADPCM a few adds per sample, at ~4x Vorbis's size), stereo, but MONO_STREAMS
+(mixed down, kept as loud: half the size); SHORT_LOOPS keep their intro and a few seconds of their
 loop (short_loop). Track and instrument
 volumes, trims and fades are baked; the event's master volume is data (less whatever a render
 had to be turned down by to fit, so it plays as loud). A transition with a
@@ -61,6 +62,8 @@ import tempfile
 
 import numpy as np
 
+import adpcm # (tools/: the streams' format)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UNITY = os.path.join(os.path.dirname(ROOT), 'Slider', 'Slider')
 PREFAB = os.path.join(UNITY, 'Assets', 'Prefabs', 'Managers', 'AudioManager.prefab')
@@ -70,7 +73,10 @@ OUT = os.path.join(ROOT, 'assets', 'audio')
 MEASURED = json.load(open(os.path.join(ROOT, 'tools', 'fmod_measured.json'), encoding='utf-8'))
 RATE = 32000
 PEAK = 0.98 # renders louder than this are scaled down (Vorbis overshoots a little)
-QUALITY = {'sounds': 4, 'music': 2, 'ambience': 2} # Vorbis -q
+QUALITY = {'sounds': 4} # Vorbis -q (the rare clips)
+MIN_STREAM_SNR = 30 # dB: an ADPCM stream noisier than this fails the export (the music measures 33-40)
+# ...but a noise's own (the Waterfall measures 28: the error is more of the same noise, unheard).
+NOISE_STREAM_SNR = {'Waterfall': 25}
 
 # What the Village and the title screen play, by AudioManager name.
 SOUNDS = ['UI Click', 'Village Pick Up', 'Puzzle Complete', 'Hat Click', 'Slide Rumble', 'Slide Explosion', 'TFT Bell',
@@ -647,26 +653,32 @@ def render_voices(proj, events, store):
 
 
 def short_loop(audio, length, jumps, seconds, path):
-    """A stream cut to its intro + a loop of `seconds` from where its own loop returns to (its last
-    unconditional jump's destination): the loop's last SHORT_LOOP_FADE crossfades (equal power: a
-    noise) into the frames just before its start, so the jump back is seamless. The timeline then
-    ends with the loop (stopping fades as any stop does)."""
-    loops = [j for j in jumps if len(j) == 2 and j[1] < j[0]]
-    if not loops:
-        raise Fail(f'{path}: no loop to shorten')
-    start = loops[-1][1]
+    """A stream cut to its intro + a loop of `seconds` from where its own loop returns to, which must be
+    its only jumps: a plain jump back ([at, to]), or a crossfaded one (into the crossfade at its
+    marker, then out of it to the destination + the fade: there, as the frames before it are what the
+    timeline has there, while the intro plays as rendered). The loop's last SHORT_LOOP_FADE crossfades
+    (equal power: a noise) into the frames just before its start, so the jump back is seamless. The
+    timeline then ends with the loop (stopping fades as any stop does)."""
+    if any(len(j) != 2 for j in jumps):
+        raise Fail(f'{path}: a conditional jump: short_loop would drop it')
+    plain = len(jumps) == 1 and jumps[0][1] < jumps[0][0] <= length
+    crossfaded = (len(jumps) == 2 and jumps[0][0] <= length <= jumps[0][1] < jumps[1][0]
+                  and jumps[1][1] < jumps[0][0])
+    if not (plain or crossfaded):
+        raise Fail(f'{path}: jumps {jumps} are not one loop: short_loop would drop some')
+    marker, start = jumps[0][0], jumps[-1][1] # (where the original loop leaves, where it comes back)
     end, fade = start + frames(seconds), frames(SHORT_LOOP_FADE)
-    if start < fade or end > length:
-        raise Fail(f'{path}: a {seconds} s loop does not fit its timeline')
+    if start < fade or end > marker:
+        raise Fail(f'{path}: a {seconds} s loop does not fit before its loop marker')
     ramp = (np.arange(fade) / fade)[:, None].astype(np.float32)
     out = audio[:end].copy()
     out[end - fade:end] = audio[end - fade:end] * np.sqrt(1 - ramp) + audio[start - fade:start] * np.sqrt(ramp)
     return out, end, [[end, start]]
 
 
-def file_name(table, name, variant=None):
+def file_name(table, name, variant=None, ext='.ogg'):
     base = {'sounds': 'sfx', 'music': 'music', 'ambience': 'amb'}[table] + '_' + re.sub(r'[^a-z0-9]+', '_', name.lower()).strip('_')
-    return base + (f'_{variant}' if variant is not None else '') + '.ogg'
+    return base + (f'_{variant}' if variant is not None else '') + ext
 
 
 def main():
@@ -686,7 +698,7 @@ def main():
 
     os.makedirs(OUT, exist_ok=True)
     for f in os.listdir(OUT):
-        if f.endswith('.ogg') or f == 'clips.pcm':
+        if f.endswith(('.ogg', '.adp')) or f == 'clips.pcm':
             os.remove(os.path.join(OUT, f))
     store = Clips()
     eq = MEASURED['indoorMusicEq']
@@ -720,14 +732,19 @@ def main():
                 if name in MONO_STREAMS: # (mixed down at the same loudness: the sides' RMS)
                     mono = audio.mean(axis=1, keepdims=True)
                     audio = mono * float(np.sqrt(np.mean(audio ** 2)) / max(np.sqrt(np.mean(mono ** 2)), 1e-9))
-                f = file_name(table, name)
+                f = file_name(table, name, ext='.adp')
                 gain = headroom([audio])
-                encode(audio * db(gain), os.path.join(OUT, f), QUALITY[table])
+                blob, snr = adpcm.encode(audio * db(gain), RATE)
+                floor = NOISE_STREAM_SNR.get(name, MIN_STREAM_SNR)
+                if snr < floor:
+                    raise Fail(f'{path}: ADPCM at {snr:.1f} dB SNR (under {floor})')
+                with open(os.path.join(OUT, f), 'wb') as out:
+                    out.write(blob)
                 entry = {'file': f, 'volume': round(ev.volume - gain, 3), 'attack': ev.attack, 'release': ev.release,
                          'length': length, 'jumps': jumps, 'channels': audio.shape[1], 'frames': len(audio)}
                 if ev.volume_param: entry['volumeParam'] = ev.volume_param
             bank[table][name] = entry
-            print(f'{table:8} {name:12} -> {entry.get("file") or entry["clips"]}')
+            print(f'{table:8} {name:12} -> {entry.get("file") or entry["clips"]}' + ('' if table == 'sounds' else f' ({snr:.1f} dB SNR)'))
         bank['voices'] = render_voices(proj, voices, store)
     except Fail as e:
         sys.exit(f'make_audio: {e}')

@@ -225,7 +225,7 @@
  },
  "music": {
   "Main Menu": {
-   "file": "music_main_menu.ogg",
+   "file": "music_main_menu.adp",
    "volume": -19.209,
    "attack": 0,
    "release": 0,
@@ -239,7 +239,7 @@
    "frames": 3629453
   },
   "Village": {
-   "file": "music_village.ogg",
+   "file": "music_village.adp",
    "volume": -8.0,
    "attack": 1.0,
    "release": 1.0,
@@ -254,7 +254,7 @@
  },
  "ambience": {
   "Waterfall": {
-   "file": "amb_waterfall.ogg",
+   "file": "amb_waterfall.adp",
    "volume": -16.0,
    "attack": 0,
    "release": 0,

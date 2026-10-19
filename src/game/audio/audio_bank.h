@@ -1,10 +1,10 @@
-// The exported sounds: assets/audio/audio.json + clips.pcm + its Ogg files, from tools/make_audio.py
+// The exported sounds: assets/audio/audio.json + clips.pcm + its Ogg and ADPCM files, from tools/make_audio.py
 // (the FMOD events the port plays, rendered; its docstring has the format). The clips played all the
 // time (footsteps, slides, clicks, the voices) are raw PCM, read in one go at load. The rare ones are
 // Ogg, not even opened at load (Tremor's setup per file costs an Old 3DS a lot): the audio thread
 // decodes them a slice at a time after it (decodeSome: the title screen's intro gives it seconds; a
 // clip becomes playable once whole), or the rest at once if one plays before that (decode). Music
-// and ambience stream from their files as they play.
+// and ambience stream from their ADPCM files (game/audio/adpcm) as they play.
 #pragma once
 
 #include <cstdint>

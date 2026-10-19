@@ -47,7 +47,7 @@ bool readClip(const Json& j, const std::string& pcm, Clip& clip) {
 }
 
 // A stream's entry: mono or stereo, long enough for its length and jumps. (Its file isn't opened
-// here: Tremor's setup costs the boot; Mixer::playStream checks it against the entry.)
+// here, so the boot reads none of them; Mixer::playStream checks it against the entry.)
 bool checkStream(const StreamDef& def) {
     const int64_t frames = def.frames;
     bool ok = (def.channels == 1 || def.channels == 2) && def.length > 0 && def.length <= frames;

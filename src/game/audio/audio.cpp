@@ -111,7 +111,7 @@ void Audio::service() {
     const double end = plat::nowMs();
     clipMs_ += end - clipStart;
     busyMs_ += end - start;
-    ioMs_ += plat::takeOggIoMs();
+    ioMs_ += plat::takeFileIoMs();
     plat::lockAudio();
     busyLog_.add(start, end);
     plat::unlockAudio();
