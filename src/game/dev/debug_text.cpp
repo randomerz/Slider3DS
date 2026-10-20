@@ -28,12 +28,19 @@ const Glyph* findGlyph(char ch) {
     return nullptr;
 }
 
+int g_missing = 0;
+
 } // namespace
+
+int debugTextMissing() { return g_missing; }
 
 float drawDebugText(float x, float y, const char* text, uint32_t color, int scale) {
     for (; *text; text++, x += 4 * scale) {
         const Glyph* g = findGlyph(*text);
-        if (!g) continue;
+        if (!g) {
+            if (*text != ' ') g_missing++;
+            continue;
+        }
         for (int row = 0; row < 5; row++) // (a rect per run of lit pixels: the overlay draws ~1k glyph rows)
             for (int col = 0; col < 3;) {
                 if (!(g->rows[row] & (4 >> col))) {

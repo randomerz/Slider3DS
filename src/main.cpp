@@ -103,11 +103,14 @@ int main(int, char**) {
     const bool audioSharesCore = DEV && audio.threadLoad().core == 0;
 
     while (plat::mainLoop()) {
+        // The profiler runs only while the overlay shows (scopes are free otherwise; never in release).
+        prof::setEnabled(DEV && dev.perfPage != 0);
         prof::setStolenTime(audioSharesCore && dev.perfPage != 0 ? &Audio::threadBusyCallback : nullptr, &audio);
         prof::beginFrame();
         { // (the update: Logic, with its sections nested; closes before the draw)
             const ProfScope logic(ProfSection::Logic);
             const plat::Input in = plat::pollInput();
+            if (DEV) dev.updateAnywhere(in); // (SELECT: the overlay's page, next frame on)
             bool devSliding = false;
             if (DEV && front.mode() == Frontend::Mode::Title && !front.pauseMenu().isOpen() && (in.pressed & plat::BTN_R)) {
                 front.bootDirect(); // (outdoors on tile 1)

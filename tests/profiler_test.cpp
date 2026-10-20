@@ -13,6 +13,7 @@ double half(double t0, double t1, void*) { return (t1 - t0) / 2; }
 } // namespace
 
 TEST(profiler_nested_scopes_count_their_own_time) {
+    prof::setEnabled(true);
     testSetNowMs(1000);
     prof::beginFrame();
     {
@@ -26,10 +27,25 @@ TEST(profiler_nested_scopes_count_their_own_time) {
     }
     CHECK(prof::ms(ProfSection::Logic) == 3 && prof::ms(ProfSection::Physics) == 3);
     CHECK(prof::ms(ProfSection::AudioThread) == 0);
+    prof::setEnabled(false);
+    testSetNowMs(0);
+}
+
+TEST(profiler_off_counts_nothing) {
+    // Off (release, or the overlay hidden): scopes don't touch the clock or the times.
+    prof::setEnabled(false);
+    testSetNowMs(1500);
+    prof::beginFrame();
+    {
+        const ProfScope logic(ProfSection::Logic);
+        testSetNowMs(1510);
+    }
+    CHECK(prof::ms(ProfSection::Logic) == 0);
     testSetNowMs(0);
 }
 
 TEST(profiler_takes_stolen_time_out_of_the_scope_it_interrupted) {
+    prof::setEnabled(true);
     testSetNowMs(2000);
     { const ProfScope prime(ProfSection::Logic); } // (the clock's mark: now, before the hook)
     prof::setStolenTime(&half, nullptr);
@@ -42,9 +58,11 @@ TEST(profiler_takes_stolen_time_out_of_the_scope_it_interrupted) {
     {
         const ProfScope logic(ProfSection::Logic);
     }
-    prof::setStolenTime(nullptr, nullptr);
+    // (read with the hook still set: the times resolve as they're read)
     CHECK(prof::ms(ProfSection::Draw) == 2 && prof::ms(ProfSection::Logic) == 0);
     CHECK(prof::ms(ProfSection::AudioThread) == 5);
+    prof::setStolenTime(nullptr, nullptr);
+    prof::setEnabled(false);
     testSetNowMs(0);
 }
 
@@ -56,6 +74,7 @@ double greedy(double t0, double t1, void*) { return (t1 - t0) * 3; }
 } // namespace
 
 TEST(profiler_never_takes_more_than_the_span_and_skips_long_gaps) {
+    prof::setEnabled(true);
     testSetNowMs(3000);
     { const ProfScope prime(ProfSection::Logic); }
     prof::setStolenTime(&greedy, nullptr);
@@ -72,8 +91,39 @@ TEST(profiler_never_takes_more_than_the_span_and_skips_long_gaps) {
         const ProfScope logic(ProfSection::Logic);
         testSetNowMs(3004 + prof::MAX_STOLEN_SPAN_MS + 502);
     }
-    prof::setStolenTime(nullptr, nullptr);
     CHECK(prof::ms(ProfSection::AudioThread) == 2 && prof::ms(ProfSection::Logic) == 0);
+    prof::setStolenTime(nullptr, nullptr);
+    prof::setEnabled(false);
+    testSetNowMs(0);
+}
+
+namespace {
+
+int g_queries = 0;
+double counted(double, double, void*) {
+    g_queries++;
+    return 0;
+}
+
+} // namespace
+
+TEST(profiler_asks_for_stolen_time_only_when_the_times_are_read) {
+    // The stolen-time query (the audio thread's lock) runs as ms() is read, not at each edge: its
+    // cost never lands in a section.
+    prof::setEnabled(true);
+    testSetNowMs(4000);
+    { const ProfScope prime(ProfSection::Logic); }
+    prof::setStolenTime(&counted, nullptr);
+    prof::beginFrame();
+    g_queries = 0;
+    for (int i = 0; i < 20; i++) {
+        const ProfScope tiles(ProfSection::DrawTiles);
+        testSetNowMs(4001 + i);
+    }
+    CHECK(g_queries == 0);
+    CHECK(prof::ms(ProfSection::DrawTiles) == 20 && g_queries > 0);
+    prof::setStolenTime(nullptr, nullptr);
+    prof::setEnabled(false);
     testSetNowMs(0);
 }
 

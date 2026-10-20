@@ -13,7 +13,9 @@ struct DevControls {
     bool collected = false;    // B: tiles 2-8 collected (L + B: only 2-4, next to Kevin's knot)
     size_t spawnIndex = 0;     // R: the spawn last jumped to (L + R: Slider 9, before / after the shuffle)
 
-    // Handles this frame's dev buttons. Returns true while L is held: the D-pad then slides the
-    // player's tile instead of walking (and B sets up Kevin's knot, Y the ruins).
+    // Handles this frame's dev buttons in the game. Returns true while L is held: the D-pad then
+    // slides the player's tile instead of walking (and B sets up Kevin's knot, Y the ruins).
     bool update(const plat::Input& in, World& world);
+    // The ones that work on every screen (title, pause menu, game): SELECT.
+    void updateAnywhere(const plat::Input& in);
 };

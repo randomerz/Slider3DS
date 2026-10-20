@@ -25,22 +25,30 @@ constexpr uint32_t DRAWING =
     bit(S::Draw) | bit(S::DrawList) | bit(S::DrawSort) | bit(S::DrawTiles) | bit(S::DrawObjects) | bit(S::DrawBottom);
 static_assert(SECTIONS <= 32, "sections are a bit mask");
 
-// A legend row: the sections it sums.
+// A legend row: the sections it sums. `rest`: a catch-all (OTH), never named as the worst frame's cause.
 struct Row {
-    const char* label;
-    uint32_t color;
-    uint32_t sections;
+    const char* label = nullptr;
+    uint32_t color = 0;
+    uint32_t sections = 0; // (0: past the page's last row)
+    bool rest = false;
 };
 constexpr int MAX_ROWS = 11;
+// The counts a page shows after its rows, in this order.
+enum Count : uint32_t { COUNT_SPRITES = 1, COUNT_TILES = 2 }; // SPR, CEL
 struct PageDef {
     const char* name;
-    int rows;
     Row row[MAX_ROWS];
-    int counts; // after the rows in the legend: SPR, then (DRAW) CEL
+    uint32_t counts;
+    constexpr int rows() const {
+        int n = 0;
+        while (n < MAX_ROWS && row[n].sections) n++;
+        return n;
+    }
+    constexpr int countSlots() const { return ((counts & COUNT_SPRITES) ? 1 : 0) + ((counts & COUNT_TILES) ? 1 : 0); }
 };
-constexpr uint32_t WAIT_COLOR = plat::rgba(0x58, 0x58, 0x68);
+constexpr uint32_t WAIT_COLOR = plat::rgba(0x58, 0x58, 0x68), ATH_COLOR = plat::rgba(0xf0, 0x60, 0xa0);
 constexpr PageDef PAGE_DEFS[DevOverlay::PAGES] = {
-    {"FRAME", 11, {
+    {"FRAME", {
         {"LOG", plat::rgba(0x60, 0xd0, 0x70), bit(S::Logic)},
         {"PHY", plat::rgba(0xe0, 0xa0, 0x40), bit(S::Physics)},
         {"NPC", plat::rgba(0xd0, 0x70, 0xc0), bit(S::Npcs)},
@@ -50,32 +58,35 @@ constexpr PageDef PAGE_DEFS[DevOverlay::PAGES] = {
         {"DRW", plat::rgba(0x60, 0x90, 0xe0), DRAWING},
         {"DEV", plat::rgba(0x80, 0x80, 0x80), bit(S::Dev)},
         {"END", plat::rgba(0x40, 0x60, 0xb0), bit(S::FrameEnd)},
-        {"ATH", plat::rgba(0xf0, 0x60, 0xa0), bit(S::AudioThread)},
+        {"ATH", ATH_COLOR, bit(S::AudioThread)},
         {"WAI", WAIT_COLOR, WAIT},
-    }, 1},
-    {"DRAW", 8, {
+    }, COUNT_SPRITES},
+    {"DRAW", {
         {"LST", plat::rgba(0x60, 0xd0, 0x70), bit(S::DrawList)},
         {"SRT", plat::rgba(0xe0, 0xe0, 0x60), bit(S::DrawSort)},
         {"TIL", plat::rgba(0x60, 0x90, 0xe0), bit(S::DrawTiles)},
         {"OBJ", plat::rgba(0xe0, 0xa0, 0x40), bit(S::DrawObjects)},
         {"BOT", plat::rgba(0xa0, 0x70, 0xf0), bit(S::DrawBottom)},
         {"DRW", plat::rgba(0x40, 0x60, 0xb0), bit(S::Draw)},
-        {"OTH", plat::rgba(0x80, 0x80, 0x80), ALL & ~DRAWING & ~WAIT},
+        {"OTH", plat::rgba(0x80, 0x80, 0x80), ALL & ~DRAWING & ~WAIT, true},
         {"WAI", WAIT_COLOR, WAIT},
-    }, 2},
+    }, COUNT_SPRITES | COUNT_TILES},
 };
 constexpr int LEGEND_COLS = 4, LEGEND_SLOTS = 3 * LEGEND_COLS; // (ROW_Y[2..4])
 
 // Every page: its rows split the sections, each counted once, WAI last (the stack's top, left out
-// of the frame's work).
+// of the frame's work), nothing listed past an empty row, rows + counts in the legend.
 constexpr bool pagesSplitSections() {
     for (const PageDef& p : PAGE_DEFS) {
+        const int rows = p.rows();
         uint32_t seen = 0;
-        for (int r = 0; r < p.rows; r++) {
+        for (int r = 0; r < rows; r++) {
             if (seen & p.row[r].sections) return false;
             seen |= p.row[r].sections;
         }
-        if (seen != ALL || p.row[p.rows - 1].sections != WAIT || p.rows + p.counts > LEGEND_SLOTS) return false;
+        for (int r = rows; r < MAX_ROWS; r++)
+            if (p.row[r].label) return false;
+        if (seen != ALL || p.row[rows - 1].sections != WAIT || rows + p.countSlots() > LEGEND_SLOTS) return false;
     }
     return true;
 }
@@ -84,7 +95,7 @@ const uint32_t WHITE = plat::rgba(0xff, 0xff, 0xff), RED = plat::rgba(0xe0, 0x50
 
 // A frame's (or the average's) ms by the page's rows.
 void rowsOf(const float (&ms)[SECTIONS], const PageDef& page, float (&out)[MAX_ROWS]) {
-    for (int r = 0; r < page.rows; r++) {
+    for (int r = 0; r < page.rows(); r++) {
         out[r] = 0;
         for (int s = 0; s < SECTIONS; s++)
             if (page.row[r].sections & (1u << s)) out[r] += ms[s];
@@ -138,7 +149,7 @@ void DevOverlay::setBoot(float init, float area, float sheets, float ui, float a
 
 void DevOverlay::draw(Page which) const {
     const PageDef& page = PAGE_DEFS[(int)which];
-    const int work = page.rows - 1; // (the rows but WAI)
+    const int rows = page.rows(), work = rows - 1; // (work: the rows but WAI)
     char text[32];
     plat::drawRect(4, PANEL_Y - BOOT_H, 312, PANEL_H + BOOT_H, plat::rgba(0x1a, 0x1a, 0x1a, 0xc0));
     char line[96];
@@ -149,7 +160,7 @@ void DevOverlay::draw(Page which) const {
         n += snprintf(line + n, sizeof line - n, "  BGM %d:%02d", at / 60, at % 60);
         if (loop >= 0) snprintf(line + n, sizeof line - n, "/%d:%02d", loop / 60, loop % 60);
     }
-    drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, audio_.running ? line : "AUDIO THREAD NONE", plat::rgba(0xf0, 0x60, 0xa0), 1);
+    drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, audio_.running ? line : "AUDIO THREAD NONE", ATH_COLOR, 1);
     drawDebugText(BAR_X, PANEL_Y - BOOT_H + 10, boot_, WHITE, 1);
 
     // The graph, oldest column on the left.
@@ -158,10 +169,12 @@ void DevOverlay::draw(Page which) const {
     for (int i = 0; i < HISTORY; i++) {
         const auto& frame = history_[(next_ + i) % HISTORY];
         rowsOf(frame, page, rowMs);
-        drawStack(GRAPH_X + i * COL_W, GRAPH_Y + GRAPH_H, COL_W, page, rowMs, page.rows, GRAPH_MS_PX, GRAPH_H, true);
+        drawStack(GRAPH_X + i * COL_W, GRAPH_Y + GRAPH_H, COL_W, page, rowMs, rows, GRAPH_MS_PX, GRAPH_H, true);
         if (i >= HISTORY - WORST_FRAMES && busy(frame) > worst) { // (by its work: WAI left out)
             worst = busy(frame);
-            worstRow = (int)(std::max_element(rowMs, rowMs + work) - rowMs);
+            worstRow = -1; // (its biggest row but WAI and a catch-all: on DRAW, the drawing's)
+            for (int r = 0; r < work; r++)
+                if (!page.row[r].rest && (worstRow < 0 || rowMs[r] > rowMs[worstRow])) worstRow = r;
         }
     }
     const float graphW = HISTORY * COL_W;
@@ -184,22 +197,31 @@ void DevOverlay::draw(Page which) const {
     // The worst frame, the line above the panel: its ms and biggest row; the page's name at its end.
     snprintf(text, sizeof text, "WORST FRAME %.1fMS", worst);
     const float afterMax = drawDebugText(BAR_X, PANEL_Y - BOOT_H + 18, text, worst > 16.7f ? RED : WHITE, 1);
-    if (worst > 0) drawDebugText(afterMax + 4, PANEL_Y - BOOT_H + 18, page.row[worstRow].label, page.row[worstRow].color, 1);
+    if (worst > 0 && worstRow >= 0) drawDebugText(afterMax + 4, PANEL_Y - BOOT_H + 18, page.row[worstRow].label, page.row[worstRow].color, 1);
     snprintf(text, sizeof text, "PAGE %d/%d %s", (int)which + 1, DevOverlay::PAGES, page.name);
     drawDebugText(250, PANEL_Y - BOOT_H + 18, text, WHITE, 1);
 
     // The legend: four entries a row, the page's counts after its rows.
-    for (int i = 0; i < page.rows + page.counts; i++) {
-        const float x = BAR_X + (i % LEGEND_COLS) * 76.0f, y = ROW_Y[2 + i / LEGEND_COLS];
-        if (i < page.rows) {
-            snprintf(text, sizeof text, "%s %.1f", page.row[i].label, rowMs[i]);
-            drawDebugText(x, y, text, page.row[i].color, TEXT_SCALE);
-        } else if (i == page.rows) {
-            snprintf(text, sizeof text, "SPR %.0f", sprites_);
-            drawDebugText(x, y, text, sprites_ > plat::MAX_DRAWS_PER_FRAME * 3 / 4 ? RED : GRAY, TEXT_SCALE);
-        } else {
-            snprintf(text, sizeof text, "CEL %.0f", tiles_);
-            drawDebugText(x, y, text, GRAY, TEXT_SCALE);
-        }
+    int slot = 0;
+    const auto at = [&slot](float& x, float& y) {
+        x = BAR_X + (slot % LEGEND_COLS) * 76.0f;
+        y = ROW_Y[2 + slot / LEGEND_COLS];
+        slot++;
+    };
+    float x, y;
+    for (int r = 0; r < rows; r++) {
+        at(x, y);
+        snprintf(text, sizeof text, "%s %.1f", page.row[r].label, rowMs[r]);
+        drawDebugText(x, y, text, page.row[r].color, TEXT_SCALE);
+    }
+    if (page.counts & COUNT_SPRITES) {
+        at(x, y);
+        snprintf(text, sizeof text, "SPR %.0f", sprites_);
+        drawDebugText(x, y, text, sprites_ > plat::MAX_DRAWS_PER_FRAME * 3 / 4 ? RED : GRAY, TEXT_SCALE);
+    }
+    if (page.counts & COUNT_TILES) {
+        at(x, y);
+        snprintf(text, sizeof text, "CEL %.0f", tiles_);
+        drawDebugText(x, y, text, GRAY, TEXT_SCALE);
     }
 }

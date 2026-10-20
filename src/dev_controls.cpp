@@ -6,9 +6,12 @@
 #include "game/dev/dev_overlay.h"
 #include "game/village/village_grid.h"
 
+void DevControls::updateAnywhere(const plat::Input& in) {
+    if (in.pressed & plat::BTN_SELECT) perfPage = (perfPage + 1) % (DevOverlay::PAGES + 1);
+}
+
 bool DevControls::update(const plat::Input& in, World& world) {
     const Area& area = world.area;
-    if (in.pressed & plat::BTN_SELECT) perfPage = (perfPage + 1) % (DevOverlay::PAGES + 1);
     if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_X)) {
         // Chad: Sliders 2-8 collected (9's slot, in the middle, empty), next to him. Talk to him to
         // make him jump; then slide another tile to tip him, or his tile 8 to make him fall.
