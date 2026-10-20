@@ -20956,17 +20956,17 @@
     "buttonSpacing": 37,
     "frame": {
       "sprite": 406,
-      "rect": [-90,-75,180,150]
+      "rect": [-80,-60,160,120]
     },
     "background": {
       "sprite": 407,
-      "rect": [-90,-75,180,150]
+      "rect": [-80,-60,160,120]
     },
     "underlays": [
       {
         "name": "Outside Map",
         "sprite": 408,
-        "rect": [-90,-75,180,150]
+        "rect": [-80,-60,160,120]
       }
     ],
     "empty": 409,
@@ -27368,22 +27368,22 @@
     {
       "name": "artifact_frame",
       "sheet": 24,
-      "rect": [0,150,180,150],
-      "pivot": [90,75],
+      "rect": [0,120,160,120],
+      "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "ArtifactBG",
       "sheet": 24,
-      "rect": [0,0,180,150],
-      "pivot": [90,75],
+      "rect": [0,0,160,120],
+      "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "village_outside_map",
       "sheet": 23,
-      "rect": [0,0,180,150],
-      "pivot": [90,75],
+      "rect": [0,0,160,120],
+      "pivot": [80,60],
       "ppu": 16
     },
     {
@@ -27417,7 +27417,7 @@
     {
       "name": "ControllerHoverHighlight",
       "sheet": 24,
-      "rect": [180,0,32,32],
+      "rect": [160,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
@@ -32210,12 +32210,12 @@
     {
       "name": "ui_areaicons_outsidemap",
       "file": "../sheets/ui_areaicons_outsidemap.png",
-      "size": [256,256]
+      "size": [256,128]
     },
     {
       "name": "ui_artifact",
       "file": "../sheets/ui_artifact.png",
-      "size": [256,512]
+      "size": [256,256]
     }
   ],
   "collisionShapes": [

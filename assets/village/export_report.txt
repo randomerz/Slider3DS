@@ -4,7 +4,7 @@ World sprites: 333  Anims: 86  Object colliders: 218
 Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18  Items: 15  Knot boxes: 1  Ruins arrows: 1  Chad jumps: 1  Cat tricks: 1  Particle systems: 28
 Tiles: 168 (39 animated)  Sprites: 707
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
-Sheets (25, 2629K px):
+Sheets (25, 2533K px):
   characters_chad: 256x256  [ChadPortalGun, chad, chad_jump, chad_fall, chad_crutch, chad_sad, chad_surprised]
   characters_fezziwig: 64x512  [fezziwig_jump, fezziwig_float, fezziwig_fall, Fezziwig]
   characters_jungle: 32x128  [jungle_npcsprites]
@@ -28,8 +28,8 @@ Sheets (25, 2629K px):
   tiles_village: 512x1024  [tree_bounce, bakery, floating_wood, river_end_transition, snow_tiles, rock_column, villagebell, village_ruins_missing_piece, village_ruins_scrawls, village_ruins_scrawls_color, hole]
   ui_areaicons: 64x64  [village_icon_highlights]
   ui_areaicons_areas: 256x512  [ArtifactIcons, ArtifactIcons_completed]
-  ui_areaicons_outsidemap: 256x256  [village_outside_map]
-  ui_artifact: 256x512  [ArtifactBG, artifact_frame, ControllerHoverHighlight]
+  ui_areaicons_outsidemap: 256x128  [village_outside_map]
+  ui_artifact: 256x256  [ArtifactBG, artifact_frame, ControllerHoverHighlight]
 Tile types:
   Tile: 37599
   RuleTile: 5751
