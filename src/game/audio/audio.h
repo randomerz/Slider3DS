@@ -58,7 +58,6 @@ public:
 
     // What a music / ambience track plays on (0: not playing), the mixer (tests).
     Mixer::Voice music(std::string_view name) const;
-    void bgmPosition(float& at, float& loop) const; // (ThreadLoad's bgmS / bgmLoopS)
     Mixer::Voice ambience(std::string_view name) const;
     const Mixer& mixer() const { return mixer_; }
     Mixer& mixer() { return mixer_; }
@@ -90,6 +89,8 @@ public:
     ~Audio() { stopThread(); }
 
 private:
+    // ThreadLoad's bgmS / bgmLoopS: reads the mixer, so the audio thread's only (service).
+    void bgmPosition(float& at, float& loop) const;
     struct Dampen {
         float amount, length, t;
         int key;

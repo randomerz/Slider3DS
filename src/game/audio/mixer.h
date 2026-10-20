@@ -52,6 +52,7 @@ public:
     void stop(Voice voice);
     void stopAll(); // everything, at once
     bool playing(Voice voice) const; // (false once it has ended, or for 0)
+    bool releasing(Voice voice) const; // a stream stopped and fading out (false for a clip, or 0)
 
     void setBusVolume(Bus bus, float volume); // linear (FMOD's Bus.setVolume)
     void setMasterVolume(float volume);
@@ -65,6 +66,7 @@ public:
     void mix(int16_t* out);
 
     int64_t streamPosition(Voice voice) const; // the frame a stream plays next (tests; -1: not a stream)
+    void seekStream(Voice voice, int64_t frame); // (tests: where its loop is, without playing up to it)
     int voices() const { return (int)(clips_.size() + streams_.size()); } // (ended ones go at the next block)
     // ms spent decoding streams since the last call (the audio thread's load breakdown).
     double takeStreamMs() {

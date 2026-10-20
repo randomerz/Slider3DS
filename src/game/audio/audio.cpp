@@ -126,7 +126,7 @@ void Audio::bgmPosition(float& at, float& loop) const {
     for (const auto& [name, voice] : music_) {
         const int64_t pos = mixer_.streamPosition(voice);
         const StreamDef* def = bank_.music(name);
-        if (pos < 0 || !def || !mixer_.playing(voice)) continue;
+        if (pos < 0 || !def || !mixer_.playing(voice) || mixer_.releasing(voice)) continue; // (not one fading out)
         // The loop point: the unconditional jump back to the start (or into the crossfade that does).
         int64_t loopAt = -1, into = -1;
         for (const StreamDef::Jump& j : def->jumps) {

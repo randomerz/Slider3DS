@@ -86,6 +86,12 @@ bool Mixer::playing(Voice voice) const {
     return false;
 }
 
+bool Mixer::releasing(Voice voice) const {
+    for (const StreamVoice& s : streams_)
+        if (s.id == voice) return s.releasing;
+    return false;
+}
+
 void Mixer::setBusVolume(Bus bus, float volume) { bus_[(int)bus] = volume; }
 
 Mixer::Biquad Mixer::Biquad::pass(bool low, float hz) {
@@ -126,6 +132,14 @@ int64_t Mixer::streamPosition(Voice voice) const {
     for (const StreamVoice& s : streams_)
         if (s.id == voice) return s.pos;
     return -1;
+}
+
+void Mixer::seekStream(Voice voice, int64_t frame) {
+    for (StreamVoice& s : streams_)
+        if (s.id == voice && s.file->seek(frame)) {
+            s.pos = frame;
+            s.checked = true; // (as a jump landing there: a jump at that frame doesn't fire)
+        }
 }
 
 float Mixer::envelope(StreamVoice& s, float dt) const {
@@ -266,10 +280,11 @@ void Mixer::mix(int16_t* out) {
         const int n = readStream(s, decoded_.data(), N);
         streamMs_ += plat::nowMs() - decodeStart;
         // A short read (a storage hiccup) leaves a gap and tries again next block; it ends only after
-        // MAX_READ_FAILURES in a row (or at its end).
-        s.failures = s.readFailed ? s.failures + 1 : 0;
+        // MAX_READ_FAILURES blocks in a row that read nothing (a slow read that gets some frames is
+        // progress), or at its end.
+        s.failures = s.readFailed && n == 0 ? s.failures + 1 : 0;
         if (s.readFailed && s.failures == 1) printf("audio/%s: a read failed, retrying\n", s.def->file.c_str());
-        if (n < N && (!s.readFailed || s.failures > MAX_READ_FAILURES)) s.ended = true;
+        if (n < N && (!s.readFailed || s.failures >= MAX_READ_FAILURES)) s.ended = true;
         const float g0 = from[(int)s.def->bus] * e0 * s.def->gain, g1 = to[(int)s.def->bus] * e1 * s.def->gain;
         std::vector<float>& into = eq && s.def->bus == Bus::Music ? musicAcc_ : acc_;
         if (s.def->channels == 1) {

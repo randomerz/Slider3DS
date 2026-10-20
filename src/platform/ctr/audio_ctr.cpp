@@ -248,9 +248,16 @@ void closeAsset(AssetFile* file) {
 int64_t assetSize(const AssetFile* file) { return file->size; }
 
 int readAsset(AssetFile* file, int64_t offset, void* out, int bytes) {
-    if (offset != file->pos && timedSeek(file->f, offset, SEEK_SET) != 0) return 0;
+    if (offset != file->pos && timedSeek(file->f, offset, SEEK_SET) != 0) {
+        file->pos = -1; // (unknown: the next read seeks)
+        return 0;
+    }
     const int n = (int)timedRead(out, 1, bytes, file->f);
     file->pos = offset + n;
+    if (n < bytes) { // (the end, or an error: stdio keeps either flag and would fail every read after,
+        clearerr(file->f); // so clear it and seek again next time: a retry really reads)
+        file->pos = -1;
+    }
     return n;
 }
 

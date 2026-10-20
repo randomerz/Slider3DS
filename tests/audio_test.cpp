@@ -199,11 +199,50 @@ TEST(mixer_stream_survives_a_failed_read) {
     CHECK(m.playing(v) && m.streamPosition(v) == at && silent(gap, 0, 4 * N)); // (a gap, not moved on)
     const std::vector<int16_t> after = mixBlocks(m, 1);
     CHECK(same(after, 0, decoded(at, N), 0, N)); // (it resumes where the failure stopped it)
-    // Failing for good (past MAX_READ_FAILURES blocks in a row): it ends.
+    // (512 frames are left of that read: the next block plays them, each after that reads)
+    // In a row: 25 failing blocks, a good one, 25 more — still playing (a read resets the count).
     testFailAssetReads(1000000);
-    mixBlocks(m, 40);
+    mixBlocks(m, 26);
+    testFailAssetReads(0);
+    mixBlocks(m, 1);
+    testFailAssetReads(1000000);
+    mixBlocks(m, 26);
+    CHECK(m.playing(v));
+    // 30 blocks in a row that read nothing (MAX_READ_FAILURES): it ends on the 30th.
+    mixBlocks(m, 4);
+    CHECK(m.playing(v));
+    mixBlocks(m, 1);
     testFailAssetReads(0);
     CHECK(!m.playing(v));
+}
+
+TEST(mixer_stream_releasing_while_its_release_fades_it) {
+    Mixer m;
+    StreamDef d = stream(1000000, {});
+    d.release = 1;
+    const Mixer::Voice v = m.playStream(d);
+    mixBlocks(m, 1);
+    CHECK(!m.releasing(v));
+    m.stop(v);
+    mixBlocks(m, 2);
+    CHECK(m.releasing(v) && m.playing(v) && !m.releasing(0));
+}
+
+TEST(audio_bgm_shows_the_title_musics_loop_point_not_its_intro_hold) {
+    // The title music's first jump holds its intro (while MainMenuActivated is 0): not the loop.
+    testSetAudioThread(true);
+    Audio audio;
+    CHECK(audio.load());
+    audio.startThread();
+    AudioCues cues;
+    cues.playMusic(tracks::MAIN_MENU);
+    audio.run(cues.take());
+    testSetAudioWanted(1);
+    testRunAudioThread();
+    CHECK(std::abs(audio.threadLoad().bgmLoopS - 108.8f) < 0.001f && audio.threadLoad().bgmS >= 0);
+    audio.unload();
+    testSetAudioThread(false);
+    testSetAudioWanted(0);
 }
 
 TEST(mixer_stream_jumps_and_ends_at_its_length) {
@@ -279,6 +318,14 @@ TEST(audio_thread_applies_what_the_game_thread_handed_over) {
     const Audio::ThreadLoad load = audio.threadLoad();
     const float played = audio.mixer().streamPosition(village) / (float)plat::AUDIO_RATE;
     CHECK(load.bgmS > 1 && std::abs(load.bgmS - played) < 0.001f && std::abs(load.bgmLoopS - 259.2f) < 0.001f);
+    // In the crossfade baked past the timeline: the loop point plus how far into it.
+    AudioBank bank;
+    CHECK(bank.load());
+    const StreamDef* vdef = bank.music(tracks::VILLAGE);
+    audio.mixer().seekStream(village, vdef->length + 3200);
+    service(1);
+    const float into = (audio.mixer().streamPosition(village) - vdef->length) / (float)plat::AUDIO_RATE;
+    CHECK(std::abs(audio.threadLoad().bgmS - (259.2f + into)) < 0.001f && into >= 0.1f);
     audio.setPaused(true);
     for (int i = 0; i < 8; i++) service(2); // (its 0.1 s fade)
     CHECK(audio.mixer().voices() == 1 && audio.mixer().playing(village));
