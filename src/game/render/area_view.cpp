@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <optional>
 
+#include "game/dev/profiler.h"
 #include "platform/platform.h"
 
 void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
@@ -17,7 +19,7 @@ void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, f
     screenH_ = screenH;
     time_ = time;
     showInactive_ = showInactiveTiles;
-    spriteCount_ = 0;
+    spriteCount_ = tileCount_ = 0;
 }
 
 void AreaView::worldToScreen(float wx, float wy, float& sx, float& sy) const {
@@ -55,6 +57,8 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     auto inRange = [&](int sortLayer) { return sortLayer >= minSortLayer && sortLayer <= maxSortLayer; };
     auto ownerShown = [&](int owner) { return owner == 0 || grid.tileActive(owner) || showInactive_; };
     const ObjectStates& objects = world.objects;
+    // (the dev profiler's DrawList / DrawSort / DrawTiles / DrawObjects: the overlay's DRAW page)
+    std::optional<ProfScope> list(ProfSection::DrawList);
     items_.clear();
 
     // Tile layers sort as whole renderers, by the center of their bounds.
@@ -181,6 +185,8 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         items_.push_back({ItemKind::Player, (int)items_.size(), sp});
     }
 
+    list.reset();
+    std::optional<ProfScope> sort(ProfSection::DrawSort);
     std::sort(items_.begin(), items_.end(), [](const Item& a, const Item& b) {
         if (a.sprite.sortLayer != b.sprite.sortLayer) return a.sprite.sortLayer < b.sprite.sortLayer;
         if (a.sprite.order != b.sprite.order) return a.sprite.order < b.sprite.order;
@@ -189,9 +195,13 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         return a.index < b.index;
     });
 
+    sort.reset();
+    const ProfScope objectsScope(ProfSection::DrawObjects);
     for (const Item& it : items_) {
-        if (it.kind == ItemKind::Layer) drawLayer(area, grid, area.layers[it.index]);
-        else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
+        if (it.kind == ItemKind::Layer) {
+            const ProfScope tiles(ProfSection::DrawTiles); // (a scope per layer, not per cell: ~2 clock reads)
+            drawLayer(area, grid, area.layers[it.index]);
+        } else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
         else if (it.kind == ItemKind::Text) drawWorldText(world, it.index);
         else if (it.kind == ItemKind::Line) drawLine(lines_[it.index]);
         else if (it.kind == ItemKind::Particle) drawParticle(particles[it.index]);
@@ -302,6 +312,7 @@ void AreaView::drawLayer(const Area& area, const Grid& grid, const TileLayer& L)
             uint32_t flags = L.xform.empty() ? 0 : L.xform[cy * L.w + cx];
             sheets_->draw(area, frame, px, py, flags);
             spriteCount_++;
+            tileCount_++;
         }
     }
 }

@@ -9,7 +9,7 @@
 struct DevControls {
     bool noclip = false;       // X: walk through everything (shows the position point)
     bool showInactive = false; // Y: draw uncollected STiles too (L + Y: the ruins, one slide from assembled)
-    bool showPerf = true;      // SELECT: the perf overlay
+    int perfPage = 1;          // SELECT: the perf overlay's page, cycling (0 off, then DevOverlay::Page + 1)
     bool collected = false;    // B: tiles 2-8 collected (L + B: only 2-4, next to Kevin's knot)
     size_t spawnIndex = 0;     // R: the spawn last jumped to (L + R: Slider 9, before / after the shuffle)
 

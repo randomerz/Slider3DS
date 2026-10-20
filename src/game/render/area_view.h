@@ -51,6 +51,7 @@ public:
     static float animTime(const Area& area, const WorldSprite& ws, size_t index, float time);
 
     int lastSpriteCount() const { return spriteCount_; } // sprites drawn since begin()
+    int lastTileCount() const { return tileCount_; }     // of them, tile layer cells
 
 private:
     enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue, Text, Line, Particle }; // tie order at equal sort keys
@@ -84,7 +85,7 @@ private:
     float camX_ = 0, camY_ = 0, ppu_ = 16, time_ = 0;
     int screenW_ = 0, screenH_ = 0;
     bool showInactive_ = false;
-    int spriteCount_ = 0;
+    int spriteCount_ = 0, tileCount_ = 0;
     std::vector<Item> items_; // reused every frame
     std::vector<LineDraw> lines_; // this frame's knot lines
     struct Layout {

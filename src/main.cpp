@@ -9,7 +9,7 @@
 // loaded at start (the Frontend saves them when they change). Audio (game/audio) plays what the
 // Frontend asks each frame, at the Settings' volumes.
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) add a perf overlay
-// (game/dev/dev_overlay; SELECT toggles it), R on the title screen (boot the Village directly,
+// (game/dev/dev_overlay; SELECT cycles its pages: FRAME, DRAW, off), R on the title screen (boot the Village directly,
 // outdoors on tile 1, on a temporary profile that is never written) and in the game:
 //   R: jump to the next spawn point                 X: toggle noclip (shows the position point)
 //   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
@@ -94,7 +94,7 @@ int main(int, char**) {
     AreaView view;
     view.setFont(&font);
     DevControls dev;
-    dev.showPerf = DEV;
+    dev.perfPage = DEV ? 1 : 0;
     if (const int start = front.world().startSpawn(); start >= 0) dev.spawnIndex = start;
     DevOverlay overlay;
     overlay.setBoot(initS, areaS, sheetsS, uiS, audioS, gameS);
@@ -103,7 +103,7 @@ int main(int, char**) {
     const bool audioSharesCore = DEV && audio.threadLoad().core == 0;
 
     while (plat::mainLoop()) {
-        prof::setStolenTime(audioSharesCore && dev.showPerf ? &Audio::threadBusyCallback : nullptr, &audio);
+        prof::setStolenTime(audioSharesCore && dev.perfPage != 0 ? &Audio::threadBusyCallback : nullptr, &audio);
         prof::beginFrame();
         { // (the update: Logic, with its sections nested; closes before the draw)
             const ProfScope logic(ProfSection::Logic);
@@ -143,17 +143,21 @@ int main(int, char**) {
             front.drawTop(view, sheets, menuSkin, DEV && dev.showInactive);
             if (inGame && DEV && dev.noclip) // the position point the player moves by (the camera follows it)
                 plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
-            front.drawBottom(sheets, menuSkin);
-            if (DEV && dev.showPerf) {
+            {
+                const ProfScope bottom(ProfSection::DrawBottom);
+                front.drawBottom(sheets, menuSkin);
+            }
+            if (DEV && dev.perfPage != 0) {
                 const ProfScope self(ProfSection::Dev);
-                overlay.draw(); // (the frames before this one)
+                overlay.draw((DevOverlay::Page)(dev.perfPage - 1)); // (the frames before this one)
             }
         }
         {
             const ProfScope end(ProfSection::FrameEnd);
             plat::endFrame();
         }
-        if (DEV) overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, audio.threadLoad());
+        if (DEV) overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, inGame ? view.lastTileCount() : 0,
+                                audio.threadLoad());
     }
     front.shutdown();
 

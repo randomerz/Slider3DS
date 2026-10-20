@@ -19,7 +19,13 @@ enum class ProfSection : uint8_t {
     Anim,    // the Animators
     Fx,      // particles
     Audio,   // Audio's main-loop part: handing the cues over (all of it without an audio thread)
-    Draw,    // building the frame's draws (plat::beginFrame / endFrame excluded: Wait, FrameEnd)
+    Draw,    // building the frame's draws, but for the Draw* sections below (plat::beginFrame / endFrame
+             // excluded: Wait, FrameEnd) — the title screen, the top overlays, starting the screens
+    DrawList,    // AreaView: gathering what to draw this frame (layers, sprites, text, particles...)
+    DrawSort,    // AreaView: sorting it (Unity's order)
+    DrawTiles,   // AreaView: the tile layers' cells
+    DrawObjects, // AreaView: everything else it draws (sprites, text, lines, particles)
+    DrawBottom,  // the bottom screen (the Artifact, the menus)
     Dev,     // the dev overlay drawing itself (inside Draw)
     FrameEnd, // plat::endFrame: submitting the frame (citro2d flushes its last batch there)
     AudioThread, // the audio thread's time taken from this core (setStolenTime; 0 on its own core)
