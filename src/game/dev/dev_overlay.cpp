@@ -29,18 +29,19 @@ constexpr int LEGEND_COLS = 4;
 static_assert((DevOverlay::SECTIONS + 1 + LEGEND_COLS - 1) / LEGEND_COLS <= 3, "the legend has three rows (ROW_Y[2..4])");
 const uint32_t WHITE = plat::rgba(0xff, 0xff, 0xff), RED = plat::rgba(0xe0, 0x50, 0x50);
 
-float total(const float (&ms)[DevOverlay::SECTIONS]) {
+// The frame's work: every section but WAI (the wait for the display's pace pads any frame to a refresh).
+float busy(const float (&ms)[DevOverlay::SECTIONS]) {
     float t = 0;
-    for (float m : ms) t += m;
+    for (int s = 0; s < WAIT; s++) t += ms[s];
     return t;
 }
 
-// One stack of section times from (x, y) upward (`up`) or rightward, `pxPerMs` long per ms, at most
-// `maxLen` long.
-void drawStack(float x, float y, float thickness, const float (&ms)[DevOverlay::SECTIONS], float pxPerMs, float maxLen,
-               bool up) {
+// One stack of the first `sections` section times from (x, y) upward (`up`) or rightward, `pxPerMs`
+// long per ms, at most `maxLen` long.
+void drawStack(float x, float y, float thickness, const float (&ms)[DevOverlay::SECTIONS], int sections, float pxPerMs,
+               float maxLen, bool up) {
     float at = 0;
-    for (int s = 0; s < DevOverlay::SECTIONS && at < maxLen; s++) {
+    for (int s = 0; s < sections && at < maxLen; s++) {
         const float len = std::min(ms[s] * pxPerMs, maxLen - at);
         if (len < 0.5f) continue;
         if (up)
@@ -83,10 +84,9 @@ void DevOverlay::draw() const {
     int worstSection = 0; // (the worst frame's biggest)
     for (int i = 0; i < HISTORY; i++) {
         const auto& frame = history_[(next_ + i) % HISTORY];
-        drawStack(GRAPH_X + i * COL_W, GRAPH_Y + GRAPH_H, COL_W, frame, GRAPH_MS_PX, GRAPH_H, true);
-        if (i >= HISTORY - WORST_FRAMES && total(frame) > worst) {
-            worst = total(frame);
-            // (its biggest but WAI: a frame that overran waits out the rest of the next refresh)
+        drawStack(GRAPH_X + i * COL_W, GRAPH_Y + GRAPH_H, COL_W, frame, SECTIONS, GRAPH_MS_PX, GRAPH_H, true);
+        if (i >= HISTORY - WORST_FRAMES && busy(frame) > worst) { // (by its work: WAI left out)
+            worst = busy(frame);
             worstSection = (int)(std::max_element(std::begin(frame), std::begin(frame) + WAIT) - std::begin(frame));
         }
     }
@@ -94,10 +94,10 @@ void DevOverlay::draw() const {
     plat::drawRect(GRAPH_X, GRAPH_Y + GRAPH_H - 16.7f * GRAPH_MS_PX, graphW, 1, RED);
     plat::drawRect(GRAPH_X, GRAPH_Y + GRAPH_H - 33.3f * GRAPH_MS_PX, graphW, 1, plat::rgba(0xe0, 0x50, 0x50, 0x80));
 
-    // CPU: the averaged stack (WAI on top: the frame, up to the display's pace; "CPU" leaves it out).
-    drawStack(BAR_X, ROW_Y[0], ROW_H, avg_, MS_PX, TEXT_X - 2 * BAR_X, false);
+    // CPU: the averaged stack without WAI, so its end against the 16.7 tick is the headroom.
+    drawStack(BAR_X, ROW_Y[0], ROW_H, avg_, WAIT, MS_PX, TEXT_X - 2 * BAR_X, false);
     plat::drawRect(BAR_X + 16.7f * MS_PX, ROW_Y[0] - 2, 1, ROW_H + 4, RED);
-    snprintf(text, sizeof text, "CPU %.1f", total(avg_) - avg_[WAIT]);
+    snprintf(text, sizeof text, "CPU %.1f", busy(avg_));
     const float after = drawDebugText(TEXT_X, ROW_Y[0], text, WHITE, TEXT_SCALE);
     snprintf(text, sizeof text, "%.0fFPS", frameMs_ > 0 ? 1000.0f / frameMs_ : 0.0f);
     drawDebugText(after + 4 * TEXT_SCALE, ROW_Y[0], text, WHITE, TEXT_SCALE);

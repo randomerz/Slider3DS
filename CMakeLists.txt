@@ -35,8 +35,9 @@ file(GLOB GAME_SOURCES CONFIGURE_DEPENDS src/game/*/*.cpp)
 add_library(slider3ds_game STATIC ${GAME_SOURCES})
 target_include_directories(slider3ds_game PUBLIC src)
 
-# Ogg Vorbis decoding for the PC build and the tests (src/platform/stb, with asset files read from
-# memory; the 3DS uses libvorbisidec).
+# Ogg Vorbis decoding for the PC build and the tests (src/platform/stb; the 3DS uses libvorbisidec).
+# Beside it, src/platform/stb/asset_mem.cpp: the PC build's plat::openAsset (files read whole; the
+# tests have their own, which can fail reads).
 add_library(stb_vorbis STATIC third_party/stb_vorbis.c)
 target_include_directories(stb_vorbis PUBLIC third_party)
 
@@ -48,7 +49,7 @@ target_link_libraries(slider3ds PRIVATE slider3ds_game stb_vorbis SDL2::SDL2main
 
 # Headless tests against the exported data (tests/test_platform.cpp stands in for a backend).
 file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
-add_executable(slider3ds_tests ${TEST_SOURCES} src/platform/stb/ogg_stb.cpp src/platform/stb/asset_mem.cpp)
+add_executable(slider3ds_tests ${TEST_SOURCES} src/platform/stb/ogg_stb.cpp)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test-out)
 target_compile_definitions(slider3ds_tests PRIVATE ASSET_ROOT="${CMAKE_SOURCE_DIR}/assets"
     TESTS_DIR="${CMAKE_SOURCE_DIR}/tests" TEST_OUT_DIR="${CMAKE_BINARY_DIR}/test-out")

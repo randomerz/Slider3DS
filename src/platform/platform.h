@@ -145,7 +145,7 @@ struct AssetFile; // opaque, backend-specific
 AssetFile* openAsset(const char* path); // nullptr if missing
 void closeAsset(AssetFile* file);
 int64_t assetSize(const AssetFile* file);
-// Reads up to `bytes` bytes at `offset`; returns how many (fewer only at the end).
+// Reads up to `bytes` bytes at `offset`; returns how many (fewer at the end, or on a read error).
 int readAsset(AssetFile* file, int64_t offset, void* out, int bytes);
 
 // ms the calling thread spent reading / seeking Ogg and asset files since its last call (the audio

@@ -209,7 +209,7 @@ export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMF
 
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_AUDIO)
-	@stale=$$(for f in $(ROMFS)/audio/*; do [ -e "assets/audio/$${f##*/}" ] || echo "$$f"; done); \
+	@stale=$$(for f in $(ROMFS)/audio/*; do [ -e "$$f" ] || continue; [ -e "assets/audio/$${f##*/}" ] || echo "$$f"; done); \
 	if [ -n "$$stale" ]; then echo "removing stale" $$stale; rm -f $$stale $(TARGET).3dsx; fi # (renders make_audio no longer writes)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 

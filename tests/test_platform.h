@@ -9,6 +9,8 @@
 // In-memory files that readFile() serves before the asset root (for synthetic fixtures).
 void testSetFile(const std::string& path, const std::string& contents);
 void testClearFiles();
+// The next `reads` plat::readAsset calls fail (read nothing), as a storage error would.
+void testFailAssetReads(int reads);
 // The player's files (readUserFile / writeUserFile), in memory, by name.
 std::map<std::string, std::string>& testUserFiles();
 

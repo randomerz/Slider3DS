@@ -1,5 +1,5 @@
-// plat::openAsset and friends for the PC build and the headless tests: the file is read whole through
-// plat::readFile (fixtures included) and served from memory.
+// plat::openAsset and friends for the PC build: the file is read whole through plat::readFile and
+// served from memory (the tests have their own, in tests/test_platform.cpp, which can fail reads).
 #include <algorithm>
 #include <cstring>
 #include <string>

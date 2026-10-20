@@ -2,9 +2,11 @@
 //   - a history graph of the last frames: one column per frame, CPU time stacked by
 //     game/dev/profiler's sections (DRW building the draws, DEV this overlay, END submitting the
 //     frame, ATH the audio thread's time taken from the game's core, WAI on top: plat::beginFrame's
-//     wait for the display's pace and the GPU, so a column is the whole frame), lines at 16.7 ms
+//     wait for the display's pace and the GPU, so a column is about the whole frame: only the
+//     loop's own edges, overlay.record and plat::mainLoop, go uncounted), lines at 16.7 ms
 //     (60 fps) and 33.3 ms (30 fps), so spikes and what caused them show;
-//   - CPU: the same stack averaged over about half a second, its total (WAI left out) and the FPS;
+//   - CPU: the same stack averaged over about half a second without WAI (its end vs the 16.7 tick =
+//     the headroom), its total and the FPS;
 //   - GPU (drawing; 0 where the backend can't measure it);
 //   - a legend: each section's averaged ms in its color, and SPR, sprites drawn on the top screen
 //     (red near the draw budget);
@@ -14,7 +16,7 @@
 //     game's, C2 a New 3DS's), its busy share and how much of it went to
 //     decoding streams (STR) and clips (CLP) — the rest mixes —, how much of it read files (IO;
 //     wall time: waits count as busy), and DRY, the gaps after the output ran dry (stutters);
-//     above the panel too, the worst frame of the last second and its biggest section but WAI (AUD in the legend is only the main
+//     above the panel too, the worst frame of the last second by its work (WAI left out) and its biggest section (AUD in the legend is only the main
 //     loop's part: handing the cues over).
 #pragma once
 

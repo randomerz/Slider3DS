@@ -11,6 +11,7 @@ namespace {
 constexpr float SILENT_DB = -80; // the AHDSR's floor (FMOD's -80 dB: off)
 constexpr int N = plat::AUDIO_BLOCK;
 constexpr float BLOCK_S = N / (float)plat::AUDIO_RATE;
+constexpr int MAX_READ_FAILURES = 30; // blocks (~0.5 s) of failed reads before a stream gives up
 
 float level(float db) { return db <= SILENT_DB ? 0 : std::pow(10.0f, db / 20); }
 
@@ -194,7 +195,10 @@ int Mixer::readStream(StreamVoice& s, int16_t* out, int frames) {
             s.checked = false;
             done += got;
         }
-        if (got < want) return done; // (the file ended early)
+        if (got < want) { // (a read error: retried next block; or the file ended early)
+            s.readFailed = s.pos < s.file->frames();
+            return done;
+        }
     }
     return done;
 }
@@ -258,9 +262,14 @@ void Mixer::mix(int16_t* out) {
         const float e0 = s.gainMixed, e1 = envelope(s, BLOCK_S) * paramGain(*s.def);
         s.gainMixed = e1;
         const double decodeStart = plat::nowMs();
+        s.readFailed = false;
         const int n = readStream(s, decoded_.data(), N);
         streamMs_ += plat::nowMs() - decodeStart;
-        if (n < N) s.ended = true;
+        // A short read (a storage hiccup) leaves a gap and tries again next block; it ends only after
+        // MAX_READ_FAILURES in a row (or at its end).
+        s.failures = s.readFailed ? s.failures + 1 : 0;
+        if (s.readFailed && s.failures == 1) printf("audio/%s: a read failed, retrying\n", s.def->file.c_str());
+        if (n < N && (!s.readFailed || s.failures > MAX_READ_FAILURES)) s.ended = true;
         const float g0 = from[(int)s.def->bus] * e0 * s.def->gain, g1 = to[(int)s.def->bus] * e1 * s.def->gain;
         std::vector<float>& into = eq && s.def->bus == Bus::Music ? musicAcc_ : acc_;
         if (s.def->channels == 1) {

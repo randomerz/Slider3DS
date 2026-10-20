@@ -3,8 +3,10 @@
 // (Ogg decoding is the PC build's: src/platform/stb/ogg_stb.cpp).
 #include "test_platform.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <map>
 
 #include "platform/platform.h"
@@ -26,7 +28,10 @@ bool g_audioThreadOn = false;
 double g_nowMs = 0;
 void (*g_audioService)(void*) = nullptr;
 void* g_audioUser = nullptr;
+int g_assetReadsToFail = 0;
 } // namespace
+
+void testFailAssetReads(int reads) { g_assetReadsToFail = reads; }
 
 void testSetFile(const std::string& path, const std::string& contents) { g_files[path] = contents; }
 void testClearFiles() { g_files.clear(); }
@@ -67,6 +72,34 @@ bool readFile(const char* path, std::string& out) {
     size_t got = fread(&out[0], 1, out.size(), f);
     fclose(f);
     return got == out.size();
+}
+
+// Asset files: read whole through readFile (fixtures included); testFailAssetReads makes reads fail.
+struct AssetFile {
+    std::string data;
+};
+
+AssetFile* openAsset(const char* path) {
+    AssetFile* file = new AssetFile;
+    if (readFile(path, file->data)) return file;
+    delete file;
+    return nullptr;
+}
+
+void closeAsset(AssetFile* file) { delete file; }
+
+int64_t assetSize(const AssetFile* file) { return (int64_t)file->data.size(); }
+
+int readAsset(AssetFile* file, int64_t offset, void* out, int bytes) {
+    const int64_t size = (int64_t)file->data.size();
+    if (g_assetReadsToFail > 0) {
+        g_assetReadsToFail--;
+        return 0;
+    }
+    if (offset < 0 || offset >= size) return 0;
+    const int n = (int)std::min<int64_t>(bytes, size - offset);
+    memcpy(out, file->data.data() + offset, n);
+    return n;
 }
 
 bool readUserFile(const char* name, std::string& out) {

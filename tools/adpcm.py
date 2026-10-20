@@ -64,24 +64,27 @@ def _run(x, pred, idx):
 def encode_channel(x):
     """x: int32 samples of one channel, padded to whole packets → (pred, idx, nibbles, decoded)."""
     x = x.reshape(-1, PACKET_FRAMES)
-    pred = x[:, 0].copy()
     # The start index: near the packet's own first steps, then the best of a spread around it.
     first = np.maximum(np.abs(np.diff(x[:, :5], axis=1)).mean(axis=1), 1)
     guess = np.clip(np.searchsorted(STEPS, first * 2), 0, 88).astype(np.int32)
     best = None
     for off in (-12, -8, -5, -3, -2, -1, 0, 1, 2, 3, 5, 8, 12):
         idx = np.clip(guess + off, 0, 88).astype(np.int32)
+        # The predictor sits a nibble 0 below the first sample (code 0 adds step/8), so the first
+        # sample decodes exactly instead of each packet starting step/8 high (a tone at rate/64).
+        pred = np.clip(x[:, 0] - (STEPS[idx] >> 3), -32768, 32767)
         nib, out = _run(x, pred, idx)
         err = ((out - x).astype(np.int64) ** 2).sum(axis=1)
         if best is None:
-            best = [idx, nib, out, err]
+            best = [pred, idx, nib, out, err]
             continue
-        better = err < best[3]
-        best[0] = np.where(better, idx, best[0])
-        best[1] = np.where(better[:, None], nib, best[1])
-        best[2] = np.where(better[:, None], out, best[2])
-        best[3] = np.where(better, err, best[3])
-    return pred, best[0], best[1], best[2]
+        better = err < best[4]
+        best[0] = np.where(better, pred, best[0])
+        best[1] = np.where(better, idx, best[1])
+        best[2] = np.where(better[:, None], nib, best[2])
+        best[3] = np.where(better[:, None], out, best[3])
+        best[4] = np.where(better, err, best[4])
+    return best[0], best[1], best[2], best[3]
 
 
 def encode(samples, rate):

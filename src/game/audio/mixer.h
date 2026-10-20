@@ -100,6 +100,8 @@ private:
         float releaseT = 0;     // s into the release
         float attackT = 0;      // s into the attack
         bool ended = false;
+        bool readFailed = false; // the last block's read came up short before the file's end
+        int failures = 0;        // blocks in a row that did (a few: retried, the rest of each silent)
     };
 
     // A 2nd-order low / high pass (RBJ, Q = 1/sqrt 2), state per channel; tools/fmod_measure.py

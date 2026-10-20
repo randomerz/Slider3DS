@@ -166,6 +166,11 @@ TEST(adpcm_stream_seeks_exactly) {
     int16_t tail[64];
     CHECK(s.read(tail, 64) == 0); // (at the end: nothing more)
     CHECK(s.seek(s.frames() - 10) && s.read(tail, 64) == 10);
+    // The title music's last packet is padded (its frames aren't a multiple of 64): the padding
+    // never plays.
+    int16_t stereo[128];
+    CHECK(s.open(("audio/" + std::string(FILE_NAME)).c_str()) && s.frames() % adpcm::PACKET_FRAMES != 0);
+    CHECK(s.seek(s.frames() - 10) && s.read(stereo, 64) == 10 && s.read(stereo, 64) == 0);
     testSetFile("audio/cut.adp", std::string("SADP\x01\x01\0\0", 8) + std::string("\x00\x01\0\0\0\x7d\0\0", 8));
     CHECK(!s.open("audio/cut.adp")); // (256 frames promised, no packets: refused)
 }
@@ -179,6 +184,26 @@ TEST(mixer_stream_jump_at_its_length_loops) {
     CHECK(same(out, 0, decoded(0, 2048), 0, 2048));
     CHECK(same(out, 2048, decoded(512, 1024), 0, 1024));
     CHECK(m.playing(v));
+}
+
+TEST(mixer_stream_survives_a_failed_read) {
+    // A storage hiccup: a block's read fails. The stream leaves a gap and goes on where it was.
+    Mixer m;
+    const StreamDef d = stream(1000000, {});
+    const Mixer::Voice v = m.playStream(d);
+    mixBlocks(m, 2); // (1024 frames: what its first read decoded, so the next block reads again)
+    const int64_t at = m.streamPosition(v);
+    testFailAssetReads(1000); // (every read fails, from the next load)
+    const std::vector<int16_t> gap = mixBlocks(m, 4);
+    testFailAssetReads(0);
+    CHECK(m.playing(v) && m.streamPosition(v) == at && silent(gap, 0, 4 * N)); // (a gap, not moved on)
+    const std::vector<int16_t> after = mixBlocks(m, 1);
+    CHECK(same(after, 0, decoded(at, N), 0, N)); // (it resumes where the failure stopped it)
+    // Failing for good (past MAX_READ_FAILURES blocks in a row): it ends.
+    testFailAssetReads(1000000);
+    mixBlocks(m, 40);
+    testFailAssetReads(0);
+    CHECK(!m.playing(v));
 }
 
 TEST(mixer_stream_jumps_and_ends_at_its_length) {
