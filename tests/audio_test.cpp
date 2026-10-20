@@ -275,6 +275,10 @@ TEST(audio_thread_applies_what_the_game_thread_handed_over) {
     // the menu track's release over): the Village music and the voice; then only the music.
     for (int i = 0; i < 40; i++) service(2);
     CHECK(audio.mixer().voices() == 2 && audio.mixer().playing(village));
+    // The overlay's BGM: the Village music's position (~1.3 s in) and its loop point (259.2 s).
+    const Audio::ThreadLoad load = audio.threadLoad();
+    const float played = audio.mixer().streamPosition(village) / (float)plat::AUDIO_RATE;
+    CHECK(load.bgmS > 1 && std::abs(load.bgmS - played) < 0.001f && std::abs(load.bgmLoopS - 259.2f) < 0.001f);
     audio.setPaused(true);
     for (int i = 0; i < 8; i++) service(2); // (its 0.1 s fade)
     CHECK(audio.mixer().voices() == 1 && audio.mixer().playing(village));

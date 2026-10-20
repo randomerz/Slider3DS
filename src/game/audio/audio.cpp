@@ -112,9 +112,35 @@ void Audio::service() {
     clipMs_ += end - clipStart;
     busyMs_ += end - start;
     ioMs_ += plat::takeFileIoMs();
+    float bgmS, bgmLoopS;
+    bgmPosition(bgmS, bgmLoopS);
     plat::lockAudio();
     busyLog_.add(start, end);
+    load_.bgmS = bgmS;
+    load_.bgmLoopS = bgmLoopS;
     plat::unlockAudio();
+}
+
+void Audio::bgmPosition(float& at, float& loop) const {
+    at = loop = -1;
+    for (const auto& [name, voice] : music_) {
+        const int64_t pos = mixer_.streamPosition(voice);
+        const StreamDef* def = bank_.music(name);
+        if (pos < 0 || !def || !mixer_.playing(voice)) continue;
+        // The loop point: the unconditional jump back to the start (or into the crossfade that does).
+        int64_t loopAt = -1, into = -1;
+        for (const StreamDef::Jump& j : def->jumps) {
+            if (!j.param.empty() || j.at > def->length) continue;
+            loopAt = j.at;
+            into = j.to;
+            break;
+        }
+        loop = loopAt < 0 ? -1 : loopAt / (float)plat::AUDIO_RATE;
+        // (in the crossfade: the loop point plus how far into it)
+        const int64_t t = pos >= def->length && loopAt >= 0 && into >= def->length ? loopAt + (pos - into) : pos;
+        at = t / (float)plat::AUDIO_RATE;
+        return;
+    }
 }
 
 void Audio::applyListener(const Listener& listener) {

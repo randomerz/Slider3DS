@@ -73,9 +73,14 @@ void DevOverlay::setBoot(float init, float area, float sheets, float ui, float a
 void DevOverlay::draw() const {
     char text[32];
     plat::drawRect(4, PANEL_Y - BOOT_H, 312, PANEL_H + BOOT_H, plat::rgba(0x1a, 0x1a, 0x1a, 0xc0));
-    char line[64];
-    snprintf(line, sizeof line, "AUDIO THREAD C%d %.0f%%  STR %.0f%%  CLP %.0f%%  IO %.0f%%  DRY %d", audio_.core,
-             audio_.total * 100, audio_.streams * 100, audio_.clips * 100, audio_.io * 100, audio_.underruns);
+    char line[96];
+    int n = snprintf(line, sizeof line, "AUDIO THREAD C%d %.0f%%  STR %.0f%%  CLP %.0f%%  IO %.0f%%  DRY %d", audio_.core,
+                     audio_.total * 100, audio_.streams * 100, audio_.clips * 100, audio_.io * 100, audio_.underruns);
+    if (audio_.bgmS >= 0) { // the music's position / its loop point, m:ss
+        const int at = (int)audio_.bgmS, loop = (int)audio_.bgmLoopS;
+        n += snprintf(line + n, sizeof line - n, "  BGM %d:%02d", at / 60, at % 60);
+        if (loop >= 0) snprintf(line + n, sizeof line - n, "/%d:%02d", loop / 60, loop % 60);
+    }
     drawDebugText(BAR_X, PANEL_Y - BOOT_H + 2, audio_.running ? line : "AUDIO THREAD NONE", COLORS[(int)ProfSection::AudioThread], 1);
     drawDebugText(BAR_X, PANEL_Y - BOOT_H + 10, boot_, WHITE, 1);
 

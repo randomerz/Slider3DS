@@ -58,6 +58,7 @@ public:
 
     // What a music / ambience track plays on (0: not playing), the mixer (tests).
     Mixer::Voice music(std::string_view name) const;
+    void bgmPosition(float& at, float& loop) const; // (ThreadLoad's bgmS / bgmLoopS)
     Mixer::Voice ambience(std::string_view name) const;
     const Mixer& mixer() const { return mixer_; }
     Mixer& mixer() { return mixer_; }
@@ -70,6 +71,9 @@ public:
         float total = 0, streams = 0, clips = 0, io = 0;
         int core = -1; // (-1: unknown)
         int underruns = 0; // the output ran dry (plat::audioUnderruns)
+        // The music playing: its position and where it loops back (s in its timeline; -1: none).
+        // Past its loop point it's in the baked crossfade, which counts on from the loop point.
+        float bgmS = -1, bgmLoopS = -1;
     };
     ThreadLoad threadLoad() const;
     // ms the audio thread was busy within [t0, t1] (plat::nowMs times; its last BusyLog::SIZE

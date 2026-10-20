@@ -15,7 +15,8 @@
 //     Frontend: the World, the save profiles); above that the audio thread: its core (C0 the
 //     game's, C2 a New 3DS's), its busy share and how much of it went to
 //     decoding streams (STR) and clips (CLP) — the rest mixes —, how much of it read files (IO;
-//     wall time: waits count as busy), and DRY, the gaps after the output ran dry (stutters);
+//     wall time: waits count as busy), DRY, the gaps after the output ran dry (stutters), and BGM,
+//     the music's position / where it loops back (m:ss; in the loop's crossfade it counts on past it);
 //     above the panel too, the worst frame of the last second by its work (WAI left out) and its biggest section (AUD in the legend is only the main
 //     loop's part: handing the cues over).
 #pragma once
