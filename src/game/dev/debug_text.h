@@ -1,4 +1,4 @@
-// A tiny 3x5 pixel font drawn with rects, for dev overlays (digits, '.', '-', ':', '%', '/', space and
+// A tiny 3x5 pixel font drawn with rects, for dev overlays (digits, '.', '-', '+', ':', '%', '/', space and
 // the capitals but K Q Z). Unknown characters draw as blanks, and are counted (debugTextMissing: the
 // overlay's test checks it draws none). Not the game's text.
 #pragma once

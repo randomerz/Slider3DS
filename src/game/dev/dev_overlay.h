@@ -15,7 +15,7 @@
 //     crossfade it counts on past it)); the boot (total s, then each step's: IN platform init, AR
 //     the area, SH sprite sheets, UI fonts + menus + title art, AU audio, GA settings + the
 //     Frontend: the World, the save profiles); the worst frame of the last second by its work (WAI
-//     left out) and its biggest row.
+//     left out): its ms, its biggest row's ms, and UP: the row furthest over its own average (+ms).
 // Pages:
 //   FRAME: LOG PHY NPC ANI VFX AUD DRW (all the drawing) DEV END ATH (the audio thread's time
 //     taken from the game's core) WAI, and SPR, the top screen's sprites (red near the draw

@@ -25,12 +25,11 @@ constexpr uint32_t DRAWING =
     bit(S::Draw) | bit(S::DrawList) | bit(S::DrawSort) | bit(S::DrawTiles) | bit(S::DrawObjects) | bit(S::DrawBottom);
 static_assert(SECTIONS <= 32, "sections are a bit mask");
 
-// A legend row: the sections it sums. `rest`: a catch-all (OTH), never named as the worst frame's cause.
+// A legend row: the sections it sums.
 struct Row {
     const char* label = nullptr;
     uint32_t color = 0;
     uint32_t sections = 0; // (0: past the page's last row)
-    bool rest = false;
 };
 constexpr int MAX_ROWS = 11;
 // The counts a page shows after its rows, in this order.
@@ -68,7 +67,7 @@ constexpr PageDef PAGE_DEFS[DevOverlay::PAGES] = {
         {"OBJ", plat::rgba(0xe0, 0xa0, 0x40), bit(S::DrawObjects)},
         {"BOT", plat::rgba(0xa0, 0x70, 0xf0), bit(S::DrawBottom)},
         {"DRW", plat::rgba(0x40, 0x60, 0xb0), bit(S::Draw)},
-        {"OTH", plat::rgba(0x80, 0x80, 0x80), ALL & ~DRAWING & ~WAIT, true},
+        {"OTH", plat::rgba(0x80, 0x80, 0x80), ALL & ~DRAWING & ~WAIT},
         {"WAI", WAIT_COLOR, WAIT},
     }, COUNT_SPRITES | COUNT_TILES},
 };
@@ -164,17 +163,14 @@ void DevOverlay::draw(Page which) const {
     drawDebugText(BAR_X, PANEL_Y - BOOT_H + 10, boot_, WHITE, 1);
 
     // The graph, oldest column on the left.
-    float worst = 0, rowMs[MAX_ROWS];
-    int worstRow = 0; // (the worst frame's biggest but WAI)
+    float worst = 0, rowMs[MAX_ROWS], worstMs[MAX_ROWS] = {};
     for (int i = 0; i < HISTORY; i++) {
         const auto& frame = history_[(next_ + i) % HISTORY];
         rowsOf(frame, page, rowMs);
         drawStack(GRAPH_X + i * COL_W, GRAPH_Y + GRAPH_H, COL_W, page, rowMs, rows, GRAPH_MS_PX, GRAPH_H, true);
         if (i >= HISTORY - WORST_FRAMES && busy(frame) > worst) { // (by its work: WAI left out)
             worst = busy(frame);
-            worstRow = -1; // (its biggest row but WAI and a catch-all: on DRAW, the drawing's)
-            for (int r = 0; r < work; r++)
-                if (!page.row[r].rest && (worstRow < 0 || rowMs[r] > rowMs[worstRow])) worstRow = r;
+            std::copy(rowMs, rowMs + rows, worstMs);
         }
     }
     const float graphW = HISTORY * COL_W;
@@ -183,6 +179,13 @@ void DevOverlay::draw(Page which) const {
 
     // CPU: the averaged stack without WAI, so its end against the 16.7 tick is the headroom.
     rowsOf(avg_, page, rowMs);
+    // The worst frame's biggest row (but WAI) and the one furthest over its own average (what spiked:
+    // a row that's always big, like TIL, would hide it).
+    int biggest = 0, spiked = 0;
+    for (int r = 1; r < work; r++) {
+        if (worstMs[r] > worstMs[biggest]) biggest = r;
+        if (worstMs[r] - rowMs[r] > worstMs[spiked] - rowMs[spiked]) spiked = r;
+    }
     drawStack(BAR_X, ROW_Y[0], ROW_H, page, rowMs, work, MS_PX, TEXT_X - 2 * BAR_X, false);
     plat::drawRect(BAR_X + 16.7f * MS_PX, ROW_Y[0] - 2, 1, ROW_H + 4, RED);
     snprintf(text, sizeof text, "CPU %.1f", busy(avg_));
@@ -194,12 +197,19 @@ void DevOverlay::draw(Page which) const {
     plat::drawRect(BAR_X, ROW_Y[1], std::min(gpuMs_ * MS_PX, TEXT_X - 2 * BAR_X), ROW_H, GRAY);
     snprintf(text, sizeof text, "GPU %.1f", gpuMs_);
     drawDebugText(TEXT_X, ROW_Y[1], text, GRAY, TEXT_SCALE);
-    // The worst frame, the line above the panel: its ms and biggest row; the page's name at its end.
+    // The worst frame, the line above the panel: its ms, its biggest row's, and UP the row furthest
+    // over its average; the page's name at the line's end.
+    const float lineY = PANEL_Y - BOOT_H + 18;
     snprintf(text, sizeof text, "WORST FRAME %.1fMS", worst);
-    const float afterMax = drawDebugText(BAR_X, PANEL_Y - BOOT_H + 18, text, worst > 16.7f ? RED : WHITE, 1);
-    if (worst > 0 && worstRow >= 0) drawDebugText(afterMax + 4, PANEL_Y - BOOT_H + 18, page.row[worstRow].label, page.row[worstRow].color, 1);
+    float lineX = drawDebugText(BAR_X, lineY, text, worst > 16.7f ? RED : WHITE, 1);
+    if (worst > 0) {
+        snprintf(text, sizeof text, "%s %.1f", page.row[biggest].label, worstMs[biggest]);
+        lineX = drawDebugText(lineX + 4, lineY, text, page.row[biggest].color, 1);
+        snprintf(text, sizeof text, "UP %s +%.1f", page.row[spiked].label, std::max(0.0f, worstMs[spiked] - rowMs[spiked]));
+        drawDebugText(lineX + 8, lineY, text, page.row[spiked].color, 1);
+    }
     snprintf(text, sizeof text, "PAGE %d/%d %s", (int)which + 1, DevOverlay::PAGES, page.name);
-    drawDebugText(250, PANEL_Y - BOOT_H + 18, text, WHITE, 1);
+    drawDebugText(250, lineY, text, WHITE, 1);
 
     // The legend: four entries a row, the page's counts after its rows.
     int slot = 0;
