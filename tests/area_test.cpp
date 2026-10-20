@@ -123,6 +123,18 @@ TEST(anim_frame_at) {
     CHECK(an.frameAt(5) == 12); // holds the last frame
 }
 
+TEST(area_validation_rejects_a_rotated_tile_that_isnt_square) {
+    // A ROT90 cell turns its sprite about its center: square keeps its footprint (AreaView culls by it).
+    Area a;
+    std::string err;
+    const std::string rotated = fixture(R"("cells": [0, -1], "xform": [0, 0])", R"("cells": [0, -1], "xform": [4, 0])");
+    check(loadFixture(rotated, a, err), "a rotated square tile loads: " + err);
+    std::string tall = rotated;
+    const std::string from = R"("rect": [0, 0, 16, 16])";
+    tall.replace(tall.find(from), from.size(), R"("rect": [0, 0, 16, 32])");
+    CHECK(!loadFixture(tall, a, err) && err.find("isn't square") != std::string::npos);
+}
+
 TEST(area_validation_rejects_bad_indices) {
     const char* cases[][3] = {
         {R"("frames": [0])", R"("frames": [5])", "tile frame -> missing sprite"},

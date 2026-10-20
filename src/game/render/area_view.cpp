@@ -285,7 +285,11 @@ void AreaView::drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace
     }
 }
 
+// Keyed by the Area's and the sheets' addresses: both are loaded once for the app's life (main) or a
+// test's. A future in-place reload of either (dev hot-reload) must reset tilesFor_ (textures and
+// tile indices would go stale).
 void AreaView::prepareTiles(const Area& area) {
+    assert(sheets_->loaded() || area.sprites.empty());
     tilesFor_ = &area;
     tileSheets_ = sheets_;
     tileSprites_.assign(area.sprites.size(), TileSprite{});

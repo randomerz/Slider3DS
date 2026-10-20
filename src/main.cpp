@@ -104,8 +104,9 @@ int main(int, char**) {
 
     while (plat::mainLoop()) {
         // The profiler runs only while the overlay shows (scopes are free otherwise; never in release).
-        prof::setEnabled(DEV && dev.perfPage != 0);
-        prof::setStolenTime(audioSharesCore && dev.perfPage != 0 ? &Audio::threadBusyCallback : nullptr, &audio);
+        const bool profiling = DEV && dev.perfPage != 0; // (this frame's: SELECT below changes the next)
+        prof::setEnabled(profiling);
+        prof::setStolenTime(audioSharesCore && profiling ? &Audio::threadBusyCallback : nullptr, &audio);
         prof::beginFrame();
         { // (the update: Logic, with its sections nested; closes before the draw)
             const ProfScope logic(ProfSection::Logic);
@@ -159,7 +160,8 @@ int main(int, char**) {
             const ProfScope end(ProfSection::FrameEnd);
             plat::endFrame();
         }
-        if (DEV) overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, inGame ? view.lastTileCount() : 0,
+        if (profiling) // (hidden: nothing to record — the profiler is off, its times 0)
+            overlay.record(plat::lastFrameStats(), inGame ? view.lastSpriteCount() : 0, inGame ? view.lastTileCount() : 0,
                                 audio.threadLoad());
     }
     front.shutdown();

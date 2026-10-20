@@ -205,8 +205,11 @@ void DevOverlay::draw(Page which) const {
     if (worst > 0) {
         snprintf(text, sizeof text, "%s %.1f", page.row[biggest].label, worstMs[biggest]);
         lineX = drawDebugText(lineX + 4, lineY, text, page.row[biggest].color, 1);
-        snprintf(text, sizeof text, "UP %s +%.1f", page.row[spiked].label, std::max(0.0f, worstMs[spiked] - rowMs[spiked]));
-        drawDebugText(lineX + 8, lineY, text, page.row[spiked].color, 1);
+        const float rise = worstMs[spiked] - rowMs[spiked];
+        if (rise > 0.05f) { // (none rose: no UP)
+            snprintf(text, sizeof text, "UP %s +%.1f", page.row[spiked].label, rise);
+            drawDebugText(lineX + 8, lineY, text, page.row[spiked].color, 1);
+        }
     }
     snprintf(text, sizeof text, "PAGE %d/%d %s", (int)which + 1, DevOverlay::PAGES, page.name);
     drawDebugText(250, lineY, text, WHITE, 1);

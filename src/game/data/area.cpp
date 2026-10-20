@@ -999,6 +999,13 @@ static bool validate(const Area& a, std::string* error) {
             if (c < -1 || c >= (int)a.tiles.size()) return fail(error, "tilemap " + L.path + ": bad tile index");
         if (!L.xform.empty() && L.xform.size() != L.cells.size())
             return fail(error, "tilemap " + L.path + ": xform size mismatch");
+        // (a rotation turns a sprite about its rect's center: only a square one keeps its footprint,
+        // which AreaView's tile culling relies on)
+        for (size_t i = 0; i < L.xform.size(); i++) {
+            if (!(L.xform[i] & plat::ROT90) || L.cells[i] < 0) continue;
+            for (int f : a.tiles[L.cells[i]].frames)
+                if (a.sprites[f].w != a.sprites[f].h) return fail(error, "tilemap " + L.path + ": a rotated cell's sprite isn't square");
+        }
     }
     for (const CollisionLayer& C : a.collision)
         for (int16_t c : C.cells)

@@ -15,6 +15,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <tuple>
 
 #include "game/render/area_view.h"
 #include "game/ui/artifact_ui.h"
@@ -197,6 +198,70 @@ TEST(render_goldens) {
         view.draw(world);
         goldens.compare(sc.name, 50);
     }
+}
+
+// AreaView culls tile cells by each layer's sprite extents: against a model that places every cell
+// the plain way (no culling) and keeps those touching the screen, from many cameras (fractional,
+// far, mid-slide), every visible cell must be drawn and nothing else counted as a tile.
+TEST(render_tile_culling_draws_exactly_the_visible_cells) {
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    check(sheets.load(area), "sheets load");
+    AreaView view;
+    World still = sceneWorld();
+    allButNine(still);
+    World sliding = sceneWorld();
+    allButNine(sliding);
+    sliding.artifact.tryMove(sliding.grid, 2, 1, 1, 1, 0); // (tile 7 left into the middle)
+    for (int i = 0; i < 23; i++) sliding.artifact.update(sliding.grid, 1.0f / 60.0f, 0);
+    using Key = std::tuple<std::string, int, int, int, int, float, float, uint32_t>;
+    int cameras = 0, missing = 0, extra = 0;
+    uint32_t seed = 12345;
+    const auto rnd = [&seed](float lo, float hi) {
+        seed = seed * 1664525u + 1013904223u;
+        return lo + (hi - lo) * (float)(seed >> 8) / (float)(1u << 24);
+    };
+    for (const World* world : {&still, &sliding}) {
+        for (int c = 0; c < 40; c++, cameras++) {
+            const float camX = rnd(-12, 64), camY = rnd(-12, 64), time = rnd(0, 3);
+            testResetDrawCalls();
+            view.begin(area, sheets, camX, camY, plat::TOP_W, plat::TOP_H, time, false);
+            view.draw(*world);
+            std::multiset<Key> drawn;
+            for (const DrawCall& d : testDrawCalls()) drawn.insert({d.sheet, d.sx, d.sy, d.sw, d.sh, d.x, d.y, d.flags});
+            // The model: every cell of every shown layer, placed as the view's worldToScreen would.
+            int expected = 0;
+            for (const TileLayer& L : area.layers) {
+                if (!L.active || (L.owner != 0 && !world->grid.tileActive(L.owner))) continue;
+                float bx, by;
+                world->grid.ownerBase(L.owner, bx, by);
+                for (int cy = 0; cy < L.h; cy++)
+                    for (int cx = 0; cx < L.w; cx++) {
+                        const int v = L.cell(cx, cy);
+                        if (v < 0 || area.tiles[v].frames.empty()) continue;
+                        const TileDef& T = area.tiles[v];
+                        const int s = T.frames.size() > 1 ? T.frames[(size_t)(time * T.fps) % T.frames.size()] : T.frames[0];
+                        const SpriteDef& S = area.sprites[s];
+                        float px, py;
+                        view.worldToScreen(bx + L.originX + L.minX + cx + L.anchorX - S.pivotX / S.ppu,
+                                           by + L.originY + L.minY + cy + L.anchorY + (S.h - S.pivotY) / S.ppu, px, py);
+                        px = std::round(px);
+                        py = std::round(py);
+                        if (px >= plat::TOP_W || py >= plat::TOP_H || px + S.w <= 0 || py + S.h <= 0) continue;
+                        expected++;
+                        const Key k{area.sheetNames[S.sheet], S.x, S.y, S.w, S.h, px, py,
+                                    L.xform.empty() ? 0u : (uint32_t)L.xform[cy * L.w + cx]};
+                        auto it = drawn.find(k);
+                        if (it == drawn.end()) missing++;
+                        else drawn.erase(it);
+                    }
+            }
+            if (view.lastTileCount() != expected) extra++;
+        }
+    }
+    check(missing == 0, "every visible tile cell drawn (" + std::to_string(missing) + " missing over " +
+                            std::to_string(cameras) + " cameras)");
+    check(extra == 0, "no other tile cells drawn (" + std::to_string(extra) + " cameras off)");
 }
 
 TEST(render_artifact_goldens) {
