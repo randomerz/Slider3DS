@@ -7,6 +7,12 @@
 namespace {
 constexpr int DRAG_THRESHOLD = 3; // px of stylus travel before a press becomes a drag (Unity's drag threshold)
 constexpr int IMAGE_HALF = 16;    // button images are 32x32, centered on the slot
+// UITrackerManager's (code constants) and UITracker's.
+constexpr float TRACKER_SCALE = 27.0f / 17.0f;        // UI px per world unit from its tile's center
+constexpr float TRACKER_CENTER = 17;                  // off the grid: from world (17, 17), the grid's middle,
+constexpr float TRACKER_CENTER_SCALE = 37.0f / 17.0f; // at this scale,
+constexpr float TRACKER_CLAMP_X = 70, TRACKER_CLAMP_Y = 60; // clamped to the panel
+constexpr float TRACKER_HOUSE_Y = -75;                // below it: in a house (UITracker.minY)
 }
 
 void ArtifactUI::init(const Area& area, const Artifact& artifact) {
@@ -207,22 +213,27 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
              (float)centerY);
     for (const UiPart& u : def.underlays) drawPart(u.sprite, u.x, u.y, u.h, (float)centerX, (float)centerY);
 
-    for (const ArtifactButtonDef& b : def.buttons) { // Button1..9 sibling order
-        int bx, by;
-        if (!artifact.findButton(b.islandId, bx, by)) continue;
-        float cx, cy;
+    // A button's screen center this frame (its slot, its nudge toward it, pressed: dropped); its
+    // image (and the pins on it) sit at (cx, cy + drop).
+    auto buttonCenter = [&](int islandId, int bx, int by, float& cx, float& cy, float& drop) {
         slotCenter(area, bx, by, cx, cy);
-        const Nudge& n = nudges_[b.islandId];
+        const Nudge& n = nudges_[islandId];
         if (n.t < 1) { // ease out: the curve starts with slope 2
             float k = 1 - (1 - n.t) * (1 - n.t);
             cx += n.dx * (1 - k) * scale;
             cy -= n.dy * (1 - k) * scale;
         }
+        drop = buttonPressed(grid, artifact, islandId, selected) ? (float)(def.pressedDrop * scale) : 0.0f;
+    };
+    for (const ArtifactButtonDef& b : def.buttons) { // Button1..9 sibling order
+        int bx, by;
+        if (!artifact.findButton(b.islandId, bx, by)) continue;
+        float cx, cy, drop;
+        buttonCenter(b.islandId, bx, by, cx, cy, drop);
         const bool active = grid.tileActive(b.islandId);
         const bool pressed = buttonPressed(grid, artifact, b.islandId, selected);
         const bool option = !stale && isOption(bx, by);
         const bool hovered = bx == hoverX_ && by == hoverY_ && option;
-        const float drop = pressed ? (float)(def.pressedDrop * scale) : 0.0f;
 
         const bool complete = world.artifactButtons.complete(b.islandId) && b.completed >= 0;
         const int image = hovered ? def.hoverIcon : !active ? def.empty : complete ? b.completed : b.island;
@@ -234,5 +245,46 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
         if (option && !hovered)
             drawPart(def.highlight.sprite, def.highlight.x, def.highlight.y, def.highlight.h, cx, cy + drop);
         if (pressed) drawPart(def.pressed.sprite, def.pressed.x, def.pressed.y, def.pressed.h, cx, cy);
+    }
+
+    // The pins (UITrackerManager.UpdateTrackerPostion), over the buttons, centered on their spot.
+    const UiTrackersDef& td = area.uiTrackers;
+    for (const UiTracker& t : world.trackers.trackers()) {
+        if (!t.shown) continue;
+        float x, y;
+        if (t.object == UiTracker::PLAYER) {
+            x = world.player.x;
+            y = world.player.y;
+        } else {
+            world.objectPosition(t.object, x, y);
+        }
+        const int island = grid.stileUnder(x, y);
+        int bx, by, sprite;
+        float sx, sy;
+        const auto halfHeight = [&](int s) { return s >= 0 ? area.sprites[s].h * 0.5f : 0.0f; };
+        if (island > 0 && artifact.findButton(island, bx, by)) { // on its tile's button (CalculateOffset)
+            float drop;
+            buttonCenter(island, bx, by, sx, sy, drop);
+            sy += drop;
+            const bool inHouse = y < TRACKER_HOUSE_Y; // (UITracker.GetIsInHouse)
+            if (!inHouse || td.trackHousingAccurately) {
+                float tx, ty;
+                grid.ownerBase(island, tx, ty);
+                sx += (x - tx) * TRACKER_SCALE * scale;
+                sy -= (y - (inHouse ? area.housingOffset : 0) - ty) * TRACKER_SCALE * scale;
+            } // (in a house: the button's center)
+            sprite = t.blinking ? t.blinkSprite : t.sprite;
+        } else { // off the grid: on the panel, clamped (CalculateOffsetNullTile), its off-map sprites
+            sprite = t.offMapSprite >= 0 ? (t.blinking ? t.offMapBlinkSprite : t.offMapSprite)
+                                         : (t.blinking ? t.blinkSprite : t.sprite);
+            // (port: the screen shows 120 of the panel's 150 UI px: Unity's +-60 clamp would leave
+            // half the pin past the edge — clamped to keep it whole)
+            const float clampY = std::min(TRACKER_CLAMP_Y, centerY / (float)scale - halfHeight(sprite));
+            sx = centerX + std::clamp((x - TRACKER_CENTER) * TRACKER_CENTER_SCALE, -TRACKER_CLAMP_X, TRACKER_CLAMP_X) * scale;
+            sy = centerY - std::clamp((y - TRACKER_CENTER) * TRACKER_CENTER_SCALE, -clampY, clampY) * scale;
+        }
+        if (sprite < 0) continue;
+        const SpriteDef& S = area.sprites[sprite];
+        sheets.draw(area, sprite, sx - S.w * scale * 0.5f, sy - S.h * scale * 0.5f, 0, scale);
     }
 }

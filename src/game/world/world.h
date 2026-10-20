@@ -16,6 +16,7 @@
 #include "game/fx/screen_effects.h"
 #include "game/grid/artifact.h"
 #include "game/grid/artifact_buttons.h"
+#include "game/ui/ui_trackers.h"
 #include "game/world/game_state.h"
 #include "game/grid/grid.h"
 #include "game/items/items.h"
@@ -168,6 +169,7 @@ public:
     Grid grid;
     Artifact artifact;
     ArtifactButtons artifactButtons; // what scripts set on the Artifact's buttons (icons, completion)
+    UiTrackers trackers;             // the Artifact's pins (the player, Slider 2's collectible)
     ObjectStates objects;
     Starts starts;
     TriggerTracker triggers;

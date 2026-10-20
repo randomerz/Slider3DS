@@ -937,6 +937,15 @@ static bool validate(const Area& a, std::string* error) {
     if (a.areaGrid.introDolly < -1 || a.areaGrid.introDolly >= (int)a.cameraDollies.size())
         return fail(error, "area grid: bad introDolly");
     if (a.areaGrid.romeo < -1 || a.areaGrid.romeo >= (int)a.npcs.size()) return fail(error, "area grid: romeo isn't an NPC");
+    if (a.areaGrid.slider2Collectible != -1 && !objectOk(a.areaGrid.slider2Collectible))
+        return fail(error, "area grid: bad slider2Collectible");
+    if (const UiTrackersDef& t = a.uiTrackers; t.present) {
+        bool ok = t.uiPerPixel == 1; // (the port draws them at the Artifact's scale: 1 UI px per sprite pixel)
+        for (int s : {t.playerFullBlackCircle, t.playerFullBlackCircleEmpty, t.playerFullWhiteCircle,
+                      t.playerFullWhiteCircleEmpty, t.circle3, t.circleEmpty, t.circle1W, t.circleEmptyW})
+            ok = ok && s >= -1 && s < (int)a.sprites.size();
+        if (!ok) return fail(error, "ui trackers: bad sprite index, or not 1 UI px per pixel");
+    }
     if (const CatAbductionDef& ca = a.areaGrid.catAbduction; ca.present) {
         const bool itemOk = ca.item >= 0 && ca.item < (int)a.items.size() && a.items[ca.item].spriteObject >= 0 &&
                             a.items[ca.item].colliderSlot >= 0;
@@ -1163,6 +1172,22 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.areaGrid.slider8Floor = doc["areaGrid"]["slider8Floor"].asInt(-1);
     out.areaGrid.introDolly = doc["areaGrid"]["introDolly"].asInt(-1);
     out.areaGrid.romeo = doc["areaGrid"]["romeo"].asInt(-1);
+    out.areaGrid.slider2Collectible = doc["areaGrid"]["slider2Collectible"].asInt(-1);
+    if (const Json& t = doc["uiTrackers"]; !t.isNull()) {
+        UiTrackersDef& d = out.uiTrackers;
+        d.present = true;
+        const Json& s = t["sprites"];
+        d.playerFullBlackCircle = s["playerFullBlackCircle"].asInt(-1);
+        d.playerFullBlackCircleEmpty = s["playerFullBlackCircleEmpty"].asInt(-1);
+        d.playerFullWhiteCircle = s["playerFullWhiteCircle"].asInt(-1);
+        d.playerFullWhiteCircleEmpty = s["playerFullWhiteCircleEmpty"].asInt(-1);
+        d.circle3 = s["circle3"].asInt(-1);
+        d.circleEmpty = s["circleEmpty"].asInt(-1);
+        d.circle1W = s["circle1W"].asInt(-1);
+        d.circleEmptyW = s["circleEmptyW"].asInt(-1);
+        d.uiPerPixel = t["uiPerPixel"].asFloat(1);
+        d.trackHousingAccurately = t["trackHousingAccurately"].asBool(false);
+    }
     if (const Json& ca = doc["areaGrid"]["catAbduction"]; !ca.isNull()) {
         CatAbductionDef& d = out.areaGrid.catAbduction;
         d.present = true;

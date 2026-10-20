@@ -302,7 +302,6 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         "ParticleSystem.Play",
         "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
         "UIArtifactWorldMap.SetAreaStatusSilhouette",
-        "VillageGrid.RemoveSlider2Tracker",
     };
     std::string got;
     for (const std::string& n : unsupported) got += n + ", ";

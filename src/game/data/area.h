@@ -238,6 +238,7 @@ struct ConditionDef {
     X(VillageHouseExit, "VillageGrid.OnHouseExit")                     \
     X(VillageFillInHole, "VillageGrid.FillInHole")                     \
     X(VillageShufflePuzzle, "VillageGrid.ShufflePuzzle")               \
+    X(VillageRemoveSlider2Tracker, "VillageGrid.RemoveSlider2Tracker") \
     X(SetColliderEnabled, "BoxCollider2D.set_enabled")                 \
     X(ItemSortingOrderInc, "PlayerAction.SetItemSortingOrderInc")      \
     X(ItemSortingOrderDec, "PlayerAction.SetItemSortingOrderDec")      \
@@ -688,6 +689,18 @@ struct AreaGridDef {
     int introDolly = -1;        // introCameraDolly: Area::cameraDollies index (OnHouseExit's intro), -1 = none
     int romeo = -1;             // romeoNPC: Area::npcs index (the intro turns him and walks him in), -1 = none
     CatAbductionDef catAbduction; // after the intro, the cat floats off to the beach
+    int slider2Collectible = -1; // its object: VillageGrid.Start's Artifact tracker (until Slider 2 is collected)
+};
+
+// UITrackerManager's pins (UITracker): the sprites the port's trackers use, by its DefaultSprites
+// names (Area::sprites, -1 = unset). The player's are the playerFull* set (MiniPlayerIcon's default, off).
+struct UiTrackersDef {
+    bool present = false;
+    int playerFullBlackCircle = -1, playerFullBlackCircleEmpty = -1;
+    int playerFullWhiteCircle = -1, playerFullWhiteCircleEmpty = -1;
+    int circle3 = -1, circleEmpty = -1, circle1W = -1, circleEmptyW = -1;
+    float uiPerPixel = 1; // Artifact UI px per sprite pixel (SetNativeSize; the port draws 1)
+    bool trackHousingAccurately = false;
 };
 
 // CameraDolly: a cutscene camera rolling along a Cinemachine path, given as where the camera is over
@@ -866,6 +879,7 @@ struct Area {
     std::vector<int> objectColliderStart, objectCollidersOf;
     PlayerDef player;
     ArtifactDef artifact;
+    UiTrackersDef uiTrackers;
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
     std::vector<std::string> sheetNames;

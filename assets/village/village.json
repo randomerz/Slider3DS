@@ -16801,6 +16801,7 @@
     "slider8Floor": 513,
     "introDolly": 0,
     "romeo": 148,
+    "slider2Collectible": 49,
     "catAbduction": {
       "item": 0,
       "animator": {
@@ -20952,37 +20953,51 @@
       "NoDropItems"
     ]
   },
+  "uiTrackers": {
+    "sprites": {
+      "playerFullBlackCircle": 406,
+      "playerFullBlackCircleEmpty": 407,
+      "playerFullWhiteCircle": 408,
+      "playerFullWhiteCircleEmpty": 409,
+      "circle3": 410,
+      "circleEmpty": 411,
+      "circle1W": 412,
+      "circleEmptyW": 413
+    },
+    "uiPerPixel": 1,
+    "trackHousingAccurately": false
+  },
   "artifact": {
     "buttonSpacing": 37,
     "frame": {
-      "sprite": 406,
+      "sprite": 414,
       "rect": [-80,-60,160,120]
     },
     "background": {
-      "sprite": 407,
+      "sprite": 415,
       "rect": [-80,-60,160,120]
     },
     "underlays": [
       {
         "name": "Outside Map",
-        "sprite": 408,
+        "sprite": 416,
         "rect": [-80,-60,160,120]
       }
     ],
-    "empty": 409,
-    "blank": 410,
-    "hoverIcon": 410,
+    "empty": 417,
+    "blank": 418,
+    "hoverIcon": 418,
     "parts": {
       "pressed": {
-        "sprite": 411,
+        "sprite": 419,
         "rect": [-16,-17,32,33]
       },
       "highlight": {
-        "sprite": 412,
+        "sprite": 420,
         "rect": [-16,-17,32,32]
       },
       "hover": {
-        "sprite": 413,
+        "sprite": 421,
         "rect": [-16,-16,32,32]
       }
     },
@@ -20994,11 +21009,11 @@
     "buttons": [
       {
         "islandId": 1,
-        "island": 414,
-        "completed": 415,
+        "island": 422,
+        "completed": 423,
         "icons": [
           {
-            "sprite": 416,
+            "sprite": 424,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21006,11 +21021,11 @@
       },
       {
         "islandId": 2,
-        "island": 417,
-        "completed": 418,
+        "island": 425,
+        "completed": 426,
         "icons": [
           {
-            "sprite": 419,
+            "sprite": 427,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21018,11 +21033,11 @@
       },
       {
         "islandId": 3,
-        "island": 420,
-        "completed": 421,
+        "island": 428,
+        "completed": 429,
         "icons": [
           {
-            "sprite": 422,
+            "sprite": 430,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21030,25 +21045,25 @@
       },
       {
         "islandId": 4,
-        "island": 423,
-        "completed": 424,
+        "island": 431,
+        "completed": 432,
         "icons": [
         ]
       },
       {
         "islandId": 5,
-        "island": 425,
-        "completed": 426,
+        "island": 433,
+        "completed": 434,
         "icons": [
         ]
       },
       {
         "islandId": 6,
-        "island": 427,
-        "completed": 428,
+        "island": 435,
+        "completed": 436,
         "icons": [
           {
-            "sprite": 429,
+            "sprite": 437,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21056,22 +21071,22 @@
       },
       {
         "islandId": 7,
-        "island": 430,
-        "completed": 431,
+        "island": 438,
+        "completed": 439,
         "icons": [
         ]
       },
       {
         "islandId": 8,
-        "island": 432,
-        "completed": 433,
+        "island": 440,
+        "completed": 441,
         "icons": [
         ]
       },
       {
         "islandId": 9,
-        "island": 434,
-        "completed": 435,
+        "island": 442,
+        "completed": 443,
         "icons": [
         ]
       }
@@ -23811,128 +23826,96 @@
   "tiles": [
     {
       "name": "Grass2 (Flower)",
-      "frames": [436,437,438],
+      "frames": [444,445,446],
       "fps": 4
     },
     {
       "name": "Grass1",
-      "frames": [439,440],
+      "frames": [447,448],
       "fps": 4
     },
     {
       "name": "Grass4",
-      "frames": [441,442],
+      "frames": [449,450],
       "fps": 4
     },
     {
       "name": "Grass6",
-      "frames": [443,444],
+      "frames": [451,452],
       "fps": 4
     },
     {
       "name": "Grass5",
-      "frames": [445,446],
+      "frames": [453,454],
       "fps": 4
     },
     {
       "name": "rock_wall_12",
-      "frames": [447]
+      "frames": [455]
     },
     {
       "name": "rock_wall_15",
-      "frames": [448]
+      "frames": [456]
     },
     {
       "name": "rock_wall_13",
-      "frames": [449]
+      "frames": [457]
     },
     {
       "name": "rock_wall_2",
-      "frames": [450]
+      "frames": [458]
     },
     {
       "name": "rock_wall_24",
-      "frames": [451]
+      "frames": [459]
     },
     {
       "name": "Grass3",
-      "frames": [452,453],
+      "frames": [460,461],
       "fps": 4
     },
     {
       "name": "rock_wall_23",
-      "frames": [454]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [455]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [456]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [457]
-    },
-    {
-      "name": "rock_wall_21",
-      "frames": [458]
-    },
-    {
-      "name": "rock_wall_17",
-      "frames": [459]
-    },
-    {
-      "name": "village_ruins_deco_10",
-      "frames": [460]
-    },
-    {
-      "name": "village_ruins_deco_8",
-      "frames": [461]
-    },
-    {
-      "name": "rock_wall_4",
       "frames": [462]
     },
     {
-      "name": "rock_wall_11",
+      "name": "WallRockCut",
       "frames": [463]
     },
     {
-      "name": "rock_wall_5",
+      "name": "WallRockCut",
       "frames": [464]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "WallRockCut",
       "frames": [465]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_21",
       "frames": [466]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_17",
       "frames": [467]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "village_ruins_deco_10",
       "frames": [468]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "village_ruins_deco_8",
       "frames": [469]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "rock_wall_4",
       "frames": [470]
     },
     {
-      "name": "village_ruins_deco_9",
+      "name": "rock_wall_11",
       "frames": [471]
     },
     {
-      "name": "village_ruins_deco_1",
+      "name": "rock_wall_5",
       "frames": [472]
     },
     {
@@ -23948,23 +23931,23 @@
       "frames": [475]
     },
     {
-      "name": "village_ruins_deco_3",
+      "name": "Jungle Leaves",
       "frames": [476]
     },
     {
-      "name": "village_ruins_deco_2",
+      "name": "Jungle Leaves",
       "frames": [477]
     },
     {
-      "name": "rock_wall_0",
+      "name": "Jungle Leaves",
       "frames": [478]
     },
     {
-      "name": "rock_wall_1",
+      "name": "village_ruins_deco_9",
       "frames": [479]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "village_ruins_deco_1",
       "frames": [480]
     },
     {
@@ -23972,40 +23955,51 @@
       "frames": [481]
     },
     {
-      "name": "village_ruins_deco_0",
+      "name": "Jungle Leaves",
       "frames": [482]
     },
     {
-      "name": "leaf_tiles_5",
+      "name": "Jungle Leaves",
       "frames": [483]
     },
     {
-      "name": "Ground_4",
+      "name": "village_ruins_deco_3",
       "frames": [484]
     },
     {
-      "name": "sand-grass_transition_6",
+      "name": "village_ruins_deco_2",
       "frames": [485]
     },
     {
-      "name": "DesertSand",
+      "name": "rock_wall_0",
       "frames": [486]
     },
     {
-      "name": "WaterSandTransition5",
-      "frames": [487,488,489,490,490,489,488,487],
-      "fps": 4
+      "name": "rock_wall_1",
+      "frames": [487]
     },
     {
-      "name": "Tileset_1",
+      "name": "Jungle Leaves",
+      "frames": [488]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [489]
+    },
+    {
+      "name": "village_ruins_deco_0",
+      "frames": [490]
+    },
+    {
+      "name": "leaf_tiles_5",
       "frames": [491]
     },
     {
-      "name": "DesertSand",
+      "name": "Ground_4",
       "frames": [492]
     },
     {
-      "name": "DesertSand",
+      "name": "sand-grass_transition_6",
       "frames": [493]
     },
     {
@@ -24013,416 +24007,437 @@
       "frames": [494]
     },
     {
+      "name": "WaterSandTransition5",
+      "frames": [495,496,497,498,498,497,496,495],
+      "fps": 4
+    },
+    {
+      "name": "Tileset_1",
+      "frames": [499]
+    },
+    {
+      "name": "DesertSand",
+      "frames": [500]
+    },
+    {
+      "name": "DesertSand",
+      "frames": [501]
+    },
+    {
+      "name": "DesertSand",
+      "frames": [502]
+    },
+    {
       "name": "sand-grass_transition_8",
-      "frames": [495]
+      "frames": [503]
     },
     {
       "name": "sand-grass_transition_11",
-      "frames": [496]
+      "frames": [504]
     },
     {
       "name": "WaterSandTransition6",
-      "frames": [497,498,499,500,500,499,498,497],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition7",
-      "frames": [501,502,503,504,504,503,502,501],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition8",
       "frames": [505,506,507,508,508,507,506,505],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition11",
+      "name": "WaterSandTransition7",
       "frames": [509,510,511,512,512,511,510,509],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition12",
+      "name": "WaterSandTransition8",
       "frames": [513,514,515,516,516,515,514,513],
       "fps": 4
     },
     {
+      "name": "WaterSandTransition11",
+      "frames": [517,518,519,520,520,519,518,517],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition12",
+      "frames": [521,522,523,524,524,523,522,521],
+      "fps": 4
+    },
+    {
       "name": "DesertSand",
-      "frames": [517]
+      "frames": [525]
     },
     {
       "name": "WaterSandTransition4",
-      "frames": [518,519,520,521,521,520,519,518],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition10",
-      "frames": [522,523,524,525,525,524,523,522],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition3",
       "frames": [526,527,528,529,529,528,527,526],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition1",
+      "name": "WaterSandTransition10",
       "frames": [530,531,532,533,533,532,531,530],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition9",
+      "name": "WaterSandTransition3",
       "frames": [534,535,536,537,537,536,535,534],
       "fps": 4
     },
     {
+      "name": "WaterSandTransition1",
+      "frames": [538,539,540,541,541,540,539,538],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition9",
+      "frames": [542,543,544,545,545,544,543,542],
+      "fps": 4
+    },
+    {
       "name": "sand-grass_transition_10",
-      "frames": [538]
+      "frames": [546]
     },
     {
       "name": "WaterSandTransition2",
-      "frames": [539,540,541,542,542,541,540,539],
+      "frames": [547,548,549,550,550,549,548,547],
       "fps": 4
     },
     {
       "name": "Tileset_0",
-      "frames": [543]
+      "frames": [551]
     },
     {
       "name": "sand-grass_transition_4",
-      "frames": [544]
+      "frames": [552]
     },
     {
       "name": "sand-grass_transition_2",
-      "frames": [545]
+      "frames": [553]
     },
     {
       "name": "RiverEndTile2",
-      "frames": [546,547,548,549],
+      "frames": [554,555,556,557],
       "fps": 4
     },
     {
       "name": "Water9",
-      "frames": [550,551,552,553,553,552,551,550],
+      "frames": [558,559,560,561,561,560,559,558],
       "fps": 4
     },
     {
       "name": "Water2",
-      "frames": [554,555,556,557,557,556,555,554],
+      "frames": [562,563,564,565,565,564,563,562],
       "fps": 4
     },
     {
       "name": "RiverEndTile1",
-      "frames": [558,559,560,561],
+      "frames": [566,567,568,569],
       "fps": 4
     },
     {
       "name": "GroundDefault",
-      "frames": [562]
-    },
-    {
-      "name": "GroundDefault",
-      "frames": [563]
-    },
-    {
-      "name": "snow_tiles_0",
-      "frames": [564]
-    },
-    {
-      "name": "WallRock",
-      "frames": [565]
-    },
-    {
-      "name": "WallRock",
-      "frames": [566]
-    },
-    {
-      "name": "WallRock",
-      "frames": [567]
-    },
-    {
-      "name": "WallRock",
-      "frames": [568]
-    },
-    {
-      "name": "border_3",
-      "frames": [569]
-    },
-    {
-      "name": "WallRock",
       "frames": [570]
     },
     {
-      "name": "WallRock",
+      "name": "GroundDefault",
       "frames": [571]
     },
     {
+      "name": "snow_tiles_0",
+      "frames": [572]
+    },
+    {
+      "name": "WallRock",
+      "frames": [573]
+    },
+    {
+      "name": "WallRock",
+      "frames": [574]
+    },
+    {
+      "name": "WallRock",
+      "frames": [575]
+    },
+    {
+      "name": "WallRock",
+      "frames": [576]
+    },
+    {
+      "name": "border_3",
+      "frames": [577]
+    },
+    {
+      "name": "WallRock",
+      "frames": [578]
+    },
+    {
+      "name": "WallRock",
+      "frames": [579]
+    },
+    {
       "name": "Water6",
-      "frames": [572,573,574,575,575,574,573,572],
+      "frames": [580,581,582,583,583,582,581,580],
       "fps": 4
     },
     {
       "name": "Water7",
-      "frames": [576,577,578,579,579,578,577,576],
+      "frames": [584,585,586,587,587,586,585,584],
       "fps": 4
     },
     {
       "name": "WallRock",
-      "frames": [580]
+      "frames": [588]
     },
     {
       "name": "Fall3",
-      "frames": [581,582,583,584],
-      "fps": 4
-    },
-    {
-      "name": "Fall2",
-      "frames": [585,586,587,588],
-      "fps": 4
-    },
-    {
-      "name": "Fall1",
       "frames": [589,590,591,592],
       "fps": 4
     },
     {
+      "name": "Fall2",
+      "frames": [593,594,595,596],
+      "fps": 4
+    },
+    {
+      "name": "Fall1",
+      "frames": [597,598,599,600],
+      "fps": 4
+    },
+    {
       "name": "snow_tiles_6",
-      "frames": [593]
-    },
-    {
-      "name": "Tileset_74",
-      "frames": [594]
-    },
-    {
-      "name": "Tileset_65",
-      "frames": [595]
-    },
-    {
-      "name": "snow_tiles_7",
-      "frames": [596]
-    },
-    {
-      "name": "Tileset_73",
-      "frames": [597]
-    },
-    {
-      "name": "Tileset_66",
-      "frames": [598]
-    },
-    {
-      "name": "snow_tiles_2",
-      "frames": [599]
-    },
-    {
-      "name": "snow_tiles_4",
-      "frames": [600]
-    },
-    {
-      "name": "snow_tiles_3",
       "frames": [601]
     },
     {
-      "name": "snow_tiles_1",
+      "name": "Tileset_74",
       "frames": [602]
     },
     {
-      "name": "snow_tiles_5",
+      "name": "Tileset_65",
       "frames": [603]
     },
     {
-      "name": "Ceiling",
+      "name": "snow_tiles_7",
       "frames": [604]
     },
     {
-      "name": "Ceiling",
+      "name": "Tileset_73",
       "frames": [605]
     },
     {
-      "name": "interiors_0",
+      "name": "Tileset_66",
       "frames": [606]
     },
     {
-      "name": "Tileset_26",
+      "name": "snow_tiles_2",
       "frames": [607]
     },
     {
-      "name": "interiors_2",
+      "name": "snow_tiles_4",
       "frames": [608]
     },
     {
-      "name": "interiors_4",
+      "name": "snow_tiles_3",
       "frames": [609]
     },
     {
-      "name": "interiors_5",
+      "name": "snow_tiles_1",
       "frames": [610]
     },
     {
-      "name": "interiors_1",
+      "name": "snow_tiles_5",
       "frames": [611]
     },
     {
-      "name": "interiors_3",
+      "name": "Ceiling",
       "frames": [612]
     },
     {
-      "name": "interiors_6",
+      "name": "Ceiling",
       "frames": [613]
     },
     {
-      "name": "interiors_7",
+      "name": "interiors_0",
       "frames": [614]
     },
     {
-      "name": "leaf_tiles_7",
+      "name": "Tileset_26",
       "frames": [615]
     },
     {
-      "name": "rock_wall_34",
+      "name": "interiors_2",
       "frames": [616]
     },
     {
-      "name": "rock_wall_33",
+      "name": "interiors_4",
       "frames": [617]
     },
     {
-      "name": "border_6",
+      "name": "interiors_5",
       "frames": [618]
     },
     {
-      "name": "border_7",
+      "name": "interiors_1",
       "frames": [619]
     },
     {
-      "name": "border_5",
+      "name": "interiors_3",
       "frames": [620]
     },
     {
-      "name": "rock_wall_border_10",
+      "name": "interiors_6",
       "frames": [621]
     },
     {
-      "name": "rock_wall_border_8",
+      "name": "interiors_7",
       "frames": [622]
     },
     {
-      "name": "border_4",
+      "name": "leaf_tiles_7",
       "frames": [623]
     },
     {
-      "name": "border_0",
+      "name": "rock_wall_34",
       "frames": [624]
     },
     {
-      "name": "rock_wall_border_7",
+      "name": "rock_wall_33",
       "frames": [625]
     },
     {
-      "name": "rock_wall_border_4",
+      "name": "border_6",
       "frames": [626]
     },
     {
-      "name": "border_1",
+      "name": "border_7",
       "frames": [627]
     },
     {
-      "name": "border_2",
+      "name": "border_5",
       "frames": [628]
     },
     {
-      "name": "village_ruins_deco_11",
+      "name": "rock_wall_border_10",
       "frames": [629]
     },
     {
-      "name": "cave_rocks_17",
+      "name": "rock_wall_border_8",
       "frames": [630]
     },
     {
-      "name": "cave_rocks_18",
+      "name": "border_4",
       "frames": [631]
     },
     {
-      "name": "rock_wall_border_15",
+      "name": "border_0",
       "frames": [632]
     },
     {
-      "name": "rock_wall_26",
+      "name": "rock_wall_border_7",
       "frames": [633]
     },
     {
+      "name": "rock_wall_border_4",
+      "frames": [634]
+    },
+    {
+      "name": "border_1",
+      "frames": [635]
+    },
+    {
+      "name": "border_2",
+      "frames": [636]
+    },
+    {
+      "name": "village_ruins_deco_11",
+      "frames": [637]
+    },
+    {
+      "name": "cave_rocks_17",
+      "frames": [638]
+    },
+    {
+      "name": "cave_rocks_18",
+      "frames": [639]
+    },
+    {
+      "name": "rock_wall_border_15",
+      "frames": [640]
+    },
+    {
+      "name": "rock_wall_26",
+      "frames": [641]
+    },
+    {
       "name": "Water11",
-      "frames": [634,635,636,637,637,636,635,634],
+      "frames": [642,643,644,645,645,644,643,642],
       "fps": 4
     },
     {
       "name": "Water12",
-      "frames": [638,639,640,641,641,640,639,638],
+      "frames": [646,647,648,649,649,648,647,646],
       "fps": 4
     },
     {
       "name": "Tileset_51",
-      "frames": [642]
+      "frames": [650]
     },
     {
       "name": "Water4",
-      "frames": [643,644,645,646,646,645,644,643],
-      "fps": 4
-    },
-    {
-      "name": "RiverReeds",
-      "frames": [647,648,649,650],
-      "fps": 4
-    },
-    {
-      "name": "Water5",
       "frames": [651,652,653,654,654,653,652,651],
       "fps": 4
     },
     {
+      "name": "RiverReeds",
+      "frames": [655,656,657,658],
+      "fps": 4
+    },
+    {
+      "name": "Water5",
+      "frames": [659,660,661,662,662,661,660,659],
+      "fps": 4
+    },
+    {
       "name": "rock_wall_border_5",
-      "frames": [655]
+      "frames": [663]
     },
     {
       "name": "rock_wall_border_3",
-      "frames": [656]
+      "frames": [664]
     },
     {
       "name": "rock_wall_border_11",
-      "frames": [657]
+      "frames": [665]
     },
     {
       "name": "rock_wall_border_9",
-      "frames": [658]
+      "frames": [666]
     },
     {
       "name": "Tileset_42",
-      "frames": [659]
+      "frames": [667]
     },
     {
       "name": "Water13",
-      "frames": [660,661,662,663,663,662,661,660],
-      "fps": 4
-    },
-    {
-      "name": "Water3",
-      "frames": [664,665,666,667,667,666,665,664],
-      "fps": 4
-    },
-    {
-      "name": "Water1",
       "frames": [668,669,670,671,671,670,669,668],
       "fps": 4
     },
     {
+      "name": "Water3",
+      "frames": [672,673,674,675,675,674,673,672],
+      "fps": 4
+    },
+    {
+      "name": "Water1",
+      "frames": [676,677,678,679,679,678,677,676],
+      "fps": 4
+    },
+    {
       "name": "cave_rocks_9",
-      "frames": [672]
+      "frames": [680]
     },
     {
       "name": "cave_rocks_8",
-      "frames": [673]
+      "frames": [681]
     },
     {
       "name": "cave_rocks_16",
-      "frames": [674]
+      "frames": [682]
     },
     {
       "name": "cave_rocks_6",
@@ -24430,95 +24445,95 @@
     },
     {
       "name": "rock_wall_border_6",
-      "frames": [675]
+      "frames": [683]
     },
     {
       "name": "rock_wall_28",
-      "frames": [676]
+      "frames": [684]
     },
     {
       "name": "rock_wall_31",
-      "frames": [677]
+      "frames": [685]
     },
     {
       "name": "rock_wall_border_0",
-      "frames": [678]
+      "frames": [686]
     },
     {
       "name": "rock_wall_border_14",
-      "frames": [679]
+      "frames": [687]
     },
     {
       "name": "border_light_1",
-      "frames": [680]
+      "frames": [688]
     },
     {
       "name": "Water8",
-      "frames": [681,682,683,684,684,683,682,681],
+      "frames": [689,690,691,692,692,691,690,689],
       "fps": 4
     },
     {
       "name": "rock_wall_27",
-      "frames": [685]
+      "frames": [693]
     },
     {
       "name": "rock_wall_30",
-      "frames": [686]
+      "frames": [694]
     },
     {
       "name": "Snow1",
-      "frames": [687,688],
+      "frames": [695,696],
       "fps": 4
     },
     {
       "name": "Tileset_27",
-      "frames": [689]
+      "frames": [697]
     },
     {
       "name": "Tileset_40",
-      "frames": [690]
+      "frames": [698]
     },
     {
       "name": "rock_wall_border_1",
-      "frames": [691]
+      "frames": [699]
     },
     {
       "name": "interiors_19",
-      "frames": [692]
+      "frames": [700]
     },
     {
       "name": "Water10",
-      "frames": [693,694,695,696,696,695,694,693],
+      "frames": [701,702,703,704,704,703,702,701],
       "fps": 4
     },
     {
       "name": "Water14",
-      "frames": [697,698,699,700,700,699,698,697],
+      "frames": [705,706,707,708,708,707,706,705],
       "fps": 4
     },
     {
       "name": "Ceiling",
-      "frames": [701]
+      "frames": [709]
     },
     {
       "name": "rock_wall_border_2",
-      "frames": [702]
+      "frames": [710]
     },
     {
       "name": "Tileset_32",
-      "frames": [703]
+      "frames": [711]
     },
     {
       "name": "Tileset_45",
-      "frames": [704]
+      "frames": [712]
     },
     {
       "name": "Tileset_31",
-      "frames": [705]
+      "frames": [713]
     },
     {
       "name": "Tileset_30",
-      "frames": [706]
+      "frames": [714]
     }
   ],
   "sprites": [
@@ -27366,211 +27381,267 @@
       "ppu": 16
     },
     {
+      "name": "ui_player_trackers_full_black",
+      "sheet": 21,
+      "rect": [16,0,9,9],
+      "pivot": [4.5,4.5],
+      "ppu": 32
+    },
+    {
+      "name": "ui_player_trackers_full_black_empty",
+      "sheet": 21,
+      "rect": [32,0,9,9],
+      "pivot": [4.5,4.5],
+      "ppu": 32
+    },
+    {
+      "name": "ui_player_trackers_full_white",
+      "sheet": 21,
+      "rect": [17,17,7,7],
+      "pivot": [3.5,3.5],
+      "ppu": 32
+    },
+    {
+      "name": "ui_player_trackers_full_white_empty",
+      "sheet": 21,
+      "rect": [33,17,7,7],
+      "pivot": [3.5,3.5],
+      "ppu": 32
+    },
+    {
+      "name": "ui_object_trackers_circle3",
+      "sheet": 21,
+      "rect": [17,73,5,5],
+      "pivot": [2.5,2.5],
+      "ppu": 32
+    },
+    {
+      "name": "ui_object_trackers_circle_empty",
+      "sheet": 21,
+      "rect": [1,73,5,5],
+      "pivot": [2.5,2.5],
+      "ppu": 32
+    },
+    {
+      "name": "ui_object_trackers_circle1w",
+      "sheet": 21,
+      "rect": [8,65,5,5],
+      "pivot": [2.5,2.5],
+      "ppu": 32
+    },
+    {
+      "name": "ui_object_trackers_circle_empty_w",
+      "sheet": 21,
+      "rect": [8,73,5,5],
+      "pivot": [2.5,2.5],
+      "ppu": 32
+    },
+    {
       "name": "artifact_frame",
-      "sheet": 24,
+      "sheet": 25,
       "rect": [0,120,160,120],
       "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "ArtifactBG",
-      "sheet": 24,
+      "sheet": 25,
       "rect": [0,0,160,120],
       "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "village_outside_map",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [0,0,160,120],
       "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "ArtifactIcons_empty",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [1,103,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_blank",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [69,69,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_pressed_frame",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [35,69,32,33],
       "pivot": [16,17],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_highlight",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [69,103,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ControllerHoverHighlight",
-      "sheet": 24,
+      "sheet": 25,
       "rect": [160,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_0",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [1,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_0",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [1,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_2",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [0,32,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_1",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [35,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_1",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [35,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_0",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [0,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_2",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [69,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_2",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [69,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_3",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [32,32,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_3",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [103,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_3",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [103,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_4",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [1,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_4",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [1,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_5",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [35,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_5",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [35,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_1",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [32,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_6",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [69,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_6",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [69,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_7",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [103,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_7",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [103,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_8",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [1,69,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_8",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [1,205,32,32],
       "pivot": [16,16],
       "ppu": 100
@@ -32196,6 +32267,11 @@
       "name": "tiles_village",
       "file": "../sheets/tiles_village.png",
       "size": [512,1024]
+    },
+    {
+      "name": "ui",
+      "file": "../sheets/ui.png",
+      "size": [64,128]
     },
     {
       "name": "ui_areaicons",

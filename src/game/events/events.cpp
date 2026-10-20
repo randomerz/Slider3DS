@@ -126,6 +126,9 @@ void runCall(World& world, const CallDef& c) {
     case M::VillageShufflePuzzle:
         world.finale.shufflePuzzle(world);
         break;
+    case M::VillageRemoveSlider2Tracker:
+        world.trackers.remove(world.area.areaGrid.slider2Collectible);
+        break;
     case M::SetColliderEnabled:
         world.objects.setColliderEnabled(c.data, c.boolArg);
         break;

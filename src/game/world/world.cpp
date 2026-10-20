@@ -152,6 +152,17 @@ void World::reloadObjects() {
     starts.reset(area);
     runStarts();
     audio.playMusic(tracks::VILLAGE); // VillageGrid.Start
+    // The Artifact's pins: UITrackerManager.Awake's Player.AddTracker; VillageGrid.Start's on the
+    // Slider 2 collectible while it isn't collected.
+    trackers.clear();
+    if (const UiTrackersDef& u = area.uiTrackers; u.present) {
+        trackers.add({UiTracker::PLAYER, u.playerFullBlackCircle, u.playerFullBlackCircleEmpty, u.playerFullWhiteCircle,
+                      u.playerFullWhiteCircleEmpty, PLAYER_TRACKER_BLINK_S, PLAYER_TRACKER_REPEAT_S});
+        if (area.areaGrid.slider2Collectible >= 0 && !state.hasCollectible("Slider 2", "Village"))
+            trackers.add({area.areaGrid.slider2Collectible, u.circle3, u.circleEmpty, u.circle1W, u.circleEmptyW,
+                          SLIDER2_TRACKER_BLINK_S});
+        trackers.update(*this, 0); // (shown by their targets before the first draw: the manager's LateUpdate)
+    }
     finale.start(*this); // VillageGrid.Start (after every Awake; CheckHole may hide the fragment)
     abduction.start(*this); // CatAbductionController.Start
     sfx.start(*this);       // DistanceBasedAmbience.Start
@@ -257,6 +268,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
     items.update(*this, dt); // (PlayerAction.Update: the carried item follows, the drop spot)
     cats.update(*this);      // (CatTrick.Update: a cat dropped in the zone is back)
+    trackers.update(*this, dt); // (UITracker.Update: the Artifact pins' blinking)
     abduction.update(*this, dt); // (CatAbductionController.Update + its sine wave's)
 
     // Start runs before an object's first update (here: before triggers can touch it), and again
