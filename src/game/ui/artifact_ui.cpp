@@ -7,12 +7,6 @@
 namespace {
 constexpr int DRAG_THRESHOLD = 3; // px of stylus travel before a press becomes a drag (Unity's drag threshold)
 constexpr int IMAGE_HALF = 16;    // button images are 32x32, centered on the slot
-// UITrackerManager's (code constants) and UITracker's.
-constexpr float TRACKER_SCALE = 27.0f / 17.0f;        // UI px per world unit from its tile's center
-constexpr float TRACKER_CENTER = 17;                  // off the grid: from world (17, 17), the grid's middle,
-constexpr float TRACKER_CENTER_SCALE = 37.0f / 17.0f; // at this scale,
-constexpr float TRACKER_CLAMP_X = 70, TRACKER_CLAMP_Y = 60; // clamped to the panel
-constexpr float TRACKER_HOUSE_Y = -75;                // below it: in a house (UITracker.minY)
 }
 
 void ArtifactUI::init(const Area& area, const Artifact& artifact) {
@@ -225,6 +219,14 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
         }
         drop = buttonPressed(grid, artifact, islandId, selected) ? (float)(def.pressedDrop * scale) : 0.0f;
     };
+    // The pins (UITrackerManager.UpdateTrackerPostion: game/grid/ui_trackers), each drawn at its
+    // place's whole UI px from an origin on the screen's 2x grid.
+    std::vector<PinPlace> pins;
+    for (const UiTracker& t : world.trackers.trackers())
+        if (const PinPlace pin = world.trackers.place(world, t, centerY / (float)scale); pin.sprite >= 0) pins.push_back(pin);
+    auto drawPin = [&](const PinPlace& pin, float originX, float originY) {
+        sheets.draw(area, pin.sprite, std::round(originX) + pin.left * scale, std::round(originY) - pin.top * scale, 0, scale);
+    };
     for (const ArtifactButtonDef& b : def.buttons) { // Button1..9 sibling order
         int bx, by;
         if (!artifact.findButton(b.islandId, bx, by)) continue;
@@ -242,49 +244,16 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
             for (int i = 0; i < (int)b.icons.size(); i++)
                 if (world.artifactButtons.iconShown(b.islandId, i))
                     drawPart(b.icons[i].sprite, b.icons[i].x, b.icons[i].y, b.icons[i].h, cx, cy + drop);
+        // Its pins: children of its Image, under its highlight and pressed frames (ButtonSprites:
+        // Image, Border, Shadow), moving with the image.
+        for (const PinPlace& pin : pins)
+            if (pin.island == b.islandId) drawPin(pin, cx, cy + drop);
         if (option && !hovered)
             drawPart(def.highlight.sprite, def.highlight.x, def.highlight.y, def.highlight.h, cx, cy + drop);
         if (pressed) drawPart(def.pressed.sprite, def.pressed.x, def.pressed.y, def.pressed.h, cx, cy);
     }
 
-    // The pins (UITrackerManager.UpdateTrackerPostion), over the buttons, centered on their spot.
-    const UiTrackersDef& td = area.uiTrackers;
-    for (const UiTracker& t : world.trackers.trackers()) {
-        if (!t.shown) continue;
-        float x, y;
-        if (t.object == UiTracker::PLAYER) {
-            x = world.player.x;
-            y = world.player.y;
-        } else {
-            world.objectPosition(t.object, x, y);
-        }
-        const int island = grid.stileUnder(x, y);
-        int bx, by, sprite;
-        float sx, sy;
-        const auto halfHeight = [&](int s) { return s >= 0 ? area.sprites[s].h * 0.5f : 0.0f; };
-        if (island > 0 && artifact.findButton(island, bx, by)) { // on its tile's button (CalculateOffset)
-            float drop;
-            buttonCenter(island, bx, by, sx, sy, drop);
-            sy += drop;
-            const bool inHouse = y < TRACKER_HOUSE_Y; // (UITracker.GetIsInHouse)
-            if (!inHouse || td.trackHousingAccurately) {
-                float tx, ty;
-                grid.ownerBase(island, tx, ty);
-                sx += (x - tx) * TRACKER_SCALE * scale;
-                sy -= (y - (inHouse ? area.housingOffset : 0) - ty) * TRACKER_SCALE * scale;
-            } // (in a house: the button's center)
-            sprite = t.blinking ? t.blinkSprite : t.sprite;
-        } else { // off the grid: on the panel, clamped (CalculateOffsetNullTile), its off-map sprites
-            sprite = t.offMapSprite >= 0 ? (t.blinking ? t.offMapBlinkSprite : t.offMapSprite)
-                                         : (t.blinking ? t.blinkSprite : t.sprite);
-            // (port: the screen shows 120 of the panel's 150 UI px: Unity's +-60 clamp would leave
-            // half the pin past the edge — clamped to keep it whole)
-            const float clampY = std::min(TRACKER_CLAMP_Y, centerY / (float)scale - halfHeight(sprite));
-            sx = centerX + std::clamp((x - TRACKER_CENTER) * TRACKER_CENTER_SCALE, -TRACKER_CLAMP_X, TRACKER_CLAMP_X) * scale;
-            sy = centerY - std::clamp((y - TRACKER_CENTER) * TRACKER_CENTER_SCALE, -clampY, clampY) * scale;
-        }
-        if (sprite < 0) continue;
-        const SpriteDef& S = area.sprites[sprite];
-        sheets.draw(area, sprite, sx - S.w * scale * 0.5f, sy - S.h * scale * 0.5f, 0, scale);
-    }
+    // Pins off the grid: children of the panel, after the buttons.
+    for (const PinPlace& pin : pins)
+        if (pin.island == 0) drawPin(pin, (float)centerX, (float)centerY);
 }

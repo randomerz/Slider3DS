@@ -4,7 +4,7 @@
 
 #include "game/events/events.h"
 #include "game/ui/artifact_ui.h"
-#include "game/ui/ui_trackers.h"
+#include "game/grid/ui_trackers.h"
 #include "game/world/world.h"
 #include "test.h"
 #include "test_platform.h"
@@ -68,44 +68,165 @@ TEST(ui_trackers_remove_slider2_tracker_call) {
     CHECK(w.trackers.trackers().size() == 1 && find(w, UiTracker::PLAYER) != nullptr);
 }
 
-TEST(ui_trackers_pins_land_on_their_tiles_button_or_clamped_off_the_grid) {
-    const Area& area = villageArea();
-    SpriteSheets sheets;
-    check(sheets.load(area), "sheets load");
-    World w(area, DEFAULT_SETTINGS);
-    w.artifact.init(w.grid);
+namespace {
+
+// An Artifact on the Village (tiles 1-8 collected or just tile 1), drawn into the test platform.
+struct Board {
+    World w{villageArea(), DEFAULT_SETTINGS};
     ArtifactUI ui;
-    ui.init(area, w.artifact);
-    w.trackers.remove(area.areaGrid.slider2Collectible); // (just the player's)
-    const auto pinCenter = [&](float& x, float& y, int& sprite) {
+    SpriteSheets sheets;
+    explicit Board(bool allButNine = false) {
+        check(sheets.load(villageArea()), "sheets load");
+        if (allButNine)
+            for (int id = 1; id <= 8; id++) w.setTileActive(id, true);
+        w.artifact.init(w.grid);
+        ui.init(villageArea(), w.artifact);
+    }
+    void touch(bool down, int x, int y, int frames = 1) {
+        for (int i = 0; i < frames; i++) {
+            plat::Input in;
+            in.touching = down;
+            float cx, cy;
+            ui.slotCenter(villageArea(), x, y, cx, cy);
+            in.touchX = (int)cx;
+            in.touchY = (int)cy;
+            ui.update(in, w, DT);
+            w.artifact.update(w.grid, DT, 0);
+        }
+    }
+    void draw() {
         testResetDrawCalls();
         ui.draw(w, sheets);
-        const DrawCall& d = testDrawCalls().back(); // (pins come last)
-        x = d.x + d.sw * ui.scale * 0.5f;
-        y = d.y + d.sh * ui.scale * 0.5f;
-        sprite = d.sw;
-    };
-    // Outdoors on tile 1, 1 unit right and 2 up of its center: its button + 27/17 UI px per unit.
+    }
+};
+
+bool isSprite(const DrawCall& d, int sprite) {
+    const SpriteDef& S = villageArea().sprites[sprite];
+    return sprite >= 0 && d.sheet == villageArea().sheetNames[S.sheet] && d.sx == S.x && d.sy == S.y && d.sw == S.w &&
+           d.sh == S.h;
+}
+
+// The draw of `sprite` (index in the draw list; -1: none).
+int drawOf(int sprite) {
+    const std::vector<DrawCall>& calls = testDrawCalls();
+    for (int i = 0; i < (int)calls.size(); i++)
+        if (isSprite(calls[i], sprite)) return i;
+    return -1;
+}
+
+// The pins drawn (the ui sheet's).
+std::vector<DrawCall> pinDraws() {
+    std::vector<DrawCall> out;
+    for (const DrawCall& d : testDrawCalls())
+        if (d.sheet == villageArea().sheetNames[villageArea().sprites[villageArea().uiTrackers.circle3].sheet]) out.push_back(d);
+    return out;
+}
+
+} // namespace
+
+TEST(ui_trackers_pins_land_on_their_tiles_button_or_clamped_off_the_grid) {
+    const Area& area = villageArea();
+    const UiTrackersDef& u = area.uiTrackers;
+    Board b;
+    b.w.trackers.remove(area.areaGrid.slider2Collectible); // (just the player's)
+    const int scale = b.ui.scale;
+    // Outdoors on tile 1, 1 unit right and 2 up of its center: its button + 27/17 UI px per unit,
+    // on whole UI px from the button image's 2x grid.
     float tx, ty;
-    w.grid.ownerBase(1, tx, ty);
-    w.player.x = tx + 1;
-    w.player.y = ty + 2;
+    b.w.grid.ownerBase(1, tx, ty);
+    b.w.player.x = tx + 1;
+    b.w.player.y = ty + 2;
     int bx, by;
-    CHECK(w.artifact.findButton(1, bx, by));
-    float cx, cy, x, y;
-    int size;
-    ui.slotCenter(area, bx, by, cx, cy);
-    pinCenter(x, y, size);
-    CHECK(std::abs(x - (cx + 27.0f / 17.0f * ui.scale)) <= 1 && std::abs(y - (cy - 2 * 27.0f / 17.0f * ui.scale)) <= 1);
-    CHECK(size == area.sprites[area.uiTrackers.playerFullBlackCircle].w);
+    CHECK(b.w.artifact.findButton(1, bx, by));
+    float cx, cy;
+    b.ui.slotCenter(area, bx, by, cx, cy);
+    b.draw();
+    const int image = drawOf(area.artifact.buttons[0].island);
+    CHECK(image >= 0 && pinDraws().size() == 1);
+    if (image < 0 || pinDraws().size() != 1) return;
+    DrawCall pin = pinDraws()[0];
+    const DrawCall& img = testDrawCalls()[image];
+    const float px = pin.x + pin.sw * scale * 0.5f, py = pin.y + pin.sh * scale * 0.5f;
+    CHECK(std::abs(px - (cx + 27.0f / 17.0f * scale)) <= scale && std::abs(py - (cy - 2 * 27.0f / 17.0f * scale)) <= scale);
+    CHECK((int)(pin.x - img.x) % scale == 0 && (int)(pin.y - img.y) % scale == 0); // (the button's pixel grid)
+    CHECK(isSprite(pin, u.playerFullBlackCircle));
     // In its house (below y -75): the button's center.
-    w.player.y = ty + area.housingOffset;
-    pinCenter(x, y, size);
-    CHECK(std::abs(x - cx) <= 1 && std::abs(y - cy) <= 1);
+    b.w.player.y = ty + area.housingOffset;
+    b.draw();
+    pin = pinDraws()[0];
+    CHECK(std::abs(pin.x + pin.sw * scale * 0.5f - cx) <= scale && std::abs(pin.y + pin.sh * scale * 0.5f - cy) <= scale);
     // Off the grid, far up and right: clamped on the panel, whole on screen, the white off-map pin.
-    w.player.x = 80;
-    w.player.y = 90;
-    pinCenter(x, y, size);
-    CHECK(size == area.sprites[area.uiTrackers.playerFullWhiteCircle].w);
-    CHECK(std::abs(x - (ui.centerX + 70 * ui.scale)) <= 1 && y - size * ui.scale * 0.5f >= 0);
+    b.w.player.x = 80;
+    b.w.player.y = 90;
+    b.draw();
+    pin = pinDraws()[0];
+    CHECK(isSprite(pin, u.playerFullWhiteCircle) && pin.y >= 0 && (int)(pin.x - b.ui.centerX) % scale == 0);
+    CHECK(std::abs(pin.x + pin.sw * scale * 0.5f - (b.ui.centerX + 70 * scale)) <= scale);
+}
+
+TEST(ui_trackers_hidden_and_blinking_pins_draw_as_they_should) {
+    const Area& area = villageArea();
+    const UiTrackersDef& u = area.uiTrackers;
+    const int slider2 = area.areaGrid.slider2Collectible;
+    Board b;
+    // Slider 2's pin: off the grid (white), blinking for its first 3 s — the empty one half the time.
+    bool sawFull = false, sawEmpty = false;
+    for (int f = 0; f < 120; f++) {
+        b.w.trackers.update(b.w, DT);
+        b.draw();
+        sawFull = sawFull || drawOf(u.circle1W) >= 0;
+        sawEmpty = sawEmpty || drawOf(u.circleEmptyW) >= 0;
+        check(!(drawOf(u.circle1W) >= 0 && drawOf(u.circleEmptyW) >= 0), "one sprite at a time");
+    }
+    CHECK(sawFull && sawEmpty);
+    // Its target hidden: no pin.
+    b.w.objects.setActive(area, slider2, false);
+    b.w.trackers.update(b.w, DT);
+    b.draw();
+    CHECK(drawOf(u.circle1W) < 0 && drawOf(u.circleEmptyW) < 0 && pinDraws().size() == 1);
+    // The player's, on its tile, mid-blink: the empty circle.
+    while (!b.w.trackers.trackers()[0].blinking) b.w.trackers.update(b.w, DT);
+    b.draw();
+    CHECK(drawOf(u.playerFullBlackCircleEmpty) >= 0 && drawOf(u.playerFullBlackCircle) < 0);
+}
+
+TEST(ui_trackers_pin_moves_with_its_button_under_its_frames) {
+    const Area& area = villageArea();
+    Board b(true);
+    b.w.trackers.remove(area.areaGrid.slider2Collectible);
+    const int pinSprite = area.uiTrackers.playerFullBlackCircle;
+    // The player outdoors on tile 7: where its pin sits on the button image, at rest.
+    float tx, ty;
+    b.w.grid.ownerBase(7, tx, ty);
+    b.w.player.x = tx - 2;
+    b.w.player.y = ty + 1;
+    const int island7 = area.artifact.buttons[6].island;
+    b.draw();
+    const int restImage = drawOf(island7), restPin = drawOf(pinSprite);
+    CHECK(restImage >= 0 && restPin > restImage);
+    if (restImage < 0 || restPin < 0) return;
+    const DrawCall rest = testDrawCalls()[restImage]; // (copied: the next draw replaces the list)
+    const float dx = testDrawCalls()[restPin].x - rest.x, dy = testDrawCalls()[restPin].y - rest.y;
+    // Tapped: pressed, its image (and the pin with it) one UI px lower, the pin under the pressed frame.
+    b.touch(true, 2, 1);
+    b.touch(false, 2, 1);
+    b.draw();
+    int image = drawOf(island7), pin = drawOf(pinSprite), pressed = drawOf(area.artifact.pressed.sprite);
+    CHECK(image >= 0 && pin > image && pressed > pin);
+    CHECK(testDrawCalls()[image].y == rest.y + area.artifact.pressedDrop * b.ui.scale);
+    CHECK(testDrawCalls()[pin].x - testDrawCalls()[image].x == dx && testDrawCalls()[pin].y - testDrawCalls()[image].y == dy);
+    // Moved to the middle slot: once the tile has stopped (the player kept still where it was), the
+    // button still nudging into its slot — the pin rides the image's offset for the new spot.
+    b.touch(true, 1, 1);
+    b.touch(false, 1, 1);
+    for (int i = 0; i < 600 && !b.w.artifact.queueEmpty(); i++) b.touch(false, 0, 0);
+    b.w.grid.ownerBase(7, tx, ty);
+    b.w.player.x = tx - 2;
+    b.w.player.y = ty + 1;
+    b.draw();
+    image = drawOf(island7);
+    pin = drawOf(pinSprite);
+    CHECK(image >= 0 && pin > image);
+    if (image >= 0 && pin >= 0)
+        CHECK(testDrawCalls()[pin].x - testDrawCalls()[image].x == dx && testDrawCalls()[pin].y - testDrawCalls()[image].y == dy);
 }

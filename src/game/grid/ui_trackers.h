@@ -1,8 +1,8 @@
 // UITrackerManager + UITracker: pins on the Artifact that follow something in the world — the
 // player (Player.AddTracker: the playerFull* circles, blinking 3 s every 10 s) and, until Slider 2 is
-// collected, VillageGrid.Start's pin on its collectible (circle3, blinking 3 s once). World::trackers
-// (added in reloadObjects, as each scene start's; VillageGrid.RemoveSlider2Tracker removes that one);
-// ArtifactUI draws them over the buttons.
+// collected, VillageGrid.Start's pin on its collectible (game/village: circle3, blinking 3 s once).
+// World::trackers (set in reloadObjects, as each scene start's; VillageGrid.RemoveSlider2Tracker
+// removes that one); `place` says where each goes, ArtifactUI draws them.
 //   A pin shows while its target is active in the hierarchy (the manager's SetActive); showing again
 // restarts its blinking (OnEnable). While blinking it shows its blink sprite for half of each second.
 // Off the grid it shows its "off map" sprites (white), if it has them.
@@ -28,6 +28,13 @@ struct UiTracker {
     float blinkLeft = 0, toSwap = 1, repeatLeft = 0;
 };
 
+// Where a pin goes (UITrackerManager.UpdateTrackerPostion) and what it shows (DetermineCurrentSprite).
+struct PinPlace {
+    int island = 0;   // on this tile's button (its image's center is the origin); 0: on the panel (its center)
+    int left = 0, top = 0; // the sprite's top-left, whole UI px (y up, so `top` is its upper edge)
+    int sprite = -1;  // Area::sprites (-1: nothing to draw)
+};
+
 class UiTrackers {
 public:
     void clear() { trackers_.clear(); }
@@ -37,6 +44,14 @@ public:
     // UITracker.Update for `dt` s, after the manager's SetActive(target.activeInHierarchy).
     void update(const World& world, float dt);
     const std::vector<UiTracker>& trackers() const { return trackers_; }
+
+    // Where `t` goes: on the button of the tile under its target, from the tile's center at 27/17
+    // UI px per world unit (in a house: the button's center); else on the panel from the grid's
+    // middle (17, 17) at 37/17, clamped — to +-70 x, and to `panelHalfH` (the UI px of the panel
+    // the screen shows above / below its center) less half the pin, so it stays whole (port: Unity's
+    // +-60 would cut it in half on the 3DS's cropped view). Snapped to whole UI px (the Artifact's
+    // pixel grid). Not shown: sprite -1.
+    PinPlace place(const World& world, const UiTracker& t, float panelHalfH) const;
 
 private:
     std::vector<UiTracker> trackers_;

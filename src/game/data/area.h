@@ -700,7 +700,7 @@ struct UiTrackersDef {
     int playerFullWhiteCircle = -1, playerFullWhiteCircleEmpty = -1;
     int circle3 = -1, circleEmpty = -1, circle1W = -1, circleEmptyW = -1;
     float uiPerPixel = 1; // Artifact UI px per sprite pixel (SetNativeSize; the port draws 1)
-    bool trackHousingAccurately = false;
+    bool trackHousingAccurately = false; // (not ported: refused at load)
 };
 
 // CameraDolly: a cutscene camera rolling along a Cinemachine path, given as where the camera is over

@@ -940,11 +940,13 @@ static bool validate(const Area& a, std::string* error) {
     if (a.areaGrid.slider2Collectible != -1 && !objectOk(a.areaGrid.slider2Collectible))
         return fail(error, "area grid: bad slider2Collectible");
     if (const UiTrackersDef& t = a.uiTrackers; t.present) {
-        bool ok = t.uiPerPixel == 1; // (the port draws them at the Artifact's scale: 1 UI px per sprite pixel)
+        // (the port draws them at the Artifact's scale, 1 UI px per sprite pixel, and doesn't port
+        // trackHousingAccurately — a pin in a house sits on its button's center)
+        bool ok = std::abs(t.uiPerPixel - 1) < 1e-3f && !t.trackHousingAccurately;
         for (int s : {t.playerFullBlackCircle, t.playerFullBlackCircleEmpty, t.playerFullWhiteCircle,
                       t.playerFullWhiteCircleEmpty, t.circle3, t.circleEmpty, t.circle1W, t.circleEmptyW})
             ok = ok && s >= -1 && s < (int)a.sprites.size();
-        if (!ok) return fail(error, "ui trackers: bad sprite index, or not 1 UI px per pixel");
+        if (!ok) return fail(error, "ui trackers: bad sprite index, not 1 UI px per pixel, or trackHousingAccurately");
     }
     if (const CatAbductionDef& ca = a.areaGrid.catAbduction; ca.present) {
         const bool itemOk = ca.item >= 0 && ca.item < (int)a.items.size() && a.items[ca.item].spriteObject >= 0 &&

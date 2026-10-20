@@ -16,7 +16,7 @@
 #include "game/fx/screen_effects.h"
 #include "game/grid/artifact.h"
 #include "game/grid/artifact_buttons.h"
-#include "game/ui/ui_trackers.h"
+#include "game/grid/ui_trackers.h"
 #include "game/world/game_state.h"
 #include "game/grid/grid.h"
 #include "game/items/items.h"

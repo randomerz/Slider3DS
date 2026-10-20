@@ -36,6 +36,19 @@ void waterfallEntry(World& world) {
 
 void houseExit(World& world) { world.intro.houseExit(world); }
 
+void addSlider2Tracker(World& world) {
+    const Area& area = world.area;
+    const UiTrackersDef& u = area.uiTrackers;
+    const int object = area.areaGrid.slider2Collectible;
+    if (!u.present || object < 0) return;
+    for (const CollectibleDef& c : area.collectibles) // (its name and area: the collectible's own)
+        if (c.object == object && !world.state.hasCollectible(c.name, c.area)) {
+            // AddNewTracker(circle3) with its defaults: circleEmpty, circle1W, circleEmptyW.
+            world.trackers.add({object, u.circle3, u.circleEmpty, u.circle1W, u.circleEmptyW, SLIDER2_TRACKER_BLINK_S});
+            return;
+        }
+}
+
 bool checkSpec(const World& world, const ConditionDef& c) {
     switch (c.spec) {
     case ConditionDef::Spec::VillageFishOn: return world.state.flag(FISH_ON_FLAG); // CheckFishOn
