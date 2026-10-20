@@ -1,3 +1,3 @@
 # Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
-chad_walking 947:2fe8c8cb854d8f06
-romeo_walking 959:a9f52d11700c6d96
+chad_walking 675:d6768d541f785f95
+romeo_walking 685:feaf72dce8878d02

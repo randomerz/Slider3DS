@@ -20,6 +20,11 @@ void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, f
     time_ = time;
     showInactive_ = showInactiveTiles;
     spriteCount_ = tileCount_ = 0;
+    if (tilesFor_ != &area || tileSheets_ != &sheets) prepareTiles(area);
+    for (int i : animatedTiles_) { // (each animated tile's frame once, not per cell)
+        const TileDef& T = area.tiles[i];
+        tileFrame_[i] = T.frames[(size_t)(time_ * T.fps) % T.frames.size()];
+    }
 }
 
 void AreaView::worldToScreen(float wx, float wy, float& sx, float& sy) const {
@@ -200,7 +205,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     for (const Item& it : items_) {
         if (it.kind == ItemKind::Layer) {
             const ProfScope tiles(ProfSection::DrawTiles); // (a scope per layer, not per cell: ~2 clock reads)
-            drawLayer(area, grid, area.layers[it.index]);
+            drawLayer(area, grid, it.index);
         } else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
         else if (it.kind == ItemKind::Text) drawWorldText(world, it.index);
         else if (it.kind == ItemKind::Line) drawLine(lines_[it.index]);
@@ -280,37 +285,85 @@ void AreaView::drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace
     }
 }
 
-void AreaView::drawLayer(const Area& area, const Grid& grid, const TileLayer& L) {
-    const float halfW = screenW_ / (2 * ppu_), halfH = screenH_ / (2 * ppu_);
+void AreaView::prepareTiles(const Area& area) {
+    tilesFor_ = &area;
+    tileSheets_ = sheets_;
+    tileSprites_.assign(area.sprites.size(), TileSprite{});
+    for (size_t i = 0; i < area.sprites.size(); i++) {
+        const SpriteDef& S = area.sprites[i];
+        TileSprite& t = tileSprites_[i];
+        if (S.outlineWidth == 0 && S.sheet >= 0) t.tex = sheets_->texture(S.sheet);
+        t.x = (int16_t)S.x;
+        t.y = (int16_t)S.y;
+        t.w = (int16_t)S.w;
+        t.h = (int16_t)S.h;
+        t.offX = -S.pivotX / S.ppu * ppu_;
+        t.offY = -(S.h - S.pivotY) / S.ppu * ppu_;
+    }
+    tileFrame_.assign(area.tiles.size(), -1);
+    animatedTiles_.clear();
+    for (size_t i = 0; i < area.tiles.size(); i++) {
+        const TileDef& T = area.tiles[i];
+        if (!T.frames.empty()) tileFrame_[i] = T.frames[0];
+        if (T.frames.size() > 1) animatedTiles_.push_back((int)i);
+    }
+    layerBounds_.assign(area.layers.size(), LayerBounds{});
+    for (size_t li = 0; li < area.layers.size(); li++) {
+        LayerBounds& b = layerBounds_[li];
+        bool any = false;
+        for (int16_t v : area.layers[li].cells) {
+            if (v < 0) continue;
+            for (int s : area.tiles[v].frames) {
+                const TileSprite& t = tileSprites_[s];
+                if (!any || t.offX < b.left) b.left = t.offX;
+                if (!any || t.offX + t.w > b.right) b.right = t.offX + t.w;
+                if (!any || t.offY < b.top) b.top = t.offY;
+                if (!any || t.offY + t.h > b.bottom) b.bottom = t.offY + t.h;
+                any = true;
+            }
+        }
+    }
+}
+
+namespace {
+
+// std::round's halves away from zero, without the library call (screen coordinates: small values).
+float roundPx(float v) { return (float)(int)(v >= 0 ? v + 0.5f : v - 0.5f); }
+
+} // namespace
+
+void AreaView::drawLayer(const Area& area, const Grid& grid, int layer) {
+    const TileLayer& L = area.layers[layer];
+    const LayerBounds& b = layerBounds_[layer];
     float baseX, baseY;
     grid.ownerBase(L.owner, baseX, baseY);
-    // World position of cell (0,0)'s min corner.
-    const float ox = baseX + L.originX + L.minX, oy = baseY + L.originY + L.minY;
-
-    // Visible cells, with a margin for sprites larger than one cell.
-    int x0 = std::max(0, (int)std::floor(camX_ - halfW - ox) - 1);
-    int x1 = std::min(L.w - 1, (int)std::ceil(camX_ + halfW - ox) + 1);
-    int y0 = std::max(0, (int)std::floor(camY_ - halfH - oy) - 2);
-    int y1 = std::min(L.h - 1, (int)std::ceil(camY_ + halfH - oy) + 1);
-
+    // The screen position of cell (0, 0)'s anchor point (each sprite's pivot sits on its cell's);
+    // a cell is ppu_ px right per column, up per row.
+    const float ax = (baseX + L.originX + L.minX + L.anchorX - camX_) * ppu_ + screenW_ * 0.5f;
+    const float ay = (camY_ - (baseY + L.originY + L.minY + L.anchorY)) * ppu_ + screenH_ * 0.5f;
+    // The cells whose sprites can reach the screen (a cell more each way: the check below is exact).
+    const int x0 = std::max(0, (int)std::floor((-b.right - ax) / ppu_));
+    const int x1 = std::min(L.w - 1, (int)std::ceil((screenW_ - b.left - ax) / ppu_));
+    const int y0 = std::max(0, (int)std::floor((ay + b.top - screenH_) / ppu_));
+    const int y1 = std::min(L.h - 1, (int)std::ceil((ay + b.bottom) / ppu_));
+    const float w = (float)screenW_, h = (float)screenH_;
     for (int cy = y0; cy <= y1; cy++) {
+        const int16_t* row = &L.cells[(size_t)cy * L.w];
+        const uint8_t* xform = L.xform.empty() ? nullptr : &L.xform[(size_t)cy * L.w];
+        const float rowY = ay - cy * ppu_;
         for (int cx = x0; cx <= x1; cx++) {
-            int v = L.cell(cx, cy);
+            const int v = row[cx];
             if (v < 0) continue;
-            const TileDef& T = area.tiles[v];
-            if (T.frames.empty()) continue;
-            int frame = T.frames.size() > 1
-                ? T.frames[(size_t)(time_ * T.fps) % T.frames.size()]
-                : T.frames[0];
-            const SpriteDef& S = area.sprites[frame];
-
-            // The sprite's pivot sits on the cell's anchor point.
-            float left = ox + cx + L.anchorX - S.pivotX / S.ppu;
-            float top = oy + cy + L.anchorY - S.pivotY / S.ppu + S.h / S.ppu;
-            float px, py;
-            worldToScreen(left, top, px, py);
-            uint32_t flags = L.xform.empty() ? 0 : L.xform[cy * L.w + cx];
-            sheets_->draw(area, frame, px, py, flags);
+            const int s = tileFrame_[v];
+            if (s < 0) continue;
+            const TileSprite& t = tileSprites_[s];
+            const float px = roundPx(ax + cx * ppu_ + t.offX), py = roundPx(rowY + t.offY);
+            if (px >= w || py >= h || px + t.w <= 0 || py + t.h <= 0) continue;
+            const uint32_t flags = xform ? xform[cx] : 0;
+            if (t.tex)
+                plat::drawSprite(t.tex, t.x, t.y, t.w, t.h, px, py, flags);
+            else
+                sheets_->draw(area, s, px, py, flags);
             spriteCount_++;
             tileCount_++;
         }

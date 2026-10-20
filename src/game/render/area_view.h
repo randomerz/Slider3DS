@@ -67,7 +67,8 @@ private:
         uint32_t color;
     };
 
-    void drawLayer(const Area& area, const Grid& grid, const TileLayer& L);
+    void drawLayer(const Area& area, const Grid& grid, int layer); // Area::layers index
+    void prepareTiles(const Area& area); // tileSprites_ / layerBounds_ / tileFrame_, once per Area
     void drawSprite(const Area& area, const SortedSprite& sp); // if on screen
     void drawDialogue(const World& world, int npc);
     void drawWorldText(const World& world, int i); // texts_[i]
@@ -101,4 +102,21 @@ private:
         std::vector<GlyphPlace> glyphs;
     };
     std::vector<TextLayout> textLayouts_; // per texts_ entry, redone when its box or text changes
+
+    // Tile cells, the bulk of a frame's sprites (~5 us each on an Old 3DS with the general path):
+    // what each needs is worked out once per Area, so a cell is a few adds and one plat::drawSprite.
+    struct TileSprite {
+        plat::Texture* tex = nullptr; // null: an outline sprite (drawn the general way)
+        int16_t x = 0, y = 0, w = 0, h = 0; // its rect in the sheet
+        float offX = 0, offY = 0; // screen px from the cell's anchor point to its top-left (pivot on the anchor)
+    };
+    struct LayerBounds { // the layer's sprites' extents around a cell's anchor, screen px (for culling)
+        float left = 0, right = 0, top = 0, bottom = 0;
+    };
+    const Area* tilesFor_ = nullptr;        // the Area and sheets these were prepared for
+    const SpriteSheets* tileSheets_ = nullptr;
+    std::vector<TileSprite> tileSprites_;   // per Area::sprites
+    std::vector<LayerBounds> layerBounds_;  // per Area::layers
+    std::vector<int> tileFrame_;            // per Area::tiles: its sprite this frame (-1: draws nothing)
+    std::vector<int> animatedTiles_;        // tiles with several frames (tileFrame_ set each begin())
 };
