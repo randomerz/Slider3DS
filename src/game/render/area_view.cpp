@@ -419,6 +419,8 @@ void AreaView::prepareTiles(const Area& area) {
                 solidRects_[li].push_back({(int16_t)cx, (int16_t)cy, (int16_t)w, (int16_t)h, c});
             }
         // The lines over them: runs of one color and width along a row (top / bottom) or a column.
+        // (Only cells still in the runs (color[c]) give lines: an excluded cell draws its own sprite,
+        // lines included, after the rects — so the gate saves draws, it isn't needed for the pixels.)
         for (int side = 0; side < 4; side++) {
             const bool alongRow = side < 2;
             using Line = std::pair<uint32_t, uint8_t>; // (color, width; width 0: none)
