@@ -1,6 +1,7 @@
 #include "game/render/area_view.h"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <optional>
@@ -293,6 +294,19 @@ void AreaView::drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace
     }
 }
 
+namespace {
+
+// A sprite side (0 top, 1 bottom, 2 left, 3 right) on screen after a cell's xform: rotated 90 CCW,
+// then flipped (plat::DrawFlags' order).
+int screenSide(int side, uint32_t flags) {
+    if (flags & plat::ROT90) side = side == 0 ? 2 : side == 1 ? 3 : side == 2 ? 1 : 0;
+    if (flags & plat::FLIP_X) side = side == 2 ? 3 : side == 3 ? 2 : side;
+    if (flags & plat::FLIP_Y) side = side == 0 ? 1 : side == 1 ? 0 : side;
+    return side;
+}
+
+} // namespace
+
 // Keyed by the Area's and the sheets' addresses: both are loaded once for the app's life (main) or a
 // test's. A future in-place reload of either (dev hot-reload) must reset tilesFor_ (textures and
 // tile indices would go stale).
@@ -343,15 +357,31 @@ void AreaView::prepareTiles(const Area& area) {
         }
         // The cell's own square, from its anchor (screen px; y down).
         const float cellL = -L.anchorX * ppu_, cellR = cellL + ppu_, cellT = -(1 - L.anchorY) * ppu_, cellB = cellT + ppu_;
-        // Solid cells (one color, one frame, filling exactly their cell) ...
+        // Solid cells (one color, one frame, filling exactly their cell), and edge-lined ones: their
+        // base joins the color runs, their lines (on the screen sides the cell's flips and rotation
+        // put them) make runs of their own ...
         std::vector<uint32_t> color(L.cells.size(), 0);
+        std::vector<std::array<uint32_t, 4>> lineColor(L.cells.size());
+        std::vector<std::array<uint8_t, 4>> lineW(L.cells.size());
         for (size_t c = 0; c < L.cells.size(); c++) {
             const int v = L.cells[c];
             if (v < 0 || area.tiles[v].frames.size() != 1) continue;
             const int s = area.tiles[v].frames[0];
             const TileSprite& t = tileSprites_[s];
-            if (area.sprites[s].solid && t.offX == cellL && t.offY == cellT && t.w == ppu_ && t.h == ppu_)
-                color[c] = area.sprites[s].solid;
+            const SpriteDef& S = area.sprites[s];
+            if (t.offX != cellL || t.offY != cellT || t.w != ppu_ || t.h != ppu_) continue;
+            if (S.solid) {
+                color[c] = S.solid;
+            } else if (S.edgedBase) {
+                color[c] = S.edgedBase;
+                const uint32_t flags = L.xform.empty() ? 0 : L.xform[c];
+                for (int side = 0; side < 4; side++) {
+                    if (!S.edgeWidth[side]) continue;
+                    const int on = screenSide(side, flags);
+                    lineColor[c][on] = S.edgeColor[side];
+                    lineW[c][on] = S.edgeWidth[side];
+                }
+            }
         }
         // ... but not under another cell's sprite reaching past its own cell (a tall one): those stay
         // sprites, drawn in the cells' order.
@@ -388,6 +418,27 @@ void AreaView::prepareTiles(const Area& area) {
                     for (int i = 0; i < w; i++) used[(size_t)(cy + j) * L.w + cx + i] = 1;
                 solidRects_[li].push_back({(int16_t)cx, (int16_t)cy, (int16_t)w, (int16_t)h, c});
             }
+        // The lines over them: runs of one color and width along a row (top / bottom) or a column.
+        for (int side = 0; side < 4; side++) {
+            const bool alongRow = side < 2;
+            using Line = std::pair<uint32_t, uint8_t>; // (color, width; width 0: none)
+            const Line none{}; // (0, 0)
+            auto line = [&](int cx, int cy) -> Line {
+                const size_t c = (size_t)cy * L.w + cx;
+                return color[c] && lineW[c][side] ? Line{lineColor[c][side], lineW[c][side]} : none;
+            };
+            for (int cy = 0; cy < L.h; cy++)
+                for (int cx = 0; cx < L.w; cx++) {
+                    const auto here = line(cx, cy);
+                    if (!here.second) continue;
+                    const Line before = alongRow ? (cx > 0 ? line(cx - 1, cy) : none) : (cy > 0 ? line(cx, cy - 1) : none);
+                    if (before == here) continue; // (inside a run started earlier)
+                    int n = 1;
+                    while (alongRow ? cx + n < L.w && line(cx + n, cy) == here : cy + n < L.h && line(cx, cy + n) == here) n++;
+                    solidRects_[li].push_back({(int16_t)cx, (int16_t)cy, (int16_t)(alongRow ? n : 1), (int16_t)(alongRow ? 1 : n),
+                                               here.first, (uint8_t)(LINE_TOP + side), here.second});
+                }
+        }
     }
 }
 
@@ -425,9 +476,13 @@ void AreaView::drawLayer(const Area& area, const Grid& grid, int layer) {
     for (const SolidRect& r : solidRects_[layer]) {
         if (r.cx > x1 || r.cx + r.w - 1 < x0 || r.cy > y1 || r.cy + r.h - 1 < y0) continue;
         const float px = roundPx(ax + r.cx * ppu_ + cellL), py = roundPx(ay - (r.cy + r.h - 1) * ppu_ + cellT);
-        const float rw = r.w * ppu_, rh = r.h * ppu_;
-        if (px >= w || py >= h || px + rw <= 0 || py + rh <= 0) continue;
-        plat::drawRect(px, py, rw, rh, r.color);
+        float rx = px, ry = py, rw = r.w * ppu_, rh = r.h * ppu_;
+        if (r.part == LINE_TOP) rh = r.lineW;
+        else if (r.part == LINE_BOTTOM) ry += rh - r.lineW, rh = r.lineW;
+        else if (r.part == LINE_LEFT) rw = r.lineW;
+        else if (r.part == LINE_RIGHT) rx += rw - r.lineW, rw = r.lineW;
+        if (rx >= w || ry >= h || rx + rw <= 0 || ry + rh <= 0) continue;
+        plat::drawRect(rx, ry, rw, rh, r.color);
         spriteCount_++;
         tileCount_++;
     }

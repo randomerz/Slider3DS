@@ -235,11 +235,29 @@ TEST(render_tile_culling_draws_exactly_the_visible_cells) {
                 drawn.insert({d.sheet, d.sx, d.sy, d.sw, d.sh, d.x, d.y, d.flags});
                 if (d.sheet.empty()) rects.push_back(d);
             }
-            const auto coveredByRect = [&](const SpriteDef& S, float px, float py) {
+            const auto covered = [&](uint32_t color, float x, float y, float w, float h) {
                 for (const DrawCall& r : rects)
-                    if (S.solid && r.flags == S.solid && r.x <= px && r.y <= py && r.x + r.sw >= px + S.w && r.y + r.sh >= py + S.h)
-                        return true;
+                    if (r.flags == color && r.x <= x && r.y <= y && r.x + r.sw >= x + w && r.y + r.sh >= y + h) return true;
                 return false;
+            };
+            // A solid cell: a rect of its color over its square; an edge-lined one: its base's, and
+            // each line's on the screen side its flags (rotate 90 CCW, then flips) put it.
+            const auto coveredByRect = [&](const SpriteDef& S, float px, float py, uint32_t flags) {
+                if (S.solid) return covered(S.solid, px, py, (float)S.w, (float)S.h);
+                if (!S.edgedBase || !covered(S.edgedBase, px, py, (float)S.w, (float)S.h)) return false;
+                for (int side = 0; side < 4; side++) {
+                    const float lw = S.edgeWidth[side];
+                    if (!lw) continue;
+                    int on = side;
+                    if (flags & plat::ROT90) on = on == 0 ? 2 : on == 1 ? 3 : on == 2 ? 1 : 0;
+                    if (flags & plat::FLIP_X) on = on == 2 ? 3 : on == 3 ? 2 : on;
+                    if (flags & plat::FLIP_Y) on = on == 0 ? 1 : on == 1 ? 0 : on;
+                    const float x = on == 3 ? px + S.w - lw : px, y = on == 1 ? py + S.h - lw : py;
+                    const float w = on >= 2 ? lw : (float)S.w, h = on >= 2 ? (float)S.h : lw;
+                    const bool onScreen = x < plat::TOP_W && y < plat::TOP_H && x + w > 0 && y + h > 0;
+                    if (onScreen && !covered(S.edgeColor[side], x, y, w, h)) return false; // (an unseen line isn't drawn)
+                }
+                return true;
             };
             // The model: every cell of every shown layer, placed as the view's worldToScreen would.
             int expected = 0;
@@ -265,7 +283,7 @@ TEST(render_tile_culling_draws_exactly_the_visible_cells) {
                                     L.xform.empty() ? 0u : (uint32_t)L.xform[cy * L.w + cx]};
                         auto it = drawn.find(k);
                         if (it != drawn.end()) drawn.erase(it);
-                        else if (!coveredByRect(S, px, py)) missing++;
+                        else if (!coveredByRect(S, px, py, std::get<7>(k))) missing++;
                     }
             }
             if (view.lastTileCount() > expected) extra++;

@@ -1290,6 +1290,17 @@ bool loadArea(const char* path, Area& out, std::string* error) {
             const Json& c = s["solid"];
             d.solid = (uint32_t)c.at(0).asInt() << 24 | (uint32_t)c.at(1).asInt() << 16 | (uint32_t)c.at(2).asInt() << 8 | 0xffu;
         }
+        if (s.has("base") && s.has("edges")) {
+            const Json& c = s["base"];
+            const Json& e = s["edges"];
+            d.edgedBase = (uint32_t)c.at(0).asInt() << 24 | (uint32_t)c.at(1).asInt() << 16 | (uint32_t)c.at(2).asInt() << 8 | 0xffu;
+            for (int side = 0; side < 4; side++) {
+                d.edgeWidth[side] = (uint8_t)e.at(side * 4 + 3).asInt();
+                if (d.edgeWidth[side])
+                    d.edgeColor[side] = (uint32_t)e.at(side * 4).asInt() << 24 | (uint32_t)e.at(side * 4 + 1).asInt() << 16 |
+                                        (uint32_t)e.at(side * 4 + 2).asInt() << 8 | 0xffu;
+            }
+        }
         out.sprites.push_back(d);
     }
 

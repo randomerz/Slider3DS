@@ -20,6 +20,12 @@ struct SpriteDef {
     // Every pixel this one opaque color (0xRRGGBBFF; the exporter's "solid"; 0 = not): AreaView draws
     // runs of such tile cells as rectangles.
     uint32_t solid = 0;
+    // Or an opaque base color (0xRRGGBBFF; 0 = not) with straight lines along some edges: per side
+    // (top, bottom, left, right, sprite space) a color and a width in px (0: no line). The
+    // exporter's "base" / "edges" (a slider's outline cells): drawn as rectangles too.
+    uint32_t edgedBase = 0;
+    uint32_t edgeColor[4] = {0, 0, 0, 0};
+    uint8_t edgeWidth[4] = {0, 0, 0, 0};
 };
 
 struct TileDef {

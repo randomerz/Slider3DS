@@ -119,12 +119,17 @@ private:
     std::vector<LayerBounds> layerBounds_;  // per Area::layers
     std::vector<int> tileFrame_;            // per Area::tiles: its sprite this frame (-1: draws nothing)
     std::vector<int> animatedTiles_;        // tiles with several frames (tileFrame_ set each begin())
-    // Most cells are one solid color (SpriteDef::solid: ~3/4 of the Village's): each layer's are merged
-    // into rectangles per color, drawn before its other cells — a cell joins only if its sprite fills
-    // exactly its cell and no other cell's sprite in the layer reaches over it, so the pixels match.
+    // Most cells are one solid color (SpriteDef::solid: ~3/4 of the Village's), or a solid base with
+    // edge lines (SpriteDef::edgedBase: the sliders' outlines): each layer's are merged into
+    // rectangles per color — the bases first, then the lines, as runs along rows / columns — drawn
+    // before its other cells. A cell joins only if its sprite fills exactly its cell and no other
+    // cell's sprite in the layer reaches over it, so the pixels match.
+    enum : uint8_t { FULL = 0, LINE_TOP, LINE_BOTTOM, LINE_LEFT, LINE_RIGHT }; // SolidRect::part (screen sides)
     struct SolidRect {
         int16_t cx, cy, w, h; // cells [cx, cx + w) x [cy, cy + h)
         uint32_t color;
+        uint8_t part = FULL;  // the cells' whole squares, or a line `lineW` px thick along that side of them
+        uint8_t lineW = 0;
     };
     std::vector<std::vector<SolidRect>> solidRects_; // per layer
     std::vector<std::vector<uint8_t>> inRect_;       // per layer, per cell: drawn by a SolidRect
