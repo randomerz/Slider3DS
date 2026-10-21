@@ -1286,6 +1286,10 @@ bool loadArea(const char* path, Area& out, std::string* error) {
             d.outlineColor = (uint32_t)o.at(0).asInt() << 24 | (uint32_t)o.at(1).asInt() << 16 | (uint32_t)o.at(2).asInt() << 8 |
                              (uint32_t)o.at(3).asInt();
         }
+        if (s.has("solid")) {
+            const Json& c = s["solid"];
+            d.solid = (uint32_t)c.at(0).asInt() << 24 | (uint32_t)c.at(1).asInt() << 16 | (uint32_t)c.at(2).asInt() << 8 | 0xffu;
+        }
         out.sprites.push_back(d);
     }
 

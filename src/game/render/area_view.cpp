@@ -66,10 +66,15 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     std::optional<ProfScope> list(ProfSection::DrawList);
     items_.clear();
 
-    // Tile layers sort as whole renderers, by the center of their bounds.
+    // Tile layers sort as whole renderers, by the center of their bounds (none off screen: e.g. the
+    // house interiors while outdoors, and the outdoors inside one).
     for (size_t i = 0; i < area.layers.size(); i++) {
         const TileLayer& L = area.layers[i];
         if (!inRange(L.sortLayer) || !L.active || !ownerShown(L.owner)) continue;
+        float ax, ay;
+        int x0, x1, y0, y1;
+        layerRange(area, grid, (int)i, ax, ay, x0, x1, y0, y1);
+        if (x0 > x1 || y0 > y1) continue;
         float bx, by;
         grid.ownerBase(L.owner, bx, by);
         const float centerY = by + L.originY + L.minY + L.h * 0.5f;
@@ -86,6 +91,9 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
             continue;
         float bx, by;
         world.objectBase(ws.object, bx, by);
+        float sx, sy; // (its pivot further off screen than any sprite reaches: skipped before the rest)
+        worldToScreen(bx + ws.place.x, by + ws.place.y, sx, sy);
+        if (sx < -spriteReach_ || sy < -spriteReach_ || sx > screenW_ + spriteReach_ || sy > screenH_ + spriteReach_) continue;
         SortedSprite sp = placeSprite(area, ws.place, bx, by, animTime(area, ws, i, time_));
         if (objects.sprite(ws.object) >= 0) sp.sprite = objects.sprite(ws.object); // set by a script
         sp.fill = objects.fill(ws.object);
@@ -293,6 +301,7 @@ void AreaView::prepareTiles(const Area& area) {
     tilesFor_ = &area;
     tileSheets_ = sheets_;
     tileSprites_.assign(area.sprites.size(), TileSprite{});
+    spriteReach_ = 0;
     for (size_t i = 0; i < area.sprites.size(); i++) {
         const SpriteDef& S = area.sprites[i];
         TileSprite& t = tileSprites_[i];
@@ -303,6 +312,9 @@ void AreaView::prepareTiles(const Area& area) {
         t.h = (int16_t)S.h;
         t.offX = -S.pivotX / S.ppu * ppu_;
         t.offY = -(S.h - S.pivotY) / S.ppu * ppu_;
+        const float k = ppu_ / S.ppu; // (world sprites draw at their pixel size; the reach in this view's px)
+        spriteReach_ = std::max({spriteReach_, std::abs(S.pivotX) * k, std::abs(S.w - S.pivotX) * k,
+                                 std::abs(S.pivotY) * k, std::abs(S.h - S.pivotY) * k, (float)S.w, (float)S.h});
     }
     tileFrame_.assign(area.tiles.size(), -1);
     animatedTiles_.clear();
@@ -312,10 +324,13 @@ void AreaView::prepareTiles(const Area& area) {
         if (T.frames.size() > 1) animatedTiles_.push_back((int)i);
     }
     layerBounds_.assign(area.layers.size(), LayerBounds{});
+    solidRects_.assign(area.layers.size(), {});
+    inRect_.assign(area.layers.size(), {});
     for (size_t li = 0; li < area.layers.size(); li++) {
+        const TileLayer& L = area.layers[li];
         LayerBounds& b = layerBounds_[li];
         bool any = false;
-        for (int16_t v : area.layers[li].cells) {
+        for (int16_t v : L.cells) {
             if (v < 0) continue;
             for (int s : area.tiles[v].frames) {
                 const TileSprite& t = tileSprites_[s];
@@ -326,6 +341,53 @@ void AreaView::prepareTiles(const Area& area) {
                 any = true;
             }
         }
+        // The cell's own square, from its anchor (screen px; y down).
+        const float cellL = -L.anchorX * ppu_, cellR = cellL + ppu_, cellT = -(1 - L.anchorY) * ppu_, cellB = cellT + ppu_;
+        // Solid cells (one color, one frame, filling exactly their cell) ...
+        std::vector<uint32_t> color(L.cells.size(), 0);
+        for (size_t c = 0; c < L.cells.size(); c++) {
+            const int v = L.cells[c];
+            if (v < 0 || area.tiles[v].frames.size() != 1) continue;
+            const int s = area.tiles[v].frames[0];
+            const TileSprite& t = tileSprites_[s];
+            if (area.sprites[s].solid && t.offX == cellL && t.offY == cellT && t.w == ppu_ && t.h == ppu_)
+                color[c] = area.sprites[s].solid;
+        }
+        // ... but not under another cell's sprite reaching past its own cell (a tall one): those stay
+        // sprites, drawn in the cells' order.
+        for (int cy = 0; cy < L.h; cy++)
+            for (int cx = 0; cx < L.w; cx++) {
+                const int v = L.cell(cx, cy);
+                if (v < 0) continue;
+                for (int s : area.tiles[v].frames) {
+                    const TileSprite& t = tileSprites_[s];
+                    const int left = (int)std::ceil((cellL - t.offX) / ppu_), right = (int)std::ceil((t.offX + t.w - cellR) / ppu_);
+                    const int up = (int)std::ceil((cellT - t.offY) / ppu_), down = (int)std::ceil((t.offY + t.h - cellB) / ppu_);
+                    for (int dy = -std::max(0, down); dy <= std::max(0, up); dy++)
+                        for (int dx = -std::max(0, left); dx <= std::max(0, right); dx++) {
+                            const int nx = cx + dx, ny = cy + dy;
+                            if ((dx || dy) && nx >= 0 && nx < L.w && ny >= 0 && ny < L.h) color[(size_t)ny * L.w + nx] = 0;
+                        }
+                }
+            }
+        // Greedy rectangles: a run along a row, grown upward while the rows above match.
+        std::vector<uint8_t>& used = inRect_[li];
+        used.assign(L.cells.size(), 0);
+        auto free = [&](int cx, int cy, uint32_t c) { return color[(size_t)cy * L.w + cx] == c && !used[(size_t)cy * L.w + cx]; };
+        for (int cy = 0; cy < L.h; cy++)
+            for (int cx = 0; cx < L.w; cx++) {
+                const uint32_t c = color[(size_t)cy * L.w + cx];
+                if (!c || used[(size_t)cy * L.w + cx]) continue;
+                int w = 1;
+                while (cx + w < L.w && free(cx + w, cy, c)) w++;
+                int h = 1;
+                for (bool rowOk = true; rowOk && cy + h < L.h; h += rowOk) {
+                    for (int i = 0; i < w && rowOk; i++) rowOk = free(cx + i, cy + h, c);
+                }
+                for (int j = 0; j < h; j++)
+                    for (int i = 0; i < w; i++) used[(size_t)(cy + j) * L.w + cx + i] = 1;
+                solidRects_[li].push_back({(int16_t)cx, (int16_t)cy, (int16_t)w, (int16_t)h, c});
+            }
     }
 }
 
@@ -336,28 +398,48 @@ float roundPx(float v) { return (float)(int)(v >= 0 ? v + 0.5f : v - 0.5f); }
 
 } // namespace
 
-void AreaView::drawLayer(const Area& area, const Grid& grid, int layer) {
+void AreaView::layerRange(const Area& area, const Grid& grid, int layer, float& ax, float& ay, int& x0, int& x1, int& y0,
+                          int& y1) const {
     const TileLayer& L = area.layers[layer];
     const LayerBounds& b = layerBounds_[layer];
     float baseX, baseY;
     grid.ownerBase(L.owner, baseX, baseY);
-    // The screen position of cell (0, 0)'s anchor point (each sprite's pivot sits on its cell's);
-    // a cell is ppu_ px right per column, up per row.
-    const float ax = (baseX + L.originX + L.minX + L.anchorX - camX_) * ppu_ + screenW_ * 0.5f;
-    const float ay = (camY_ - (baseY + L.originY + L.minY + L.anchorY)) * ppu_ + screenH_ * 0.5f;
-    // The cells whose sprites can reach the screen (a cell more each way: the check below is exact).
-    const int x0 = std::max(0, (int)std::floor((-b.right - ax) / ppu_));
-    const int x1 = std::min(L.w - 1, (int)std::ceil((screenW_ - b.left - ax) / ppu_));
-    const int y0 = std::max(0, (int)std::floor((ay + b.top - screenH_) / ppu_));
-    const int y1 = std::min(L.h - 1, (int)std::ceil((ay + b.bottom) / ppu_));
+    // A cell is ppu_ px right per column, up per row, from cell (0, 0)'s anchor.
+    ax = (baseX + L.originX + L.minX + L.anchorX - camX_) * ppu_ + screenW_ * 0.5f;
+    ay = (camY_ - (baseY + L.originY + L.minY + L.anchorY)) * ppu_ + screenH_ * 0.5f;
+    // (a cell more each way than can show: the per-cell check is exact)
+    x0 = std::max(0, (int)std::floor((-b.right - ax) / ppu_));
+    x1 = std::min(L.w - 1, (int)std::ceil((screenW_ - b.left - ax) / ppu_));
+    y0 = std::max(0, (int)std::floor((ay + b.top - screenH_) / ppu_));
+    y1 = std::min(L.h - 1, (int)std::ceil((ay + b.bottom) / ppu_));
+}
+
+void AreaView::drawLayer(const Area& area, const Grid& grid, int layer) {
+    const TileLayer& L = area.layers[layer];
+    float ax, ay;
+    int x0, x1, y0, y1;
+    layerRange(area, grid, layer, ax, ay, x0, x1, y0, y1);
     const float w = (float)screenW_, h = (float)screenH_;
+    // Its solid runs first (nothing in the layer overlaps them), then its other cells in order.
+    const float cellL = -L.anchorX * ppu_, cellT = -(1 - L.anchorY) * ppu_;
+    for (const SolidRect& r : solidRects_[layer]) {
+        if (r.cx > x1 || r.cx + r.w - 1 < x0 || r.cy > y1 || r.cy + r.h - 1 < y0) continue;
+        const float px = roundPx(ax + r.cx * ppu_ + cellL), py = roundPx(ay - (r.cy + r.h - 1) * ppu_ + cellT);
+        const float rw = r.w * ppu_, rh = r.h * ppu_;
+        if (px >= w || py >= h || px + rw <= 0 || py + rh <= 0) continue;
+        plat::drawRect(px, py, rw, rh, r.color);
+        spriteCount_++;
+        tileCount_++;
+    }
+    const std::vector<uint8_t>& inRect = inRect_[layer];
     for (int cy = y0; cy <= y1; cy++) {
         const int16_t* row = &L.cells[(size_t)cy * L.w];
+        const uint8_t* skip = &inRect[(size_t)cy * L.w];
         const uint8_t* xform = L.xform.empty() ? nullptr : &L.xform[(size_t)cy * L.w];
         const float rowY = ay - cy * ppu_;
         for (int cx = x0; cx <= x1; cx++) {
             const int v = row[cx];
-            if (v < 0) continue;
+            if (v < 0 || skip[cx]) continue;
             const int s = tileFrame_[v];
             if (s < 0) continue;
             const TileSprite& t = tileSprites_[s];

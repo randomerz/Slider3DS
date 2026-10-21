@@ -17,6 +17,9 @@ struct SpriteDef {
     // A sprite that is only a solid border (BGFrame): drawn as rectangles, no texture. 0 = a normal sprite.
     int outlineWidth = 0;
     uint32_t outlineColor = 0; // 0xRRGGBBAA
+    // Every pixel this one opaque color (0xRRGGBBFF; the exporter's "solid"; 0 = not): AreaView draws
+    // runs of such tile cells as rectangles.
+    uint32_t solid = 0;
 };
 
 struct TileDef {

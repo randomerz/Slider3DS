@@ -200,9 +200,11 @@ TEST(render_goldens) {
     }
 }
 
-// AreaView culls tile cells by each layer's sprite extents: against a model that places every cell
-// the plain way (no culling) and keeps those touching the screen, from many cameras (fractional,
-// far, mid-slide), every visible cell must be drawn and nothing else counted as a tile.
+// AreaView culls tile cells by each layer's sprite extents and draws runs of solid-color cells as
+// rectangles: against a model that places every cell the plain way (no culling, a sprite each) and
+// keeps those touching the screen, from many cameras (fractional, far, mid-slide), every visible
+// cell must be drawn — its sprite, or (a solid one) a rectangle of its color covering its square —
+// and the view never counts more tile draws than visible cells.
 TEST(render_tile_culling_draws_exactly_the_visible_cells) {
     const Area& area = villageArea();
     SpriteSheets sheets;
@@ -228,7 +230,17 @@ TEST(render_tile_culling_draws_exactly_the_visible_cells) {
             view.begin(area, sheets, camX, camY, plat::TOP_W, plat::TOP_H, time, false);
             view.draw(*world);
             std::multiset<Key> drawn;
-            for (const DrawCall& d : testDrawCalls()) drawn.insert({d.sheet, d.sx, d.sy, d.sw, d.sh, d.x, d.y, d.flags});
+            std::vector<DrawCall> rects; // (sheet "": a rect; its size in sw / sh, its color in flags)
+            for (const DrawCall& d : testDrawCalls()) {
+                drawn.insert({d.sheet, d.sx, d.sy, d.sw, d.sh, d.x, d.y, d.flags});
+                if (d.sheet.empty()) rects.push_back(d);
+            }
+            const auto coveredByRect = [&](const SpriteDef& S, float px, float py) {
+                for (const DrawCall& r : rects)
+                    if (S.solid && r.flags == S.solid && r.x <= px && r.y <= py && r.x + r.sw >= px + S.w && r.y + r.sh >= py + S.h)
+                        return true;
+                return false;
+            };
             // The model: every cell of every shown layer, placed as the view's worldToScreen would.
             int expected = 0;
             for (const TileLayer& L : area.layers) {
@@ -252,11 +264,11 @@ TEST(render_tile_culling_draws_exactly_the_visible_cells) {
                         const Key k{area.sheetNames[S.sheet], S.x, S.y, S.w, S.h, px, py,
                                     L.xform.empty() ? 0u : (uint32_t)L.xform[cy * L.w + cx]};
                         auto it = drawn.find(k);
-                        if (it == drawn.end()) missing++;
-                        else drawn.erase(it);
+                        if (it != drawn.end()) drawn.erase(it);
+                        else if (!coveredByRect(S, px, py)) missing++;
                     }
             }
-            if (view.lastTileCount() != expected) extra++;
+            if (view.lastTileCount() > expected) extra++;
         }
     }
     check(missing == 0, "every visible tile cell drawn (" + std::to_string(missing) + " missing over " +

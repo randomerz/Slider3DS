@@ -119,4 +119,18 @@ private:
     std::vector<LayerBounds> layerBounds_;  // per Area::layers
     std::vector<int> tileFrame_;            // per Area::tiles: its sprite this frame (-1: draws nothing)
     std::vector<int> animatedTiles_;        // tiles with several frames (tileFrame_ set each begin())
+    // Most cells are one solid color (SpriteDef::solid: ~3/4 of the Village's): each layer's are merged
+    // into rectangles per color, drawn before its other cells — a cell joins only if its sprite fills
+    // exactly its cell and no other cell's sprite in the layer reaches over it, so the pixels match.
+    struct SolidRect {
+        int16_t cx, cy, w, h; // cells [cx, cx + w) x [cy, cy + h)
+        uint32_t color;
+    };
+    std::vector<std::vector<SolidRect>> solidRects_; // per layer
+    std::vector<std::vector<uint8_t>> inRect_;       // per layer, per cell: drawn by a SolidRect
+    float spriteReach_ = 0; // screen px: the farthest any sprite's pixels lie from its pivot (world sprites' early cull)
+    // The screen position of cell (0, 0)'s anchor and the cells whose sprites can reach the screen
+    // (x0 > x1 or y0 > y1: none).
+    void layerRange(const Area& area, const Grid& grid, int layer, float& ax, float& ay, int& x0, int& x1, int& y0,
+                    int& y1) const;
 };
