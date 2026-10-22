@@ -763,6 +763,34 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
     check(world.state.hasCollectible("Slider 4", "Village") && world.grid.tileActive(4), "picked up: tile 4 collected");
 }
 
+TEST(village_dialogue_disabled_holds_lines_and_conditionals) {
+    // dialogueEnabledAllNPC off (a cutscene): entering the trigger types nothing and the Coffee doesn't
+    // switch Archibald's conditional; on again, both happen. A line already typing finishes, but its
+    // delayed next line waits (re-checked every 0.25 s).
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    world.setTileActive(3, true);
+    const int npc = villageNpc("Map/Village 8Puzzle/STile (3)/Objects/Archibald");
+    CHECK(npc >= 0);
+    if (npc < 0) return;
+    world.update(DT, 0, 0, false); // (Starts)
+    world.npcs.setDialogueEnabled(false);
+    standInTalkRange(world, npc);
+    world.state.setCollectible("Coffee", "Village", true);
+    for (int f = 0; f < 30; f++) world.update(DT, 0, 0, false);
+    CHECK(!world.npcs.textShown(npc) && world.npcs.currentCond(npc) == 0);
+    world.npcs.setDialogueEnabled(true);
+    world.update(DT, 0, 0, false);
+    CHECK(world.npcs.currentCond(npc) == 1 && world.npcs.textShown(npc) && world.npcs.lineIndex(npc) == 0);
+    // "Not so fast squirt!" (1 s delay) typing when it goes off: it finishes, the next one waits.
+    world.npcs.setDialogueEnabled(false);
+    for (int f = 0; f < 300; f++) world.update(DT, 0, 0, false);
+    CHECK(world.npcs.typer(npc).finished() && world.npcs.lineIndex(npc) == 0);
+    world.npcs.setDialogueEnabled(true);
+    for (int f = 0; f < 17; f++) world.update(DT, 0, 0, false);
+    CHECK(world.npcs.lineIndex(npc) == 1);
+}
+
 TEST(animators_player_runs_while_moving) {
     // Player.Update sets isRunning from the input and isOnWater from the boat; the body shows the state.
     const Area& area = villageArea();

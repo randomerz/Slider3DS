@@ -22,6 +22,7 @@ void ItemPickup::start(World& world, int index) {
     const CollectibleDef& c = world.area.collectibles[index];
     world.objects.setActive(world.area, c.object, false); // DespwanCollectable
     world.lockPlayer(LOCK_PICKUP, true);
+    world.npcs.setDialogueEnabled(false);
     index_ = index;
     collected_ = textShown_ = false;
     step_ = Step::Shown;
@@ -53,8 +54,9 @@ void ItemPickup::coroutines(World& world, float dt) {
         circleT_ = 0;
         since_ = world.frame;
         wait_.start(CLOSE_FOR, world.frame);
-    } else { // 2.5 s: the mask off, the player let go
+    } else { // 2.5 s: the mask off, the player let go, NPCs talk again
         world.lockPlayer(LOCK_PICKUP, false);
+        world.npcs.setDialogueEnabled(true);
         index_ = -1;
     }
 }

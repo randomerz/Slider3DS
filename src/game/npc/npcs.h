@@ -12,7 +12,9 @@
 // played by the same three moments: animationOnEnter, animationOnStart, animationOnLeave.
 // Hiding an NPC stops its clocks (Unity stops a disabled object's coroutines).
 // Conditionals are re-checked only when the game state or the grid changed.
-// Walks: game/npc/npc_walks. Not yet: cutscene state.
+// Cutscenes switch dialogue off for every NPC (NPCDialogueContext.dialogueEnabledAllNPC): no line
+// starts (one typing finishes), a delayed next line waits for it, conditionals aren't re-picked.
+// Walks: game/npc/npc_walks.
 #pragma once
 
 #include <cstdint>
@@ -42,6 +44,9 @@ public:
     // NPC.Teleport: onto `target` (an object), parented to it; nothing if it's already there.
     void teleport(World& world, int npc, int target);
     bool showsPrompt(const Area& area, int npc) const; // DisplayInteractionPrompt
+    // NPCDialogueContext.dialogueEnabledAllNPC (on again after a scene load).
+    void setDialogueEnabled(bool on) { dialogueEnabled_ = on; }
+    bool dialogueEnabled() const { return dialogueEnabled_; }
 
     // For drawing and tests.
     int currentCond(int npc) const { return s_[npc].cond; }
@@ -89,6 +94,7 @@ private:
     const DialogueDef* line(const Area& area, int npc) const; // CurrentDialogue(), null if none
     bool chainEmpty(const Area& area, int npc) const;
     bool dontInterruptShown(const Area& area, int npc) const; // NPCGivingDontInterruptDialogue
+    bool canUpdateConds(const Area& area, int npc) const;     // NPC.CanUpdateConditionals
     bool shouldShowPing(const Area& area, int npc) const;
     void poll(World& world, int npc);              // PollForNewConditional
     void changeCond(World& world, int npc, int cond);
@@ -103,5 +109,6 @@ private:
 
     std::vector<State> s_;
     VoiceRandom random_; // (the vocalizer's choices: stress, intonation)
+    bool dialogueEnabled_ = true;
     uint32_t textCounter_ = 0; // never reset: a cache keyed by textVersion can't see an old value again
 };

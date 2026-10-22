@@ -22,6 +22,7 @@ Interactable offered(int npc) { return {Interactable::Kind::Npc, npc}; }
 void Npcs::reset(const Area& area) {
     s_.assign(area.npcs.size(), State());
     random_ = VoiceRandom();
+    dialogueEnabled_ = true;
     for (size_t i = 0; i < s_.size(); i++) {
         const NpcDef& def = area.npcs[i];
         for (const NpcCondDef& c : def.conds)
@@ -55,6 +56,10 @@ bool Npcs::chainEmpty(const Area& area, int npc) const {
 bool Npcs::dontInterruptShown(const Area& area, int npc) const {
     const DialogueDef* l = line(area, npc);
     return !chainEmpty(area, npc) && s_[npc].boxActive && l && l->dontInterrupt;
+}
+
+bool Npcs::canUpdateConds(const Area& area, int npc) const {
+    return dialogueEnabled_ && !dontInterruptShown(area, npc);
 }
 
 bool Npcs::shouldShowPing(const Area& area, int npc) const {
@@ -122,7 +127,7 @@ void Npcs::start(World& world, int npc) {
     State& st = s_[npc];
     setPing(world, npc, shouldShowPing(world.area, npc)); // NPCDialogueContext.Start
     // NPC.Start: pick a conditional; the first one is entered if nothing else is.
-    if (!dontInterruptShown(world.area, npc)) poll(world, npc);
+    if (canUpdateConds(world.area, npc)) poll(world, npc);
     if (st.cond == 0 && !world.area.npcs[npc].conds.empty()) changeCond(world, npc, 0);
     st.started = true;
     st.wasActive = true;
@@ -166,7 +171,7 @@ void Npcs::changeCond(World& world, int npc, int cond) {
 }
 
 void Npcs::typeCurrent(World& world, int npc) {
-    if (chainEmpty(world.area, npc)) return;
+    if (!dialogueEnabled_ || chainEmpty(world.area, npc)) return;
     State& st = s_[npc];
     const DialogueDef& l = *line(world.area, npc);
     // NPCConditionals.GetDialogueString: a line waiting for the player ends in a looping " ...".
@@ -350,7 +355,7 @@ void Npcs::update(World& world, float dt) {
         tryDeactivate(world, i);
         const bool changed = !st.polled || st.pollsEveryFrame || st.stateVersion != world.state.version() ||
                              st.gridVersion != world.grid.version();
-        if (!dontInterruptShown(area, i) && changed) poll(world, i);
+        if (canUpdateConds(area, i) && changed) poll(world, i);
     }
     for (int i = 0; i < (int)s_.size(); i++) {
         if (!s_[i].started || !world.objects.activeInHierarchy(area.npcs[i].object)) continue;
@@ -359,8 +364,13 @@ void Npcs::update(World& world, float dt) {
             if (st.delayFresh) {
                 st.delayFresh = false;
             } else if ((st.delayLeft -= dt) <= 1e-4f) {
-                st.delayPending = false;
-                typeNext(world, i);
+                if (dialogueEnabled_) {
+                    st.delayPending = false;
+                    typeNext(world, i);
+                } else { // ("Delaying dialogue start...": WaitForSeconds(0.25) until it's on)
+                    st.delayFresh = true;
+                    st.delayLeft = 0.25f;
+                }
             }
         }
         st.typer.tick(dt); // after the delay, so a line it starts waits from the next frame

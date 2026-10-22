@@ -37,6 +37,7 @@ TEST(item_pickup_runs_its_timeline) {
     const CollectibleDef& c = world.area.collectibles[index];
     world.update(DT, 0, 0, false); // touched: the cutscene starts
     CHECK(world.pickup.active() && world.playerLocked() && !world.objects.activeInHierarchy(c.object));
+    CHECK(!world.npcs.dialogueEnabled()); // (dialogueEnabledAllNPC)
     CHECK(world.pickup.circleDiameter() == 0 && !world.pickup.textShown());
     CHECK(!world.state.hasCollectible("Slider 2", "Village") && !world.saveRequested);
     CHECK(world.pickup.itemSprite(world.area) == c.sprite);
@@ -63,6 +64,7 @@ TEST(item_pickup_runs_its_timeline) {
     while (world.pickup.active() && f < 300) world.update(DT, 0, 0, false), f++;
     check(f >= 149 && f <= 152, "over at frame " + std::to_string(f));
     CHECK(!world.playerLocked() && world.pickup.circleDiameter() == 0 && world.pickup.itemSprite(world.area) < 0);
+    CHECK(world.npcs.dialogueEnabled());
     world.update(DT, 1, 0, false);
     CHECK(world.player.x > x); // (walks again)
 }
@@ -74,7 +76,7 @@ TEST(item_pickup_a_scene_load_drops_it) {
     world.update(DT, 0, 0, false);
     CHECK(world.pickup.active());
     world.reloadObjects();
-    CHECK(!world.pickup.active() && !world.playerLocked());
+    CHECK(!world.pickup.active() && !world.playerLocked() && world.npcs.dialogueEnabled());
 }
 
 TEST(item_pickup_draws_under_the_player) {
