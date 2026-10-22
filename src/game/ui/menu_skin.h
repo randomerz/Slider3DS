@@ -52,7 +52,7 @@ public:
     // The value a touch at UI x `touchX` (fractional) sets on a slider at x, `w` wide (0-1, clamped):
     // the handle's middle follows it.
     static float sliderValueAt(float touchX, int x, int w);
-    // The ending's art (assets/ui/end.json: EndOfDemo's background), 1x with its top-left at
+    // The ending's top screen (assets/ui/end.json: EndOfDemo's canvas, baked), 1x with its top-left at
     // screen px (x, y) — the top screen's scale, not the menus' grid.
     void drawEndArt(int x, int y) const;
     // Its TinyUnicode font (the top screen's HUD draws it at 1x).

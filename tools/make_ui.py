@@ -23,7 +23,9 @@ Slider3DSTitleExporter: the layout), cut from TITLE_TEXTURES:
   assets/sheets/ui_title.png  the sheet (.fmt by its colors)
   assets/ui/title_sheet.json  {"sheet", "sprites": {name: {"rect", "pivot": [x, y] (px from the bottom-left)}}}
 
-The ending's art (the demo's EndOfDemo.unity Background: end_cutscene_parallax_0, 320x180; game/ui/end_screen):
+The ending's top screen (game/ui/end_screen): the demo's EndOfDemo.unity canvas (320x180) baked into one
+image, in its draw order — Background (end_cutscene_parallax_0), the title outlined, DarkPanel, the text
+outlined — with TextMeshPro's layout worked out here (END_TEXTS); the second text line is the port's:
   assets/sheets/ui_end.png    the sheet (.fmt by its colors)
   assets/ui/end.json          {"sheet", "sprites": {"art": {"rect"}}}
 
@@ -141,9 +143,52 @@ def menu():
     print(f"menu: {len(sprites)} sprites, sheet {sheet.width}x{sheet.height}")
 
 
-# The title art's textures (assets/ui/title.json names their sprites: Slider3DSTitleExporter).
+FONTS = os.path.join(ASSETS, "Fonts", "originalFonts")
+LIGHT = (230, 230, 230, 255)  # the texts' m_fontColor 0.902
+DARK = (26, 26, 26, 255)      # their outline copies' 0.102
+# EndOfDemo's TMP texts: font, size, lines (centered; "" = a blank line), the middle of the box they're
+# centered in (canvas px from the top-left; VerticalAlignment Middle), and the font asset's face info
+# (pointSize, lineHeight, ascent, descent) for TMP's line layout. Title Text: "Thanks for playing Slider!"
+# in a 200 px box at (-45, 55) from the middle, word-wrapped to two lines. Text: a 320 px box centered
+# 42.5 px up from the bottom, lineSpacing -15; "Please wishlist Slider on Steam!" -> the port's line.
+END_TEXTS = [
+    ("PixelTitanOne.ttf", 20, ["Thanks for", "playing Slider!"], (160 - 45, 90 - 55), (151, 155.1289, 113.25, -28.3125), 0),
+    ("PixelTitanZero.ttf", 16, ["This is the end of the demo.", "", "More areas coming soon"], (160, 180 - 42.5),
+     (172, 176.70312, 129, -32.25), -15),
+]
+END_PANEL = (60, 0.392)  # DarkPanel: the canvas's bottom 60 px, black at 0.392
+
+
+def draw_tmp_text(img, ttf, size, lines, center, face, line_spacing):
+    """Lines as TMP lays them out (centered, the block's ascender-to-descender middle on `center`),
+    each outlined like EndOfDemo's texts (dark copies 1 px around, then light)."""
+    from PIL import ImageDraw, ImageFont
+    point, line_height, ascent, descent = face
+    scale = size / point
+    advance = line_height * scale + line_spacing * size / 100  # (TMP: lineSpacing in em / 100)
+    height = ascent * scale + (len(lines) - 1) * advance - descent * scale
+    top = center[1] - height / 2
+    font = ImageFont.truetype(os.path.join(FONTS, ttf), size)
+    draw = ImageDraw.Draw(img)
+    draw.fontmode = "1"  # (pixel fonts: no antialiasing)
+    for i, line in enumerate(lines):
+        if not line:
+            continue
+        baseline = round(top + ascent * scale + i * advance)
+        x = round(center[0] - draw.textlength(line, font=font) / 2)
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            draw.text((x + dx, baseline + dy), line, font=font, fill=DARK, anchor="ls")
+        draw.text((x, baseline), line, font=font, fill=LIGHT, anchor="ls")
+
+
 def end():
     img, _ = unity_sprite("Sprites/UI/end_cutscene/end_cutscene_parallax.png", "end_cutscene_parallax_0")
+    title, text = END_TEXTS
+    draw_tmp_text(img, *title)
+    panel_h, alpha = END_PANEL
+    panel = Image.new("RGBA", (img.width, panel_h), (0, 0, 0, round(alpha * 255)))
+    img.alpha_composite(panel, (0, img.height - panel_h))
+    draw_tmp_text(img, *text)
     sheet, placed = pack({"art": img}, 512)
     write_sheet(sheet, "ui_end")
     write_json(os.path.join(REPO, "assets", "ui", "end.json"), "ui_end",
@@ -151,6 +196,7 @@ def end():
     print(f"end: sheet {sheet.width}x{sheet.height}")
 
 
+# The title art's textures (assets/ui/title.json names their sprites: Slider3DSTitleExporter).
 TITLE_TEXTURES = ["Sprites/UI/menus/pixel_logo.png", "Sprites/UI/menus/mainmenu_bg_stars.png",
                   "Sprites/UI/menus/mainmenu_giant_star.png", "Sprites/UI/menus/mainmenu_meteor.png",
                   "Sprites/UI/menus/mainmenu_plannet.png", "Sprites/Characters/player/playersprite.png"]

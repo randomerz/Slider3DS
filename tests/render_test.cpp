@@ -630,11 +630,11 @@ TEST(render_ending_goldens) {
     for (int i = 0; i < EndScreen::FADE_FRAMES / 2; i++) end.update({});
     testResetDrawCalls();
     end.drawTop(skin);
-    goldens.compare("ending_fading_in", 20);
+    goldens.compare("ending_fading_in", 2); // (the baked canvas + the fade)
     for (int i = 0; i < EndScreen::LOCKOUT_FRAMES; i++) end.update({});
     testResetDrawCalls();
     end.drawTop(skin);
-    goldens.compare("ending_top", 20);
+    goldens.compare("ending_top", 1);
     testResetDrawCalls();
     end.drawBottom(skin);
     goldens.compare("ending_bottom", 10);
