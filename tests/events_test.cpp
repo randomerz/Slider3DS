@@ -139,22 +139,11 @@ TEST(events_every_exit_has_a_spawn) {
     const Area& area = villageArea();
     World world(area, DEFAULT_SETTINGS);
     int exits = 0;
-    auto scan = [&](const std::vector<CallDef>& calls) {
-        for (const CallDef& c : calls)
-            if (c.method == CallDef::Method::ChangeScenes) {
-                exits++;
-                CHECK(world.exitSpawn(c.target) >= 0);
-            }
-    };
-    for (const ConditionCheckerDef& c : area.conditionCheckers) {
-        scan(c.conditionals.onSuccess);
-        scan(c.conditionals.onFail);
-    }
-    for (const TriggerEventDef& t : area.triggerEvents) {
-        scan(t.onEnter);
-        scan(t.onExit);
-    }
-    for (const InteractionDef& i : area.interactions) scan(i.onSuccess);
+    forEachCall(area, [&](const CallDef& c) {
+        if (c.method != CallDef::Method::ChangeScenes) return;
+        exits++;
+        CHECK(world.exitSpawn(c.target) >= 0);
+    });
     CHECK(exits == 3); // the Cave Door, the beach, the Waterfall
 }
 

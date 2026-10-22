@@ -52,9 +52,6 @@ public:
     // The value a touch at UI x `touchX` (fractional) sets on a slider at x, `w` wide (0-1, clamped):
     // the handle's middle follows it.
     static float sliderValueAt(float touchX, int x, int w);
-    // The ending's top screen (assets/ui/end.json: EndOfDemo's canvas, baked), 1x with its top-left at
-    // screen px (x, y) — the top screen's scale, not the menus' grid.
-    void drawEndArt(int x, int y) const;
     // Its TinyUnicode font (the top screen's HUD draws it at 1x).
     const Font& font() const { return font_; }
     // A toggle (TOGGLE_SIZE square at (x, y)); `selected` swaps its background.
@@ -103,8 +100,6 @@ private:
     void fillRect(int x, int y, int w, int h, uint32_t color) const;
 
     plat::Texture* sheet_ = nullptr;
-    plat::Texture* endSheet_ = nullptr;
-    Sprite endArt_;
     Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
     Sprite card_[3], cardBack_, frame_[2], back_[3], trash_[3]; // ([State] / [Frame])
     Font font_;

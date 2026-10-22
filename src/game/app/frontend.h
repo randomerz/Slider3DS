@@ -42,8 +42,8 @@ public:
     // The title menu ignores input this long after it appears (TitleScreen::MENU_LOCKOUT).
     static constexpr int MENU_LOCKOUT_FRAMES = (int)(TitleScreen::MENU_LOCKOUT / FRAME_DT + 0.5f);
 
-    // Starts on the title screen. `settings` (main's) and `art` (loaded) must outlive it.
-    Frontend(const Area& area, const TitleArt& art, Settings& settings);
+    // Starts on the title screen. `settings` (main's) and the art (loaded) must outlive it.
+    Frontend(const Area& area, const TitleArt& art, const EndArt& endArt, Settings& settings);
 
     // One frame of input. In the game, (moveX, moveY) is where the player walks (each -1..1; main
     // leaves out what its dev controls use) and `noclip` skips collisions (dev). False once the app
@@ -84,6 +84,7 @@ private:
 
     const Area& area_;
     const TitleArt& art_;
+    const EndArt& endArt_;
     Settings& settings_;
     Settings savedSettings_;
     World world_;

@@ -39,6 +39,13 @@ const TitleArt& titleArt() {
     return art;
 }
 
+const EndArt& endArt() {
+    static EndArt art;
+    static const bool loaded = art.load();
+    check(loaded, "the end art loads");
+    return art;
+}
+
 // "Press any key": the title menu appears (that press is used up), then takes input once its 1 s
 // lockout is over.
 void showMenu(Frontend& f) {
@@ -87,7 +94,7 @@ void newGame(Frontend& f) {
 TEST(frontend_boots_to_the_title_and_writes_nothing) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     showMenu(f);
     CHECK(f.mode() == Frontend::Mode::Title && frames(f, 30));
     f.shutdown();
@@ -97,7 +104,7 @@ TEST(frontend_boots_to_the_title_and_writes_nothing) {
 TEST(frontend_new_game_saves_once_started) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     showMenu(f);
     const int64_t before = (int64_t)std::time(nullptr);
     newGame(f);
@@ -114,7 +121,7 @@ TEST(frontend_new_game_saves_once_started) {
 TEST(frontend_quit_saves_and_continue_resumes) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     showMenu(f);
     newGame(f);
     for (int i = 0; i < 30; i++) f.update({}, 1, 0); // (walks right for half a second)
@@ -141,7 +148,7 @@ TEST(frontend_quit_saves_and_continue_resumes) {
 TEST(frontend_saves_on_a_pick_up_and_on_closing_in_the_game) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     showMenu(f);
     newGame(f);
     int slider2 = -1;
@@ -173,7 +180,7 @@ TEST(frontend_an_exit_fades_out_saves_and_ends) {
     CHECK(door >= 0 && alcove >= 0);
     if (door < 0 || alcove < 0) return;
     Settings settings;
-    Frontend f(area, titleArt(), settings);
+    Frontend f(area, titleArt(), endArt(), settings);
     showMenu(f);
     newGame(f);
     f.world().leaveArea(door);
@@ -216,7 +223,7 @@ TEST(frontend_closing_while_leaving_saves_on_the_exit_spawn) {
     CHECK(door >= 0);
     if (door < 0) return;
     Settings settings;
-    Frontend f(area, titleArt(), settings);
+    Frontend f(area, titleArt(), endArt(), settings);
     showMenu(f);
     newGame(f);
     f.world().placeNear(30, 30); // (anywhere but the spawn)
@@ -241,7 +248,7 @@ TEST(frontend_the_ending_draws_and_taps_main_menu_on_release) {
     std::string err;
     CHECK(sheets.load(area) && skin.load(&err));
     Settings settings;
-    Frontend f(area, titleArt(), settings);
+    Frontend f(area, titleArt(), endArt(), settings);
     AreaView view;
     f.bootDirect();
     f.world().leaveArea(0);
@@ -265,6 +272,13 @@ TEST(frontend_the_ending_draws_and_taps_main_menu_on_release) {
     CHECK(f.mode() == Frontend::Mode::Title);
     frames(f, 5);
     CHECK(!f.titleScreen().menuShown()); // (the title's intro plays)
+    f.bootDirect();
+    f.world().leaveArea(0);
+    for (int i = 0; i < 120 && f.mode() != Frontend::Mode::End; i++) f.update({}, 0, 0);
+    for (int i = 0; i < EndScreen::LOCKOUT_FRAMES - 5; i++) step({});
+    for (int i = 0; i < 10; i++) step(onButton); // (down before the button shows, held past it)
+    step({});
+    CHECK(f.mode() == Frontend::Mode::End);
     f.shutdown();
     CHECK(profileFiles() == 0); // (a temporary profile, still never written)
 }
@@ -272,7 +286,7 @@ TEST(frontend_the_ending_draws_and_taps_main_menu_on_release) {
 TEST(frontend_direct_boot_never_writes) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     showMenu(f);
     f.bootDirect();
     CHECK(f.mode() == Frontend::Mode::Game && f.slot() == -1 && f.world().state.str("Cat") == "Boomo");
@@ -290,7 +304,7 @@ TEST(frontend_direct_boot_never_writes) {
 TEST(frontend_options_from_the_title) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     showMenu(f);
     tapTitle(f, TitleMenu::OPTIONS);
     CHECK(f.pauseMenu().isOpen() && f.pauseMenu().page() == PauseMenu::Page::Options);
@@ -314,13 +328,13 @@ TEST(frontend_stylus_held_into_the_game_is_no_artifact_press) {
     testUserFiles().clear();
     SaveProfile::make("Tofu").save(0);
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     showMenu(f);
     CHECK(f.title().selected() == TitleMenu::CONTINUE);
     // Continue with A while the stylus already rests on tile 1's Artifact button.
     int bx = 0, by = 0;
     float sx = 0, sy = 0;
-    Frontend probe(villageArea(), titleArt(), settings); // (where tile 1's button will be)
+    Frontend probe(villageArea(), titleArt(), endArt(), settings); // (where tile 1's button will be)
     probe.bootDirect();
     CHECK(probe.world().artifact.findButton(1, bx, by));
     probe.artifactUI().slotCenter(villageArea(), bx, by, sx, sy);
@@ -347,7 +361,7 @@ TEST(frontend_draws_every_screen) {
     std::string err;
     CHECK(sheets.load(area) && font.load("fonts/dialogue.json", &err) && skin.load(&err));
     Settings settings;
-    Frontend f(area, titleArt(), settings);
+    Frontend f(area, titleArt(), endArt(), settings);
     AreaView view;
     view.setFont(&font);
     auto step = [&](const plat::Input& in) {
@@ -399,7 +413,7 @@ TEST(frontend_title_menu_slides_up_as_it_comes_in) {
     std::string err;
     CHECK(skin.load(&err));
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     auto menuTop = [&](bool alone = false) { // the bottom screen's highest draw, px
         testResetDrawCalls();
         if (alone) f.title().draw(skin);
@@ -429,7 +443,7 @@ TEST(frontend_title_key_waits_for_the_second_frame_and_locks_the_menu_out) {
     testUserFiles().clear();
     SaveProfile::make("Tofu").save(0);
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     f.update(buttons(plat::BTN_A), 0, 0); // (frame 1: the listener isn't there yet)
     CHECK(!f.titleScreen().menuShown());
     f.update(buttons(plat::BTN_A), 0, 0);
@@ -448,11 +462,11 @@ TEST(frontend_title_touch_that_shows_the_menu_is_no_tap) {
     // Tapping to skip the intro where Play will appear, held while it appears and let go: no Play.
     testUserFiles().clear();
     Settings settings;
-    Frontend probe(villageArea(), titleArt(), settings);
+    Frontend probe(villageArea(), titleArt(), endArt(), settings);
     showMenu(probe);
     TitleMenu::Box play;
     CHECK(probe.title().box(TitleMenu::PLAY, play));
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     f.update({}, 0, 0);
     for (int i = 0; i < Frontend::MENU_LOCKOUT_FRAMES + 10; i++) f.update(touchAt(play.x + 4, play.y + 4), 0, 0);
     CHECK(f.titleScreen().menuShown());
@@ -533,7 +547,7 @@ int countCues(const std::vector<AudioCue>& cues, AudioCue::Kind kind, const std:
 TEST(frontend_asks_for_the_title_music_the_clicks_and_the_villages_music) {
     testUserFiles().clear();
     Settings settings;
-    Frontend f(villageArea(), titleArt(), settings);
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
     using K = AudioCue::Kind;
     // MainMenuManager.Start: its music (not restarted if playing), the full arrangement held back.
     std::vector<AudioCue> cues = f.audio().take();

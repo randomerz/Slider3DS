@@ -2,21 +2,53 @@
 
 #include <cmath>
 
+#include "game/data/json.h"
 #include "game/ui/menu_skin.h"
 #include "game/ui/palette.h"
 
 namespace {
 
 constexpr int S = MenuSkin::UI_SCALE;
-// EndOfDemo.unity's 320x180 canvas (baked: tools/make_ui.py), centered on the top screen at 1x.
-constexpr int CANVAS_W = 320, CANVAS_H = 180;
-constexpr int CANVAS_X = (plat::TOP_W - CANVAS_W) / 2, CANVAS_Y = (plat::TOP_H - CANVAS_H) / 2;
+constexpr int MIN_W = 320, MIN_H = 180; // EndOfDemo.unity's canvas
 // Main Menu (its button), centered on the bottom screen like the pause menu's (UI px).
 constexpr int BUTTON_W = 120, BUTTON_H = 18;
 constexpr int BUTTON_X = (plat::BOTTOM_W / S - BUTTON_W) / 2, BUTTON_Y = (plat::BOTTOM_H / S - BUTTON_H) / 2;
 constexpr int BUTTON = 0; // its MenuTap item
 
 } // namespace
+
+bool EndArt::load(std::string* error) {
+    unload();
+    std::string text;
+    Json doc;
+    if (!plat::readFile("ui/end.json", text) || !Json::parse(text, doc, error)) {
+        if (error && error->empty()) *error = "can't read ui/end.json";
+        return false;
+    }
+    const Json& r = doc["sprites"]["art"]["rect"];
+    if (r.size() != 4) {
+        if (error) *error = "ui/end.json: no sprite art";
+        return false;
+    }
+    x_ = r.at(0).asInt(), y_ = r.at(1).asInt(), w_ = r.at(2).asInt(), h_ = r.at(3).asInt();
+    if (w_ < MIN_W || h_ < MIN_H || w_ > plat::TOP_W || h_ > plat::TOP_H) {
+        if (error) *error = "ui/end.json: the art is " + std::to_string(w_) + "x" + std::to_string(h_);
+        return false;
+    }
+    sheet_ = plat::loadSheet(doc["sheet"].asString().c_str());
+    if (!sheet_) {
+        if (error) *error = "can't load the end sheet " + doc["sheet"].asString();
+        return false;
+    }
+    return true;
+}
+
+void EndArt::unload() {
+    if (sheet_) plat::freeSheet(sheet_);
+    sheet_ = nullptr;
+}
+
+void EndArt::draw(int x, int y) const { plat::drawSprite(sheet_, x_, y_, w_, h_, (float)x, (float)y); }
 
 EndScreen::Box EndScreen::buttonBox() { return {BUTTON_X * S, BUTTON_Y * S, BUTTON_W * S, BUTTON_H * S}; }
 
@@ -40,9 +72,9 @@ bool EndScreen::update(const plat::Input& in) {
     return f.tapped == BUTTON || (in.pressed & plat::BTN_A);
 }
 
-void EndScreen::drawTop(const MenuSkin& skin) const {
+void EndScreen::drawTop(const EndArt& art) const {
     plat::beginScreen(plat::Screen::Top, palette::DARK); // (the art's own background around it)
-    skin.drawEndArt(CANVAS_X, CANVAS_Y);
+    art.draw((plat::TOP_W - art.width()) / 2, (plat::TOP_H - art.height()) / 2);
     if (frames_ < FADE_FRAMES) // (from black)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)std::lround(255 - 255.0f * frames_ / FADE_FRAMES)));
 }

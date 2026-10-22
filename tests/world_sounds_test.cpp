@@ -29,36 +29,6 @@ const AudioCue* find(const std::vector<AudioCue>& cues, const std::string& name)
     return nullptr;
 }
 
-// Every exported call in the area.
-void forEachCall(const Area& area, const std::function<void(const CallDef&)>& f) {
-    auto all = [&](const std::vector<CallDef>& calls) {
-        for (const CallDef& c : calls) f(c);
-    };
-    for (const ConditionCheckerDef& c : area.conditionCheckers) {
-        all(c.conditionals.onSuccess);
-        all(c.conditionals.onFail);
-    }
-    for (const InteractionDef& i : area.interactions) all(i.onSuccess);
-    for (const TriggerEventDef& t : area.triggerEvents) {
-        all(t.onEnter);
-        all(t.onExit);
-    }
-    for (const CollectibleDef& c : area.collectibles) all(c.onCollect);
-    for (const ItemDef& it : area.items) {
-        all(it.onPickUp);
-        all(it.onDrop);
-    }
-    for (const NpcDef& n : area.npcs)
-        for (const NpcCondDef& c : n.conds) {
-            all(c.onEnter);
-            all(c.onExhausted);
-            for (const DialogueDef& d : c.dialogue) {
-                all(d.onStart);
-                all(d.onEnd);
-            }
-        }
-}
-
 // Tile 1 slides into an empty slot beside it; the frame's cues.
 std::vector<AudioCue> slideTile1(World& w) {
     int bx, by;

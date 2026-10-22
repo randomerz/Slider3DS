@@ -12,8 +12,8 @@
 #include "game/ui/menu_skin.h"
 #include "game/ui/palette.h"
 
-Frontend::Frontend(const Area& area, const TitleArt& art, Settings& settings)
-    : area_(area), art_(art), settings_(settings), savedSettings_(settings), world_(area, settings) {
+Frontend::Frontend(const Area& area, const TitleArt& art, const EndArt& endArt, Settings& settings)
+    : area_(area), art_(art), endArt_(endArt), settings_(settings), savedSettings_(settings), world_(area, settings) {
     toTitle();
 }
 
@@ -146,7 +146,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
 
 void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin, bool showInactive) const {
     if (mode_ == Mode::End) {
-        end_.drawTop(skin);
+        end_.drawTop(endArt_);
         return;
     }
     if (mode_ == Mode::Title) {

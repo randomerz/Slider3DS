@@ -4,6 +4,7 @@
 // a substring with slider3ds_tests.exe <substring>. Exit code 0 = all passed.
 #pragma once
 
+#include <functional>
 #include <string>
 
 #include "game/data/area.h"
@@ -24,3 +25,5 @@ void check(bool ok, const std::string& what);
 // The real Village export, loaded once (a failed load fails the calling test and returns an
 // empty Area).
 const Area& villageArea();
+// Every exported call in `area` (conditionals, interactions, triggers, collectibles, items, NPCs).
+void forEachCall(const Area& area, const std::function<void(const CallDef&)>& f);

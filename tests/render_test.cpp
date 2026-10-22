@@ -622,18 +622,24 @@ TEST(render_ending_goldens) {
     // The port's ending (EndOfDemo fitted): the top screen half faded in, then both screens once it
     // takes input.
     MenuSkin skin;
+    EndArt art;
     std::string error;
     check(skin.load(&error), "menu skin loads " + error);
+    check(art.load(&error), "end art loads " + error);
+    CHECK(art.width() >= 320 && art.height() >= 180); // (the original canvas, or the user extension; load refuses more than the screen)
     GoldenSet goldens("ending.txt");
     EndScreen end;
     end.start();
     for (int i = 0; i < EndScreen::FADE_FRAMES / 2; i++) end.update({});
     testResetDrawCalls();
-    end.drawTop(skin);
+    end.drawTop(art);
     goldens.compare("ending_fading_in", 2); // (the baked canvas + the fade)
+    testResetDrawCalls();
+    end.drawBottom(skin);
+    CHECK(testDrawCalls().empty()); // (no button until it takes input)
     for (int i = 0; i < EndScreen::LOCKOUT_FRAMES; i++) end.update({});
     testResetDrawCalls();
-    end.drawTop(skin);
+    end.drawTop(art);
     goldens.compare("ending_top", 1);
     testResetDrawCalls();
     end.drawBottom(skin);

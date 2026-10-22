@@ -70,13 +70,15 @@ int main(int, char**) {
     Font font;
     MenuSkin menuSkin;
     TitleArt titleArt;
+    EndArt endArt;
     Audio audio;
     std::string error;
     bool loaded = loadArea("village/village.json", area, &error);
     const float areaS = lap();
     loaded = loaded && sheets.load(area);
     const float sheetsS = lap();
-    loaded = loaded && font.load("fonts/dialogue.json", &error) && menuSkin.load(&error) && titleArt.load(&error);
+    loaded = loaded && font.load("fonts/dialogue.json", &error) && menuSkin.load(&error) && titleArt.load(&error) &&
+             endArt.load(&error);
     const float uiS = lap();
     loaded = loaded && audio.load(&error);
     const float audioS = lap();
@@ -89,7 +91,7 @@ int main(int, char**) {
 
     audio.startThread(); // (mixing and decoding off the main loop, where the platform has a thread for it)
     Settings settings = Settings::load();
-    Frontend front(area, titleArt, settings);
+    Frontend front(area, titleArt, endArt, settings);
     const float gameS = lap(); // (the settings, the World, the save profiles' headers)
     AreaView view;
     view.setFont(&font);
@@ -168,6 +170,7 @@ int main(int, char**) {
 
     audio.unload();
     titleArt.unload();
+    endArt.unload();
     menuSkin.unload();
     font.unload();
     sheets.unload();

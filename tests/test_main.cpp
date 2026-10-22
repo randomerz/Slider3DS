@@ -47,6 +47,35 @@ const Area& villageArea() {
     return area;
 }
 
+void forEachCall(const Area& area, const std::function<void(const CallDef&)>& f) {
+    auto all = [&](const std::vector<CallDef>& calls) {
+        for (const CallDef& c : calls) f(c);
+    };
+    for (const ConditionCheckerDef& c : area.conditionCheckers) {
+        all(c.conditionals.onSuccess);
+        all(c.conditionals.onFail);
+    }
+    for (const InteractionDef& i : area.interactions) all(i.onSuccess);
+    for (const TriggerEventDef& t : area.triggerEvents) {
+        all(t.onEnter);
+        all(t.onExit);
+    }
+    for (const CollectibleDef& c : area.collectibles) all(c.onCollect);
+    for (const ItemDef& it : area.items) {
+        all(it.onPickUp);
+        all(it.onDrop);
+    }
+    for (const NpcDef& n : area.npcs)
+        for (const NpcCondDef& c : n.conds) {
+            all(c.onEnter);
+            all(c.onExhausted);
+            for (const DialogueDef& d : c.dialogue) {
+                all(d.onStart);
+                all(d.onEnd);
+            }
+        }
+}
+
 int main(int argc, char** argv) {
 #ifdef _MSC_VER
     // A failed debug assertion (e.g. vector subscript) prints and aborts instead of opening a dialog.

@@ -101,38 +101,17 @@ bool MenuSkin::load(std::string* error) {
         if (error) *error = "can't load the menu sheet " + doc["sheet"].asString();
         return false;
     }
-    Json end;
-    if (!plat::readFile("ui/end.json", text) || !Json::parse(text, end, error)) {
-        if (error && error->empty()) *error = "can't read ui/end.json";
-        return false;
-    }
-    const Json& art = end["sprites"]["art"]["rect"];
-    if (art.size() != 4) {
-        if (error) *error = "ui/end.json: no sprite art";
-        return false;
-    }
-    endArt_ = {art.at(0).asInt(), art.at(1).asInt(), art.at(2).asInt(), art.at(3).asInt()};
-    endSheet_ = plat::loadSheet(end["sheet"].asString().c_str());
-    if (!endSheet_) {
-        if (error) *error = "can't load the end sheet " + end["sheet"].asString();
-        return false;
-    }
     return font_.load("fonts/menu.json", error);
 }
 
 void MenuSkin::unload() {
     if (sheet_) plat::freeSheet(sheet_);
-    if (endSheet_) plat::freeSheet(endSheet_);
-    sheet_ = endSheet_ = nullptr;
+    sheet_ = nullptr;
     font_.unload();
 }
 
 void MenuSkin::draw(const Sprite& s, int x, int y) const {
     plat::drawSprite(sheet_, s.x, s.y, s.w, s.h, (float)((x + shiftX_) * S), (float)((y + shiftY_) * S), 0, S);
-}
-
-void MenuSkin::drawEndArt(int x, int y) const {
-    plat::drawSprite(endSheet_, endArt_.x, endArt_.y, endArt_.w, endArt_.h, (float)x, (float)y);
 }
 
 void MenuSkin::fillRect(int x, int y, int w, int h, uint32_t color) const {
