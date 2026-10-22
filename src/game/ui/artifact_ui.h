@@ -6,7 +6,11 @@
 //     (tapping another collected tile selects that one instead);
 //   - drag a tile onto an option to slide it there; releasing it back on itself counts as a tap
 //     (selects it; auto-moves a single option), anywhere else cancels;
-//   - tiles in a running move show pressed; a button whose slot changes nudges toward it.
+//   - tiles in a running move show pressed; a button whose slot changes nudges toward it;
+//   - without the stylus (a controller's EventSystem selection, ArtifactTileButton's controller hover
+//     frame): the D-pad shows a cursor on a button (first press: the player's tile, else the middle)
+//     and steps it to the slot beside (no wrap); X is a tap on that button. It stays on its slot as
+//     tiles move (Unity's SwapButtons / auto-move re-select the button now there); a touch hides it.
 // Positions are UI pixels from the Area's ArtifactDef, drawn `scale`x around (centerX, centerY).
 // At 2x the outer frame runs off the 320x240 screen; the buttons and the area art fit.
 #pragma once
@@ -38,6 +42,9 @@ public:
 
     int selected() const { return selectedId_; } // islandId of the selected tile, 0 = none
     bool isOption(int x, int y) const;           // slot highlighted as a move option
+    bool cursorShown() const { return cursorShown_; }
+    int cursorX() const { return cursorX_; } // the D-pad cursor's slot
+    int cursorY() const { return cursorY_; }
     // Screen pixel center of slot (x, y), without nudge (for tests and touch mapping).
     void slotCenter(const Area& area, int x, int y, float& sx, float& sy) const;
 
@@ -66,6 +73,9 @@ private:
     int lastX_ = 0, lastY_ = 0;       // last touched pixel (the 3DS reports none on release)
     int downSlotX_ = -1, downSlotY_ = -1; // slot touched down on (-1 = none)
     int hoverX_ = -1, hoverY_ = -1;   // slot under the stylus while dragging
+    // The D-pad's cursor.
+    bool cursorShown_ = false;
+    int cursorX_ = 1, cursorY_ = 1;
     // Per islandId: last slot seen (to detect moves) and its nudge animation.
     std::vector<std::pair<int, int>> lastSlot_;
     std::vector<Nudge> nudges_;

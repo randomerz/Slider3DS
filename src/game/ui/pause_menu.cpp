@@ -264,15 +264,15 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
     }
     if (in.pressed & plat::BTN_B) return back();
     const PageDef& p = pageDef(page_);
-    const int move = ((in.pressed & plat::BTN_DOWN) ? 1 : 0) - ((in.pressed & plat::BTN_UP) ? 1 : 0);
+    const int move = ((in.pressed & plat::DIR_DOWN) ? 1 : 0) - ((in.pressed & plat::DIR_UP) ? 1 : 0);
     const int next = std::clamp(cursor_ + move, 0, p.count - 1); // (stops at the ends, as the title menu)
     if (next != cursor_) {
         cursor_ = next;
         confirmQuit_ = false;
     }
     if (in.pressed & plat::BTN_A) return activate(p.items[cursor_], settings);
-    if (in.pressed & plat::BTN_LEFT) step(p.items[cursor_], -1, settings);
-    if (in.pressed & plat::BTN_RIGHT) step(p.items[cursor_], 1, settings);
+    if (in.pressed & plat::DIR_LEFT) step(p.items[cursor_], -1, settings);
+    if (in.pressed & plat::DIR_RIGHT) step(p.items[cursor_], 1, settings);
 
     const bool wasSliding = sliding_;
     const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y); });

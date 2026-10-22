@@ -62,10 +62,14 @@ uint32_t readKeys() {
     if (k[SDL_SCANCODE_W])         b |= BTN_R;
     if (k[SDL_SCANCODE_RETURN])    b |= BTN_START;
     if (k[SDL_SCANCODE_BACKSPACE]) b |= BTN_SELECT;
-    if (k[SDL_SCANCODE_UP])        b |= BTN_UP;
-    if (k[SDL_SCANCODE_DOWN])      b |= BTN_DOWN;
-    if (k[SDL_SCANCODE_LEFT])      b |= BTN_LEFT;
-    if (k[SDL_SCANCODE_RIGHT])     b |= BTN_RIGHT;
+    if (k[SDL_SCANCODE_T])         b |= BTN_UP; // (Citra's defaults: T/G/F/H = D-pad, arrows = Circle Pad)
+    if (k[SDL_SCANCODE_G])         b |= BTN_DOWN;
+    if (k[SDL_SCANCODE_F])         b |= BTN_LEFT;
+    if (k[SDL_SCANCODE_H])         b |= BTN_RIGHT;
+    if (k[SDL_SCANCODE_UP])        b |= BTN_CPAD_UP;
+    if (k[SDL_SCANCODE_DOWN])      b |= BTN_CPAD_DOWN;
+    if (k[SDL_SCANCODE_LEFT])      b |= BTN_CPAD_LEFT;
+    if (k[SDL_SCANCODE_RIGHT])     b |= BTN_CPAD_RIGHT;
     return b;
 }
 

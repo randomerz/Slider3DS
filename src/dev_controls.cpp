@@ -7,7 +7,7 @@
 #include "game/village/village_grid.h"
 
 void DevControls::updateAnywhere(const plat::Input& in) {
-    if (in.pressed & plat::BTN_SELECT) perfPage = (perfPage + 1) % (DevOverlay::PAGES + 1);
+    if ((in.pressed & plat::BTN_SELECT) && !(in.held & plat::BTN_L)) perfPage = (perfPage + 1) % (DevOverlay::PAGES + 1);
 }
 
 bool DevControls::update(const plat::Input& in, World& world) {
@@ -27,9 +27,8 @@ bool DevControls::update(const plat::Input& in, World& world) {
             world.placeNear(x - 1, y - 1);
         }
         printf("Chad setup: tiles 2-8 collected, next to Chad; grid %s\n", world.grid.gridString().c_str());
-    } else if (in.pressed & plat::BTN_X) {
-        noclip = !noclip;
     }
+    if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_SELECT)) noclip = !noclip; // (X: the Artifact's cursor)
 
     if ((in.held & plat::BTN_L) && (in.pressed & plat::BTN_R)) {
         // Slider 9. Before the shuffle: Sliders 2-8 collected, the Ruins Fragment dropped next to the
@@ -115,8 +114,8 @@ bool DevControls::update(const plat::Input& in, World& world) {
     const bool sliding = (in.held & plat::BTN_L) != 0;
     const int stile = world.player.stile;
     if (sliding && stile != 0) {
-        const int dx = (in.pressed & plat::BTN_RIGHT) ? 1 : (in.pressed & plat::BTN_LEFT) ? -1 : 0;
-        const int dy = (in.pressed & plat::BTN_UP) ? 1 : (in.pressed & plat::BTN_DOWN) ? -1 : 0;
+        const int dx = (in.pressed & plat::BTN_CPAD_RIGHT) ? 1 : (in.pressed & plat::BTN_CPAD_LEFT) ? -1 : 0;
+        const int dy = (in.pressed & plat::BTN_CPAD_UP) ? 1 : (in.pressed & plat::BTN_CPAD_DOWN) ? -1 : 0;
         if ((dx != 0) != (dy != 0)) {
             // The Artifact's view of where the tile is (it may still be queued to get there).
             int bx = 0, by = 0;

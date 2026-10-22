@@ -341,6 +341,25 @@ TEST(render_artifact_goldens) {
         goldens.compare("artifact_selected", 11);
     }
     {
+        // The D-pad cursor's hover frame: on the selected tile 1, then on an option.
+        Setup s(false);
+        auto press = [&](uint32_t b) {
+            plat::Input in;
+            in.pressed = in.held = b;
+            s.ui.update(in, s.world, 1.0f / 60.0f);
+        };
+        press(plat::BTN_DOWN); // (shown: the middle)
+        press(plat::BTN_DOWN);
+        press(plat::BTN_LEFT);
+        press(plat::BTN_X);
+        check(s.ui.selected() == 1, "tile 1 selected by the cursor");
+        s.render(sheets);
+        goldens.compare("artifact_cursor_selected", 11);
+        press(plat::BTN_UP);
+        s.render(sheets);
+        goldens.compare("artifact_cursor_option", 11);
+    }
+    {
         Setup s(true);
         s.touch(true, 2, 1); // tile 7, then the middle slot: moving (pressed, nudged)
         s.touch(false, 2, 1);

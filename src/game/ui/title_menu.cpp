@@ -285,10 +285,10 @@ TitleMenu::Action TitleMenu::update(const plat::Input& in) {
         tap_.update(in, S, [](int, int) { return -1; }); // (a touch that goes down now is on nothing)
     } else if (in.pressed & plat::BTN_B) back();
     else if (in.pressed & plat::BTN_A) action = activate(selected_);
-    else if (in.pressed & plat::BTN_UP) move(0, -1);
-    else if (in.pressed & plat::BTN_DOWN) move(0, 1);
-    else if (in.pressed & plat::BTN_LEFT) move(-1, 0);
-    else if (in.pressed & plat::BTN_RIGHT) move(1, 0);
+    else if (in.pressed & plat::DIR_UP) move(0, -1);
+    else if (in.pressed & plat::DIR_DOWN) move(0, 1);
+    else if (in.pressed & plat::DIR_LEFT) move(-1, 0);
+    else if (in.pressed & plat::DIR_RIGHT) move(1, 0);
 
     if (!locked && page_ == page) { // (a button changed the page: the touch waits for its release)
         const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y); });

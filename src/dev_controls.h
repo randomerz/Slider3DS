@@ -7,7 +7,7 @@
 #include "platform/platform.h"
 
 struct DevControls {
-    bool noclip = false;       // X: walk through everything (shows the position point)
+    bool noclip = false;       // L + SELECT: walk through everything (shows the position point)
     bool showInactive = false; // Y: draw uncollected STiles too (L + Y: the ruins, one slide from assembled)
     int perfPage = 1;          // SELECT: the perf overlay's page, cycling (0 off, then DevOverlay::Page + 1)
     bool collected = false;    // B: tiles 2-8 collected (L + B: only 2-4, next to Kevin's knot)

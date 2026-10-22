@@ -51,6 +51,12 @@ struct Fixture {
     void settle() {
         for (int i = 0; i < 600 && !artifact.queueEmpty(); i++) frame(false);
     }
+    void press(uint32_t buttons) { // one frame with `buttons` pressed, no touch
+        plat::Input in;
+        in.pressed = in.held = buttons;
+        ui.update(in, world, DT);
+        artifact.update(grid, DT, 0);
+    }
 };
 
 } // namespace
@@ -218,4 +224,45 @@ TEST(artifact_ui_before_init_does_nothing) {
     ui.update(in, world, 1.0f / 60);
     ui.update(plat::Input{}, world, 1.0f / 60);
     CHECK(ui.selected() == 0 && world.artifact.queueEmpty());
+}
+
+TEST(artifact_ui_dpad_cursor_selects_and_moves) {
+    // The D-pad's cursor: its first press shows it (no player tile here: the middle), then it steps
+    // by slot without wrapping; X taps the button under it, so a tile is selected then sent to an
+    // option. The cursor stays on its slot; X on the selected tile deselects it.
+    Fixture f;
+    CHECK(!f.ui.cursorShown());
+    f.press(plat::BTN_LEFT);
+    CHECK(f.ui.cursorShown() && f.ui.cursorX() == 1 && f.ui.cursorY() == 1);
+    f.press(plat::BTN_LEFT);
+    f.press(plat::BTN_LEFT); // (no wrap)
+    f.press(plat::BTN_DOWN);
+    CHECK(f.ui.cursorX() == 0 && f.ui.cursorY() == 0);
+    f.press(plat::BTN_CPAD_RIGHT); // (the Circle Pad walks: not the cursor's)
+    CHECK(f.ui.cursorX() == 0);
+    f.press(plat::BTN_X); // tile 1
+    CHECK(f.ui.selected() == 1 && f.ui.clicked() && f.ui.isOption(2, 0));
+    f.press(plat::BTN_RIGHT);
+    f.press(plat::BTN_RIGHT);
+    f.press(plat::BTN_X); // its option (2, 0)
+    check(f.artifact.gridString(f.grid) == "###_###_##1", "queued to (2,0): " + f.artifact.gridString(f.grid));
+    CHECK(f.ui.cursorX() == 2 && f.ui.cursorY() == 0 && f.ui.selected() == 1);
+    f.settle();
+    f.press(plat::BTN_X); // the selected tile, under the cursor: deselected
+    CHECK(f.ui.selected() == 0);
+    f.press(plat::BTN_A); // (A is the world's)
+    CHECK(f.ui.selected() == 0);
+}
+
+TEST(artifact_ui_dpad_cursor_starts_on_the_player_and_hides_on_touch) {
+    Fixture f;
+    f.world.player.stile = 1; // (tile 1 at (0, 0))
+    f.press(plat::BTN_UP);
+    CHECK(f.ui.cursorShown() && f.ui.cursorX() == 0 && f.ui.cursorY() == 0);
+    f.tap(2, 2);
+    CHECK(!f.ui.cursorShown());
+    f.press(plat::BTN_X); // (hidden: X does nothing)
+    CHECK(f.ui.selected() == 0);
+    f.press(plat::BTN_UP); // shows it again where it was
+    CHECK(f.ui.cursorShown() && f.ui.cursorX() == 0 && f.ui.cursorY() == 0);
 }

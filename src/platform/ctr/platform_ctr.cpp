@@ -53,10 +53,14 @@ uint32_t mapKeys(u32 k) {
     if (k & KEY_R)      b |= BTN_R;
     if (k & KEY_START)  b |= BTN_START;
     if (k & KEY_SELECT) b |= BTN_SELECT;
-    if (k & KEY_UP)     b |= BTN_UP;    // KEY_UP = D-pad | circle pad
-    if (k & KEY_DOWN)   b |= BTN_DOWN;
-    if (k & KEY_LEFT)   b |= BTN_LEFT;
-    if (k & KEY_RIGHT)  b |= BTN_RIGHT;
+    if (k & KEY_DUP)    b |= BTN_UP;
+    if (k & KEY_DDOWN)  b |= BTN_DOWN;
+    if (k & KEY_DLEFT)  b |= BTN_LEFT;
+    if (k & KEY_DRIGHT) b |= BTN_RIGHT;
+    if (k & KEY_CPAD_UP)    b |= BTN_CPAD_UP;
+    if (k & KEY_CPAD_DOWN)  b |= BTN_CPAD_DOWN;
+    if (k & KEY_CPAD_LEFT)  b |= BTN_CPAD_LEFT;
+    if (k & KEY_CPAD_RIGHT) b |= BTN_CPAD_RIGHT;
     return b;
 }
 

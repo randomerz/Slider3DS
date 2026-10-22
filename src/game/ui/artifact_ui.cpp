@@ -16,6 +16,7 @@ void ArtifactUI::init(const Area& area, const Artifact& artifact) {
     autoMoveFlag_ = "forceAutoMove" + area.name;
     wasTouching_ = dragging_ = false;
     downSlotX_ = downSlotY_ = hoverX_ = hoverY_ = -1;
+    cursorShown_ = false;
     int maxId = 0;
     for (const STileDef& s : area.stiles) maxId = std::max(maxId, s.islandId);
     lastSlot_.assign(maxId + 1, {-1, -1});
@@ -110,6 +111,29 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
     // a port feature, the player's autoMove setting.
     auto autoMove = [&] { return world.settings.autoMove || world.state.flag(autoMoveFlag_); };
     const bool touching = in.touching;
+
+    // The D-pad's cursor (see the header); one axis a press (Unity's UI navigation).
+    const int stepX = ((in.pressed & plat::BTN_RIGHT) ? 1 : 0) - ((in.pressed & plat::BTN_LEFT) ? 1 : 0);
+    const int stepY = stepX ? 0 : ((in.pressed & plat::BTN_UP) ? 1 : 0) - ((in.pressed & plat::BTN_DOWN) ? 1 : 0);
+    if ((stepX || stepY) && !touching) {
+        if (!cursorShown_) {
+            cursorShown_ = true;
+            if (!playerStile || !artifact.findButton(playerStile, cursorX_, cursorY_)) {
+                cursorX_ = artifact.width() / 2;
+                cursorY_ = artifact.height() / 2;
+            }
+        } else {
+            cursorX_ = std::min(std::max(cursorX_ + stepX, 0), artifact.width() - 1);
+            cursorY_ = std::min(std::max(cursorY_ + stepY, 0), artifact.height() - 1);
+        }
+    }
+    if (touching) {
+        cursorShown_ = false;
+    } else if (cursorShown_ && (in.pressed & plat::BTN_X)) {
+        clicked_ = true; // (its Button's UIClick)
+        selectButton(grid, artifact, cursorX_, cursorY_, false, playerStile, autoMove());
+    }
+
     int sx = -1, sy = -1;
     const bool onSlot = touching && slotAtPixel(area, artifact, in.touchX, in.touchY, sx, sy);
 
@@ -251,6 +275,8 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
         if (option && !hovered)
             drawPart(def.highlight.sprite, def.highlight.x, def.highlight.y, def.highlight.h, cx, cy + drop);
         if (pressed) drawPart(def.pressed.sprite, def.pressed.x, def.pressed.y, def.pressed.h, cx, cy);
+        if (cursorShown_ && bx == cursorX_ && by == cursorY_) // (controllerHoverFrame, around the image)
+            drawPart(def.hover.sprite, def.hover.x, def.hover.y, def.hover.h, cx, cy + drop);
     }
 
     // Pins off the grid: children of the panel, after the buttons.

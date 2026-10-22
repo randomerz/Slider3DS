@@ -27,11 +27,18 @@ enum Button : uint32_t {
     BTN_R      = 1u << 5,
     BTN_START  = 1u << 6,
     BTN_SELECT = 1u << 7,
-    BTN_UP     = 1u << 8,
+    BTN_UP     = 1u << 8,  // the D-pad (the Artifact's cursor)
     BTN_DOWN   = 1u << 9,
     BTN_LEFT   = 1u << 10,
     BTN_RIGHT  = 1u << 11,
+    BTN_CPAD_UP    = 1u << 12, // the Circle Pad (walking)
+    BTN_CPAD_DOWN  = 1u << 13,
+    BTN_CPAD_LEFT  = 1u << 14,
+    BTN_CPAD_RIGHT = 1u << 15,
 };
+// Either pad: what the menus move by.
+constexpr uint32_t DIR_UP = BTN_UP | BTN_CPAD_UP, DIR_DOWN = BTN_DOWN | BTN_CPAD_DOWN;
+constexpr uint32_t DIR_LEFT = BTN_LEFT | BTN_CPAD_LEFT, DIR_RIGHT = BTN_RIGHT | BTN_CPAD_RIGHT;
 
 struct Input {
     uint32_t held = 0;    // buttons currently down
