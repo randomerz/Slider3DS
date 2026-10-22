@@ -54,11 +54,12 @@ public:
     int lastTileCount() const { return tileCount_; }     // of them, tile layer cells
 
 private:
-    enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue, Text, Line, Particle }; // tie order at equal sort keys
+    enum class ItemKind : uint8_t { Layer, Sprite, Player, Emote, Dialogue, Text, Line, Particle, Pickup }; // tie order at equal sort keys
     struct Item {
         ItemKind kind;
         // Layer: Area::layers; Sprite: Area::worldSprites; Player: insertion order; Emote, Dialogue:
-        // Area::npcs; Text: texts_; Line: lines_; Particle: World::particles
+        // Area::npcs; Text: texts_; Line: lines_; Particle: World::particles; Pickup: 0 = its circle,
+        // 1 = its item (drawn as a sprite)
         int index;
         SortedSprite sprite; // sort keys (all kinds) and what to draw (sprites)
     };
@@ -77,6 +78,7 @@ private:
     void drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace>& glyphs, float sx, float sy,
                     const Typer* typer);
     void drawLine(const LineDraw& l);
+    void drawPickupCircle(const World& world); // ItemPickupEffect's mask (its dark panel inside it)
     void drawParticle(const Particles::Particle& p);
     // Screen top-left of `sp`; false if it is off screen.
     bool spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const;

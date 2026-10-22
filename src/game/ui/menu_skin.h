@@ -54,6 +54,9 @@ public:
     static float sliderValueAt(float touchX, int x, int w);
     // Its TinyUnicode font (the top screen's HUD draws it at 1x).
     const Font& font() const { return font_; }
+    // The top screen's captions (ItemPickupEffect's): the original's PixelTitanZero at 16, its own
+    // pixel size; 1x.
+    const Font& captionFont() const { return caption_; }
     // A toggle (TOGGLE_SIZE square at (x, y)); `selected` swaps its background.
     void drawToggle(int x, int y, bool on, bool selected) const;
     // A profile card filling the box: its background, and its face (pressed: 1 px lower; selected:
@@ -103,5 +106,6 @@ private:
     Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
     Sprite card_[3], cardBack_, frame_[2], back_[3], trash_[3]; // ([State] / [Frame])
     Font font_;
+    Font caption_;
     mutable int shiftX_ = 0, shiftY_ = 0; // (Shift: a draw-time offset, not the skin's look)
 };

@@ -241,6 +241,8 @@ TEST(collectible_pick_up_asks_for_a_save) {
     w.objectPosition(slider2->object, x, y);
     w.placeNear(x, y);
     frames(w, 2);
+    CHECK(!w.saveRequested); // (DoOnCollect saves, 0.75 s into the pick-up cutscene)
+    frames(w, PICKUP_FRAMES);
     CHECK(w.state.hasCollectible("Slider 2", "Village") && w.saveRequested);
     w.load(SaveProfile::make("Cat")); // (a load starts without one)
     CHECK(!w.saveRequested);

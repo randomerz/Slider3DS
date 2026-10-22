@@ -131,6 +131,11 @@ void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t colo
     const int w100 = (int)std::lround(width * 100);
     g_draws.push_back({"line", (int)std::lround(x1), (int)std::lround(y1), w100, 0, x0, y0, (float)w100, 0, color});
 }
+void drawCircle(float cx, float cy, float r, uint32_t color) {
+    // (sheet "circle": centered on (x, y); sw = the radius in 1/100 px)
+    const int r100 = (int)std::lround(r * 100);
+    g_draws.push_back({"circle", 0, 0, r100, 0, cx, cy, (float)r100, 0, color});
+}
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale, uint32_t fill) {
     g_draws.push_back({tex->name, sx, sy, sw, sh, x, y, (float)(sw * scale), (float)(sh * scale), flags, fill});
 }

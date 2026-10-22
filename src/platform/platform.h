@@ -90,6 +90,8 @@ void drawRect(float x, float y, float w, float h, uint32_t color);
 // A `width`-wide band along the segment (x0, y0)-(x1, y1), ending square at its endpoints (a
 // two-point LineRenderer without caps). Colors with alpha < 255 blend, as for drawRect.
 void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t color);
+// A filled circle of radius `r` centered on (cx, cy). Colors with alpha < 255 blend, as for drawRect.
+void drawCircle(float cx, float cy, float r, uint32_t color);
 // Draws the sw x sh pixel rect at (sx, sy) of `tex` (top-left origin) with its top-left at (x, y).
 // Rotation is about the rect's center, so ROT90 suits square sprites (area loading refuses it on a
 // tile that isn't: most tiles are 16x16, a few 16x32).

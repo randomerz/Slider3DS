@@ -759,7 +759,7 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
     world.objectBase(object, bx, by);
     world.player.x = bx + (trigger->minX + trigger->maxX) * 0.5f;
     world.player.y = by + (trigger->minY + trigger->maxY) * 0.5f - area.player.footBox.offY;
-    world.update(DT, 0, 0, true);
+    for (int f = 0; f <= PICKUP_FRAMES; f++) world.update(DT, 0, 0, true); // (the pick-up cutscene)
     check(world.state.hasCollectible("Slider 4", "Village") && world.grid.tileActive(4), "picked up: tile 4 collected");
 }
 

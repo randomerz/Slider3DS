@@ -12,6 +12,7 @@
 #include "game/events/sound_props.h"
 #include "game/cutscene/camera_dolly.h"
 #include "game/data/area.h"
+#include "game/fx/item_pickup.h"
 #include "game/fx/particles.h"
 #include "game/fx/screen_effects.h"
 #include "game/grid/artifact.h"
@@ -41,7 +42,7 @@ struct SaveProfile;
 // the STile it stands on, which it rides while that tile slides.
 // Who holds the player (Player.SetCanMove(false) + a PauseManager restriction): while any does, it
 // can't move, act or pause, and the Artifact stays shut.
-enum PlayerLock : uint8_t { LOCK_DOLLY = 1, LOCK_SCENE = 2 }; // (next: ItemPickupEffect)
+enum PlayerLock : uint8_t { LOCK_DOLLY = 1, LOCK_SCENE = 2, LOCK_PICKUP = 4 };
 
 struct Player {
     static constexpr float HOUSE_Y = -75; // Player.houseYThreshold: below it, the player is in a house
@@ -202,6 +203,7 @@ public:
     Player player;
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
+    ItemPickup pickup; // ItemPickupEffect: a collectible's pick-up cutscene
     const Settings& settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;

@@ -14,7 +14,7 @@ void testFailAssetReads(int reads);
 // The player's files (readUserFile / writeUserFile), in memory, by name.
 std::map<std::string, std::string>& testUserFiles();
 
-// Every drawSprite/drawRect/drawLine since the last reset, in call order.
+// Every drawSprite/drawRect/drawLine/drawCircle since the last reset, in call order.
 struct DrawCall {
     std::string sheet; // empty for rects
     int sx, sy, sw, sh; // rects: 0, 0, then their size

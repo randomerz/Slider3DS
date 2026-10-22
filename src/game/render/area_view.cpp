@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "game/dev/profiler.h"
+#include "game/ui/palette.h"
 #include "platform/platform.h"
 
 void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
@@ -193,10 +194,38 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         // The body flips with facing (SpriteRenderer.flipX); its children (boat, indicator) don't.
         const uint32_t flip = p == &area.player.body ? facing : 0u;
         SortedSprite sp = placeSprite(area, *p, pl.x, pl.y, time_, flip);
+        if (p == &area.player.body && world.pickup.active()) sp.sortLayer = ItemPickup::SORT_LAYER; // (ScreenEffects)
         const int animator = area.player.animator;
         if (p == &area.player.body && animator >= 0 && world.animators.sprite(animator) != Animators::NOT_YET)
             sp.sprite = world.animators.sprite(animator); // its Animator's state (idle, run, boat)
         items_.push_back({ItemKind::Player, (int)items_.size(), sp});
+    }
+
+    // ItemPickupEffect's canvas (around the player, under it): the circle, then the item inside it.
+    if (const float d = world.pickup.circleDiameter(); d > 0 && inRange(ItemPickup::SORT_LAYER)) {
+        Item circle{ItemKind::Pickup, 0, {}};
+        circle.sprite.sortLayer = ItemPickup::SORT_LAYER;
+        circle.sprite.order = ItemPickup::ORDER;
+        circle.sprite.sortY = pl.y;
+        items_.push_back(circle);
+        const int item = world.pickup.itemSprite(area);
+        if (item >= 0) {
+            // Its Image: the sprite's rect centered 1 unit up, at native size (1 px a pixel); shown
+            // once the circle (its mask) covers it all.
+            const SpriteDef& s = area.sprites[item];
+            const float hw = s.w / s.ppu / 2, hh = s.h / s.ppu / 2;
+            const float far = std::sqrt(hw * hw + (ItemPickup::ITEM_UP + hh) * (ItemPickup::ITEM_UP + hh));
+            if (d / 2 >= far) {
+                Item it{ItemKind::Pickup, 1, {}};
+                it.sprite.sprite = item;
+                it.sprite.x = pl.x + (s.pivotX - s.w / 2.0f) / s.ppu;
+                it.sprite.y = pl.y + ItemPickup::ITEM_UP + (s.pivotY - s.h / 2.0f) / s.ppu;
+                it.sprite.sortY = pl.y;
+                it.sprite.sortLayer = ItemPickup::SORT_LAYER;
+                it.sprite.order = ItemPickup::ORDER;
+                items_.push_back(it);
+            }
+        }
     }
 
     list.reset();
@@ -219,8 +248,16 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         else if (it.kind == ItemKind::Text) drawWorldText(world, it.index);
         else if (it.kind == ItemKind::Line) drawLine(lines_[it.index]);
         else if (it.kind == ItemKind::Particle) drawParticle(particles[it.index]);
+        else if (it.kind == ItemKind::Pickup && it.index == 0) drawPickupCircle(world);
         else drawSprite(area, it.sprite);
     }
+}
+
+void AreaView::drawPickupCircle(const World& world) {
+    float sx, sy;
+    worldToScreen(world.player.x, world.player.y, sx, sy); // (the WorldCanvas follows the player)
+    plat::drawCircle(sx, sy, world.pickup.circleDiameter() / 2 * ppu_, palette::DARK);
+    spriteCount_++;
 }
 
 void AreaView::drawLine(const LineDraw& l) {

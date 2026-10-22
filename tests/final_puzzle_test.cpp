@@ -227,9 +227,11 @@ TEST(final_completions_and_slider_9) {
     CHECK(std::fabs(cx - world.player.x) < 1e-3f && std::fabs(cy - world.player.y) < 1e-3f);
     const int delay = framesFor(1.2f, true) - 1; // counted from the frame after it appeared
     frames(world, 2);
+    CHECK(world.pickup.active()); // (picked up: collected 0.75 s in)
+    frames(world, PICKUP_FRAMES);
     CHECK(world.state.hasCollectible("Slider 9", "Village") && world.grid.tileActive(9));
     CHECK(!world.artifactButtons.complete(9));
-    frames(world, delay - 3);
+    frames(world, delay - 3 - PICKUP_FRAMES);
     CHECK(!world.artifactButtons.complete(9));
     frames(world, 1);
     CHECK(world.artifactButtons.complete(9));
@@ -275,7 +277,7 @@ TEST(final_start_reads_the_save) {
     CHECK(pending.finale.placingTile9() && !pending.objects.activeInHierarchy(slider9));
     frames(pending, 1);
     CHECK(!pending.finale.placingTile9() && pending.objects.activeInHierarchy(slider9));
-    frames(pending, 2);
+    frames(pending, 2 + PICKUP_FRAMES);
     CHECK(pending.state.hasCollectible("Slider 9", "Village"));
 }
 

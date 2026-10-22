@@ -106,6 +106,9 @@ TEST(events_collectible_pickup_collects_its_tile) {
     check(!world.grid.tileActive(2) && !world.state.hasCollectible("Slider 2", "Village"), "not collected yet");
     check(standIn(world, path), "standing on Slider 2");
     world.update(DT, 0, 0, false);
+    check(!world.objects.activeInHierarchy(object) && !world.state.hasCollectible("Slider 2", "Village"),
+          "hidden at once, collected 0.75 s in (the pick-up cutscene)");
+    for (int f = 0; f < PICKUP_FRAMES; f++) world.update(DT, 0, 0, false);
     check(world.state.hasCollectible("Slider 2", "Village"), "in the inventory");
     check(world.grid.tileActive(2), "tile 2 collected");
     check(!world.objects.activeInHierarchy(object), "the collectible is gone");

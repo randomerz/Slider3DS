@@ -159,7 +159,7 @@ TEST(frontend_saves_on_a_pick_up_and_on_closing_in_the_game) {
     float cx, cy;
     f.world().objectPosition(villageArea().collectibles[slider2].object, cx, cy);
     f.world().placeNear(cx, cy);
-    frames(f, 2);
+    frames(f, 2 + PICKUP_FRAMES);
     CHECK(saved(0).state.hasCollectible("Slider 2", "Village")); // (SaveGame in DoOnCollect)
     frames(f, 60);
     f.shutdown();

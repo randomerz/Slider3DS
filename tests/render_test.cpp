@@ -853,6 +853,39 @@ TEST(render_intro_goldens) {
     testResetDrawCalls();
     view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
     view.draw(world);
-    drawTopOverlays(world, skin.font()); // (as main draws them: the prompt, then the panels)
+    drawTopOverlays(world, skin); // (as main draws them: the prompt, then the panels)
     goldens.compare("intro_rolling_skip_held", 50);
+}
+
+TEST(render_item_pickup_golden) {
+    // ItemPickupEffect 0.15 s in (the dark circle growing over the world, the item inside it, the
+    // player on top) and 1 s in (it covers the view; "Slider 2 Acquired!").
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    Font font;
+    MenuSkin skin;
+    AreaView view;
+    std::string error;
+    check(sheets.load(area) && font.load("fonts/dialogue.json", &error) && skin.load(&error), "assets load " + error);
+    view.setFont(&font);
+    GoldenSet goldens("pickup.txt");
+    World world = sceneWorld();
+    float x, y;
+    world.objectPosition(area.collectibles[area.collectible("Slider 2")].object, x, y);
+    world.placeNear(x, y);
+    auto shoot = [&](const char* name) {
+        float cx, cy;
+        world.camera(cx, cy);
+        testResetDrawCalls();
+        view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        drawTopOverlays(world, skin);
+        goldens.compare(name, 10);
+    };
+    for (int i = 0; i < 9; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.pickup.circleDiameter() > 2 && world.pickup.circleDiameter() < 10, "the circle growing");
+    shoot("pickup_expanding");
+    for (int i = 9; i < 61; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.pickup.active() && world.pickup.textShown(), "the cutscene, its text up");
+    shoot("pickup_text");
 }

@@ -224,7 +224,7 @@ TEST(ruins_dig_up_slider_7) {
     CHECK(world.promptShown());
     world.action(); // dig
     check(world.objects.activeInHierarchy(area.collectibles[slider7].object), "Slider 7 dug up");
-    for (int f = 0; f < 5; f++) world.update(DT, 0, 0, false); // (standing on it: picked up)
+    for (int f = 0; f < 5 + PICKUP_FRAMES; f++) world.update(DT, 0, 0, false); // (standing on it: picked up)
     check(world.state.hasCollectible("Slider 7", "Village") && world.grid.tileActive(7), "collected: tile 7 joins");
     CHECK(!world.objects.activeInHierarchy(r.buriedSlider));
     CHECK(world.objects.rendererEnabled(r.renderer) && world.objects.sprite(r.renderer) == ObjectStates::NO_SPRITE);

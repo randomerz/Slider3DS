@@ -155,6 +155,7 @@ void World::reloadObjects() {
     intro.reset();
     abduction.reset();
     dollies.reset();
+    pickup.reset();
     player.locks = 0; // (what held the player is reset)
     artifactButtons.reset(area);
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
@@ -320,6 +321,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     chad.coroutines(*this, dt);
     finale.coroutines(*this, dt);
     intro.coroutines(*this, dt);
+    pickup.coroutines(*this, dt);
     abduction.coroutines(*this, dt);
     props.coroutines(*this, dt);
     dollies.update(*this, dt, in.actionHeld);

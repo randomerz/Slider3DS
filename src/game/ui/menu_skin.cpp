@@ -101,13 +101,14 @@ bool MenuSkin::load(std::string* error) {
         if (error) *error = "can't load the menu sheet " + doc["sheet"].asString();
         return false;
     }
-    return font_.load("fonts/menu.json", error);
+    return font_.load("fonts/menu.json", error) && caption_.load("fonts/caption.json", error);
 }
 
 void MenuSkin::unload() {
     if (sheet_) plat::freeSheet(sheet_);
     sheet_ = nullptr;
     font_.unload();
+    caption_.unload();
 }
 
 void MenuSkin::draw(const Sprite& s, int x, int y) const {

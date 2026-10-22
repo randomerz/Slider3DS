@@ -14,9 +14,11 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <vector>
 
 #ifndef ASSET_ROOT
 #define ASSET_ROOT "assets"
@@ -304,6 +306,24 @@ void drawLine(float x0, float y0, float x1, float y1, float width, uint32_t colo
                              {{x1 - nx, y1 - ny}, c, {0, 0}}, {{x0 - nx, y0 - ny}, c, {0, 0}}};
     const int idx[6] = {0, 1, 2, 0, 2, 3};
     SDL_RenderGeometry(g_renderer, nullptr, v, 4, idx, 6);
+}
+
+void drawCircle(float cx, float cy, float r, uint32_t color) {
+    if (r <= 0) return;
+    // A fan of triangles from the center; enough segments that the edge stays round at any size.
+    const int n = std::min(std::max((int)(r * 0.75f), 16), 256);
+    const SDL_Color c{(Uint8)(color >> 24), (Uint8)(color >> 16), (Uint8)(color >> 8), (Uint8)color};
+    std::vector<SDL_Vertex> v(n + 1);
+    std::vector<int> idx(n * 3);
+    v[0] = {{cx, cy}, c, {0, 0}};
+    for (int i = 0; i < n; i++) {
+        const float a = 6.2831853f * i / n;
+        v[i + 1] = {{cx + r * std::cos(a), cy + r * std::sin(a)}, c, {0, 0}};
+        idx[i * 3] = 0;
+        idx[i * 3 + 1] = i + 1;
+        idx[i * 3 + 2] = i + 1 < n ? i + 2 : 1;
+    }
+    SDL_RenderGeometry(g_renderer, nullptr, v.data(), n + 1, idx.data(), n * 3);
 }
 
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale, uint32_t fill) {

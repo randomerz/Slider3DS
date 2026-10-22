@@ -2,7 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 
+#include "game/ui/menu_skin.h"
 #include "game/ui/palette.h"
 #include "game/world/world.h"
 #include "platform/platform.h"
@@ -33,8 +35,17 @@ void drawSkipPrompt(const Font& font, int screenW, int screenH, float fill) {
     font.drawText(text, (float)(x + (W - font.textWidth(text)) / 2), (float)baseline, 1, palette::OFF_WHITE);
 }
 
-void drawTopOverlays(const World& world, const Font& font) {
-    if (world.dollies.promptShown()) drawSkipPrompt(font, plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
+void drawTopOverlays(const World& world, const MenuSkin& skin) {
+    if (world.dollies.promptShown()) drawSkipPrompt(skin.font(), plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
+    if (world.pickup.textShown()) {
+        // Item Acquired Text: centered 50 px above the view's middle (its 240x50 box; one line).
+        const Font& font = skin.captionFont();
+        const std::string text = world.pickup.text(world.area);
+        const GlyphRect& cap = font.def().glyph('A').text;
+        const int cy = plat::TOP_H / 2 - 50;
+        const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
+        font.drawText(text, (float)((plat::TOP_W - font.textWidth(text)) / 2), (float)baseline, 1, palette::OFF_WHITE);
+    }
     if (const float black = world.effects.black(); black > 0)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(black * 255)));
     if (const float white = world.effects.whiteAlpha(world.area); white > 0)

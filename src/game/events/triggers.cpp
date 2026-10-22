@@ -23,16 +23,13 @@ void enterInteraction(World& world, int index) {
     world.offer({Interactable::Kind::Interaction, index});
 }
 
-void pickUp(World& world, const CollectibleDef& c) {
-    // Collectible.DoPickUp (without the cutscene yet): into the inventory, hidden, onCollect, saved;
-    // ItemPickupEffect's sound ("<area> Pick Up") and its dip in the music (to 0.2 over its 2 s:
-    // UIEffects' soundDampenLength).
+void pickUp(World& world, int index) {
+    // Collectible.DoPickUp: ItemPickupEffect's cutscene (hides it; DoOnCollect at 0.75 s: into the
+    // inventory, onCollect, saved), its sound ("<area> Pick Up") and its dip in the music (to 0.2
+    // over its 2 s: UIEffects' soundDampenLength).
     world.audio.play(world.area.name + " Pick Up");
     world.audio.dampenMusic(0.2f, 2);
-    world.state.setCollectible(c.name, c.area, true);
-    world.objects.setActive(world.area, c.object, false);
-    runCalls(world, c.onCollect);
-    world.saveRequested = true;
+    world.pickup.start(world, index);
 }
 
 // The object's components react to the player entering (or leaving) its trigger.
@@ -51,7 +48,7 @@ void dispatch(World& world, int object, bool enter) {
             else world.withdraw({Interactable::Kind::Interaction, ref.index});
             break;
         case K::Collectible:
-            if (enter) pickUp(world, area.collectibles[ref.index]);
+            if (enter) pickUp(world, ref.index);
             break;
         case K::ConditionChecker:
         case K::Item: // (picked up with the action button, not by touch)

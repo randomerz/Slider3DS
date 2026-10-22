@@ -6,6 +6,9 @@ native sizes come out as in the game:
   dialogue       NPC dialogue: TinyUnicode (light text) over PixelUnicodeFill (a dark backing behind
                  each letter), 1 em = 1 world unit = 16 px (NPC.prefab: "Dialogue" and "Dialogue BG
                  Font").
+  caption        the top screen's UI captions (ItemPickupEffect's "<item> Acquired!"): the original's
+                 PixelTitanZero at 16, its own pixel size (64/1024 em; the original's 24 is 1.5 px per
+                 font pixel at 1x), drawn in each use's color.
   menu           the menus' text: TinyUnicode (a port choice: the original's PixelTitanZero /
                  PixelUnicode read worse on the 3DS), drawn at the menu's 2x like its sprites, in
                  the color each use needs (game/ui/menu_skin; baked light).
@@ -40,6 +43,7 @@ ATLAS_W = 128
 FONTS = {
     "dialogue": (16, ("TinyUnicode.ttf", LIGHT), ("PixelUnicodeFill.ttf", DARK)),
     "menu": (16, ("TinyUnicode.ttf", LIGHT), None),
+    "caption": (16, ("PixelTitanZero.ttf", LIGHT), None),
 }
 
 
