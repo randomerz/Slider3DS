@@ -300,7 +300,6 @@ TEST(calls_unsupported_in_the_village_are_pinned) {
         "ArtifactScreenHider.AddScreensAndShow",
         "ArtifactWorldMapAffector.UpdateStatus", "Breadge.Pickup",
         "ParticleSystem.Play",
-        "PlayerActionHints.DisableHint", "PlayerActionHints.EnableDisabling", "PlayerActionHints.TriggerHint",
         "UIArtifactWorldMap.SetAreaStatusSilhouette",
     };
     std::string got;

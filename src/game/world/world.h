@@ -13,6 +13,7 @@
 #include "game/cutscene/camera_dolly.h"
 #include "game/data/area.h"
 #include "game/fx/item_pickup.h"
+#include "game/hints/hints.h"
 #include "game/fx/particles.h"
 #include "game/fx/screen_effects.h"
 #include "game/grid/artifact.h"
@@ -204,6 +205,7 @@ public:
     std::vector<Interactable> interactables; // on offer now
     ScreenEffects effects;
     ItemPickup pickup; // ItemPickupEffect: a collectible's pick-up cutscene
+    Hints hints;       // PlayerActionHints + UIHints: the tutorial hints
     const Settings& settings; // the player's preferences (not the save profile)
     // The coroutine clock (Wait / WaitUntil in game/world/wait.h): advanced at the end of update().
     uint32_t frame = 0;
@@ -223,4 +225,5 @@ private:
     void sendGridEvents();
 
     int exitSpawn_ = -1; // leaveArea: the Area::spawns index the save puts the player on, -1 = none
+    float moveInX_ = 0, moveInY_ = 0; // last frame's move input (the hints hear it change)
 };

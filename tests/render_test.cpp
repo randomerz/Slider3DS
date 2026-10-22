@@ -889,3 +889,33 @@ TEST(render_item_pickup_golden) {
     check(world.pickup.active() && world.pickup.textShown(), "the cutscene, its text up");
     shoot("pickup_text");
 }
+
+TEST(render_hints_golden) {
+    // The hint box along the top screen's bottom: "move" fading in (4.25 s after the scene starts),
+    // then fully shown.
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    MenuSkin skin;
+    AreaView view;
+    std::string error;
+    check(sheets.load(area) && skin.load(&error), "assets load " + error);
+    GoldenSet goldens("hints.txt");
+    World world = sceneWorld();
+    auto shoot = [&](const char* name) {
+        float cx, cy;
+        world.camera(cx, cy);
+        testResetDrawCalls();
+        view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        drawTopOverlays(world, skin);
+        goldens.compare(name, 10);
+    };
+    for (int i = 0; i < 255; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.hints.shownHint() == area.hints.find("move") && world.hints.boxAlpha() > 0.3f &&
+              world.hints.boxAlpha() < 0.7f,
+          "move fading in");
+    shoot("hint_fading_in");
+    for (int i = 0; i < 30; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.hints.boxAlpha() == 1, "shown");
+    shoot("hint_shown");
+}

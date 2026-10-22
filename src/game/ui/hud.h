@@ -1,6 +1,7 @@
 // The top screen's overlays over the world view, in the original's canvas order: the cutscene skip
-// prompt (DollyCanvas), then EffectCanvas: ItemPickupEffect's "<item> Acquired!", UIEffects' black
-// and white panels. Drawn at 1x: the world's pixel size, as the original's sit over its 320x180
+// prompt (DollyCanvas), then EffectCanvas: the hint box (game/hints), ItemPickupEffect's "<item>
+// Acquired!", UIEffects' black and white panels (the original's acquired text is above the panels;
+// the two never meet). Drawn at 1x: the world's pixel size, as the original's sit over its 320x180
 // view. (Next: area titles.)
 #pragma once
 

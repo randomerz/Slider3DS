@@ -215,6 +215,8 @@ struct ConditionDef {
 //   KnotSetToCorrect        KnotBox.SetToCorrectPositions on knotBoxes[data]: the nodes go to their solved spots
 //   ChadJumpStarter         ChadJump.JumpStarter on chadJumps[data]: he jumps onto the rock
 //   ChadSetIsOnRock         VillageChadJump.SetIsOnRock on chadJumps[data]: from now on slides tip him
+//   HintTrigger / HintDisable / HintEnableDisabling  PlayerActionHints.TriggerHint / DisableHint /
+//                           EnableDisabling(stringArg: a hint's name in Area::hints)
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -256,6 +258,9 @@ struct ConditionDef {
     X(ChadJumpStarter, "ChadJump.JumpStarter")                         \
     X(ChadSetIsOnRock, "VillageChadJump.SetIsOnRock")                  \
     X(CatPickedUp, "CatAbductionController.SetPickedUp")              \
+    X(HintTrigger, "PlayerActionHints.TriggerHint")                    \
+    X(HintDisable, "PlayerActionHints.DisableHint")                    \
+    X(HintEnableDisabling, "PlayerActionHints.EnableDisabling")        \
     X(AudioPlay, "AudioManager.Play")                                  \
     X(PlaySoundString, "PlaySound.PlayString")                         \
     X(UIClick, "UIClick.Click")                                        \
@@ -712,6 +717,36 @@ struct UiTrackersDef {
     bool trackHousingAccurately = false; // (not ported: refused at load)
 };
 
+// PlayerActionHints: the area's tutorial hints (shown by game/hints) and what fires its calls.
+struct HintDef {
+    std::string name;               // hintName (what calls refer to it by)
+    std::string text;               // hintText, its <...> placeholders unreplaced
+    std::vector<std::string> binds; // controlBinds: Unity Control names, one per placeholder in order
+    bool canDisable = false;        // canDisableHint
+    float delay = 0;                // timeUntilTrigger, s
+    bool onLoad = false;            // triggerOnLoad
+};
+// StileMoveHint: calls when tile `stile` starts or ends a move (STile.onChangeMove; 0 = none) and,
+// with anyTile, on every grid move (SGrid.OnGridMove).
+struct TileMoveHintDef {
+    int object = -1;
+    int stile = 0;
+    bool anyTile = false;
+    std::vector<CallDef> onMove;
+};
+struct HintsDef {
+    bool present = false;
+    int object = -1;
+    float fadeDuration = 0.5f; // UIHints' box / text fades, s
+    std::vector<HintDef> list;
+    // Its input events (Controls bindings). The port has no OpenArtifact press (the Artifact is always
+    // on the bottom screen: onArtifactOpen never runs; it only dismisses "tab", which the port drops),
+    // CycleEquip or AltViewHold (their calls must be empty: checked at load, not kept).
+    std::vector<CallDef> onArtifactOpen, onMove, onAction;
+    std::vector<TileMoveHintDef> tileMoves;
+    int find(const std::string& name) const; // index in list, -1 if none
+};
+
 // CameraDolly: a cutscene camera rolling along a Cinemachine path, given as where the camera is over
 // its duration (sampled: the path and its pathMovementCurve). Holding the action button skips it.
 struct CameraDollyDef {
@@ -889,6 +924,7 @@ struct Area {
     PlayerDef player;
     ArtifactDef artifact;
     UiTrackersDef uiTrackers;
+    HintsDef hints;
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
     std::vector<std::string> sheetNames;

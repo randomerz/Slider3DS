@@ -13,6 +13,17 @@ namespace {
 
 constexpr uint32_t PROMPT_EDGE = plat::rgba(0x66, 0x66, 0x66); // Skip Prompt (dialogueHighContrastBG's outline)
 constexpr uint32_t PROMPT_FILL = plat::rgba(0xe5, 0xe5, 0xe5);
+constexpr float HINT_BOX_ALPHA = 0.878f; // HintsPanel's Image: #1a1a1a at 224/255
+constexpr int HINT_BOX_H = 30;           // its height, along the view's bottom edge
+
+// One line of `font` centered on (cx, cy): its capitals' middle on cy.
+void drawCentered(const Font& font, const std::string& text, int cx, int cy, uint32_t color) {
+    const GlyphRect& cap = font.def().glyph('A').text;
+    const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
+    font.drawText(text, (float)(cx - (font.textWidth(text) + 1) / 2), (float)baseline, 1, color); // (odd widths: a px left)
+}
+
+uint8_t alpha(float a) { return (uint8_t)std::lround(std::min(std::max(a, 0.0f), 1.0f) * 255); }
 
 } // namespace
 
@@ -37,14 +48,19 @@ void drawSkipPrompt(const Font& font, int screenW, int screenH, float fill) {
 
 void drawTopOverlays(const World& world, const MenuSkin& skin) {
     if (world.dollies.promptShown()) drawSkipPrompt(skin.font(), plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
+    if (const float box = world.hints.boxAlpha(); box > 0) {
+        // HintsPanel: a dark strip along the bottom, its hint centered on one line (PixelTitanZero:
+        // the original's 12 is under its 16 px pixel size; the 3DS texts fit the width).
+        plat::drawRect(0, plat::TOP_H - HINT_BOX_H, plat::TOP_W, HINT_BOX_H,
+                       palette::withAlpha(palette::DARK, alpha(box * HINT_BOX_ALPHA)));
+        if (const int hint = world.hints.shownHint(); hint >= 0)
+            drawCentered(skin.captionFont(), Hints::text(world.area.hints.list[hint]), plat::TOP_W / 2,
+                         plat::TOP_H - HINT_BOX_H / 2, palette::withAlpha(palette::OFF_WHITE, alpha(box * world.hints.textAlpha())));
+    }
     if (world.pickup.textShown()) {
         // Item Acquired Text: centered 50 px above the view's middle (its 240x50 box; one line).
-        const Font& font = skin.captionFont();
-        const std::string text = world.pickup.text(world.area);
-        const GlyphRect& cap = font.def().glyph('A').text;
-        const int cy = plat::TOP_H / 2 - 50;
-        const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
-        font.drawText(text, (float)((plat::TOP_W - font.textWidth(text)) / 2), (float)baseline, 1, palette::OFF_WHITE);
+        drawCentered(skin.captionFont(), world.pickup.text(world.area), plat::TOP_W / 2, plat::TOP_H / 2 - 50,
+                     palette::OFF_WHITE);
     }
     if (const float black = world.effects.black(); black > 0)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(black * 255)));

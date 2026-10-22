@@ -120,6 +120,9 @@ void runCall(World& world, const CallDef& c) {
     case M::CatPickedUp:
         world.abduction.pickedUp();
         break;
+    case M::HintTrigger: world.hints.trigger(world, world.area.hints.find(c.stringArg)); break;
+    case M::HintDisable: world.hints.disable(world, world.area.hints.find(c.stringArg)); break;
+    case M::HintEnableDisabling: world.hints.enableDisabling(world.area.hints.find(c.stringArg)); break;
     case M::VillageFillInHole:
         world.finale.fillInHole(world);
         break;

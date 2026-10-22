@@ -92,6 +92,12 @@ int Area::npcOn(int object) const {
     return -1;
 }
 
+int HintsDef::find(const std::string& name) const {
+    for (int i = 0; i < (int)list.size(); i++)
+        if (list[i].name == name) return i;
+    return -1;
+}
+
 const char* NpcEmoteDef::name(int emote) {
     static const char* names[Count] = {"", "Sparkle", "Exclamation", "Question", "Annoyed", "Sweat"};
     return emote >= 0 && emote < Count ? names[emote] : "";
@@ -793,6 +799,9 @@ static bool validate(const Area& a, std::string* error) {
                 (c.target == -1 || a.animatorByObject[c.target] < 0 || c.data < 0 || c.data >= (int)a.animatorControllers.size()))
                 return false;
             if (c.method == M::CheckConditions && (c.data < 0 || c.data >= (int)a.conditionCheckers.size())) return false;
+            if ((c.method == M::HintTrigger || c.method == M::HintDisable || c.method == M::HintEnableDisabling) &&
+                (!a.hints.present || c.target != a.hints.object || a.hints.find(c.stringArg) < 0))
+                return false;
             if ((c.method == M::KnotCheckParticles || c.method == M::KnotSetToCorrect) &&
                 (c.data < 0 || c.data >= (int)a.knotBoxes.size() || a.knotBoxes[c.data].object != c.target))
                 return false;
@@ -947,6 +956,13 @@ static bool validate(const Area& a, std::string* error) {
                       t.playerFullWhiteCircleEmpty, t.circle3, t.circleEmpty, t.circle1W, t.circleEmptyW})
             ok = ok && s >= -1 && s < (int)a.sprites.size();
         if (!ok) return fail(error, "ui trackers: bad sprite index, not 1 UI px per pixel, or trackHousingAccurately");
+    }
+    if (const HintsDef& h = a.hints; h.present) {
+        bool ok = objectOk(h.object) && h.fadeDuration > 0 && callsOk(h.onArtifactOpen) && callsOk(h.onMove) &&
+                  callsOk(h.onAction);
+        for (const HintDef& hint : h.list) ok = ok && !hint.name.empty() && h.find(hint.name) == &hint - h.list.data();
+        for (const TileMoveHintDef& m : h.tileMoves) ok = ok && objectOk(m.object) && ownerOk(m.stile) && callsOk(m.onMove);
+        if (!ok) return fail(error, "hints: bad object, fade, name (empty or repeated), tile or call");
     }
     if (const CatAbductionDef& ca = a.areaGrid.catAbduction; ca.present) {
         const bool itemOk = ca.item >= 0 && ca.item < (int)a.items.size() && a.items[ca.item].spriteObject >= 0 &&
@@ -1189,6 +1205,35 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         d.circleEmptyW = s["circleEmptyW"].asInt(-1);
         d.uiPerPixel = t["uiPerPixel"].asFloat(1);
         d.trackHousingAccurately = t["trackHousingAccurately"].asBool(false);
+    }
+    if (const Json& h = doc["hints"]; !h.isNull()) {
+        HintsDef& d = out.hints;
+        d.present = true;
+        d.object = h["object"].asInt(-1);
+        d.fadeDuration = h["fadeDuration"].asFloat(0.5f);
+        for (const Json& j : h["list"].items()) {
+            HintDef hint;
+            hint.name = j["name"].asString();
+            hint.text = j["text"].asString();
+            for (const Json& b : j["binds"].items()) hint.binds.push_back(b.asString());
+            hint.canDisable = j["canDisable"].asBool();
+            hint.delay = j["delay"].asFloat();
+            hint.onLoad = j["onLoad"].asBool();
+            d.list.push_back(std::move(hint));
+        }
+        d.onArtifactOpen = readCalls(h["onArtifactOpen"], out);
+        d.onMove = readCalls(h["onMove"], out);
+        d.onAction = readCalls(h["onAction"], out);
+        if (!h["onCycle"].items().empty() || !h["onAltViewHold"].items().empty())
+            return fail(error, "hints: CycleEquip / AltViewHold calls (the port has neither input)");
+        for (const Json& j : h["tileMoves"].items()) {
+            TileMoveHintDef m;
+            m.object = j["object"].asInt(-1);
+            m.stile = j["stile"].asInt();
+            m.anyTile = j["anyTile"].asBool();
+            m.onMove = readCalls(j["onMove"], out);
+            d.tileMoves.push_back(std::move(m));
+        }
     }
     if (const Json& ca = doc["areaGrid"]["catAbduction"]; !ca.isNull()) {
         CatAbductionDef& d = out.areaGrid.catAbduction;

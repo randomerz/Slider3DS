@@ -20967,6 +20967,109 @@
     "uiPerPixel": 1,
     "trackHousingAccurately": false
   },
+  "hints": {
+    "object": 476,
+    "fadeDuration": 0.5,
+    "list": [
+      {
+        "name": "move",
+        "text": "Use <U>/<L>/<D>/<R> to move",
+        "binds": [
+          "Move_Up",
+          "Move_Left",
+          "Move_Down",
+          "Move_Right"
+        ],
+        "canDisable": true,
+        "delay": 4,
+        "onLoad": true
+      },
+      {
+        "name": "interact",
+        "text": "Press <Action> to interact",
+        "binds": [
+          "Action"
+        ],
+        "canDisable": true,
+        "delay": 5,
+        "onLoad": false
+      },
+      {
+        "name": "tab",
+        "text": "Press <Tab> to open the Artifact",
+        "binds": [
+          "OpenArtifact"
+        ],
+        "canDisable": true,
+        "delay": 33,
+        "onLoad": false
+      },
+      {
+        "name": "tiles",
+        "text": "Use the mouse to move sliders",
+        "binds": [
+          "Action"
+        ],
+        "canDisable": false,
+        "delay": 35,
+        "onLoad": false
+      },
+      {
+        "name": "dialogue",
+        "text": "Press <Action> for more dialogue from some NPCs",
+        "binds": [
+          "Action"
+        ],
+        "canDisable": true,
+        "delay": 1,
+        "onLoad": false
+      },
+      {
+        "name": "items",
+        "text": "Press <Action> to pick up items",
+        "binds": [
+          "Action"
+        ],
+        "canDisable": false,
+        "delay": 4,
+        "onLoad": false
+      }
+    ],
+    "onArtifactOpen": [
+      {
+        "method": "PlayerActionHints.DisableHint",
+        "target": 476,
+        "string": "tab"
+      }
+    ],
+    "onMove": [
+      {
+        "method": "PlayerActionHints.DisableHint",
+        "target": 476,
+        "string": "move"
+      }
+    ],
+    "onAction": [
+    ],
+    "onCycle": [
+    ],
+    "onAltViewHold": [
+    ],
+    "tileMoves": [
+      {
+        "object": 476,
+        "stile": 1,
+        "anyTile": true,
+        "onMove": [
+          {
+            "method": "PlayerActionHints.DisableHint",
+            "target": 476,
+            "string": "tiles"
+          }
+        ]
+      }
+    ]
+  },
   "artifact": {
     "buttonSpacing": 37,
     "frame": {

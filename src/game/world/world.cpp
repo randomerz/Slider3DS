@@ -36,6 +36,7 @@ void World::sendGridEvents() {
     ruins.gridEvents(*this, events);
     chad.gridEvents(*this, events);
     walks.gridEvents(*this, events);
+    hints.gridEvents(*this, events);
     runStarts(); // (the arrow may show the buried Slider)
 }
 
@@ -156,6 +157,7 @@ void World::reloadObjects() {
     abduction.reset();
     dollies.reset();
     pickup.reset();
+    hints.load(*this);
     player.locks = 0; // (what held the player is reset)
     artifactButtons.reset(area);
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
@@ -257,6 +259,10 @@ void World::placeNear(float x, float y) {
 
 void World::update(float dt, const FrameInput& in, bool noclip) {
     float moveX = in.moveX, moveY = in.moveY;
+    // PlayerActionHints' PlayerMove: the Move binding performed (a change while it's held), held or not.
+    if ((moveX != 0 || moveY != 0) && (moveX != moveInX_ || moveY != moveInY_)) runCalls(*this, area.hints.onMove);
+    moveInX_ = moveX;
+    moveInY_ = moveY;
     if (playerLocked()) moveX = moveY = 0; // (Player.SetCanMove(false))
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
@@ -322,6 +328,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
     finale.coroutines(*this, dt);
     intro.coroutines(*this, dt);
     pickup.coroutines(*this, dt);
+    hints.update(*this, dt);
     abduction.coroutines(*this, dt);
     props.coroutines(*this, dt);
     dollies.update(*this, dt, in.actionHeld);
@@ -370,6 +377,7 @@ bool World::showsPrompt(const Interactable& it) const {
 }
 
 void World::action() {
+    runCalls(*this, area.hints.onAction); // (PlayerActionHints' PlayerAction: the binding, held or not)
     if (playerLocked()) { // (PlayerAction: not while the player can't move)
         dollies.actionPressed();
         return;
