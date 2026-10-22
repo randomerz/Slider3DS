@@ -363,14 +363,12 @@ void Npcs::update(World& world, float dt) {
         if (st.delayPending) {
             if (st.delayFresh) {
                 st.delayFresh = false;
-            } else if ((st.delayLeft -= dt) <= 1e-4f) {
-                if (dialogueEnabled_) {
-                    st.delayPending = false;
-                    typeNext(world, i);
-                } else { // ("Delaying dialogue start...": WaitForSeconds(0.25) until it's on)
-                    st.delayFresh = true;
-                    st.delayLeft = 0.25f;
-                }
+            } else if ((st.delayLeft -= dt) <= 1e-4f && dialogueEnabled_) {
+                // (run out while dialogue is off: it waits for it — Unity re-checks every 0.25 s, so
+                // the port's line can come up to 0.25 s sooner. Like Unity's, a pending delay outlives
+                // a conditional change: it then advances the new chain.)
+                st.delayPending = false;
+                typeNext(world, i);
             }
         }
         st.typer.tick(dt); // after the delay, so a line it starts waits from the next frame

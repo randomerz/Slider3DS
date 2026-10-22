@@ -13,7 +13,7 @@
 // Hiding an NPC stops its clocks (Unity stops a disabled object's coroutines).
 // Conditionals are re-checked only when the game state or the grid changed.
 // Cutscenes switch dialogue off for every NPC (NPCDialogueContext.dialogueEnabledAllNPC): no line
-// starts (one typing finishes), a delayed next line waits for it, conditionals aren't re-picked.
+// starts (one typing finishes), a delayed next line waits until it's on, conditionals aren't re-picked.
 // Walks: game/npc/npc_walks.
 #pragma once
 
@@ -44,7 +44,8 @@ public:
     // NPC.Teleport: onto `target` (an object), parented to it; nothing if it's already there.
     void teleport(World& world, int npc, int target);
     bool showsPrompt(const Area& area, int npc) const; // DisplayInteractionPrompt
-    // NPCDialogueContext.dialogueEnabledAllNPC (on again after a scene load).
+    // NPCDialogueContext.dialogueEnabledAllNPC (on again after a scene load). One owner at a time
+    // (ItemPickupEffect, as in every area): a second cutscene writing it would need a count.
     void setDialogueEnabled(bool on) { dialogueEnabled_ = on; }
     bool dialogueEnabled() const { return dialogueEnabled_; }
 

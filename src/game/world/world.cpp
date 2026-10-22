@@ -259,10 +259,7 @@ void World::placeNear(float x, float y) {
 
 void World::update(float dt, const FrameInput& in, bool noclip) {
     float moveX = in.moveX, moveY = in.moveY;
-    // PlayerActionHints' PlayerMove: the Move binding performed (a change while it's held), held or not.
-    if ((moveX != 0 || moveY != 0) && (moveX != moveInX_ || moveY != moveInY_)) runCalls(*this, area.hints.onMove);
-    moveInX_ = moveX;
-    moveInY_ = moveY;
+    hints.moveInput(*this, moveX, moveY);
     if (playerLocked()) moveX = moveY = 0; // (Player.SetCanMove(false))
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
@@ -377,7 +374,7 @@ bool World::showsPrompt(const Interactable& it) const {
 }
 
 void World::action() {
-    runCalls(*this, area.hints.onAction); // (PlayerActionHints' PlayerAction: the binding, held or not)
+    hints.actionPressed(*this);
     if (playerLocked()) { // (PlayerAction: not while the player can't move)
         dollies.actionPressed();
         return;

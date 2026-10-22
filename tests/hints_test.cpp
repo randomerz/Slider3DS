@@ -19,6 +19,13 @@ void frames(World& world, int n, float moveX = 0) {
     for (int i = 0; i < n; i++) world.update(DT, moveX, 0, false);
 }
 
+// The first exported call to `method` in `calls`, null if none.
+const CallDef* findCall(const std::vector<CallDef>& calls, CallDef::Method method) {
+    for (const CallDef& c : calls)
+        if (c.method == method) return &c;
+    return nullptr;
+}
+
 } // namespace
 
 TEST(hints_village_exports_its_hints_with_3ds_texts) {
@@ -44,6 +51,8 @@ TEST(hints_village_exports_its_hints_with_3ds_texts) {
         check(got == text, std::string(name) + ": " + got);
         check(font.textWidth(got) <= plat::TOP_W - 8, std::string(name) + " fits the top screen on one line");
     }
+    // Any hint the 3DS can't word (a button it lacks) needs an override, or it would silently vanish.
+    for (const HintDef& d : h.list) check(!Hints::text(d).empty() || Hints::overridden(d), d.name + " has a 3DS text");
 }
 
 TEST(hints_move_shows_after_its_countdown_and_moving_dismisses_it) {
@@ -100,13 +109,21 @@ TEST(hints_box_shows_them_in_turn) {
 
 TEST(hints_exported_calls_drive_them) {
     // Leaving the house (the Artifact Prompt Trigger) starts "tiles" (and "tab": never shown); a
-    // slide dismisses "tiles" (StileMoveHint), but only once it was started (canDisableHint off).
+    // real slide dismisses "tiles" (StileMoveHint, through World's grid events), but only once it was
+    // started (canDisableHint off).
     const Area& area = villageArea();
     World world(area, DEFAULT_SETTINGS);
     world.hints.disable(world, hint("move"));
     const int tiles = hint("tiles");
-    GridEvent move; // (GridEvent::Kind::Move: SGrid.OnGridMove)
-    world.hints.gridEvents(world, {move});
+    auto slide = [&]() { // tile 1 into a free slot next to it, run to its end
+        const TileState* t = world.grid.tile(1);
+        const auto options = world.artifact.moveOptions(world.grid, t->x, t->y);
+        CHECK(!options.empty());
+        if (options.empty()) return;
+        CHECK(world.artifact.tryMove(world.grid, t->x, t->y, options[0].first, options[0].second, world.player.stile));
+        frames(world, 120);
+    };
+    slide();
     CHECK(!world.state.flag("HintComplete tiles"));
     const TriggerEventDef* prompt = nullptr;
     for (const TriggerEventDef& te : area.triggerEvents)
@@ -119,8 +136,30 @@ TEST(hints_exported_calls_drive_them) {
     CHECK(world.hints.boxAlpha() == 0); // ("tab" isn't shown)
     frames(world, 2 * 60 + 1);
     CHECK(world.hints.shownHint() == tiles);
-    world.hints.gridEvents(world, {move});
+    slide();
     CHECK(world.state.flag("HintComplete tiles") && !world.state.flag("HintCountdown tiles"));
+}
+
+TEST(hints_items_can_be_dismissed_once_enabled) {
+    // "items" (canDisableHint off): picking an item up (its onPickUp DisableHint) does nothing until
+    // Archibald's line runs EnableDisabling; then it completes it.
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    const CallDef* dismiss = nullptr;
+    for (const ItemDef& it : area.items)
+        if (!dismiss) dismiss = findCall(it.onPickUp, CallDef::Method::HintDisable);
+    const CallDef* enable = nullptr;
+    for (const NpcDef& n : area.npcs)
+        for (const NpcCondDef& c : n.conds)
+            for (const DialogueDef& l : c.dialogue)
+                if (!enable) enable = findCall(l.onStart, CallDef::Method::HintEnableDisabling);
+    CHECK(dismiss && enable);
+    if (!dismiss || !enable) return;
+    runCalls(world, {*dismiss});
+    CHECK(!world.state.flag("HintComplete items"));
+    runCalls(world, {*enable});
+    runCalls(world, {*dismiss});
+    CHECK(world.state.flag("HintComplete items"));
 }
 
 TEST(hints_a_started_countdown_survives_a_load) {
@@ -134,4 +173,6 @@ TEST(hints_a_started_countdown_survives_a_load) {
     CHECK(world.hints.shownHint() < 0);
     frames(world, 3);
     CHECK(world.hints.shownHint() == hint("items"));
+    world.hints.disable(world, hint("items")); // (a saved countdown makes it dismissable: SetBools)
+    CHECK(world.state.flag("HintComplete items"));
 }

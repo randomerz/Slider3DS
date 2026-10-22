@@ -25,6 +25,10 @@ public:
     void trigger(World& world, int hint);         // TriggerHint
     void disable(World& world, int hint);         // DisableHint (only once it can be)
     void enableDisabling(int hint);               // EnableDisabling
+    // Its input events (Controls bindings, heard whether the player is held or not): PlayerMove = the
+    // move input changing to a non-zero value (each frame's, from World::update), PlayerAction = a press.
+    void moveInput(World& world, float x, float y);
+    void actionPressed(World& world);
     // StileMoveHint: their calls for these grid events (each one active hears them).
     void gridEvents(World& world, const std::vector<GridEvent>& events);
     // One frame: the countdowns (Update), then the box's fades (its coroutines).
@@ -34,11 +38,14 @@ public:
     float boxAlpha() const { return boxAlpha_; }
     float textAlpha() const { return textAlpha_; }
     int shownHint() const { return active_; }
+    const std::string& shownText() const; // the shown hint's text ("" = none)
 
     // A hint's text on the 3DS (HintData.GetFormattedHintText with the 3DS's buttons): its
     // placeholders as the 3DS's buttons ("Up/Left/Down/Right" as the Circle Pad), or the port's own
-    // text where the original's names a mouse or a key; "" = the port doesn't show it.
+    // text where the original's names a mouse or a key; "" = the port doesn't show it (an override,
+    // or a button the 3DS lacks: hints_test requires an override for those).
     static std::string text(const HintDef& hint);
+    static bool overridden(const HintDef& hint); // the port gives its own text (OVERRIDES)
 
 private:
     struct State {
@@ -46,7 +53,7 @@ private:
         bool canDisable = false; // canDisableHint
         bool complete = false;   // hasBeenCompleted (shouldDisplay = !complete)
         bool added = false;      // hasBeenAddedToDisplay
-        bool shown = false;      // the 3DS shows it (it has a text)
+        std::string text;        // its 3DS text (text()), "" = never shown
         float left = 0;          // timeUntilTrigger
     };
     void save(World& world, int hint) const; // its Save keys, into GameState
@@ -66,4 +73,5 @@ private:
     float fadeT_ = 0;
     uint32_t fadeSince_ = 0; // World::frame the fade started (it moves from the next)
     float boxAlpha_ = 0, textAlpha_ = 1;
+    float moveX_ = 0, moveY_ = 0; // the last frame's move input
 };

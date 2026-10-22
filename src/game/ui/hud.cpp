@@ -15,12 +15,14 @@ constexpr uint32_t PROMPT_EDGE = plat::rgba(0x66, 0x66, 0x66); // Skip Prompt (d
 constexpr uint32_t PROMPT_FILL = plat::rgba(0xe5, 0xe5, 0xe5);
 constexpr float HINT_BOX_ALPHA = 0.878f; // HintsPanel's Image: #1a1a1a at 224/255
 constexpr int HINT_BOX_H = 30;           // its height, along the view's bottom edge
+constexpr int ACQUIRED_SCALE = 2;        // the item caption at 2x (user: 1x is small on the 3DS; 2x = the UI's pixel)
 
-// One line of `font` centered on (cx, cy): its capitals' middle on cy.
-void drawCentered(const Font& font, const std::string& text, int cx, int cy, uint32_t color) {
+// One line of `font` at `scale`x centered on (cx, cy): its capitals' middle on cy.
+void drawCentered(const Font& font, const std::string& text, int cx, int cy, uint32_t color, int scale = 1) {
     const GlyphRect& cap = font.def().glyph('A').text;
-    const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f);
-    font.drawText(text, (float)(cx - (font.textWidth(text) + 1) / 2), (float)baseline, 1, color); // (odd widths: a px left)
+    const int baseline = cy - (int)std::floor(cap.oy + cap.h / 2.0f) * scale;
+    const int w = font.textWidth(text, scale);
+    font.drawText(text, (float)(cx - (w + 1) / 2), (float)baseline, scale, color); // (odd widths: a px left)
 }
 
 uint8_t alpha(float a) { return (uint8_t)std::lround(std::min(std::max(a, 0.0f), 1.0f) * 255); }
@@ -53,14 +55,15 @@ void drawTopOverlays(const World& world, const MenuSkin& skin) {
         // the original's 12 is under its 16 px pixel size; the 3DS texts fit the width).
         plat::drawRect(0, plat::TOP_H - HINT_BOX_H, plat::TOP_W, HINT_BOX_H,
                        palette::withAlpha(palette::DARK, alpha(box * HINT_BOX_ALPHA)));
-        if (const int hint = world.hints.shownHint(); hint >= 0)
-            drawCentered(skin.captionFont(), Hints::text(world.area.hints.list[hint]), plat::TOP_W / 2,
+        if (world.hints.shownHint() >= 0)
+            drawCentered(skin.captionFont(), world.hints.shownText(), plat::TOP_W / 2,
                          plat::TOP_H - HINT_BOX_H / 2, palette::withAlpha(palette::OFF_WHITE, alpha(box * world.hints.textAlpha())));
     }
     if (world.pickup.textShown()) {
-        // Item Acquired Text: centered 50 px above the view's middle (its 240x50 box; one line).
+        // Item Acquired Text: centered 50 px above the view's middle (its 240x50 box; one line: at
+        // 2x the Village's longest, "Artifact Acquired!", is 256 px; later areas' may need a wrap).
         drawCentered(skin.captionFont(), world.pickup.text(world.area), plat::TOP_W / 2, plat::TOP_H / 2 - 50,
-                     palette::OFF_WHITE);
+                     palette::OFF_WHITE, ACQUIRED_SCALE);
     }
     if (const float black = world.effects.black(); black > 0)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(black * 255)));

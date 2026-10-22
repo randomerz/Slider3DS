@@ -1,3 +1,3 @@
 # Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
 pickup_expanding 346:07269dcffc7eb921
-pickup_text 380:4aa66eea17bdeb97
+pickup_text 380:c7c074f0cd47a621

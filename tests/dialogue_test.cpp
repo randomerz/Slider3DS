@@ -766,7 +766,7 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
 TEST(village_dialogue_disabled_holds_lines_and_conditionals) {
     // dialogueEnabledAllNPC off (a cutscene): entering the trigger types nothing and the Coffee doesn't
     // switch Archibald's conditional; on again, both happen. A line already typing finishes, but its
-    // delayed next line waits (re-checked every 0.25 s).
+    // delayed next line waits until it's on again (then comes on the next frame).
     const Area& area = villageArea();
     World world(area, DEFAULT_SETTINGS);
     world.setTileActive(3, true);
@@ -787,7 +787,7 @@ TEST(village_dialogue_disabled_holds_lines_and_conditionals) {
     for (int f = 0; f < 300; f++) world.update(DT, 0, 0, false);
     CHECK(world.npcs.typer(npc).finished() && world.npcs.lineIndex(npc) == 0);
     world.npcs.setDialogueEnabled(true);
-    for (int f = 0; f < 17; f++) world.update(DT, 0, 0, false);
+    world.update(DT, 0, 0, false);
     CHECK(world.npcs.lineIndex(npc) == 1);
 }
 

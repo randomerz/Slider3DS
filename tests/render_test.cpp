@@ -892,7 +892,7 @@ TEST(render_item_pickup_golden) {
 
 TEST(render_hints_golden) {
     // The hint box along the top screen's bottom: "move" fading in (4.25 s after the scene starts),
-    // then fully shown.
+    // fully shown, then its text fading out for the next one's (dismissed with "interact" waiting).
     const Area& area = villageArea();
     SpriteSheets sheets;
     MenuSkin skin;
@@ -918,4 +918,10 @@ TEST(render_hints_golden) {
     for (int i = 0; i < 30; i++) world.update(1.0f / 60.0f, 0, 0, false);
     check(world.hints.boxAlpha() == 1, "shown");
     shoot("hint_shown");
+    world.hints.trigger(world, area.hints.find("interact"));
+    for (int i = 0; i < 5 * 60 + 2; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    world.hints.disable(world, area.hints.find("move"));
+    for (int i = 0; i < 15; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.hints.textAlpha() > 0.3f && world.hints.textAlpha() < 0.7f && world.hints.boxAlpha() == 1, "swapping");
+    shoot("hint_swapping");
 }

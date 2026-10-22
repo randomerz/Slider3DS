@@ -225,5 +225,4 @@ private:
     void sendGridEvents();
 
     int exitSpawn_ = -1; // leaveArea: the Area::spawns index the save puts the player on, -1 = none
-    float moveInX_ = 0, moveInY_ = 0; // last frame's move input (the hints hear it change)
 };

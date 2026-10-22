@@ -8,7 +8,8 @@
 
 namespace {
 
-// Where the 3DS says something else than the original's text.
+// Where the 3DS says something else than the original's text, by hint name (the Village's: when more
+// areas come, names may need their area).
 struct TextOverride {
     const char* name;
     const char* text; // "" = not shown
@@ -32,6 +33,12 @@ const char* button(const std::string& control) {
 bool contains(const std::vector<int>& v, int x) { return std::find(v.begin(), v.end(), x) != v.end(); }
 
 } // namespace
+
+bool Hints::overridden(const HintDef& hint) {
+    for (const TextOverride& o : OVERRIDES)
+        if (hint.name == o.name) return true;
+    return false;
+}
 
 std::string Hints::text(const HintDef& hint) {
     for (const TextOverride& o : OVERRIDES)
@@ -66,7 +73,7 @@ void Hints::load(World& world) {
         h.left = d.delay;
         h.countdown = world.state.flag("HintCountdown " + d.name);
         h.complete = world.state.flag("HintComplete " + d.name);
-        h.shown = !text(d).empty();
+        h.text = text(d);
         // SetBools
         if (d.onLoad) h.countdown = true;
         if (h.countdown) h.canDisable = true;
@@ -78,7 +85,21 @@ void Hints::load(World& world) {
     fade_ = Fade::None;
     boxAlpha_ = 0;
     textAlpha_ = 1;
+    moveX_ = moveY_ = 0;
 }
+
+const std::string& Hints::shownText() const {
+    static const std::string none;
+    return active_ >= 0 ? s_[active_].text : none;
+}
+
+void Hints::moveInput(World& world, float x, float y) {
+    if ((x != 0 || y != 0) && (x != moveX_ || y != moveY_)) runCalls(world, world.area.hints.onMove);
+    moveX_ = x;
+    moveY_ = y;
+}
+
+void Hints::actionPressed(World& world) { runCalls(world, world.area.hints.onAction); }
 
 void Hints::save(World& world, int hint) const {
     const std::string& name = world.area.hints.list[hint].name;
@@ -122,7 +143,7 @@ void Hints::update(World& world, float dt) {
         State& h = s_[i];
         if (!h.countdown || h.complete) continue;
         h.left -= dt;
-        if (h.left < 0 && !h.added && h.shown) { // Display
+        if (h.left < 0 && !h.added && !h.text.empty()) { // Display
             h.added = true;
             add(world, i);
         }

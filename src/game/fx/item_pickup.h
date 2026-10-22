@@ -2,14 +2,15 @@
 // (Collectible.DoPickUp -> StartCutscene, 2.5 s). The collectible hides and the player is held
 // (PlayerLock: no moving, acting, pausing or Artifact; PauseManager's restriction) and NPCs' dialogue
 // is off (Npcs::setDialogueEnabled: dialogueEnabledAllNPC — no new lines, conditionals wait, so an
-// NPC's reaction to the item comes after the cutscene); a dark circle
-// (the CircleMask: Unity's Circle sprite masking a #1a1a1a panel) grows from the player to 40 units
-// across in 0.5 s (the ItemEffect Animator's ItemExpandCircle: a flat-tangent ease), over the world
-// and under the player (its sprite moves to the ScreenEffects sorting layer, the canvas sits there
-// at order -1); the item shows 1 unit above the player at its native size; at 0.75 s "<item>
-// Acquired!" shows (EffectCanvas, 50 px above the view's middle) and DoOnCollect runs (inventory,
-// onCollect, save); at 2 s the text hides and the circle shrinks back in 0.5 s; then all is as before.
-// The sound and the music dip are started by the pick-up (game/events/triggers). Part of World; its waits run in the coroutine slot (game/world/wait.h).
+// NPC's reaction to the item comes after the cutscene); a dark circle (the CircleMask: Unity's
+// Circle sprite masking a #1a1a1a panel) grows from the player to 40 units across in 0.5 s (the
+// ItemEffect Animator's ItemExpandCircle: a flat-tangent ease), over the world and under the player
+// (its sprite moves to the ScreenEffects sorting layer, the canvas sits there at order -1); the item
+// shows 1 unit above the player at its native size; at 0.75 s "<item> Acquired!" shows (EffectCanvas,
+// 50 px above the view's middle; the hud draws it at 2x) and DoOnCollect runs (inventory, onCollect,
+// save); at 2 s the text hides and the circle shrinks back in 0.5 s; then all is as before.
+// The sound and the music dip are started by the pick-up (game/events/triggers). Part of World; its
+// waits run in the coroutine slot (game/world/wait.h).
 #pragma once
 
 #include <cstdint>
