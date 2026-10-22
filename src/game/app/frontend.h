@@ -6,6 +6,8 @@
 //          the title plays its intro again (Unity reloads the MainMenu scene).
 //   Game:  the World on the top screen, the Artifact (game/ui/artifact_ui) on the bottom; START
 //          pauses (game/ui/pause_menu), whose Quit saves and returns to the title (QuitHandler).
+//   End:   the port's ending (game/ui/end_screen), once the game faded out through one of the
+//          area's exits (World::leaveArea, which has it saved); then the title.
 // The save profile is written as Unity's GameSaver / SaveSystem.SaveGame do: once the scene has
 // started, when a script asks (World::saveRequested: a collectible's pick-up), on Quit, and when the
 // app closes in the game — each stamped with the time (lastSaved: Continue's pick). A scene booted
@@ -22,6 +24,7 @@
 #include "game/save/profile.h"
 #include "game/save/settings.h"
 #include "game/ui/artifact_ui.h"
+#include "game/ui/end_screen.h"
 #include "game/ui/pause_menu.h"
 #include "game/ui/title_menu.h"
 #include "game/ui/title_screen.h"
@@ -34,7 +37,7 @@ class SpriteSheets;
 
 class Frontend {
 public:
-    enum class Mode { Title, Game };
+    enum class Mode { Title, Game, End };
     static constexpr float FRAME_DT = 1.0f / 60.0f; // the game steps a fixed 60 fps
     // The title menu ignores input this long after it appears (TitleScreen::MENU_LOCKOUT).
     static constexpr int MENU_LOCKOUT_FRAMES = (int)(TitleScreen::MENU_LOCKOUT / FRAME_DT + 0.5f);
@@ -53,7 +56,7 @@ public:
 
     // The top screen: the world (or the title's backdrop), its overlays, the pause shade.
     void drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin, bool showInactive) const;
-    // The bottom screen: the pause menu, the title menu or the Artifact.
+    // The bottom screen: the pause menu, the title menu, the Artifact or the ending's prompt.
     void drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) const;
 
     Mode mode() const { return mode_; }
@@ -87,6 +90,7 @@ private:
     TitleScreen screen_;
     TitleMenu title_;
     PauseMenu pause_;
+    EndScreen end_;
     ArtifactUI artifactUI_;
     Mode mode_ = Mode::Title;
     AudioCues audio_;

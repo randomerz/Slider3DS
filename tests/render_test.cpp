@@ -20,6 +20,7 @@
 #include "game/render/area_view.h"
 #include "game/ui/artifact_ui.h"
 #include "game/ui/hud.h"
+#include "game/ui/end_screen.h"
 #include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/ui/title_menu.h"
@@ -615,6 +616,27 @@ TEST(render_title_screen_goldens) {
     run(7);
     CHECK(screen.backgroundAlpha(art) == 1);
     shoot("title_stars_in");
+}
+
+TEST(render_ending_goldens) {
+    // The port's ending: the top screen's card half faded in, then both screens once it takes input.
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "menu skin loads " + error);
+    GoldenSet goldens("ending.txt");
+    EndScreen end;
+    end.start();
+    for (int i = 0; i < EndScreen::FADE_FRAMES / 2; i++) end.update({});
+    testResetDrawCalls();
+    end.drawTop(skin.font());
+    goldens.compare("ending_fading_in", 20);
+    for (int i = 0; i < EndScreen::LOCKOUT_FRAMES; i++) end.update({});
+    testResetDrawCalls();
+    end.drawTop(skin.font());
+    goldens.compare("ending_top", 20);
+    testResetDrawCalls();
+    end.drawBottom(skin);
+    goldens.compare("ending_bottom", 10);
 }
 
 TEST(render_title_menu_goldens) {

@@ -41,7 +41,7 @@ struct SaveProfile;
 // the STile it stands on, which it rides while that tile slides.
 // Who holds the player (Player.SetCanMove(false) + a PauseManager restriction): while any does, it
 // can't move, act or pause, and the Artifact stays shut.
-enum PlayerLock : uint8_t { LOCK_DOLLY = 1 }; // (next: ItemPickupEffect)
+enum PlayerLock : uint8_t { LOCK_DOLLY = 1, LOCK_SCENE = 2 }; // (next: ItemPickupEffect)
 
 struct Player {
     static constexpr float HOUSE_Y = -75; // Player.houseYThreshold: below it, the player is in a house
@@ -113,6 +113,12 @@ public:
     // dropped (Unity keeps both, which would slide tiles from where they no longer are). False if
     // malformed.
     bool setGrid(const std::string& ids);
+    // SceneChanger.ChangeScenes (`changer`: its object): the player is held while the screen fades
+    // to black at double speed, then the area is left (effects.leftArea: the port's ending, as no
+    // area follows the Village yet) and the game is saved (Unity saves before the fade) with the
+    // player on the spawn nearest the exit — where coming back through it puts them — so Continue
+    // doesn't start inside the exit. Once per scene load.
+    void leaveArea(int changer);
     // Puts the player at a spawn point (SceneSpawns), in the boat if it says so.
     void placeAt(const Spawn& spawn);
     // The new game's start: the "Default" spawn (inside tile 1's house). Its Area::spawns index, -1
@@ -207,4 +213,6 @@ private:
     void runStarts();
     // Scripts listening to the grid's events (SGrid / SGridAnimator) hear what happened since last time.
     void sendGridEvents();
+
+    int exitSpawn_ = -1; // leaveArea: the Area::spawns index the save puts the player on, -1 = none
 };

@@ -109,6 +109,10 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         }
         return true;
     }
+    if (mode_ == Mode::End) {
+        if (end_.update(in)) toTitle();
+        return true;
+    }
     if ((in.pressed & plat::BTN_START) && !world_.playerLocked()) {
         pause_.open();
         artifactUI_.releaseStylus();
@@ -128,10 +132,21 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         world_.saveRequested = false;
         saveGame();
     }
+    if (world_.effects.leftArea) { // (through an exit, faded out and saved: the port's ending)
+        world_.sfx.end(world_); // (the scene unloads: its ambience stops)
+        audio_.takeFrom(world_.audio);
+        artifactUI_.releaseStylus();
+        mode_ = Mode::End;
+        end_.start();
+    }
     return true;
 }
 
 void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin, bool showInactive) const {
+    if (mode_ == Mode::End) {
+        end_.drawTop(skin.font());
+        return;
+    }
     if (mode_ == Mode::Title) {
         screen_.draw(art_, skin.font());
         if (pause_.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
@@ -147,6 +162,10 @@ void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSki
 }
 
 void Frontend::drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) const {
+    if (mode_ == Mode::End) {
+        end_.drawBottom(skin);
+        return;
+    }
     plat::beginScreen(plat::Screen::Bottom, palette::DARK);
     if (pause_.isOpen()) pause_.draw(settings_, skin);
     else if (mode_ == Mode::Game) artifactUI_.draw(world_, sheets);

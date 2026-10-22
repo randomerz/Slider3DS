@@ -68,7 +68,7 @@ void runCall(World& world, const CallDef& c) {
         runConditionals(world, world.area.conditionCheckers[c.data].conditionals);
         break;
     case M::ChangeScenes:
-        world.effects.leftArea = true;
+        world.leaveArea(c.target);
         break;
     case M::NpcTriggerEnter:
         world.npcs.triggerEnter(world, world.area.npcOn(c.target));

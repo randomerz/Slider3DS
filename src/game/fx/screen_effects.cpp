@@ -47,11 +47,12 @@ void ScreenEffects::reset() {
     offsetY_ = random() * 2000 - 1000;
 }
 
-void ScreenEffects::startBlack(float from, float to, EffectDone done, uint32_t frame) {
+void ScreenEffects::startBlack(float from, float to, EffectDone done, uint32_t frame, float speed) {
     blackOn_ = true; // (FadeCoroutine: the start alpha this frame)
     black_ = blackFrom_ = from;
     blackTo_ = to;
     blackT_ = 0;
+    blackSpeed_ = speed;
     blackDone_ = done;
     blackSince_ = frame;
 }
@@ -72,7 +73,7 @@ void ScreenEffects::shake(float duration, float amount) {
 EffectCallbacks ScreenEffects::update(const Area& area, float dt, float screenShake, uint32_t frame) {
     EffectCallbacks done;
     if (blackOn_ && frame != blackSince_) {
-        blackT_ += dt;
+        blackT_ += dt * blackSpeed_;
         if (area.fadeDuration <= 0 || blackT_ >= area.fadeDuration) {
             blackOn_ = false; // (disableAtEnd)
             black_ = 0;

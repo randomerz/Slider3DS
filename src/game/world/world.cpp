@@ -49,6 +49,11 @@ void World::effectDone(EffectDone done) {
         break;
     }
     case EffectDone::VillageShuffle: finale.doShuffle(*this); break;
+    case EffectDone::LeftArea:
+        if (exitSpawn_ >= 0) placeAt(area.spawns[exitSpawn_]);
+        saveRequested = true;
+        effects.leftArea = true;
+        break;
     }
 }
 
@@ -199,6 +204,24 @@ void World::placeAt(const Spawn& spawn) {
     player.onWater = spawn.inBoat;
     player.inHouse = player.y <= Player::HOUSE_Y; // (SceneSpawns.Start)
     player.stile = grid.stileUnder(player.x, player.y);
+}
+
+void World::leaveArea(int changer) {
+    if (player.locks & LOCK_SCENE) return; // (already leaving: SceneChanger's running coroutine)
+    lockPlayer(LOCK_SCENE, true);
+    // The spawn on the exit's own STile nearest to it (each exit has its way-back spawn beside it).
+    const SceneObject& exit = area.objects[changer];
+    exitSpawn_ = -1;
+    float best = 0;
+    for (size_t i = 0; i < area.spawns.size(); i++) {
+        const Spawn& s = area.spawns[i];
+        const float d = (s.x - exit.x) * (s.x - exit.x) + (s.y - exit.y) * (s.y - exit.y);
+        if (s.owner == exit.owner && (exitSpawn_ < 0 || d < best)) {
+            exitSpawn_ = (int)i;
+            best = d;
+        }
+    }
+    effects.fadeToBlack(EffectDone::LeftArea, frame, 2); // (FadeToBlackExtra, speed 2)
 }
 
 int World::startSpawn() const {
