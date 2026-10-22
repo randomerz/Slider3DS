@@ -111,6 +111,9 @@ void World::load(const SaveProfile& profile) {
 }
 
 void World::save(SaveProfile& profile) const {
+    // While leaving (the app closed mid-fade), where the leave will put the player: not in the exit.
+    Player p = player;
+    if ((p.locks & LOCK_SCENE) && exitSpawn_ >= 0) placeAt(area.spawns[exitSpawn_], p);
     profile.state = state;
     profile.playTime = playTime;
     profile.grid = grid.gridString(true);
@@ -119,14 +122,14 @@ void World::save(SaveProfile& profile) const {
         if (t.active) profile.activeTiles.push_back(t.islandId);
     // Player.GetSavePosition: on a tile, relative to where the tile will be (it may be sliding).
     profile.hasPlayer = true;
-    profile.playerX = player.x;
-    profile.playerY = player.y;
-    if (const TileState* t = grid.tile(player.stile)) {
+    profile.playerX = p.x;
+    profile.playerY = p.y;
+    if (const TileState* t = grid.tile(p.stile)) {
         profile.playerX += (t->x - t->posX) * grid.tileWidth();
         profile.playerY += (t->y - t->posY) * grid.tileWidth();
     }
-    profile.onWater = player.onWater;
-    profile.inHouse = player.inHouse;
+    profile.onWater = p.onWater;
+    profile.inHouse = p.inHouse;
 }
 
 void World::reloadObjects() {
@@ -196,32 +199,38 @@ bool World::setGrid(const std::string& ids) {
     return true;
 }
 
-void World::placeAt(const Spawn& spawn) {
+void World::placeAt(const Spawn& spawn) { placeAt(spawn, player); }
+
+void World::placeAt(const Spawn& spawn, Player& p) const {
     float bx, by;
     grid.ownerBase(spawn.owner, bx, by);
-    player.x = bx + spawn.x;
-    player.y = by + spawn.y;
-    player.onWater = spawn.inBoat;
-    player.inHouse = player.y <= Player::HOUSE_Y; // (SceneSpawns.Start)
-    player.stile = grid.stileUnder(player.x, player.y);
+    p.x = bx + spawn.x;
+    p.y = by + spawn.y;
+    p.onWater = spawn.inBoat;
+    p.inHouse = p.y <= Player::HOUSE_Y; // (SceneSpawns.Start)
+    p.stile = grid.stileUnder(p.x, p.y);
 }
 
 void World::leaveArea(int changer) {
     if (player.locks & LOCK_SCENE) return; // (already leaving: SceneChanger's running coroutine)
     lockPlayer(LOCK_SCENE, true);
-    // The spawn on the exit's own STile nearest to it (each exit has its way-back spawn beside it).
+    exitSpawn_ = exitSpawn(changer);
+    effects.fadeToBlack(EffectDone::LeftArea, frame, 2); // (FadeToBlackExtra, speed 2)
+}
+
+int World::exitSpawn(int changer) const {
     const SceneObject& exit = area.objects[changer];
-    exitSpawn_ = -1;
-    float best = 0;
+    int best = -1;
+    float bestD = 0;
     for (size_t i = 0; i < area.spawns.size(); i++) {
         const Spawn& s = area.spawns[i];
         const float d = (s.x - exit.x) * (s.x - exit.x) + (s.y - exit.y) * (s.y - exit.y);
-        if (s.owner == exit.owner && (exitSpawn_ < 0 || d < best)) {
-            exitSpawn_ = (int)i;
-            best = d;
+        if (s.owner == exit.owner && (best < 0 || d < bestD)) {
+            best = (int)i;
+            bestD = d;
         }
     }
-    effects.fadeToBlack(EffectDone::LeftArea, frame, 2); // (FadeToBlackExtra, speed 2)
+    return best;
 }
 
 int World::startSpawn() const {

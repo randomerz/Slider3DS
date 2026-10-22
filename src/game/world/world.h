@@ -117,10 +117,16 @@ public:
     // to black at double speed, then the area is left (effects.leftArea: the port's ending, as no
     // area follows the Village yet) and the game is saved (Unity saves before the fade) with the
     // player on the spawn nearest the exit — where coming back through it puts them — so Continue
-    // doesn't start inside the exit. Once per scene load.
+    // doesn't start inside the exit (also if the app closes mid-fade: save writes that spot). Once
+    // per scene load. Relies on the fade's callback: nothing else may start a black fade meanwhile
+    // (none can: the held player can't open doors, and dollies hold the player themselves).
     void leaveArea(int changer);
+    // The spawn leaving through `changer` saves the player on: on the exit's own STile, nearest to
+    // it (each exit has its way-back spawn beside it). Its Area::spawns index, -1 = none.
+    int exitSpawn(int changer) const;
     // Puts the player at a spawn point (SceneSpawns), in the boat if it says so.
     void placeAt(const Spawn& spawn);
+    void placeAt(const Spawn& spawn, Player& p) const; // (`p` instead of the player)
     // The new game's start: the "Default" spawn (inside tile 1's house). Its Area::spawns index, -1
     // if the area has none (the player stays put).
     int placeAtStart();

@@ -110,7 +110,9 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         return true;
     }
     if (mode_ == Mode::End) {
-        if (end_.update(in)) toTitle();
+        const bool done = end_.update(in);
+        if (end_.clicked()) audio_.play(sounds::UI_CLICK);
+        if (done) toTitle();
         return true;
     }
     if ((in.pressed & plat::BTN_START) && !world_.playerLocked()) {
@@ -144,7 +146,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
 
 void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin, bool showInactive) const {
     if (mode_ == Mode::End) {
-        end_.drawTop(skin.font());
+        end_.drawTop(skin);
         return;
     }
     if (mode_ == Mode::Title) {

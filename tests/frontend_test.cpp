@@ -161,14 +161,13 @@ TEST(frontend_saves_on_a_pick_up_and_on_closing_in_the_game) {
 }
 
 // The area's exits (SceneChanger.ChangeScenes): a fade out at double speed with the player held,
-// then the ending, saved with the player on the exit's way-back spawn; any key after its lockout
-// returns to the title, and Continue resumes on that spawn (not inside the exit again).
+// then the ending, saved with the player on the exit's way-back spawn; its Main Menu (A, after its
+// lockout) returns to the title, and Continue resumes on that spawn (not inside the exit again).
 TEST(frontend_an_exit_fades_out_saves_and_ends) {
     testUserFiles().clear();
     const Area& area = villageArea();
-    int door = -1, alcove = -1; // the alcove's Cave Door exit and its spawn
-    for (size_t i = 0; i < area.objects.size(); i++)
-        if (area.objects[i].path == "Map/World Grid/Alcove/Cave Door/Scene Change Collider") door = (int)i;
+    const int door = area.findObject("Map/World Grid/Alcove/Cave Door/Scene Change Collider");
+    int alcove = -1; // the alcove's Cave Door exit and its spawn
     for (size_t i = 0; i < area.spawns.size(); i++)
         if (area.spawns[i].name == "VillageAlcove") alcove = (int)i;
     CHECK(door >= 0 && alcove >= 0);
@@ -178,10 +177,11 @@ TEST(frontend_an_exit_fades_out_saves_and_ends) {
     showMenu(f);
     newGame(f);
     f.world().leaveArea(door);
-    f.world().leaveArea(door); // (once: a second call while leaving does nothing)
     CHECK(f.world().playerLocked());
     const int fadeFrames = (int)std::ceil(area.fadeDuration / 2 / Frontend::FRAME_DT);
-    frames(f, fadeFrames - 1, buttons(plat::BTN_START)); // (no pause while leaving)
+    frames(f, 10);
+    f.world().leaveArea(door); // (once: a second call while leaving doesn't restart the fade)
+    frames(f, fadeFrames - 11, buttons(plat::BTN_START)); // (no pause while leaving)
     CHECK(f.mode() == Frontend::Mode::Game && !f.pauseMenu().isOpen() && f.world().effects.black() > 0.9f);
     frames(f, 2);
     CHECK(f.mode() == Frontend::Mode::End);
@@ -191,10 +191,14 @@ TEST(frontend_an_exit_fades_out_saves_and_ends) {
     CHECK(p.playerX == bx + area.spawns[alcove].x && p.playerY == by + area.spawns[alcove].y && !p.inHouse);
     frames(f, EndScreen::LOCKOUT_FRAMES - 1, buttons(plat::BTN_A)); // (too early)
     CHECK(f.mode() == Frontend::Mode::End);
-    f.update(buttons(plat::BTN_SELECT), 0, 0); // (the dev overlay's)
+    for (uint32_t b : {plat::BTN_SELECT, plat::BTN_B, plat::BTN_START}) f.update(buttons(b), 0, 0); // (only Main Menu)
     CHECK(f.mode() == Frontend::Mode::End);
+    f.audio().take();
     f.update(buttons(plat::BTN_A), 0, 0);
     CHECK(f.mode() == Frontend::Mode::Title);
+    bool click = false;
+    for (const AudioCue& c : f.audio().take()) click = click || (c.kind == AudioCue::Kind::Play && c.name == sounds::UI_CLICK);
+    CHECK(click);
     showMenu(f);
     f.update(buttons(plat::BTN_A), 0, 0); // Continue
     CHECK(f.mode() == Frontend::Mode::Game && !f.world().playerLocked());
@@ -204,8 +208,32 @@ TEST(frontend_an_exit_fades_out_saves_and_ends) {
     testUserFiles().clear();
 }
 
-// The ending's screens draw (Debug asserts on a bad index), and a touch held into it is no press.
-TEST(frontend_the_ending_draws_and_ignores_a_held_touch) {
+// Closing the app mid-fade saves the player where the leave puts them, not in the exit.
+TEST(frontend_closing_while_leaving_saves_on_the_exit_spawn) {
+    testUserFiles().clear();
+    const Area& area = villageArea();
+    const int door = area.findObject("Map/World Grid/Alcove/Cave Door/Scene Change Collider");
+    CHECK(door >= 0);
+    if (door < 0) return;
+    Settings settings;
+    Frontend f(area, titleArt(), settings);
+    showMenu(f);
+    newGame(f);
+    f.world().placeNear(30, 30); // (anywhere but the spawn)
+    f.world().leaveArea(door);
+    frames(f, 5);
+    f.shutdown();
+    const Spawn& s = area.spawns[f.world().exitSpawn(door)];
+    float bx, by;
+    f.world().grid.ownerBase(s.owner, bx, by);
+    const SaveProfile p = saved(0);
+    CHECK(p.playerX == bx + s.x && p.playerY == by + s.y);
+    testUserFiles().clear();
+}
+
+// The ending's screens draw (Debug asserts on a bad index); a touch held into it is no tap, and its
+// button taps on release, so the title doesn't take the stylus as "press any key".
+TEST(frontend_the_ending_draws_and_taps_main_menu_on_release) {
     testUserFiles().clear();
     const Area& area = villageArea();
     SpriteSheets sheets;
@@ -219,16 +247,24 @@ TEST(frontend_the_ending_draws_and_ignores_a_held_touch) {
     f.world().leaveArea(0);
     for (int i = 0; i < 120 && f.mode() != Frontend::Mode::End; i++) f.update({}, 0, 0);
     CHECK(f.mode() == Frontend::Mode::End);
-    for (int i = 0; i < EndScreen::LOCKOUT_FRAMES + 10; i++) {
-        f.update(touchAt(100, 100), 0, 0);
+    const EndScreen::Box b = EndScreen::buttonBox();
+    const plat::Input onButton = touchAt(b.x + b.w / 2, b.y + b.h / 2);
+    auto step = [&](const plat::Input& in) {
+        f.update(in, 0, 0);
         f.drawTop(view, sheets, skin, false);
         f.drawBottom(sheets, skin);
         testResetDrawCalls();
-    }
+    };
+    for (int i = 0; i < EndScreen::LOCKOUT_FRAMES + 10; i++) step(onButton); // (held from before)
+    step({});
     CHECK(f.mode() == Frontend::Mode::End);
-    f.update({}, 0, 0);
-    f.update(touchAt(100, 100), 0, 0);
+    step(onButton);
+    step(onButton);
+    CHECK(f.mode() == Frontend::Mode::End); // (down: not yet)
+    step({});
     CHECK(f.mode() == Frontend::Mode::Title);
+    frames(f, 5);
+    CHECK(!f.titleScreen().menuShown()); // (the title's intro plays)
     f.shutdown();
     CHECK(profileFiles() == 0); // (a temporary profile, still never written)
 }

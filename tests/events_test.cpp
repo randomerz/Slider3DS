@@ -133,3 +133,48 @@ TEST(events_trigger_enter_sets_a_flag) {
     world.update(DT, 0, 0, false);
     check(world.state.flag("villageTouchedGrass"), "flag set on entering");
 }
+
+// Every SceneChanger.ChangeScenes target has a spawn to save the player on (World::exitSpawn).
+TEST(events_every_exit_has_a_spawn) {
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    int exits = 0;
+    auto scan = [&](const std::vector<CallDef>& calls) {
+        for (const CallDef& c : calls)
+            if (c.method == CallDef::Method::ChangeScenes) {
+                exits++;
+                CHECK(world.exitSpawn(c.target) >= 0);
+            }
+    };
+    for (const ConditionCheckerDef& c : area.conditionCheckers) {
+        scan(c.conditionals.onSuccess);
+        scan(c.conditionals.onFail);
+    }
+    for (const TriggerEventDef& t : area.triggerEvents) {
+        scan(t.onEnter);
+        scan(t.onExit);
+    }
+    for (const InteractionDef& i : area.interactions) scan(i.onSuccess);
+    CHECK(exits == 3); // the Cave Door, the beach, the Waterfall
+}
+
+// The beach's exit: its trigger holds the player and fades out, then the player is on the beach's
+// spawn, in the boat.
+TEST(events_beach_exit_leaves_from_the_boat) {
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    world.state.setFlag("villageIntroCutscene", true);
+    int beach = -1;
+    for (size_t i = 0; i < area.spawns.size(); i++)
+        if (area.spawns[i].name == "VillageBeach") beach = (int)i;
+    CHECK(beach >= 0 && standIn(world, "Map/World Grid/Beach/Scene Change/Collider"));
+    if (beach < 0) return;
+    world.player.onWater = true;
+    world.update(DT, 0, 0, false);
+    CHECK(world.playerLocked() && !world.effects.leftArea);
+    for (int i = 0; i < 60 && !world.effects.leftArea; i++) world.update(DT, 0, 0, false);
+    CHECK(world.effects.leftArea && world.saveRequested);
+    float bx, by;
+    world.grid.ownerBase(area.spawns[beach].owner, bx, by);
+    CHECK(world.player.x == bx + area.spawns[beach].x && world.player.y == by + area.spawns[beach].y && world.player.onWater);
+}

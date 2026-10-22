@@ -553,11 +553,6 @@ TEST(physics_scripted_walk_is_pinned) {
     unsigned rng = 12345;
     int exits = 0;
     for (size_t sp = 0; sp < area.spawns.size(); sp++) {
-        // (A walk into one of the area's exits holds the player while it fades out, then puts it on
-        // that exit's spawn: let go of it and the fade for the next spawn's walk.)
-        exits += world.playerLocked() ? 1 : 0;
-        world.lockPlayer(LOCK_SCENE, false);
-        world.effects.reset();
         world.placeAt(area.spawns[sp]);
         for (int seg = 0; seg < 40; seg++) {
             rng = rng * 1103515245 + 12345;
@@ -565,6 +560,11 @@ TEST(physics_scripted_walk_is_pinned) {
             const float mx = (float)(dir % 3) - 1, my = (float)(dir / 3) - 1;
             for (int f = 0; f < 45; f++) {
                 world.update(1.0f / 60, mx, my, false);
+                if (world.playerLocked()) { // (walked into an exit: let go of it, and of its fade)
+                    exits++;
+                    world.lockPlayer(LOCK_SCENE, false);
+                    world.effects.reset();
+                }
                 mix(world.player.x);
                 mix(world.player.y);
             }
@@ -573,6 +573,6 @@ TEST(physics_scripted_walk_is_pinned) {
     }
     char hex[17];
     std::snprintf(hex, sizeof hex, "%016llx", h);
-    check(std::string(hex) == "b6bdaaaa4911a3c4", std::string("walk hash ") + hex);
-    CHECK(exits == 1); // (one walk reaches an exit: re-pinned when exits started holding the player)
+    check(std::string(hex) == "7ba099e76c59be07", std::string("walk hash ") + hex);
+    CHECK(exits == 10); // (walks reach exits: the beach's and the Waterfall's)
 }

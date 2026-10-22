@@ -619,7 +619,8 @@ TEST(render_title_screen_goldens) {
 }
 
 TEST(render_ending_goldens) {
-    // The port's ending: the top screen's card half faded in, then both screens once it takes input.
+    // The port's ending (EndOfDemo fitted): the top screen half faded in, then both screens once it
+    // takes input.
     MenuSkin skin;
     std::string error;
     check(skin.load(&error), "menu skin loads " + error);
@@ -628,11 +629,11 @@ TEST(render_ending_goldens) {
     end.start();
     for (int i = 0; i < EndScreen::FADE_FRAMES / 2; i++) end.update({});
     testResetDrawCalls();
-    end.drawTop(skin.font());
+    end.drawTop(skin);
     goldens.compare("ending_fading_in", 20);
     for (int i = 0; i < EndScreen::LOCKOUT_FRAMES; i++) end.update({});
     testResetDrawCalls();
-    end.drawTop(skin.font());
+    end.drawTop(skin);
     goldens.compare("ending_top", 20);
     testResetDrawCalls();
     end.drawBottom(skin);

@@ -23,6 +23,10 @@ Slider3DSTitleExporter: the layout), cut from TITLE_TEXTURES:
   assets/sheets/ui_title.png  the sheet (.fmt by its colors)
   assets/ui/title_sheet.json  {"sheet", "sprites": {name: {"rect", "pivot": [x, y] (px from the bottom-left)}}}
 
+The ending's art (the demo's EndOfDemo.unity Background: end_cutscene_parallax_0, 320x180; game/ui/end_screen):
+  assets/sheets/ui_end.png    the sheet (.fmt by its colors)
+  assets/ui/end.json          {"sheet", "sprites": {"art": {"rect"}}}
+
 Usage: python tools/make_ui.py [path to Slider/Assets]   (needs Pillow)
 """
 import json
@@ -138,6 +142,15 @@ def menu():
 
 
 # The title art's textures (assets/ui/title.json names their sprites: Slider3DSTitleExporter).
+def end():
+    img, _ = unity_sprite("Sprites/UI/end_cutscene/end_cutscene_parallax.png", "end_cutscene_parallax_0")
+    sheet, placed = pack({"art": img}, 512)
+    write_sheet(sheet, "ui_end")
+    write_json(os.path.join(REPO, "assets", "ui", "end.json"), "ui_end",
+               {"art": {"rect": [*placed["art"], img.width, img.height]}})
+    print(f"end: sheet {sheet.width}x{sheet.height}")
+
+
 TITLE_TEXTURES = ["Sprites/UI/menus/pixel_logo.png", "Sprites/UI/menus/mainmenu_bg_stars.png",
                   "Sprites/UI/menus/mainmenu_giant_star.png", "Sprites/UI/menus/mainmenu_meteor.png",
                   "Sprites/UI/menus/mainmenu_plannet.png", "Sprites/Characters/player/playersprite.png"]
@@ -199,3 +212,4 @@ def title():
 if __name__ == "__main__":
     menu()
     title()
+    end()
