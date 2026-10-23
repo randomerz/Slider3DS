@@ -69,9 +69,11 @@ void drawTopOverlays(const World& world, const MenuSkin& skin) {
         // (wrapped once per caption: it shows for 75 frames)
         const Font& font = skin.captionFont();
         static std::string wrapped;
+        static const Font* wrappedWith = nullptr;
         static std::vector<std::string> lines;
-        if (world.pickup.text() != wrapped) {
+        if (world.pickup.text() != wrapped || &font != wrappedWith) {
             wrapped = world.pickup.text();
+            wrappedWith = &font;
             lines = font.wrap(wrapped, ACQUIRED_SCALE, plat::TOP_W - 2 * ACQUIRED_MARGIN);
         }
         const int step = font.def().ppem * ACQUIRED_SCALE;

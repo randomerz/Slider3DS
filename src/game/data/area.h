@@ -2,6 +2,7 @@
 // exporter, Slider repo: Assets/Scripts/Editor/Export3DS/Slider3DSExporter.cs).
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -595,6 +596,11 @@ struct ParticlesDef {
 enum class ParticleType : uint8_t { SmokePoof, MiniSparkle, COUNT };
 constexpr const char* PARTICLE_TYPE_NAMES[] = {"SmokePoof", "MiniSparkle"};
 static_assert(sizeof(PARTICLE_TYPE_NAMES) / sizeof(PARTICLE_TYPE_NAMES[0]) == (size_t)ParticleType::COUNT);
+constexpr std::array<int, (size_t)ParticleType::COUNT> noParticlePrefabs() {
+    std::array<int, (size_t)ParticleType::COUNT> none{};
+    for (int& i : none) i = -1;
+    return none;
+}
 
 // KnotBox (the knot puzzle): line i joins node i and node i + 1 (the last back to the first). A
 // line is bad when it crosses a ray collider other than its own two nodes', or a line that isn't
@@ -943,7 +949,7 @@ struct Area {
     UiTrackersDef uiTrackers;
     HintsDef hints;
     // ParticleManager's prefabs by ParticleType: Area::particles indices, -1 = not exported.
-    int particlePrefabs[(int)ParticleType::COUNT] = {-1, -1};
+    std::array<int, (size_t)ParticleType::COUNT> particlePrefabs = noParticlePrefabs();
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
     std::vector<std::string> sheetNames;

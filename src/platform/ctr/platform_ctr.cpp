@@ -220,10 +220,18 @@ void drawSpriteTinted(Texture* tex, int sx, int sy, int sw, int sh, float cx, fl
     Tex3DS_SubTexture sub = {(u16)sw, (u16)sh, sx * tex->invW, 1.0f - sy * tex->invH,
                              (sx + sw) * tex->invW, 1.0f - (sy + sh) * tex->invH};
     C2D_Image img = {tex->image.tex, &sub};
+    const u8 r = tint >> 24, g = (tint >> 16) & 0xff, b = (tint >> 8) & 0xff, a = tint & 0xff;
     C2D_ImageTint t;
-    C2D_PlainImageTint(&t, C2D_Color32(tint >> 24, (tint >> 16) & 0xff, (tint >> 8) & 0xff, tint & 0xff), 1.0f);
+    if (r == g && g == b) {
+        // A gray tint in the default (solid) mode: lerping toward black by 1 - gray is texture times
+        // gray, and the tint's alpha multiplies — no mode switch, so no batch flush per particle.
+        C2D_PlainImageTint(&t, C2D_Color32(0, 0, 0, a), 1.0f - r / 255.0f);
+        C2D_DrawImageAtRotated(img, cx, cy, 0.5f, -angle, &t, 1.0f, 1.0f); // (citro2d: clockwise)
+        return;
+    }
+    C2D_PlainImageTint(&t, C2D_Color32(r, g, b, a), 1.0f);
     C2D_SetTintMode(C2D_TintMult); // (texture times tint; the default, solid, is drawSprite's fill)
-    C2D_DrawImageAtRotated(img, cx, cy, 0.5f, -angle, &t, 1.0f, 1.0f); // (citro2d: clockwise)
+    C2D_DrawImageAtRotated(img, cx, cy, 0.5f, -angle, &t, 1.0f, 1.0f);
     C2D_SetTintMode(C2D_TintSolid);
 }
 

@@ -45,7 +45,8 @@ public:
     void spawn(const World& world, int def, float dx, float dy);
     // ParticleManager.SpawnParticle(type, (x, y), parent): its prefab plays once at that world
     // position, under `parent` (-1 = none: it stays put) — following it, and gone when it turns off.
-    // Nothing if the area has no such prefab or the parent is off.
+    // Under a parent that's off it waits, and plays once the parent turns on (Unity instantiates it
+    // inactive; its play-on-awake runs then). Nothing if the area has no such prefab.
     void spawnPrefab(const World& world, ParticleType type, float x, float y, int parent);
     // Random.insideUnitSphere's x and y (from this system's random sequence).
     void randomInUnitSphere(float& x, float& y);
@@ -69,9 +70,11 @@ private:
         bool spawned;      // a spawned copy (Play / Stop / playing() ignore it)
         int object;        // what it emits from: the def's object, or a spawned prefab's parent (-1 = none)
         float dx, dy;      // offset from that object (none: the world position)
+        bool waiting;      // spawned under an inactive parent: starts when it turns on
         float rateDebt;    // particles owed by the rate, carried between frames
         int live;          // its particles alive
     };
+    void start(int def, int object, float dx, float dy, bool spawned, bool waiting = false);
     void emit(const World& world, Emitter& emitter, float x, float y, int count);
     void origin(const World& world, const Emitter& e, float& x, float& y) const; // where it emits now
     uint32_t startColor(const ParticlesDef& def);

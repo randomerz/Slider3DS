@@ -395,10 +395,17 @@ TEST(particles_smoke_plays_its_row_and_follows_its_parent) {
     float x2, y2;
     meanOf(world, smoke, x2, y2);
     check(std::fabs(x2 - x - 3) < 0.05f, "carried 3 right: " + std::to_string(x2 - x));
-    // Late in their lives: the rows' last frames.
-    for (int f = 0; f < 125; f++) world.particles.update(world, dt);
-    for (const Particles::Particle& p : world.particles.particles())
-        if (p.defIndex == smoke && p.age > p.lifetime * 0.99f) CHECK(Particles::frameSprite(p) == s.frames[p.row * 5 + 4]);
+    // Late in their lives (from 95% on, whichever curve): the rows' last frames.
+    int late = 0;
+    for (int f = 0; f < 160; f++) {
+        world.particles.update(world, dt);
+        for (const Particles::Particle& p : world.particles.particles())
+            if (p.defIndex == smoke && p.age >= p.lifetime * 0.95f) {
+                late++;
+                CHECK(Particles::frameSprite(p) == s.frames[p.row * 5 + 4]);
+            }
+    }
+    CHECK(late >= 6); // (every particle passed through it)
     world.objects.setActive(area, door, false);
     world.particles.update(world, dt);
     CHECK(meanOf(world, smoke, x, y) == 0);
@@ -432,4 +439,40 @@ TEST(particles_village_spawns_smoke_and_sparkles) {
     village::activateCollectible(w2, "Slider 4", true); // (already out: no more smoke)
     w2.particles.update(w2, dt);
     CHECK(meanOf(w2, smoke, x, y) == 6);
+}
+
+TEST(particles_smoke_frames_blend_its_two_curves) {
+    // frameOverTime's two curves (fast then slow, slow then fast), blended per particle: 30% into its
+    // life one end of the blend is on frame 3 of its row (curveMin: 0.63), the other on frame 0 (0.06).
+    const Area& area = villageArea();
+    const int smoke = prefab(ParticleType::SmokePoof);
+    if (smoke < 0) return;
+    const ParticlesDef& s = area.particles[smoke];
+    Particles::Particle p{&s, smoke, 0, -1, 0, 0, 0, 0, 0.3f, 1.0f, 0xffffffffu};
+    p.row = 2;
+    p.frameBlend = 0;
+    CHECK(Particles::frameSprite(p) == s.frames[2 * 5 + 3]);
+    p.frameBlend = 1;
+    CHECK(Particles::frameSprite(p) == s.frames[2 * 5 + 0]);
+}
+
+TEST(particles_prefab_bursts_truncate_and_wait_for_their_parent) {
+    // MiniSparkle's bursts of 2.5 emit 2 (measured in Unity: 4 over its two, every time). A prefab
+    // spawned under an inactive object waits, and plays once it turns on.
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    const float dt = 1.0f / 60;
+    world.particles.spawnPrefab(world, ParticleType::MiniSparkle, 0, 0, -1);
+    for (int f = 0; f < 10; f++) world.particles.update(world, dt);
+    float x, y;
+    CHECK(meanOf(world, prefab(ParticleType::MiniSparkle), x, y) == 4);
+    const int door = area.areaGrid.caveDoorEntrance;
+    CHECK(!world.objects.activeInHierarchy(door));
+    world.objectPosition(door, x, y);
+    world.particles.spawnPrefab(world, ParticleType::SmokePoof, x, y, door);
+    for (int f = 0; f < 10; f++) world.particles.update(world, dt);
+    CHECK(meanOf(world, prefab(ParticleType::SmokePoof), x, y) == 0);
+    world.objects.setActive(area, door, true);
+    for (int f = 0; f < 10; f++) world.particles.update(world, dt);
+    CHECK(meanOf(world, prefab(ParticleType::SmokePoof), x, y) == 6);
 }

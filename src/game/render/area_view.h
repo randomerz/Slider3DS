@@ -80,6 +80,7 @@ private:
     void drawLine(const LineDraw& l);
     void drawPickupCircle(const World& world); // ItemPickupEffect's mask (its dark panel inside it)
     void drawParticle(const Area& area, const Particles::Particle& p);
+    float particleReach(const ParticlesDef& d) const; // culling: screen px it reaches from its position
     // Screen top-left of `sp`; false if it is off screen.
     bool spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const;
 

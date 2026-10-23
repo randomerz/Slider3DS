@@ -172,8 +172,8 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         if (!inRange(p.def->sortLayer)) continue;
         float sx, sy; // (off screen: not worth sorting)
         worldToScreen(p.x, p.y, sx, sy);
-        const float half = p.def->size * ppu_ * 0.5f + 1;
-        if (sx + half < 0 || sx - half > screenW_ || sy + half < 0 || sy - half > screenH_) continue;
+        const float reach = particleReach(*p.def);
+        if (sx + reach < 0 || sx - reach > screenW_ || sy + reach < 0 || sy - reach > screenH_) continue;
         Item it{ItemKind::Particle, i, {}};
         it.sprite.sortLayer = p.def->sortLayer;
         it.sprite.order = p.def->order;
@@ -272,14 +272,19 @@ void AreaView::drawLine(const LineDraw& l) {
     spriteCount_++;
 }
 
+float AreaView::particleReach(const ParticlesDef& d) const {
+    // Screen px from its position to the farthest pixel it can cover: a square's half, a turned
+    // frame's half diagonal; + 1 for rounding.
+    const float half = d.size * ppu_ * 0.5f;
+    return (d.frames.empty() ? half : half * 1.41422f) + 1;
+}
+
 void AreaView::drawParticle(const Area& area, const Particles::Particle& p) {
     // A billboard around its position: its texture sheet frame, turned and tinted (its start color
     // and fade), else a square of its color.
     const float size = p.def->size * ppu_;
     float x, y;
     worldToScreen(p.x, p.y, x, y);
-    const float reach = size * 0.7072f; // (a turned square's half diagonal)
-    if (x + reach < 0 || x - reach > screenW_ || y + reach < 0 || y - reach > screenH_) return;
     if (const int frame = Particles::frameSprite(p); frame >= 0)
         sheets_->drawTinted(area, frame, x, y, p.rotation, Particles::color(p));
     else

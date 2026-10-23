@@ -36,7 +36,7 @@ Tile types:
   Tile: 37599
   RuleTile: 5751
   AnimatedTile: 702
-Warnings (13):
+Warnings (14):
   World sprite Map/Village 8Puzzle/STile (8)/All Tile Maps/House Tile Maps/Decorations/BathroomToilet: draw mode/scale/rotation not exported
   Spec condition Player.GetIsOnWater is not checked by the port yet (evaluates false)
   Calls to Breadge.Pickup are not run by the port yet
@@ -45,7 +45,8 @@ Warnings (13):
   Animator on Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite: animated path Item Pickup Location not found
   Calls to UIArtifactWorldMap.SetAreaStatusSilhouette are not run by the port yet
   Calls to ParticleSystem.Play are not run by the port yet
-  5 play-on-awake particle systems not exported: emission over distance, shape (only a full circle in the screen plane, outward), noise
+  1 play-on-awake particle systems not exported: emission over distance, rotation, shape (only a full circle in the screen plane, outward), noise, texture sheet animation beyond one random row over the lifetime, sliced, a textured or non-billboard renderer
+  4 play-on-awake particle systems not exported: emission over distance, shape (only a full circle in the screen plane, outward), noise
   2 play-on-awake particle systems not exported: prewarm, shape (only a full circle in the screen plane, outward)
   1 play-on-awake particle systems not exported: shape (only a full circle in the screen plane, outward)
   103 play-on-awake particle systems not exported: start delay, burst count curves / probability, shape (only a full circle in the screen plane, outward), texture sheet sprites beyond one plain white one

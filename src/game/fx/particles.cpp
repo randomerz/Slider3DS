@@ -26,10 +26,23 @@ bool Particles::playing(int def) const {
     return false;
 }
 
+void Particles::start(int def, int object, float dx, float dy, bool spawned, bool waiting) {
+    Emitter e{};
+    e.def = def;
+    e.id = nextId_++;
+    e.emitting = true;
+    e.spawned = spawned;
+    e.object = object;
+    e.dx = dx;
+    e.dy = dy;
+    e.waiting = waiting;
+    emitters_.push_back(e);
+}
+
 void Particles::play(const World& world, int def) {
     const int object = world.area.particles[def].object;
     if (object < 0 || !world.objects.activeInHierarchy(object) || playing(def)) return;
-    emitters_.push_back({def, nextId_++, 0.0f, true, false, object, 0.0f, 0.0f, 0.0f, 0});
+    start(def, object, 0, 0, false);
 }
 
 void Particles::stop(int def) {
@@ -40,15 +53,15 @@ void Particles::stop(int def) {
 void Particles::spawn(const World& world, int def, float dx, float dy) {
     const int object = world.area.particles[def].object;
     if (object < 0 || !world.objects.activeInHierarchy(object)) return;
-    emitters_.push_back({def, nextId_++, 0.0f, true, true, object, dx, dy, 0.0f, 0});
+    start(def, object, dx, dy, true);
 }
 
 void Particles::spawnPrefab(const World& world, ParticleType type, float x, float y, int parent) {
     const int def = world.area.particlePrefabs[(int)type];
-    if (def < 0 || (parent >= 0 && !world.objects.activeInHierarchy(parent))) return;
+    if (def < 0) return;
     float px = 0, py = 0;
     if (parent >= 0) world.objectPosition(parent, px, py);
-    emitters_.push_back({def, nextId_++, 0.0f, true, true, parent, x - px, y - py, 0.0f, 0});
+    start(def, parent, x - px, y - py, true, parent >= 0 && !world.objects.activeInHierarchy(parent));
 }
 
 void Particles::randomInUnitSphere(float& x, float& y) {
@@ -117,8 +130,10 @@ void Particles::update(const World& world, float dt) {
     const Area& area = world.area;
     // A system on an object turned off stops, its particles with it.
     auto off = [&](int object) { return object >= 0 && !world.objects.activeInHierarchy(object); };
-    emitters_.erase(std::remove_if(emitters_.begin(), emitters_.end(), [&](const Emitter& e) { return off(e.object); }),
+    emitters_.erase(std::remove_if(emitters_.begin(), emitters_.end(), [&](const Emitter& e) { return !e.waiting && off(e.object); }),
                     emitters_.end());
+    for (Emitter& e : emitters_)
+        if (e.waiting && !off(e.object)) e.waiting = false; // (its parent on: it plays from now)
     particles_.erase(std::remove_if(particles_.begin(), particles_.end(), [&](const Particle& p) { return off(p.object); }),
                      particles_.end());
 
@@ -134,7 +149,7 @@ void Particles::update(const World& world, float dt) {
     // Bursts due in [time, time + dt) (the first frame after Play fires time 0), within the
     // duration (each loop, when looping); the rate's share, carried between frames.
     for (Emitter& e : emitters_) {
-        if (!e.emitting) continue;
+        if (!e.emitting || e.waiting) continue;
         const ParticlesDef& d = area.particles[e.def];
         const float from = e.time, to = e.time + dt;
         float x, y;
@@ -146,7 +161,8 @@ void Particles::update(const World& world, float dt) {
                 // Its times: t, and with looping t + n * duration.
                 float n = d.loop ? std::max(0.0f, std::ceil((from - t) / d.duration)) : 0.0f;
                 for (float at = t + n * d.duration; at < to; at = t + (++n) * d.duration) {
-                    if (at >= from) emit(world, e, x, y, (int)std::lround(b.countMin + (b.countMax - b.countMin) * random()));
+                    // (a fractional count is truncated: measured, MiniSparkle's 2.5 emits 2 every time)
+                    if (at >= from) emit(world, e, x, y, (int)(b.countMin + (b.countMax - b.countMin) * random()));
                     if (!d.loop) break;
                 }
             }
