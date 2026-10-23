@@ -17,6 +17,8 @@ constexpr float HINT_BOX_ALPHA = 0.878f; // HintsPanel's Image: #1a1a1a at 224/2
 constexpr int HINT_BOX_H = 30;           // its height, along the view's bottom edge
 constexpr int ACQUIRED_SCALE = 2;        // the item caption at 2x (user: 1x is small on the 3DS; 2x = the UI's pixel)
 constexpr int ACQUIRED_MARGIN = 8;       // px kept clear at each side before it wraps
+// Its line step: one em (ppem) at 2x — TMP's face line height is 1.027 em (32.9 px at 2x); whole UI
+// px keep the 2x grid.
 
 // One line of `font` at `scale`x centered on (cx, cy): its capitals' middle on cy.
 void drawCentered(const Font& font, const std::string& text, int cx, int cy, uint32_t color, int scale = 1) {
@@ -29,27 +31,6 @@ void drawCentered(const Font& font, const std::string& text, int cx, int cy, uin
 uint8_t alpha(float a) { return (uint8_t)std::lround(std::min(std::max(a, 0.0f), 1.0f) * 255); }
 
 } // namespace
-
-std::vector<std::string> wrapLines(const Font& font, const std::string& text, int scale, int maxWidth) {
-    std::vector<std::string> lines;
-    std::string line;
-    size_t at = 0;
-    while (at <= text.size()) {
-        size_t end = text.find(' ', at);
-        if (end == std::string::npos) end = text.size();
-        const std::string word = text.substr(at, end - at);
-        const std::string joined = line.empty() ? word : line + " " + word;
-        if (!line.empty() && font.textWidth(joined, scale) > maxWidth) {
-            lines.push_back(line);
-            line = word;
-        } else {
-            line = joined;
-        }
-        at = end + 1;
-    }
-    lines.push_back(line);
-    return lines;
-}
 
 void drawSkipPrompt(const Font& font, int screenW, int screenH, float fill) {
     // The original's layout on its 1920x1080 canvas over the 320x180 view (6 canvas units a pixel):
@@ -85,9 +66,14 @@ void drawTopOverlays(const World& world, const MenuSkin& skin) {
         // Item Acquired Text: centered 50 px above the view's middle (its 240x50 box), at 2x. Too
         // wide for the screen (no Village item is: "Legendary Cheese Burger Acquired!" is), it wraps
         // upward: the last line stays there, clear of the item over the player's head.
+        // (wrapped once per caption: it shows for 75 frames)
         const Font& font = skin.captionFont();
-        const std::vector<std::string> lines =
-            wrapLines(font, world.pickup.text(world.area), ACQUIRED_SCALE, plat::TOP_W - 2 * ACQUIRED_MARGIN);
+        static std::string wrapped;
+        static std::vector<std::string> lines;
+        if (world.pickup.text() != wrapped) {
+            wrapped = world.pickup.text();
+            lines = font.wrap(wrapped, ACQUIRED_SCALE, plat::TOP_W - 2 * ACQUIRED_MARGIN);
+        }
         const int step = font.def().ppem * ACQUIRED_SCALE;
         const int last = plat::TOP_H / 2 - 50;
         for (int i = 0; i < (int)lines.size(); i++)

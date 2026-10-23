@@ -53,6 +53,10 @@ public:
     // textWidth = its advance, px.
     void drawText(std::string_view text, float x, float baseline, int scale = 1, uint32_t color = 0) const;
     int textWidth(std::string_view text, int scale = 1) const;
+    // `text` word-wrapped into lines at most `maxWidth` px wide at `scale`x (greedy, on spaces; a
+    // word wider than that gets a line of its own and overflows). No markup: dialogue has its own
+    // layout (game/npc/dialogue_text).
+    std::vector<std::string> wrap(std::string_view text, int scale, int maxWidth) const;
 
 private:
     FontDef def_;

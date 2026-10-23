@@ -24,6 +24,7 @@ void ItemPickup::start(World& world, int index) {
     world.lockPlayer(LOCK_PICKUP, true);
     world.npcs.setDialogueEnabled(false);
     index_ = index;
+    text_ = c.name + " Acquired!"; // ("<item/> Acquired!" with the collectible's translated name: English = its name)
     collected_ = textShown_ = false;
     step_ = Step::Shown;
     circleT_ = 0;
@@ -58,6 +59,7 @@ void ItemPickup::coroutines(World& world, float dt) {
         world.lockPlayer(LOCK_PICKUP, false);
         world.npcs.setDialogueEnabled(true);
         index_ = -1;
+        text_.clear();
     }
 }
 
@@ -71,7 +73,3 @@ int ItemPickup::itemSprite(const Area& area) const {
     return active() ? area.collectibles[index_].sprite : -1;
 }
 
-std::string ItemPickup::text(const Area& area) const {
-    // ("<item/> Acquired!" with the collectible's translated name: English = its name)
-    return active() ? area.collectibles[index_].name + " Acquired!" : std::string();
-}

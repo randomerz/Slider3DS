@@ -43,13 +43,14 @@ public:
     float circleDiameter() const; // units, 0 = none
     int itemSprite(const Area& area) const; // Area::sprites index while shown, -1 = none
     bool textShown() const { return textShown_; }
-    std::string text(const Area& area) const; // "<item> Acquired!"
+    const std::string& text() const { return text_; } // "<item> Acquired!" while active, else ""
 
 private:
     void collect(World& world); // Collectible.DoOnCollect, once
 
     enum class Step : uint8_t { Shown, Closing };
     int index_ = -1;
+    std::string text_;
     bool collected_ = false, textShown_ = false;
     Step step_ = Step::Shown;
     float circleT_ = 0; // s into the circle's current animation

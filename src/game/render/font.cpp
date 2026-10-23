@@ -71,6 +71,28 @@ void Font::drawText(std::string_view text, float x, float baseline, int scale, u
     }
 }
 
+std::vector<std::string> Font::wrap(std::string_view text, int scale, int maxWidth) const {
+    std::vector<std::string> lines;
+    std::string line;
+    size_t at = 0;
+    while (at <= text.size()) {
+        size_t end = text.find(' ', at);
+        if (end == std::string_view::npos) end = text.size();
+        const std::string_view word = text.substr(at, end - at);
+        at = end + 1;
+        if (word.empty()) continue; // (runs of spaces: one)
+        std::string joined = line.empty() ? std::string(word) : line + " " + std::string(word);
+        if (!line.empty() && textWidth(joined, scale) > maxWidth) {
+            lines.push_back(std::move(line));
+            line = std::string(word);
+        } else {
+            line = std::move(joined);
+        }
+    }
+    lines.push_back(std::move(line));
+    return lines;
+}
+
 int Font::textWidth(std::string_view text, int scale) const {
     int w = 0;
     for (char c : text) w += def_.glyph(c).advance;

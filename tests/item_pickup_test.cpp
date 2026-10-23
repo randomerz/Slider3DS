@@ -54,7 +54,7 @@ TEST(item_pickup_runs_its_timeline) {
     // 0.75 s: the text, and DoOnCollect (inventory, onCollect: tile 2 joins, a save).
     world.update(DT, 0, 0, false);
     world.update(DT, 0, 0, false);
-    CHECK(world.pickup.textShown() && world.pickup.text(world.area) == "Slider 2 Acquired!");
+    CHECK(world.pickup.textShown() && world.pickup.text() == "Slider 2 Acquired!");
     CHECK(world.state.hasCollectible("Slider 2", "Village") && world.grid.tileActive(2) && world.saveRequested);
     // 2 s: the text goes and the circle shrinks over 0.5 s; 2.5 s: over, the player let go.
     int f = 46;
