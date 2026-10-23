@@ -909,6 +909,48 @@ TEST(render_item_pickup_golden) {
     shoot("pickup_text");
 }
 
+TEST(render_item_pickup_wraps_a_long_name_upward) {
+    // No Village item's caption is too wide at 2x; later areas' are ("Legendary Cheese Burger
+    // Acquired!" is 498 px): words wrap, the last line where one line sits, the rest above it.
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "skin loads " + error);
+    const Font& font = skin.captionFont();
+    CHECK(wrapLines(font, "Slider 2 Acquired!", 2, 384) == std::vector<std::string>{"Slider 2 Acquired!"});
+    CHECK(wrapLines(font, "Legendary Cheese Burger Acquired!", 2, 384) ==
+          (std::vector<std::string>{"Legendary Cheese Burger", "Acquired!"}));
+    CHECK(wrapLines(font, "Supercalifragilistic Acquired!", 1, 40) ==
+          (std::vector<std::string>{"Supercalifragilistic", "Acquired!"})); // (a word wider than a line)
+
+    Area area = villageArea(); // (a copy: Slider 2 renamed)
+    const int index = area.collectible("Slider 2");
+    CHECK(index >= 0);
+    if (index < 0) return;
+    area.collectibles[index].name = "Legendary Cheese Burger";
+    World world(area, DEFAULT_SETTINGS);
+    float x, y;
+    world.objectPosition(area.collectibles[index].object, x, y);
+    world.placeNear(x, y);
+    for (int i = 0; i < 61; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    CHECK(world.pickup.textShown());
+    testResetDrawCalls();
+    drawTopOverlays(world, skin);
+    GoldenSet goldens("pickup_wrapped.txt");
+    goldens.compare("pickup_wrapped", 10);
+    // "Acquired!" sits where a one-line caption does (its capitals centered 50 px above the middle),
+    // "Legendary..." one 2x line (32 px) above.
+    const GlyphRect& capA = font.def().glyph('A').text;
+    const GlyphRect& capL = font.def().glyph('L').text;
+    const int baseline = plat::TOP_H / 2 - 50 - (int)std::floor(capA.oy + capA.h / 2.0f) * 2;
+    int aY = -1, lY = -1;
+    for (const DrawCall& c : testDrawCalls()) {
+        if (c.sx == capA.x && c.sy == capA.y) aY = (int)c.y;
+        if (c.sx == capL.x && c.sy == capL.y) lY = (int)c.y;
+    }
+    check(aY == baseline + capA.oy * 2, "Acquired! on the one-line spot: " + std::to_string(aY));
+    check(lY == baseline - font.def().ppem * 2 + capL.oy * 2, "Legendary... a line above: " + std::to_string(lY));
+}
+
 TEST(render_hints_golden) {
     // The hint box along the top screen's bottom: "move" fading in (4.25 s after the scene starts),
     // fully shown, then its text fading out for the next one's (dismissed with "interact" waiting).

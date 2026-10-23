@@ -5,6 +5,9 @@
 // view. (Next: area titles.)
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "game/render/font.h"
 
 class MenuSkin;
@@ -15,3 +18,6 @@ void drawTopOverlays(const World& world, const MenuSkin& skin);
 // The skip prompt (Skip Prompt: "Skip" over a bar filling 0-1) in the bottom-right of a screen
 // `screenW` x `screenH`.
 void drawSkipPrompt(const Font& font, int screenW, int screenH, float fill);
+// `text` word-wrapped to lines at most `maxWidth` px wide at `scale`x (greedy, on spaces; a word
+// wider than that gets a line of its own).
+std::vector<std::string> wrapLines(const Font& font, const std::string& text, int scale, int maxWidth);
