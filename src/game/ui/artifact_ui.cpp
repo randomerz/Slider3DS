@@ -274,9 +274,11 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
             if (pin.island == b.islandId) drawPin(pin, cx, cy + drop);
         if (option && !hovered)
             drawPart(def.highlight.sprite, def.highlight.x, def.highlight.y, def.highlight.h, cx, cy + drop);
+        // Controller Hover Frame: in Border after the highlight, but not one of the animator's borders
+        // (it doesn't drop), under Shadow's pressed frame.
+        if (cursorShown_ && bx == cursorX_ && by == cursorY_)
+            drawPart(def.hover.sprite, def.hover.x, def.hover.y, def.hover.h, cx, cy);
         if (pressed) drawPart(def.pressed.sprite, def.pressed.x, def.pressed.y, def.pressed.h, cx, cy);
-        if (cursorShown_ && bx == cursorX_ && by == cursorY_) // (controllerHoverFrame, around the image)
-            drawPart(def.hover.sprite, def.hover.x, def.hover.y, def.hover.h, cx, cy + drop);
     }
 
     // Pins off the grid: children of the panel, after the buttons.

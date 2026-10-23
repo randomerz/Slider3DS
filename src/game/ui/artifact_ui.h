@@ -37,6 +37,9 @@ public:
     // Forgets the stylus (a drag in progress is dropped; the selection stays) and ignores a touch
     // held now until it's lifted: around the pause menu, which takes the touch screen meanwhile.
     void releaseStylus();
+    // A touch hides the D-pad's cursor, even while the Artifact takes no input (the player held):
+    // stylus play never shows it.
+    void touched() { cursorShown_ = false; }
     // A button was clicked this frame (a tap, or a drag back onto its own tile: its UIClick).
     bool clicked() const { return clicked_; }
 

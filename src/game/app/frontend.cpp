@@ -125,6 +125,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         if (artifactUI_.clicked()) audio_.play(sounds::UI_CLICK);
     } else {
         artifactUI_.releaseStylus(); // (the Artifact stays shut while the player is held)
+        if (in.touching) artifactUI_.touched();
     }
     FrameInput frame{moveX, moveY, (in.held & plat::BTN_A) != 0};
     if (in.pressed & plat::BTN_A) world_.action();

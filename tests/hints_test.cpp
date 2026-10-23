@@ -53,6 +53,11 @@ TEST(hints_village_exports_its_hints_with_3ds_texts) {
     }
     // Any hint the 3DS can't word (a button it lacks) needs an override, or it would silently vanish.
     for (const HintDef& d : h.list) check(!Hints::text(d).empty() || Hints::overridden(d), d.name + " has a 3DS text");
+    HintDef lacking; // (a button the 3DS lacks: no text, and not overridden — the check above would catch it)
+    lacking.name = "cycle";
+    lacking.text = "Press <Cycle> to cycle";
+    lacking.binds = {"CycleEquip"};
+    CHECK(Hints::text(lacking).empty() && !Hints::overridden(lacking));
 }
 
 TEST(hints_move_shows_after_its_countdown_and_moving_dismisses_it) {

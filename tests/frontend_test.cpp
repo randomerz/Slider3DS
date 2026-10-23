@@ -349,6 +349,35 @@ TEST(frontend_stylus_held_into_the_game_is_no_artifact_press) {
     testUserFiles().clear();
 }
 
+TEST(frontend_the_artifact_takes_no_input_while_the_player_is_held) {
+    // A cutscene holds the player: the D-pad's cursor, X and the stylus all leave the Artifact alone
+    // (a cursor already shown stays; a touch still hides it). Let go, the D-pad works again.
+    testUserFiles().clear();
+    Settings settings;
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
+    showMenu(f);
+    newGame(f);
+    CHECK(f.mode() == Frontend::Mode::Game);
+    f.world().lockPlayer(LOCK_DOLLY, true);
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    f.update(buttons(plat::BTN_X), 0, 0);
+    CHECK(!f.artifactUI().cursorShown() && f.artifactUI().selected() == 0);
+    int bx = 0, by = 0;
+    float sx = 0, sy = 0;
+    CHECK(f.world().artifact.findButton(1, bx, by));
+    f.artifactUI().slotCenter(villageArea(), bx, by, sx, sy);
+    f.update(touchAt((int)sx, (int)sy), 0, 0);
+    f.update({}, 0, 0);
+    CHECK(f.artifactUI().selected() == 0 && f.world().artifact.queueEmpty());
+    f.world().lockPlayer(LOCK_DOLLY, false);
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    CHECK(f.artifactUI().cursorShown());
+    f.world().lockPlayer(LOCK_DOLLY, true);
+    f.update(touchAt((int)sx, (int)sy), 0, 0);
+    CHECK(!f.artifactUI().cursorShown());
+    testUserFiles().clear();
+}
+
 TEST(frontend_draws_every_screen) {
     // main's loop with both screens drawn each frame (a Debug build asserts on a bad index): the
     // title before and after "press any key", Options from it, a new game, the pause menu, Quit to

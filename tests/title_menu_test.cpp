@@ -57,7 +57,7 @@ TEST(title_menu_without_profiles_goes_to_new_save) {
     Menu::Box b;
     CHECK(!m.box(Menu::CONTINUE, b));
     CHECK(press(m, plat::BTN_UP).kind == Kind::None && m.selected() == Menu::PLAY); // (nothing usable above)
-    press(m, plat::BTN_DOWN);
+    press(m, plat::BTN_CPAD_DOWN); // (either pad)
     CHECK(m.selected() == Menu::OPTIONS);
 }
 
@@ -67,7 +67,7 @@ TEST(title_menu_new_game_with_a_typed_name) {
     press(m, plat::BTN_A); // Play: no profiles, straight to New Save (slot 1)
     CHECK(m.page() == Menu::Page::NewSave && m.selected() == Menu::KEY);
     CHECK(press(m, plat::BTN_A).kind == Kind::None && m.name() == "q");
-    press(m, plat::BTN_RIGHT);
+    press(m, plat::BTN_CPAD_RIGHT);
     CHECK(m.selected() == Menu::KEY + 1);
     tap(m, Menu::CAPS);
     CHECK(m.caps());

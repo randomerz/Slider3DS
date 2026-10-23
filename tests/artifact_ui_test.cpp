@@ -255,14 +255,32 @@ TEST(artifact_ui_dpad_cursor_selects_and_moves) {
 }
 
 TEST(artifact_ui_dpad_cursor_starts_on_the_player_and_hides_on_touch) {
+    // The first press shows it on the player's tile; a touch hides it (stylus play never shows it);
+    // pressed again it starts over on the player's tile.
     Fixture f;
     f.world.player.stile = 1; // (tile 1 at (0, 0))
     f.press(plat::BTN_UP);
     CHECK(f.ui.cursorShown() && f.ui.cursorX() == 0 && f.ui.cursorY() == 0);
+    f.press(plat::BTN_RIGHT);
+    f.press(plat::BTN_UP);
+    CHECK(f.ui.cursorX() == 1 && f.ui.cursorY() == 1);
     f.tap(2, 2);
     CHECK(!f.ui.cursorShown());
     f.press(plat::BTN_X); // (hidden: X does nothing)
     CHECK(f.ui.selected() == 0);
-    f.press(plat::BTN_UP); // shows it again where it was
+    f.press(plat::BTN_UP);
     CHECK(f.ui.cursorShown() && f.ui.cursorX() == 0 && f.ui.cursorY() == 0);
+}
+
+TEST(artifact_ui_dpad_cursor_steps_one_axis_and_not_while_touching) {
+    Fixture f;
+    f.press(plat::BTN_LEFT); // (shown: the middle)
+    f.press(plat::BTN_RIGHT | plat::BTN_UP); // both at once: one axis (across)
+    CHECK(f.ui.cursorX() == 2 && f.ui.cursorY() == 1);
+    plat::Input in; // a D-pad press with the stylus down: the stylus wins
+    in.pressed = in.held = plat::BTN_LEFT;
+    in.touching = true;
+    in.touchX = in.touchY = 1;
+    f.ui.update(in, f.world, DT);
+    CHECK(!f.ui.cursorShown() && f.ui.cursorX() == 2);
 }

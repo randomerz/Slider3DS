@@ -108,13 +108,13 @@ TEST(pause_menu_buttons) {
     CHECK(!menu.isOpen() && menu.update(press(plat::BTN_A), s) == Menu::Action::None);
     menu.open();
     CHECK(menu.isOpen() && menu.page() == Menu::Page::Paused && menu.cursor() == Menu::RESUME);
-    menu.update(press(plat::BTN_DOWN), s);
+    menu.update(press(plat::BTN_CPAD_DOWN), s); // (either pad)
     CHECK(menu.cursor() == Menu::OPTIONS);
     menu.update(press(plat::BTN_A), s); // into Options, on General
     CHECK(menu.page() == Menu::Page::Options && menu.cursor() == Menu::GENERAL);
     menu.update(press(plat::BTN_A), s); // into General, on the first slider
     CHECK(menu.page() == Menu::Page::General && menu.cursor() == Menu::SCREEN_SHAKE);
-    menu.update(press(plat::BTN_RIGHT), s);
+    menu.update(press(plat::BTN_CPAD_RIGHT), s); // (either pad)
     CHECK(near(s.screenShake, 0.6f));
     for (int i = 0; i < 6; i++) menu.update(press(plat::BTN_RIGHT), s);
     CHECK(s.screenShake == 1.0f); // stops at 100%
