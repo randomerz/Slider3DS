@@ -993,39 +993,46 @@ TEST(render_smoke_golden) {
 }
 
 TEST(render_particles_near_the_edge_are_drawn) {
-    // Particles whose centers sit just off the left edge (swept 0-9 px out) but whose square or
-    // turned frame reaches in: every one that can show a pixel is drawn (culling never drops one).
+    // Particles whose centers sit just off each edge (swept 0-9 px out) but whose square or turned
+    // frame reaches a pixel in: each one is drawn — its own draw, matched by center and turn (counts
+    // alone would let extra draws hide a missing one). Twenty poofs a step, for many turns.
     const Area& area = villageArea();
     SpriteSheets sheets;
     AreaView view;
     check(sheets.load(area), "sheets load");
+    const float W = plat::TOP_W, H = plat::TOP_H;
+    const int dirs[4][2] = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}}; // left, right, top, bottom (world y up)
     int checked = 0, missing = 0;
-    for (ParticleType type : {ParticleType::SmokePoof, ParticleType::MiniSparkle})
-        for (int off = 0; off <= 36; off++) { // (quarter pixels)
-            World world = sceneWorld();
-            float cx, cy;
-            world.camera(cx, cy);
-            const float x = cx - (plat::TOP_W / 2.0f + off / 4.0f) / area.ppu;
-            for (int k = 0; k < 20; k++) world.particles.spawnPrefab(world, type, x, cy, -1); // (many turns)
-            world.particles.update(world, 1e-4f); // (the first burst, barely moved)
-            testResetDrawCalls();
-            view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
-            view.draw(world);
-            int drawn = 0;
-            for (const DrawCall& c : testDrawCalls())
-                drawn += (c.tint != 0) || (c.sheet.empty() && c.sw <= 1 && c.sh <= 1 && c.x < 8); // (frames; 1 px squares)
-            int visible = 0;
-            for (const Particles::Particle& p : world.particles.particles()) {
-                const float sx = (p.x - cx) * area.ppu + plat::TOP_W / 2.0f; // its center's screen x
-                const float half = p.def->size * area.ppu / 2;
-                const float reach = p.def->frames.empty() ? half
-                                                          : half * (std::fabs(std::cos(p.rotation)) + std::fabs(std::sin(p.rotation)));
-                visible += sx + reach > 0.5f; // (a pixel's worth inside)
+    for (const auto& dir : dirs)
+        for (ParticleType type : {ParticleType::SmokePoof, ParticleType::MiniSparkle})
+            for (int off = 0; off <= 36; off++) { // (quarter pixels)
+                World world = sceneWorld();
+                float cx, cy;
+                world.camera(cx, cy);
+                const float out = ((dir[0] ? W : H) / 2 + off / 4.0f) / area.ppu;
+                for (int k = 0; k < 20; k++) world.particles.spawnPrefab(world, type, cx + dir[0] * out, cy + dir[1] * out, -1);
+                world.particles.update(world, 1e-4f); // (the first burst, barely moved)
+                testResetDrawCalls();
+                view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
+                view.draw(world);
+                for (const Particles::Particle& p : world.particles.particles()) {
+                    const float sx = (p.x - cx) * area.ppu + W / 2, sy = (cy - p.y) * area.ppu + H / 2; // its center
+                    const float half = p.def->size * area.ppu / 2;
+                    const bool frames = !p.def->frames.empty();
+                    const float reach = frames ? half * (std::fabs(std::cos(p.rotation)) + std::fabs(std::sin(p.rotation))) : half;
+                    // (a pixel center inside: half a pixel past the edge)
+                    if (sx + reach <= 0.5f || sx - reach >= W - 0.5f || sy + reach <= 0.5f || sy - reach >= H - 0.5f) continue;
+                    checked++;
+                    bool drawn = false;
+                    for (const DrawCall& c : testDrawCalls()) {
+                        const bool kind = frames ? c.tint != 0 && c.angle == p.rotation : c.sheet.empty();
+                        drawn = drawn || (kind && std::fabs(c.x + c.w / 2 - sx) < 1e-3f && std::fabs(c.y + c.h / 2 - sy) < 1e-3f);
+                    }
+                    missing += !drawn;
+                }
             }
-            checked += visible;
-            if (drawn < visible) missing++;        }
-    check(checked > 20, "particles that reach in: " + std::to_string(checked));
-    check(missing == 0, "sweeps with a visible particle culled: " + std::to_string(missing));
+    check(checked > 100, "particles that reach in: " + std::to_string(checked));
+    check(missing == 0, "visible particles culled: " + std::to_string(missing));
 }
 
 TEST(render_hints_golden) {

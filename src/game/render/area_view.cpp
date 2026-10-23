@@ -274,7 +274,7 @@ void AreaView::drawLine(const LineDraw& l) {
 
 float AreaView::particleReach(const ParticlesDef& d) const {
     // Screen px from its position to the farthest pixel it can cover: a square's half, a turned
-    // frame's half diagonal; + 1 for rounding.
+    // frame's half diagonal; + 1 slack (the draws themselves aren't rounded).
     const float half = d.size * ppu_ * 0.5f;
     return (d.frames.empty() ? half : half * 1.41422f) + 1;
 }

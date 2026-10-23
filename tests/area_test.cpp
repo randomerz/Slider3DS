@@ -152,6 +152,10 @@ TEST(area_validation_particle_frames_match_their_size_on_screen) {
     CHECK(a.particles.size() == 1 && a.particles[0].frames.size() == 1);
     CHECK(!loadFixture(withParticles("[1]", "1"), a, err));   // (32 px at 32 ppu: two units on screen)
     CHECK(!loadFixture(withParticles("[0]", "0.5"), a, err)); // (16 px on a half-unit particle)
+    std::string tall = withParticles("[0]", "1"); // (16 x 32: right width, twice the height)
+    const std::string rect = R"("rect": [0, 0, 16, 16])";
+    tall.replace(tall.find(rect), rect.size(), R"("rect": [0, 0, 16, 32])");
+    CHECK(!loadFixture(tall, a, err));
 }
 
 TEST(area_validation_rejects_bad_indices) {
