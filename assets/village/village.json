@@ -15764,6 +15764,9 @@
     {
       "object": 542,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 3,
       "lifetime": [2,2.5],
@@ -15802,6 +15805,9 @@
     {
       "object": 543,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 3,
       "lifetime": [2,2.5],
@@ -15840,6 +15846,9 @@
     {
       "object": 544,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 3,
       "lifetime": [2,2.5],
@@ -15878,6 +15887,9 @@
     {
       "object": 545,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 3,
       "lifetime": [2,2.5],
@@ -15916,6 +15928,9 @@
     {
       "object": 546,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 3,
       "lifetime": [2,2.5],
@@ -15954,6 +15969,9 @@
     {
       "object": 547,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 3,
       "lifetime": [2,2.5],
@@ -15992,6 +16010,9 @@
     {
       "object": 548,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 3,
       "lifetime": [2,2.5],
@@ -16030,6 +16051,9 @@
     {
       "object": 549,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [2,2.5],
@@ -16069,6 +16093,9 @@
     {
       "object": 550,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [2,2.5],
@@ -16108,6 +16135,9 @@
     {
       "object": 551,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [2,2.5],
@@ -16147,6 +16177,9 @@
     {
       "object": 552,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [2,2.5],
@@ -16186,6 +16219,9 @@
     {
       "object": 553,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [2,2.5],
@@ -16225,6 +16261,9 @@
     {
       "object": 182,
       "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": false,
       "duration": 5,
       "lifetime": [4,5],
@@ -16265,6 +16304,9 @@
     {
       "object": 563,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16300,6 +16342,9 @@
     {
       "object": 564,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16333,6 +16378,9 @@
     {
       "object": 565,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16366,6 +16414,9 @@
     {
       "object": 566,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16399,6 +16450,9 @@
     {
       "object": 567,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16432,6 +16486,9 @@
     {
       "object": 568,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [2,2.5],
@@ -16471,6 +16528,9 @@
     {
       "object": 569,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16504,6 +16564,9 @@
     {
       "object": 570,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16537,6 +16600,9 @@
     {
       "object": 571,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16570,6 +16636,9 @@
     {
       "object": 572,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16603,6 +16672,9 @@
     {
       "object": 573,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16636,6 +16708,9 @@
     {
       "object": 574,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16669,6 +16744,9 @@
     {
       "object": 575,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16702,6 +16780,9 @@
     {
       "object": 576,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16735,6 +16816,9 @@
     {
       "object": 577,
       "playOnAwake": true,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
       "loop": true,
       "duration": 6000,
       "lifetime": [1.5,2],
@@ -16764,8 +16848,101 @@
       ],
       "sortingLayerValue": 9,
       "order": 0
+    },
+    {
+      "object": -1,
+      "playOnAwake": false,
+      "localSpace": true,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
+      "loop": false,
+      "duration": 3,
+      "lifetime": [2,2.5],
+      "speed": [1,4],
+      "size": 0.5,
+      "colorTimes": [0],
+      "colors": [
+        [230,230,230,255]
+      ],
+      "colorsFixed": false,
+      "shapeRadius": 0.1,
+      "rate": [0,0],
+      "bursts": [
+        {
+          "time": 0,
+          "count": [2,2],
+          "cycles": 3,
+          "interval": 0.05
+        }
+      ],
+      "limitVelocity": {
+        "limit": 0.05,
+        "dampen": 0.05,
+        "drag": 30,
+        "dragBySize": true,
+        "dragByVelocity": true
+      },
+      "alpha": [
+        [0,1],
+        [0.75,1],
+        [1,0]
+      ],
+      "sortingLayerValue": 9,
+      "order": 0,
+      "frames": {
+        "sprites": [387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411],
+        "tilesX": 5,
+        "multiplier": 0.9999,
+        "curveMin": [0,0,2.8364,2.8364,1,1,0,0],
+        "curveMax": [0,0,0,0,1,1,2.5484,2.5484]
+      }
+    },
+    {
+      "object": -1,
+      "playOnAwake": false,
+      "localSpace": false,
+      "rotation": [0,6.2832],
+      "spin": [-0.7854,0.7854],
+      "loop": false,
+      "duration": 3,
+      "lifetime": [2,2.5],
+      "speed": [1,4],
+      "size": 0.0625,
+      "colorTimes": [0],
+      "colors": [
+        [230,230,230,255]
+      ],
+      "colorsFixed": false,
+      "shapeRadius": 0.1,
+      "rate": [0,0],
+      "bursts": [
+        {
+          "time": 0,
+          "count": [2.5,2.5],
+          "cycles": 2,
+          "interval": 0.05
+        }
+      ],
+      "limitVelocity": {
+        "limit": 0.05,
+        "dampen": 0.15,
+        "drag": 50,
+        "dragBySize": true,
+        "dragByVelocity": true
+      },
+      "alpha": [
+        [0,1],
+        [0.75,1],
+        [1,0]
+      ],
+      "sortingLayerValue": 9,
+      "order": 0
     }
   ],
+  "particlePrefabs": {
+    "SmokePoof": 28,
+    "MiniSparkle": 29
+  },
   "fadeDuration": 1,
   "flashDuration": 1,
   "cameraShake": {
@@ -20886,7 +21063,7 @@
   ],
   "player": {
     "body": {
-      "sprite": 396,
+      "sprite": 421,
       "pos": [0,0],
       "sortY": 0,
       "sortingLayerValue": 7,
@@ -20932,7 +21109,7 @@
     "boatDropBase": [0,-0.4688],
     "carryPath": "Item Pickup Location",
     "dropIndicator": {
-      "sprite": 404,
+      "sprite": 429,
       "pos": [0,0],
       "sortY": 0,
       "sortingLayerValue": 7,
@@ -20955,14 +21132,14 @@
   },
   "uiTrackers": {
     "sprites": {
-      "playerFullBlackCircle": 406,
-      "playerFullBlackCircleEmpty": 407,
-      "playerFullWhiteCircle": 408,
-      "playerFullWhiteCircleEmpty": 409,
-      "circle3": 410,
-      "circleEmpty": 411,
-      "circle1W": 412,
-      "circleEmptyW": 413
+      "playerFullBlackCircle": 431,
+      "playerFullBlackCircleEmpty": 432,
+      "playerFullWhiteCircle": 433,
+      "playerFullWhiteCircleEmpty": 434,
+      "circle3": 435,
+      "circleEmpty": 436,
+      "circle1W": 437,
+      "circleEmptyW": 438
     },
     "uiPerPixel": 1,
     "trackHousingAccurately": false
@@ -21073,34 +21250,34 @@
   "artifact": {
     "buttonSpacing": 37,
     "frame": {
-      "sprite": 414,
+      "sprite": 439,
       "rect": [-80,-60,160,120]
     },
     "background": {
-      "sprite": 415,
+      "sprite": 440,
       "rect": [-80,-60,160,120]
     },
     "underlays": [
       {
         "name": "Outside Map",
-        "sprite": 416,
+        "sprite": 441,
         "rect": [-80,-60,160,120]
       }
     ],
-    "empty": 417,
-    "blank": 418,
-    "hoverIcon": 418,
+    "empty": 442,
+    "blank": 443,
+    "hoverIcon": 443,
     "parts": {
       "pressed": {
-        "sprite": 419,
+        "sprite": 444,
         "rect": [-16,-17,32,33]
       },
       "highlight": {
-        "sprite": 420,
+        "sprite": 445,
         "rect": [-16,-17,32,32]
       },
       "hover": {
-        "sprite": 421,
+        "sprite": 446,
         "rect": [-16,-16,32,32]
       }
     },
@@ -21112,11 +21289,11 @@
     "buttons": [
       {
         "islandId": 1,
-        "island": 422,
-        "completed": 423,
+        "island": 447,
+        "completed": 448,
         "icons": [
           {
-            "sprite": 424,
+            "sprite": 449,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21124,11 +21301,11 @@
       },
       {
         "islandId": 2,
-        "island": 425,
-        "completed": 426,
+        "island": 450,
+        "completed": 451,
         "icons": [
           {
-            "sprite": 427,
+            "sprite": 452,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21136,11 +21313,11 @@
       },
       {
         "islandId": 3,
-        "island": 428,
-        "completed": 429,
+        "island": 453,
+        "completed": 454,
         "icons": [
           {
-            "sprite": 430,
+            "sprite": 455,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21148,25 +21325,25 @@
       },
       {
         "islandId": 4,
-        "island": 431,
-        "completed": 432,
+        "island": 456,
+        "completed": 457,
         "icons": [
         ]
       },
       {
         "islandId": 5,
-        "island": 433,
-        "completed": 434,
+        "island": 458,
+        "completed": 459,
         "icons": [
         ]
       },
       {
         "islandId": 6,
-        "island": 435,
-        "completed": 436,
+        "island": 460,
+        "completed": 461,
         "icons": [
           {
-            "sprite": 437,
+            "sprite": 462,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21174,22 +21351,22 @@
       },
       {
         "islandId": 7,
-        "island": 438,
-        "completed": 439,
+        "island": 463,
+        "completed": 464,
         "icons": [
         ]
       },
       {
         "islandId": 8,
-        "island": 440,
-        "completed": 441,
+        "island": 465,
+        "completed": 466,
         "icons": [
         ]
       },
       {
         "islandId": 9,
-        "island": 442,
-        "completed": 443,
+        "island": 467,
+        "completed": 468,
         "icons": [
         ]
       }
@@ -23929,618 +24106,618 @@
   "tiles": [
     {
       "name": "Grass2 (Flower)",
-      "frames": [444,445,446],
+      "frames": [469,470,471],
       "fps": 4
     },
     {
       "name": "Grass1",
-      "frames": [447,448],
+      "frames": [472,473],
       "fps": 4
     },
     {
       "name": "Grass4",
-      "frames": [449,450],
+      "frames": [474,475],
       "fps": 4
     },
     {
       "name": "Grass6",
-      "frames": [451,452],
+      "frames": [476,477],
       "fps": 4
     },
     {
       "name": "Grass5",
-      "frames": [453,454],
+      "frames": [478,479],
       "fps": 4
     },
     {
       "name": "rock_wall_12",
-      "frames": [455]
+      "frames": [480]
     },
     {
       "name": "rock_wall_15",
-      "frames": [456]
+      "frames": [481]
     },
     {
       "name": "rock_wall_13",
-      "frames": [457]
+      "frames": [482]
     },
     {
       "name": "rock_wall_2",
-      "frames": [458]
+      "frames": [483]
     },
     {
       "name": "rock_wall_24",
-      "frames": [459]
+      "frames": [484]
     },
     {
       "name": "Grass3",
-      "frames": [460,461],
+      "frames": [485,486],
       "fps": 4
     },
     {
       "name": "rock_wall_23",
-      "frames": [462]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [463]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [464]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [465]
-    },
-    {
-      "name": "rock_wall_21",
-      "frames": [466]
-    },
-    {
-      "name": "rock_wall_17",
-      "frames": [467]
-    },
-    {
-      "name": "village_ruins_deco_10",
-      "frames": [468]
-    },
-    {
-      "name": "village_ruins_deco_8",
-      "frames": [469]
-    },
-    {
-      "name": "rock_wall_4",
-      "frames": [470]
-    },
-    {
-      "name": "rock_wall_11",
-      "frames": [471]
-    },
-    {
-      "name": "rock_wall_5",
-      "frames": [472]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [473]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [474]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [475]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [476]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [477]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [478]
-    },
-    {
-      "name": "village_ruins_deco_9",
-      "frames": [479]
-    },
-    {
-      "name": "village_ruins_deco_1",
-      "frames": [480]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [481]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [482]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [483]
-    },
-    {
-      "name": "village_ruins_deco_3",
-      "frames": [484]
-    },
-    {
-      "name": "village_ruins_deco_2",
-      "frames": [485]
-    },
-    {
-      "name": "rock_wall_0",
-      "frames": [486]
-    },
-    {
-      "name": "rock_wall_1",
       "frames": [487]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "WallRockCut",
       "frames": [488]
     },
     {
-      "name": "Jungle Leaves",
+      "name": "WallRockCut",
       "frames": [489]
     },
     {
-      "name": "village_ruins_deco_0",
+      "name": "WallRockCut",
       "frames": [490]
     },
     {
-      "name": "leaf_tiles_5",
+      "name": "rock_wall_21",
       "frames": [491]
     },
     {
-      "name": "Ground_4",
+      "name": "rock_wall_17",
       "frames": [492]
     },
     {
-      "name": "sand-grass_transition_6",
+      "name": "village_ruins_deco_10",
       "frames": [493]
     },
     {
-      "name": "DesertSand",
+      "name": "village_ruins_deco_8",
       "frames": [494]
     },
     {
+      "name": "rock_wall_4",
+      "frames": [495]
+    },
+    {
+      "name": "rock_wall_11",
+      "frames": [496]
+    },
+    {
+      "name": "rock_wall_5",
+      "frames": [497]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [498]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [499]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [500]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [501]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [502]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [503]
+    },
+    {
+      "name": "village_ruins_deco_9",
+      "frames": [504]
+    },
+    {
+      "name": "village_ruins_deco_1",
+      "frames": [505]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [506]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [507]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [508]
+    },
+    {
+      "name": "village_ruins_deco_3",
+      "frames": [509]
+    },
+    {
+      "name": "village_ruins_deco_2",
+      "frames": [510]
+    },
+    {
+      "name": "rock_wall_0",
+      "frames": [511]
+    },
+    {
+      "name": "rock_wall_1",
+      "frames": [512]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [513]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [514]
+    },
+    {
+      "name": "village_ruins_deco_0",
+      "frames": [515]
+    },
+    {
+      "name": "leaf_tiles_5",
+      "frames": [516]
+    },
+    {
+      "name": "Ground_4",
+      "frames": [517]
+    },
+    {
+      "name": "sand-grass_transition_6",
+      "frames": [518]
+    },
+    {
+      "name": "DesertSand",
+      "frames": [519]
+    },
+    {
       "name": "WaterSandTransition5",
-      "frames": [495,496,497,498,498,497,496,495],
+      "frames": [520,521,522,523,523,522,521,520],
       "fps": 4
     },
     {
       "name": "Tileset_1",
-      "frames": [499]
-    },
-    {
-      "name": "DesertSand",
-      "frames": [500]
-    },
-    {
-      "name": "DesertSand",
-      "frames": [501]
-    },
-    {
-      "name": "DesertSand",
-      "frames": [502]
-    },
-    {
-      "name": "sand-grass_transition_8",
-      "frames": [503]
-    },
-    {
-      "name": "sand-grass_transition_11",
-      "frames": [504]
-    },
-    {
-      "name": "WaterSandTransition6",
-      "frames": [505,506,507,508,508,507,506,505],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition7",
-      "frames": [509,510,511,512,512,511,510,509],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition8",
-      "frames": [513,514,515,516,516,515,514,513],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition11",
-      "frames": [517,518,519,520,520,519,518,517],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition12",
-      "frames": [521,522,523,524,524,523,522,521],
-      "fps": 4
+      "frames": [524]
     },
     {
       "name": "DesertSand",
       "frames": [525]
     },
     {
-      "name": "WaterSandTransition4",
-      "frames": [526,527,528,529,529,528,527,526],
-      "fps": 4
+      "name": "DesertSand",
+      "frames": [526]
     },
     {
-      "name": "WaterSandTransition10",
+      "name": "DesertSand",
+      "frames": [527]
+    },
+    {
+      "name": "sand-grass_transition_8",
+      "frames": [528]
+    },
+    {
+      "name": "sand-grass_transition_11",
+      "frames": [529]
+    },
+    {
+      "name": "WaterSandTransition6",
       "frames": [530,531,532,533,533,532,531,530],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition3",
+      "name": "WaterSandTransition7",
       "frames": [534,535,536,537,537,536,535,534],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition1",
+      "name": "WaterSandTransition8",
       "frames": [538,539,540,541,541,540,539,538],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition9",
+      "name": "WaterSandTransition11",
       "frames": [542,543,544,545,545,544,543,542],
       "fps": 4
     },
     {
+      "name": "WaterSandTransition12",
+      "frames": [546,547,548,549,549,548,547,546],
+      "fps": 4
+    },
+    {
+      "name": "DesertSand",
+      "frames": [550]
+    },
+    {
+      "name": "WaterSandTransition4",
+      "frames": [551,552,553,554,554,553,552,551],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition10",
+      "frames": [555,556,557,558,558,557,556,555],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition3",
+      "frames": [559,560,561,562,562,561,560,559],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition1",
+      "frames": [563,564,565,566,566,565,564,563],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition9",
+      "frames": [567,568,569,570,570,569,568,567],
+      "fps": 4
+    },
+    {
       "name": "sand-grass_transition_10",
-      "frames": [546]
+      "frames": [571]
     },
     {
       "name": "WaterSandTransition2",
-      "frames": [547,548,549,550,550,549,548,547],
+      "frames": [572,573,574,575,575,574,573,572],
       "fps": 4
     },
     {
       "name": "Tileset_0",
-      "frames": [551]
+      "frames": [576]
     },
     {
       "name": "sand-grass_transition_4",
-      "frames": [552]
+      "frames": [577]
     },
     {
       "name": "sand-grass_transition_2",
-      "frames": [553]
+      "frames": [578]
     },
     {
       "name": "RiverEndTile2",
-      "frames": [554,555,556,557],
+      "frames": [579,580,581,582],
       "fps": 4
     },
     {
       "name": "Water9",
-      "frames": [558,559,560,561,561,560,559,558],
+      "frames": [583,584,585,586,586,585,584,583],
       "fps": 4
     },
     {
       "name": "Water2",
-      "frames": [562,563,564,565,565,564,563,562],
+      "frames": [587,588,589,590,590,589,588,587],
       "fps": 4
     },
     {
       "name": "RiverEndTile1",
-      "frames": [566,567,568,569],
+      "frames": [591,592,593,594],
       "fps": 4
     },
     {
       "name": "GroundDefault",
-      "frames": [570]
+      "frames": [595]
     },
     {
       "name": "GroundDefault",
-      "frames": [571]
+      "frames": [596]
     },
     {
       "name": "snow_tiles_0",
-      "frames": [572]
+      "frames": [597]
     },
     {
       "name": "WallRock",
-      "frames": [573]
+      "frames": [598]
     },
     {
       "name": "WallRock",
-      "frames": [574]
+      "frames": [599]
     },
     {
       "name": "WallRock",
-      "frames": [575]
+      "frames": [600]
     },
     {
       "name": "WallRock",
-      "frames": [576]
+      "frames": [601]
     },
     {
       "name": "border_3",
-      "frames": [577]
+      "frames": [602]
     },
     {
       "name": "WallRock",
-      "frames": [578]
+      "frames": [603]
     },
     {
       "name": "WallRock",
-      "frames": [579]
+      "frames": [604]
     },
     {
       "name": "Water6",
-      "frames": [580,581,582,583,583,582,581,580],
+      "frames": [605,606,607,608,608,607,606,605],
       "fps": 4
     },
     {
       "name": "Water7",
-      "frames": [584,585,586,587,587,586,585,584],
+      "frames": [609,610,611,612,612,611,610,609],
       "fps": 4
     },
     {
       "name": "WallRock",
-      "frames": [588]
+      "frames": [613]
     },
     {
       "name": "Fall3",
-      "frames": [589,590,591,592],
+      "frames": [614,615,616,617],
       "fps": 4
     },
     {
       "name": "Fall2",
-      "frames": [593,594,595,596],
+      "frames": [618,619,620,621],
       "fps": 4
     },
     {
       "name": "Fall1",
-      "frames": [597,598,599,600],
+      "frames": [622,623,624,625],
       "fps": 4
     },
     {
       "name": "snow_tiles_6",
-      "frames": [601]
-    },
-    {
-      "name": "Tileset_74",
-      "frames": [602]
-    },
-    {
-      "name": "Tileset_65",
-      "frames": [603]
-    },
-    {
-      "name": "snow_tiles_7",
-      "frames": [604]
-    },
-    {
-      "name": "Tileset_73",
-      "frames": [605]
-    },
-    {
-      "name": "Tileset_66",
-      "frames": [606]
-    },
-    {
-      "name": "snow_tiles_2",
-      "frames": [607]
-    },
-    {
-      "name": "snow_tiles_4",
-      "frames": [608]
-    },
-    {
-      "name": "snow_tiles_3",
-      "frames": [609]
-    },
-    {
-      "name": "snow_tiles_1",
-      "frames": [610]
-    },
-    {
-      "name": "snow_tiles_5",
-      "frames": [611]
-    },
-    {
-      "name": "Ceiling",
-      "frames": [612]
-    },
-    {
-      "name": "Ceiling",
-      "frames": [613]
-    },
-    {
-      "name": "interiors_0",
-      "frames": [614]
-    },
-    {
-      "name": "Tileset_26",
-      "frames": [615]
-    },
-    {
-      "name": "interiors_2",
-      "frames": [616]
-    },
-    {
-      "name": "interiors_4",
-      "frames": [617]
-    },
-    {
-      "name": "interiors_5",
-      "frames": [618]
-    },
-    {
-      "name": "interiors_1",
-      "frames": [619]
-    },
-    {
-      "name": "interiors_3",
-      "frames": [620]
-    },
-    {
-      "name": "interiors_6",
-      "frames": [621]
-    },
-    {
-      "name": "interiors_7",
-      "frames": [622]
-    },
-    {
-      "name": "leaf_tiles_7",
-      "frames": [623]
-    },
-    {
-      "name": "rock_wall_34",
-      "frames": [624]
-    },
-    {
-      "name": "rock_wall_33",
-      "frames": [625]
-    },
-    {
-      "name": "border_6",
       "frames": [626]
     },
     {
-      "name": "border_7",
+      "name": "Tileset_74",
       "frames": [627]
     },
     {
-      "name": "border_5",
+      "name": "Tileset_65",
       "frames": [628]
     },
     {
-      "name": "rock_wall_border_10",
+      "name": "snow_tiles_7",
       "frames": [629]
     },
     {
-      "name": "rock_wall_border_8",
+      "name": "Tileset_73",
       "frames": [630]
     },
     {
-      "name": "border_4",
+      "name": "Tileset_66",
       "frames": [631]
     },
     {
-      "name": "border_0",
+      "name": "snow_tiles_2",
       "frames": [632]
     },
     {
-      "name": "rock_wall_border_7",
+      "name": "snow_tiles_4",
       "frames": [633]
     },
     {
-      "name": "rock_wall_border_4",
+      "name": "snow_tiles_3",
       "frames": [634]
     },
     {
-      "name": "border_1",
+      "name": "snow_tiles_1",
       "frames": [635]
     },
     {
-      "name": "border_2",
+      "name": "snow_tiles_5",
       "frames": [636]
     },
     {
-      "name": "village_ruins_deco_11",
+      "name": "Ceiling",
       "frames": [637]
     },
     {
-      "name": "cave_rocks_17",
+      "name": "Ceiling",
       "frames": [638]
     },
     {
-      "name": "cave_rocks_18",
+      "name": "interiors_0",
       "frames": [639]
     },
     {
-      "name": "rock_wall_border_15",
+      "name": "Tileset_26",
       "frames": [640]
     },
     {
-      "name": "rock_wall_26",
+      "name": "interiors_2",
       "frames": [641]
     },
     {
+      "name": "interiors_4",
+      "frames": [642]
+    },
+    {
+      "name": "interiors_5",
+      "frames": [643]
+    },
+    {
+      "name": "interiors_1",
+      "frames": [644]
+    },
+    {
+      "name": "interiors_3",
+      "frames": [645]
+    },
+    {
+      "name": "interiors_6",
+      "frames": [646]
+    },
+    {
+      "name": "interiors_7",
+      "frames": [647]
+    },
+    {
+      "name": "leaf_tiles_7",
+      "frames": [648]
+    },
+    {
+      "name": "rock_wall_34",
+      "frames": [649]
+    },
+    {
+      "name": "rock_wall_33",
+      "frames": [650]
+    },
+    {
+      "name": "border_6",
+      "frames": [651]
+    },
+    {
+      "name": "border_7",
+      "frames": [652]
+    },
+    {
+      "name": "border_5",
+      "frames": [653]
+    },
+    {
+      "name": "rock_wall_border_10",
+      "frames": [654]
+    },
+    {
+      "name": "rock_wall_border_8",
+      "frames": [655]
+    },
+    {
+      "name": "border_4",
+      "frames": [656]
+    },
+    {
+      "name": "border_0",
+      "frames": [657]
+    },
+    {
+      "name": "rock_wall_border_7",
+      "frames": [658]
+    },
+    {
+      "name": "rock_wall_border_4",
+      "frames": [659]
+    },
+    {
+      "name": "border_1",
+      "frames": [660]
+    },
+    {
+      "name": "border_2",
+      "frames": [661]
+    },
+    {
+      "name": "village_ruins_deco_11",
+      "frames": [662]
+    },
+    {
+      "name": "cave_rocks_17",
+      "frames": [663]
+    },
+    {
+      "name": "cave_rocks_18",
+      "frames": [664]
+    },
+    {
+      "name": "rock_wall_border_15",
+      "frames": [665]
+    },
+    {
+      "name": "rock_wall_26",
+      "frames": [666]
+    },
+    {
       "name": "Water11",
-      "frames": [642,643,644,645,645,644,643,642],
+      "frames": [667,668,669,670,670,669,668,667],
       "fps": 4
     },
     {
       "name": "Water12",
-      "frames": [646,647,648,649,649,648,647,646],
+      "frames": [671,672,673,674,674,673,672,671],
       "fps": 4
     },
     {
       "name": "Tileset_51",
-      "frames": [650]
+      "frames": [675]
     },
     {
       "name": "Water4",
-      "frames": [651,652,653,654,654,653,652,651],
-      "fps": 4
-    },
-    {
-      "name": "RiverReeds",
-      "frames": [655,656,657,658],
-      "fps": 4
-    },
-    {
-      "name": "Water5",
-      "frames": [659,660,661,662,662,661,660,659],
-      "fps": 4
-    },
-    {
-      "name": "rock_wall_border_5",
-      "frames": [663]
-    },
-    {
-      "name": "rock_wall_border_3",
-      "frames": [664]
-    },
-    {
-      "name": "rock_wall_border_11",
-      "frames": [665]
-    },
-    {
-      "name": "rock_wall_border_9",
-      "frames": [666]
-    },
-    {
-      "name": "Tileset_42",
-      "frames": [667]
-    },
-    {
-      "name": "Water13",
-      "frames": [668,669,670,671,671,670,669,668],
-      "fps": 4
-    },
-    {
-      "name": "Water3",
-      "frames": [672,673,674,675,675,674,673,672],
-      "fps": 4
-    },
-    {
-      "name": "Water1",
       "frames": [676,677,678,679,679,678,677,676],
       "fps": 4
     },
     {
+      "name": "RiverReeds",
+      "frames": [680,681,682,683],
+      "fps": 4
+    },
+    {
+      "name": "Water5",
+      "frames": [684,685,686,687,687,686,685,684],
+      "fps": 4
+    },
+    {
+      "name": "rock_wall_border_5",
+      "frames": [688]
+    },
+    {
+      "name": "rock_wall_border_3",
+      "frames": [689]
+    },
+    {
+      "name": "rock_wall_border_11",
+      "frames": [690]
+    },
+    {
+      "name": "rock_wall_border_9",
+      "frames": [691]
+    },
+    {
+      "name": "Tileset_42",
+      "frames": [692]
+    },
+    {
+      "name": "Water13",
+      "frames": [693,694,695,696,696,695,694,693],
+      "fps": 4
+    },
+    {
+      "name": "Water3",
+      "frames": [697,698,699,700,700,699,698,697],
+      "fps": 4
+    },
+    {
+      "name": "Water1",
+      "frames": [701,702,703,704,704,703,702,701],
+      "fps": 4
+    },
+    {
       "name": "cave_rocks_9",
-      "frames": [680]
+      "frames": [705]
     },
     {
       "name": "cave_rocks_8",
-      "frames": [681]
+      "frames": [706]
     },
     {
       "name": "cave_rocks_16",
-      "frames": [682]
+      "frames": [707]
     },
     {
       "name": "cave_rocks_6",
@@ -24548,95 +24725,95 @@
     },
     {
       "name": "rock_wall_border_6",
-      "frames": [683]
+      "frames": [708]
     },
     {
       "name": "rock_wall_28",
-      "frames": [684]
+      "frames": [709]
     },
     {
       "name": "rock_wall_31",
-      "frames": [685]
+      "frames": [710]
     },
     {
       "name": "rock_wall_border_0",
-      "frames": [686]
+      "frames": [711]
     },
     {
       "name": "rock_wall_border_14",
-      "frames": [687]
+      "frames": [712]
     },
     {
       "name": "border_light_1",
-      "frames": [688]
+      "frames": [713]
     },
     {
       "name": "Water8",
-      "frames": [689,690,691,692,692,691,690,689],
+      "frames": [714,715,716,717,717,716,715,714],
       "fps": 4
     },
     {
       "name": "rock_wall_27",
-      "frames": [693]
+      "frames": [718]
     },
     {
       "name": "rock_wall_30",
-      "frames": [694]
+      "frames": [719]
     },
     {
       "name": "Snow1",
-      "frames": [695,696],
+      "frames": [720,721],
       "fps": 4
     },
     {
       "name": "Tileset_27",
-      "frames": [697]
+      "frames": [722]
     },
     {
       "name": "Tileset_40",
-      "frames": [698]
+      "frames": [723]
     },
     {
       "name": "rock_wall_border_1",
-      "frames": [699]
+      "frames": [724]
     },
     {
       "name": "interiors_19",
-      "frames": [700]
+      "frames": [725]
     },
     {
       "name": "Water10",
-      "frames": [701,702,703,704,704,703,702,701],
+      "frames": [726,727,728,729,729,728,727,726],
       "fps": 4
     },
     {
       "name": "Water14",
-      "frames": [705,706,707,708,708,707,706,705],
+      "frames": [730,731,732,733,733,732,731,730],
       "fps": 4
     },
     {
       "name": "Ceiling",
-      "frames": [709]
+      "frames": [734]
     },
     {
       "name": "rock_wall_border_2",
-      "frames": [710]
+      "frames": [735]
     },
     {
       "name": "Tileset_32",
-      "frames": [711]
+      "frames": [736]
     },
     {
       "name": "Tileset_45",
-      "frames": [712]
+      "frames": [737]
     },
     {
       "name": "Tileset_31",
-      "frames": [713]
+      "frames": [738]
     },
     {
       "name": "Tileset_30",
-      "frames": [714]
+      "frames": [739]
     }
   ],
   "sprites": [
@@ -24734,224 +24911,224 @@
     },
     {
       "name": "buoy_2",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [96,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_0",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_1",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [48,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_3",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [144,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_4",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [192,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_5",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [240,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_6",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [288,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_7",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [336,256,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_2",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [96,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_0",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_1",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [48,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_3",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [144,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_4",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [192,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_5",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [240,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_6",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [288,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_splash_7",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [336,288,48,32],
       "pivot": [24,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_0",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,0,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_1",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,32,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_2",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,64,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_3",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,96,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_4",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,128,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_5",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,160,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_6",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,192,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_hors_7",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [0,224,192,32],
       "pivot": [96,12],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_0",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [192,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_1",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [208,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_2",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [224,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_3",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [240,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_4",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [256,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_5",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [272,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_6",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [288,0,16,192],
       "pivot": [8,96],
       "ppu": 16
     },
     {
       "name": "buoy_rope_ver_7",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [304,0,16,192],
       "pivot": [8,96],
       "ppu": 16
@@ -24965,56 +25142,56 @@
     },
     {
       "name": "Tileset_Tree1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [240,528,48,48],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "tree_bounce_C1",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [0,160,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce_C2",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [80,160,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce_C3",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [160,160,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "Tileset_Tree2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,528,48,48],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "tree_bounce2_C1",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [0,400,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce2_C2",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [80,400,80,80],
       "pivot": [40,24],
       "ppu": 16
     },
     {
       "name": "tree_bounce2_C3",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [160,400,80,80],
       "pivot": [40,24],
       "ppu": 16
@@ -25042,63 +25219,63 @@
     },
     {
       "name": "cave_rocks_14",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [128,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_11",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [80,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_15",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [144,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_10",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [64,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_0",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [320,64,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_0",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [320,0,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_1",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [368,0,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_2",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [416,0,48,32],
       "pivot": [24,24],
       "ppu": 16
     },
     {
       "name": "ocean_rocks_small_splash_3",
-      "sheet": 19,
+      "sheet": 20,
       "rect": [464,0,48,32],
       "pivot": [24,24],
       "ppu": 16
@@ -25147,70 +25324,70 @@
     },
     {
       "name": "floating_wood_0",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [0,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_1",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [32,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_2",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [64,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_3",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [96,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_4",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [128,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_5",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [160,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_6",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [192,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_7",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [224,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_8",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [256,712,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "floating_wood_9",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [288,712,32,32],
       "pivot": [16,16],
       "ppu": 16
@@ -25490,42 +25667,42 @@
     },
     {
       "name": "house_inside_4",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [0,16,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "house_inside_2",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [48,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_10",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [64,32,16,32],
       "pivot": [8,16],
       "ppu": 16
     },
     {
       "name": "house_inside_11",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [0,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_5",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [32,64,48,16],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "house_inside_6",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [4,64,24,16],
       "pivot": [12,8],
       "ppu": 16
@@ -25553,28 +25730,28 @@
     },
     {
       "name": "computer_tables_0",
-      "sheet": 14,
+      "sheet": 15,
       "rect": [160,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "computers_3",
-      "sheet": 14,
+      "sheet": 15,
       "rect": [64,0,16,16],
       "pivot": [8,0],
       "ppu": 16
     },
     {
       "name": "computers_0",
-      "sheet": 14,
+      "sheet": 15,
       "rect": [0,0,16,16],
       "pivot": [8,0],
       "ppu": 16
     },
     {
       "name": "computer_tables_1",
-      "sheet": 14,
+      "sheet": 15,
       "rect": [176,0,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -25609,42 +25786,42 @@
     },
     {
       "name": "village_ruins_scrawls",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [448,80,48,16],
       "pivot": [24,8],
       "ppu": 16
     },
     {
       "name": "village_ruins_scrawls_color_0",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [452,99,8,10],
       "pivot": [4,5],
       "ppu": 16
     },
     {
       "name": "village_ruins_scrawls_color_1",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [461,99,12,10],
       "pivot": [6,5],
       "ppu": 16
     },
     {
       "name": "village_ruins_scrawls_color_2",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [473,99,10,10],
       "pivot": [5,5],
       "ppu": 16
     },
     {
       "name": "village_ruins_scrawls_color_3",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [483,99,10,10],
       "pivot": [5,5],
       "ppu": 16
     },
     {
       "name": "village_ruins_missing_piece_0",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [480,64,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -25679,14 +25856,14 @@
     },
     {
       "name": "junglebush_Idle_0",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [0,0,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "junglebush_Moving_0",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [32,0,32,32],
       "pivot": [16,16],
       "ppu": 16
@@ -25721,70 +25898,70 @@
     },
     {
       "name": "Tileset_log",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [144,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_rock",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [176,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_props_2",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [112,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_0",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_1",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_2",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_3",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [80,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_4",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [96,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_5",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [112,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "JungleSprout_Idle_6",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [80,64,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -25833,14 +26010,14 @@
     },
     {
       "name": "cave_rocks_6",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [160,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "hole",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [496,32,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -25854,42 +26031,42 @@
     },
     {
       "name": "cave_construction_props_0",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [0,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_construction_props_1",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [16,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_pot",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [160,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_9",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [48,32,16,32],
       "pivot": [8,16],
       "ppu": 16
     },
     {
       "name": "house_inside_1",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [32,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_construction_props_2",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [32,0,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -25945,14 +26122,14 @@
     },
     {
       "name": "cave_rocks_4",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [128,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_13",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [112,0,16,32],
       "pivot": [8,8],
       "ppu": 16
@@ -25973,7 +26150,7 @@
     },
     {
       "name": "jungle_props_3",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [80,32,32,16],
       "pivot": [16,8],
       "ppu": 16
@@ -26008,77 +26185,77 @@
     },
     {
       "name": "rock_column",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [448,32,32,32],
       "pivot": [16,16],
       "ppu": 16
     },
     {
       "name": "cave_rocks_5",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [144,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "house_inside_0",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [0,0,32,16],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "house_inside_3",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [64,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_2",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [64,80,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "shelves_and_lockers_2",
-      "sheet": 15,
+      "sheet": 16,
       "rect": [0,32,32,32],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "workshop_benches_4",
-      "sheet": 15,
+      "sheet": 16,
       "rect": [128,64,32,32],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "bathroom_5",
-      "sheet": 18,
+      "sheet": 19,
       "rect": [32,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "bathroom_4",
-      "sheet": 18,
+      "sheet": 19,
       "rect": [16,0,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_10",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [48,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_7",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [48,112,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -26148,7 +26325,7 @@
     },
     {
       "name": "villagebell",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [480,32,16,32],
       "pivot": [8,4],
       "ppu": 16
@@ -26197,7 +26374,7 @@
     },
     {
       "name": "jungle_inside_8",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [0,112,16,32],
       "pivot": [8,8],
       "ppu": 16
@@ -26211,14 +26388,14 @@
     },
     {
       "name": "jungle_inside_9",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [32,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_5",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [32,112,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -26239,35 +26416,35 @@
     },
     {
       "name": "bakery_0",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [80,512,128,52],
       "pivot": [64,26],
       "ppu": 16
     },
     {
       "name": "bakery_1",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [96,564,112,32],
       "pivot": [56,16],
       "ppu": 16
     },
     {
       "name": "bakery_2",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [90,617,28,20],
       "pivot": [14,10],
       "ppu": 16
     },
     {
       "name": "jungle_inside_1",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [32,80,32,16],
       "pivot": [16,8],
       "ppu": 16
     },
     {
       "name": "jungle_inside_4",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [16,112,16,32],
       "pivot": [8,8],
       "ppu": 16
@@ -27351,6 +27528,181 @@
       "ppu": 16
     },
     {
+      "name": "smoke_0",
+      "sheet": 11,
+      "rect": [0,0,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_1",
+      "sheet": 11,
+      "rect": [8,0,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_2",
+      "sheet": 11,
+      "rect": [16,0,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_3",
+      "sheet": 11,
+      "rect": [24,0,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_4",
+      "sheet": 11,
+      "rect": [32,0,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_5",
+      "sheet": 11,
+      "rect": [0,8,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_6",
+      "sheet": 11,
+      "rect": [8,8,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_7",
+      "sheet": 11,
+      "rect": [16,8,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_8",
+      "sheet": 11,
+      "rect": [24,8,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_9",
+      "sheet": 11,
+      "rect": [32,8,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_10",
+      "sheet": 11,
+      "rect": [0,16,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_11",
+      "sheet": 11,
+      "rect": [8,16,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_12",
+      "sheet": 11,
+      "rect": [16,16,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_13",
+      "sheet": 11,
+      "rect": [24,16,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_14",
+      "sheet": 11,
+      "rect": [32,16,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_15",
+      "sheet": 11,
+      "rect": [0,24,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_16",
+      "sheet": 11,
+      "rect": [8,24,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_17",
+      "sheet": 11,
+      "rect": [16,24,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_18",
+      "sheet": 11,
+      "rect": [24,24,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_19",
+      "sheet": 11,
+      "rect": [32,24,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_20",
+      "sheet": 11,
+      "rect": [0,32,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_21",
+      "sheet": 11,
+      "rect": [8,32,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_22",
+      "sheet": 11,
+      "rect": [16,32,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_23",
+      "sheet": 11,
+      "rect": [24,32,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
+      "name": "smoke_24",
+      "sheet": 11,
+      "rect": [32,32,8,8],
+      "pivot": [4,4],
+      "ppu": 16
+    },
+    {
       "name": "cats_waking_0",
       "sheet": 6,
       "rect": [64,64,16,16],
@@ -27485,434 +27837,434 @@
     },
     {
       "name": "ui_player_trackers_full_black",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [16,0,9,9],
       "pivot": [4.5,4.5],
       "ppu": 32
     },
     {
       "name": "ui_player_trackers_full_black_empty",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [32,0,9,9],
       "pivot": [4.5,4.5],
       "ppu": 32
     },
     {
       "name": "ui_player_trackers_full_white",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [17,17,7,7],
       "pivot": [3.5,3.5],
       "ppu": 32
     },
     {
       "name": "ui_player_trackers_full_white_empty",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [33,17,7,7],
       "pivot": [3.5,3.5],
       "ppu": 32
     },
     {
       "name": "ui_object_trackers_circle3",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [17,73,5,5],
       "pivot": [2.5,2.5],
       "ppu": 32
     },
     {
       "name": "ui_object_trackers_circle_empty",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [1,73,5,5],
       "pivot": [2.5,2.5],
       "ppu": 32
     },
     {
       "name": "ui_object_trackers_circle1w",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [8,65,5,5],
       "pivot": [2.5,2.5],
       "ppu": 32
     },
     {
       "name": "ui_object_trackers_circle_empty_w",
-      "sheet": 21,
+      "sheet": 22,
       "rect": [8,73,5,5],
       "pivot": [2.5,2.5],
       "ppu": 32
     },
     {
       "name": "artifact_frame",
-      "sheet": 25,
+      "sheet": 26,
       "rect": [0,120,160,120],
       "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "ArtifactBG",
-      "sheet": 25,
+      "sheet": 26,
       "rect": [0,0,160,120],
       "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "village_outside_map",
-      "sheet": 24,
+      "sheet": 25,
       "rect": [0,0,160,120],
       "pivot": [80,60],
       "ppu": 16
     },
     {
       "name": "ArtifactIcons_empty",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [1,103,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_blank",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [69,69,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_pressed_frame",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [35,69,32,33],
       "pivot": [16,17],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_highlight",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [69,103,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ControllerHoverHighlight",
-      "sheet": 25,
+      "sheet": 26,
       "rect": [160,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_0",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [1,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_0",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [1,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_2",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [0,32,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_1",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [35,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_1",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [35,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_0",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [0,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_2",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [69,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_2",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [69,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_3",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [32,32,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_3",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [103,1,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_3",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [103,137,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_4",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [1,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_4",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [1,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_5",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [35,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_5",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [35,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "village_icon_highlights_1",
-      "sheet": 22,
+      "sheet": 23,
       "rect": [32,0,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_6",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [69,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_6",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [69,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_7",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [103,35,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_7",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [103,171,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "ArtifactIcons_8",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [1,69,32,32],
       "pivot": [16,16],
       "ppu": 32
     },
     {
       "name": "ArtifactIcons_completed_8",
-      "sheet": 23,
+      "sheet": 24,
       "rect": [1,205,32,32],
       "pivot": [16,16],
       "ppu": 100
     },
     {
       "name": "Grass2Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass2Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,192,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass2Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass1Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass1Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,176,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass4Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass4Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass6Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass6Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass5Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass5Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_12",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [352,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_15",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [400,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_13",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_24",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass3Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Grass3Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_23",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [352,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_18",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [448,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_19",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [464,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_20",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [480,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_21",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [496,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_17",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [432,608,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -27933,63 +28285,63 @@
     },
     {
       "name": "rock_wall_4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [400,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_11",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_5",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [416,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_10",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [0,96,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_12",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [32,96,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_11",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [16,96,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_4",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [64,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_3",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [48,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_6",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [16,80,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -28010,21 +28362,21 @@
     },
     {
       "name": "leaf_tiles_8",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [48,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_1",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [16,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_9",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [64,80,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -28045,28 +28397,28 @@
     },
     {
       "name": "rock_wall_0",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [352,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_0",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [0,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_2",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [32,64,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -28080,14 +28432,14 @@
     },
     {
       "name": "leaf_tiles_5",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [0,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,560,16,16],
       "pivot": [8,8],
       "solid": [26,26,26],
@@ -28095,14 +28447,14 @@
     },
     {
       "name": "sand-grass_transition_6",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [112,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [112,512,16,16],
       "pivot": [8,8],
       "solid": [153,153,153],
@@ -28110,35 +28462,35 @@
     },
     {
       "name": "sand-water_animated5 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated5 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,512,16,16],
       "pivot": [8,8],
       "solid": [102,102,102],
@@ -28146,364 +28498,364 @@
     },
     {
       "name": "Tileset_44",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [208,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_53",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [208,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_54",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [224,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_8",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [144,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_11",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [112,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated6 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated7 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated8 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,688,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated11 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated12 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_60",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [208,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,528,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated4 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated10 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [64,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated3 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [32,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated1 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [0,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated9 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_10",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,512,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-water_animated2 4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [16,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_0",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [80,512,16,16],
       "pivot": [8,8],
       "solid": [26,26,26],
@@ -28511,133 +28863,133 @@
     },
     {
       "name": "sand-grass_transition_4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [144,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "sand-grass_transition_2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [112,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_4",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [320,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_5",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [352,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_6",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [384,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_7",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [416,496,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water9Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water2Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_0",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [320,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_1",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [352,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_2",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [384,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "river_end_transition_3",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [416,480,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Ground_0",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [80,544,16,16],
       "pivot": [8,8],
       "base": [26,26,26],
@@ -28646,7 +28998,7 @@
     },
     {
       "name": "Ground_1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,544,16,16],
       "pivot": [8,8],
       "base": [26,26,26],
@@ -28655,7 +29007,7 @@
     },
     {
       "name": "snow_tiles_0",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [448,0,16,16],
       "pivot": [8,8],
       "solid": [230,230,230],
@@ -28663,217 +29015,217 @@
     },
     {
       "name": "rock_wall_22",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_16",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [416,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_25",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [384,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_32",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [416,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [224,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_14",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [384,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_29",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [352,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,224,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water6Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,128,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,224,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water7Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,320,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [384,592,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [160,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [176,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [192,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall3Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [208,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [160,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [176,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [192,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall2Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [208,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [160,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [176,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [192,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Fall1Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [208,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_6",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [480,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_74",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [128,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_65",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [112,608,16,16],
       "pivot": [8,8],
       "solid": [230,230,230],
@@ -28881,70 +29233,70 @@
     },
     {
       "name": "snow_tiles_7",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [496,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_73",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [112,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_66",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [128,608,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_2",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [480,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_4",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [448,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_3",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [496,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_1",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [464,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "snow_tiles_5",
-      "sheet": 20,
+      "sheet": 21,
       "rect": [464,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_8",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [80,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_9",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [96,144,16,16],
       "pivot": [8,8],
       "base": [26,26,26],
@@ -28953,14 +29305,14 @@
     },
     {
       "name": "interiors_0",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [0,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_26",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [128,544,16,16],
       "pivot": [8,8],
       "solid": [26,26,26],
@@ -28968,42 +29320,42 @@
     },
     {
       "name": "interiors_2",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [32,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_4",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [16,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_5",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [32,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_1",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [16,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_3",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [0,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_6",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [48,160,16,16],
       "pivot": [8,8],
       "base": [102,102,102],
@@ -29012,105 +29364,105 @@
     },
     {
       "name": "interiors_7",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [64,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "leaf_tiles_7",
-      "sheet": 17,
+      "sheet": 18,
       "rect": [32,80,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_34",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [496,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_33",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [432,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_6",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [240,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_7",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [256,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_5",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [224,672,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_10",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_8",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [256,656,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_0",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [224,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_7",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [384,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [240,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [256,640,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -29124,441 +29476,441 @@
     },
     {
       "name": "cave_rocks_17",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [176,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_18",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [192,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_15",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [384,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_26",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [400,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water11Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water12Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_51",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [176,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water4Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [320,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,32,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,288,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "River2Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [96,416,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water5Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_5",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [352,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [384,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_11",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [384,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_9",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [352,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_42",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [176,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water13Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water3Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [304,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,208,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water1Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,304,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_9",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [208,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_8",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [192,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "cave_rocks_16",
-      "sheet": 13,
+      "sheet": 14,
       "rect": [160,16,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_6",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_28",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_31",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [400,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_0",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_14",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,576,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "border_light_1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [288,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water8Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [272,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_27",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [416,624,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_30",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,640,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Snow1Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,112,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Snow1Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [48,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_27",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [144,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_40",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [144,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [352,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "interiors_19",
-      "sheet": 16,
+      "sheet": 17,
       "rect": [48,176,16,16],
       "pivot": [8,8],
       "base": [102,102,102],
@@ -29567,98 +29919,98 @@
     },
     {
       "name": "Water10Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,48,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,144,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,240,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water10Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,336,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame1",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,64,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,160,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame3",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,256,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Water14Frame4",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [336,352,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "temp_interior_0",
-      "sheet": 11,
+      "sheet": 12,
       "rect": [16,0,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "rock_wall_border_2",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [368,512,16,32],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_32",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [224,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_45",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [224,560,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_31",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [208,544,16,16],
       "pivot": [8,8],
       "ppu": 16
     },
     {
       "name": "Tileset_30",
-      "sheet": 12,
+      "sheet": 13,
       "rect": [192,544,16,16],
       "pivot": [8,8],
       "ppu": 16
@@ -30213,28 +30565,28 @@
 },
     {
   "name": "Cat1WakingUp",
-  "frames": [387,388,389,390,391,392,393,394],
+  "frames": [412,413,414,415,416,417,418,419],
   "times": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7],
   "length": 0.8,
   "loop": true
 },
     {
   "name": "Cat1FallSleep",
-  "frames": [394,388,387],
+  "frames": [419,413,412],
   "times": [0,0.125,0.25],
   "length": 0.375,
   "loop": true
 },
     {
   "name": "LargeBubble_BubbleForm",
-  "frames": [395,-1,-1,-1,-1],
+  "frames": [420,-1,-1,-1,-1],
   "times": [0,0.25,0.5,0.75,0.9833],
   "length": 1,
   "loop": true
 },
     {
   "name": "PlayerIdle",
-  "frames": [396,397],
+  "frames": [421,422],
   "times": [0,0.5],
   "length": 1,
   "loop": true
@@ -30248,21 +30600,21 @@
 },
     {
   "name": "PlayerRun",
-  "frames": [398,399,400,401],
+  "frames": [423,424,425,426],
   "times": [0,0.25,0.5,0.75],
   "length": 1,
   "loop": true
 },
     {
   "name": "PlayerPirateIdle",
-  "frames": [402,403],
+  "frames": [427,428],
   "times": [0,0.5],
   "length": 1,
   "loop": true
 },
     {
   "name": "PlayerDropIndicatorIdle",
-  "frames": [404,405],
+  "frames": [429,430],
   "times": [0,0.5],
   "length": 1,
   "loop": true
@@ -32337,6 +32689,11 @@
       "name": "largeprops_village_ruins",
       "file": "../sheets/largeprops_village_ruins.png",
       "size": [512,256]
+    },
+    {
+      "name": "particle_effects",
+      "file": "../sheets/particle_effects.png",
+      "size": [64,64]
     },
     {
       "name": "tempsprites",

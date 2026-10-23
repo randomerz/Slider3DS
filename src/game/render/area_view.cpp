@@ -247,7 +247,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         } else if (it.kind == ItemKind::Dialogue) drawDialogue(world, it.index);
         else if (it.kind == ItemKind::Text) drawWorldText(world, it.index);
         else if (it.kind == ItemKind::Line) drawLine(lines_[it.index]);
-        else if (it.kind == ItemKind::Particle) drawParticle(particles[it.index]);
+        else if (it.kind == ItemKind::Particle) drawParticle(area, particles[it.index]);
         else if (it.kind == ItemKind::Pickup && it.index == 0) drawPickupCircle(world);
         else drawSprite(area, it.sprite);
     }
@@ -272,15 +272,18 @@ void AreaView::drawLine(const LineDraw& l) {
     spriteCount_++;
 }
 
-void AreaView::drawParticle(const Particles::Particle& p) {
-    // A billboard square around its position.
+void AreaView::drawParticle(const Area& area, const Particles::Particle& p) {
+    // A billboard around its position: its texture sheet frame, turned and tinted (its start color
+    // and fade), else a square of its color.
     const float size = p.def->size * ppu_;
     float x, y;
     worldToScreen(p.x, p.y, x, y);
-    x -= size * 0.5f;
-    y -= size * 0.5f;
-    if (x + size < 0 || x > screenW_ || y + size < 0 || y > screenH_) return;
-    plat::drawRect(x, y, size, size, Particles::color(p));
+    const float reach = size * 0.7072f; // (a turned square's half diagonal)
+    if (x + reach < 0 || x - reach > screenW_ || y + reach < 0 || y - reach > screenH_) return;
+    if (const int frame = Particles::frameSprite(p); frame >= 0)
+        sheets_->drawTinted(area, frame, x, y, p.rotation, Particles::color(p));
+    else
+        plat::drawRect(x - size * 0.5f, y - size * 0.5f, size, size, Particles::color(p));
     spriteCount_++;
 }
 

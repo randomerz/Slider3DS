@@ -147,6 +147,11 @@ TEST(final_shuffle_keeps_unity_frames) {
     const RuinsSymbolsDef& rs = symbols(world);
     world.finale.fillInHole(world); // (with nothing carried: just the hole and symbols)
     CHECK(shown(world) == "00000");
+    world.particles.update(world, 1.0f / 60); // a SmokePoof on the hole: its first burst
+    int smoke = 0;
+    for (const Particles::Particle& p : world.particles.particles())
+        smoke += p.defIndex == area.particlePrefabs[(int)ParticleType::SmokePoof];
+    CHECK(smoke == 2);
     world.finale.shufflePuzzle(world); // between frames, like a dialogue event
     // FlashSymbol(0) at once: shown, white, for flashTime from the next frame; a 0.25 shake.
     CHECK(shown(world) == "10000" && world.objects.fill(rs.symbols[0]) == rs.flashColor);

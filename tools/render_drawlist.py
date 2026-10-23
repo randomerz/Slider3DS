@@ -3,7 +3,8 @@ mismatch) to a PNG using the sheet images in assets/sheets, to see what a golden
 
     python tools/render_drawlist.py build-pc/test-out/artifact_selected.txt [out.png] [--size 320x240] [--scale 3]
 
-Each line: sheet sx sy sw sh x y flags [sWxH] [xN] [fC]  (sWxH = stretched to that size, xN = scale, fC = a solid fill (RGBA) over the sprite's shape; an empty sheet name = a rect, whose flags
+Each line: sheet sx sy sw sh x y flags [sWxH] [xN] [fC] [rA tT]  (sWxH = stretched to that size, xN = scale, fC = a solid fill (RGBA) over the sprite's shape,
+rA tT = turned A/100 degrees counter-clockwise about its center and multiplied by the RGBA tint T; an empty sheet name = a rect, whose flags
 is its RGBA color; sheet "line" = a line from (x, y) to (sx, sy), sw = its width in 1/100 px; sheet "circle" = a
 filled circle centered on (x, y), sw = its radius in 1/100 px, flags its color).
 """
@@ -57,6 +58,8 @@ def main():
                                               fill=(c >> 24, (c >> 16) & 255, (c >> 8) & 255, c & 255))
                 canvas.alpha_composite(layer)
                 continue
+            tint = int(parts.pop()[1:]) if parts[-1].startswith("t") else 0
+            turn = int(parts.pop()[1:]) / 100 if parts[-1].startswith("r") else 0
             fill = int(parts.pop()[1:]) if parts[-1].startswith("f") else 0
             scale = int(parts.pop()[1:]) if parts[-1].startswith("x") else 1
             size = [round(float(v)) for v in parts.pop()[1:].split("x")] if parts[-1].startswith("s") else None
@@ -73,6 +76,14 @@ def main():
                 solid = Image.new("RGBA", img.size, (fill >> 24, (fill >> 16) & 255, (fill >> 8) & 255, 255))
                 solid.putalpha(img.getchannel("A").point(lambda a: a * (fill & 255) // 255))
                 img = solid
+            if tint:
+                bands = [b.point(lambda v, k=k: v * k // 255) for b, k in
+                         zip(img.split(), (tint >> 24, (tint >> 16) & 255, (tint >> 8) & 255, tint & 255))]
+                img = Image.merge("RGBA", bands)
+            if turn:
+                cx, cy = float(x) + img.width / 2, float(y) + img.height / 2
+                img = img.rotate(turn, resample=Image.NEAREST, expand=True)
+                x, y = cx - img.width / 2, cy - img.height / 2
             if flags & ROT90:
                 img = img.transpose(Image.Transpose.ROTATE_90)
             if flags & FLIP_X:

@@ -104,6 +104,10 @@ TEST(cat_abduction_after_the_intro) {
     frames(world, 61);
     catAt(world, x, y);
     CHECK(x == def(world).landingX && y == def(world).landingY && awake(world));
+    int smoke = 0; // (a SmokePoof where it lands)
+    for (const Particles::Particle& p : world.particles.particles())
+        smoke += p.defIndex == world.area.particlePrefabs[(int)ParticleType::SmokePoof] && std::fabs(p.x - x) < 2;
+    check(smoke >= 2, "smoke " + std::to_string(smoke)); // (just landed: at least its first burst)
     frames(world, 62); // (the drop and the 1 s wait: float time may land a frame late)
     CHECK(!awake(world) && world.abduction.landed());
 }

@@ -341,6 +341,22 @@ static ParticlesDef readParticles(const Json& j) {
     for (const Json& k : j["alpha"].items()) d.alpha.push_back({k.at(0).asFloat(), k.at(1).asFloat()});
     d.sortLayer = j["sortingLayerValue"].asInt();
     d.order = j["order"].asInt();
+    d.localSpace = j["localSpace"].asBool();
+    d.rotationMin = j["rotation"].at(0).asFloat();
+    d.rotationMax = j["rotation"].at(1).asFloat();
+    d.spinMin = j["spin"].at(0).asFloat();
+    d.spinMax = j["spin"].at(1).asFloat();
+    if (const Json& f = j["frames"]; !f.isNull()) {
+        for (const Json& s : f["sprites"].items()) d.frames.push_back(s.asInt(-1));
+        d.tilesX = f["tilesX"].asInt();
+        d.frameMultiplier = f["multiplier"].asFloat(1);
+        for (int which = 0; which < 2; which++) {
+            const Json& k = f[which ? "curveMax" : "curveMin"];
+            std::vector<CurveKey>& keys = which ? d.frameCurveMax : d.frameCurveMin;
+            for (size_t i = 0; i + 3 < k.size(); i += 4)
+                keys.push_back({k.at(i).asFloat(), k.at(i + 1).asFloat(), k.at(i + 2).asFloat(), k.at(i + 3).asFloat()});
+        }
+    }
     return d;
 }
 
@@ -893,14 +909,22 @@ static bool validate(const Area& a, std::string* error) {
         for (const NpcCondDef& c : n.conds)
             if (!conditionsOk(c.conditions)) return fail(error, "npc " + n.name + ": bad spec target");
     for (const ParticlesDef& pd : a.particles) {
-        bool ok = objectOk(pd.object) && pd.lifetimeMin <= pd.lifetimeMax && pd.speedMin <= pd.speedMax &&
+        // (a prefab's has no object: it never plays on awake)
+        bool ok = (objectOk(pd.object) || (pd.object == -1 && !pd.playOnAwake)) && pd.lifetimeMin <= pd.lifetimeMax &&
+                  pd.speedMin <= pd.speedMax && pd.rotationMin <= pd.rotationMax && pd.spinMin <= pd.spinMax &&
                   pd.rateMin >= 0 && pd.rateMin <= pd.rateMax && pd.size >= 0 && pd.duration >= 0 &&
                   !(pd.loop && pd.duration <= 0) && !pd.colors.empty() && pd.colors.size() == pd.colorTimes.size();
         for (size_t i = 1; i < pd.colorTimes.size(); i++) ok = ok && pd.colorTimes[i - 1] <= pd.colorTimes[i];
         for (const ParticleBurstDef& b : pd.bursts) ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0;
+        if (!pd.frames.empty())
+            ok = ok && pd.tilesX > 0 && pd.frames.size() % pd.tilesX == 0 && !pd.frameCurveMin.empty() && !pd.frameCurveMax.empty();
+        for (int s : pd.frames) ok = ok && spriteIndexOk(s) && a.sprites[s].outlineWidth == 0;
         if (!ok) return fail(error, "particles " + (objectOk(pd.object) ? a.pathOf(pd.object) : std::string("?")) +
-                                        ": bad object, ranges, colors or bursts");
+                                        ": bad object, ranges, colors, bursts or frames");
     }
+    for (int p : a.particlePrefabs)
+        if (p != -1 && (p < 0 || p >= (int)a.particles.size() || a.particles[p].object != -1))
+            return fail(error, "particle prefabs: not a prefab's particles");
     auto particlesOk = [&](int i) { return i >= 0 && i < (int)a.particles.size(); };
     for (const KnotBoxDef& k : a.knotBoxes) {
         bool ok = objectOk(k.object) && k.nodes.size() >= 3 && k.nodes.size() <= (size_t)KnotBoxDef::MAX_NODES &&
@@ -1158,6 +1182,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.ambiences.push_back(std::move(a));
     }
     for (const Json& j : doc["particles"].items()) out.particles.push_back(readParticles(j));
+    for (int t = 0; t < (int)ParticleType::COUNT; t++) out.particlePrefabs[t] = doc["particlePrefabs"][PARTICLE_TYPE_NAMES[t]].asInt(-1);
     if (doc.has("playerAction")) {
         const Json& pa = doc["playerAction"];
         PlayerActionDef& d = out.playerAction;

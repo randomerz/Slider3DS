@@ -92,9 +92,15 @@ void FinalPuzzle::fillInHole(World& world) {
     if (world.state.flag(VILLAGE_COMPLETION_FLAG)) return;
     const int item = world.items.removeCarried(); // PlayerInventory.RemoveItem
     if (item >= 0) world.objects.setActive(area, area.items[item].object, false);
-    if (area.areaGrid.ruinsSymbols.present) world.objects.setRendererEnabled(area.areaGrid.ruinsSymbols.hole, false);
-    setSymbols(world, false); // (and a SmokePoof)
+    const RuinsSymbolsDef& rs = area.areaGrid.ruinsSymbols;
+    if (rs.present) world.objects.setRendererEnabled(rs.hole, false);
+    setSymbols(world, false);
     world.audio.play(sounds::PUZZLE_COMPLETE);
+    if (rs.present) { // a SmokePoof on the hole, under the RuinsSymbols
+        float x, y;
+        world.objectPosition(rs.hole, x, y);
+        world.particles.spawnPrefab(world, ParticleType::SmokePoof, x, y, rs.object);
+    }
 }
 
 void FinalPuzzle::shufflePuzzle(World& world) {

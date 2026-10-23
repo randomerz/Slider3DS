@@ -51,6 +51,7 @@ std::string drawListText(const std::vector<DrawCall>& calls) {
             out << " s" << c.w << 'x' << c.h;
         }
         if (c.fill) out << " f" << c.fill;                                                // solid fill, if any
+        if (c.tint) out << " r" << std::lround(c.angle * 5729.578f) << " t" << c.tint;   // turned (1/100 deg), tinted
         out << '\n';
     }
     return out.str();
@@ -960,6 +961,35 @@ TEST(render_item_pickup_wraps_a_long_name_upward) {
     pickUp("Crystal Chunk #2", aY, lY, 'C');
     check(aY == baseline + capA.oy * 2 && lY == baseline - 32 + font.def().glyph('C').text.oy * 2,
           "Crystal Chunk #2 wraps (the margin): " + std::to_string(lY));
+}
+
+TEST(render_smoke_golden) {
+    // The cave door blown open: five SmokePoofs' turned, tinted frames 0.3 s and 1.5 s in.
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    GoldenSet goldens("smoke.txt");
+    World world(area, DEFAULT_SETTINGS);
+    float x, y;
+    world.objectPosition(area.areaGrid.caveDoorEntrance, x, y);
+    world.placeNear(x, y - 3);
+    village::explode(world);
+    auto shoot = [&](const char* name) {
+        float cx, cy;
+        world.camera(cx, cy);
+        testResetDrawCalls();
+        view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        int tinted = 0;
+        for (const DrawCall& c : testDrawCalls()) tinted += c.tint != 0;
+        check(tinted == 30, std::string(name) + ": 30 smoke frames, got " + std::to_string(tinted));
+        goldens.compare(name, 10);
+    };
+    for (int i = 0; i < 18; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    shoot("smoke_early");
+    for (int i = 0; i < 72; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    shoot("smoke_late");
 }
 
 TEST(render_hints_golden) {

@@ -21,6 +21,9 @@ struct DrawCall {
     float x, y, w, h;
     uint32_t flags; // sprites: DrawFlags; rects: color
     uint32_t fill = 0; // sprites: drawSprite's fill (0 = none)
+    // drawSpriteTinted: (x, y) = its unturned top-left; its angle (radians, counter-clockwise) and tint.
+    float angle = 0;
+    uint32_t tint = 0; // 0 = not a tinted draw
 };
 const std::vector<DrawCall>& testDrawCalls();
 void testResetDrawCalls();

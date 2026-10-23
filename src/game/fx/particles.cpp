@@ -27,8 +27,9 @@ bool Particles::playing(int def) const {
 }
 
 void Particles::play(const World& world, int def) {
-    if (!world.objects.activeInHierarchy(world.area.particles[def].object) || playing(def)) return;
-    emitters_.push_back({def, nextId_++, 0.0f, true, false, 0.0f, 0.0f, 0.0f, 0});
+    const int object = world.area.particles[def].object;
+    if (object < 0 || !world.objects.activeInHierarchy(object) || playing(def)) return;
+    emitters_.push_back({def, nextId_++, 0.0f, true, false, object, 0.0f, 0.0f, 0.0f, 0});
 }
 
 void Particles::stop(int def) {
@@ -37,8 +38,33 @@ void Particles::stop(int def) {
 }
 
 void Particles::spawn(const World& world, int def, float dx, float dy) {
-    if (!world.objects.activeInHierarchy(world.area.particles[def].object)) return;
-    emitters_.push_back({def, nextId_++, 0.0f, true, true, dx, dy, 0.0f, 0});
+    const int object = world.area.particles[def].object;
+    if (object < 0 || !world.objects.activeInHierarchy(object)) return;
+    emitters_.push_back({def, nextId_++, 0.0f, true, true, object, dx, dy, 0.0f, 0});
+}
+
+void Particles::spawnPrefab(const World& world, ParticleType type, float x, float y, int parent) {
+    const int def = world.area.particlePrefabs[(int)type];
+    if (def < 0 || (parent >= 0 && !world.objects.activeInHierarchy(parent))) return;
+    float px = 0, py = 0;
+    if (parent >= 0) world.objectPosition(parent, px, py);
+    emitters_.push_back({def, nextId_++, 0.0f, true, true, parent, x - px, y - py, 0.0f, 0});
+}
+
+void Particles::randomInUnitSphere(float& x, float& y) {
+    float z;
+    do { // (rejection: uniform in the ball)
+        x = random() * 2 - 1;
+        y = random() * 2 - 1;
+        z = random() * 2 - 1;
+    } while (x * x + y * y + z * z > 1);
+}
+
+void Particles::origin(const World& world, const Emitter& e, float& x, float& y) const {
+    x = y = 0;
+    if (e.object >= 0) world.objectPosition(e.object, x, y);
+    x += e.dx;
+    y += e.dy;
 }
 
 uint32_t Particles::startColor(const ParticlesDef& def) {
@@ -62,8 +88,10 @@ uint32_t Particles::startColor(const ParticlesDef& def) {
     return c.back();
 }
 
-void Particles::emit(const Area& area, Emitter& emitter, float x, float y, int count) {
-    const ParticlesDef& def = area.particles[emitter.def];
+void Particles::emit(const World& world, Emitter& emitter, float x, float y, int count) {
+    const ParticlesDef& def = world.area.particles[emitter.def];
+    float ox = 0, oy = 0;
+    if (emitter.object >= 0) world.objectPosition(emitter.object, ox, oy);
     emitter.live += count;
     for (int i = 0; i < count; i++) {
         // Circle shape: anywhere inside it (uniform over the area), moving away from its center.
@@ -71,23 +99,34 @@ void Particles::emit(const Area& area, Emitter& emitter, float x, float y, int c
         const float dx = std::cos(angle), dy = std::sin(angle);
         const float speed = def.speedMin + (def.speedMax - def.speedMin) * random();
         const float lifetime = def.lifetimeMin + (def.lifetimeMax - def.lifetimeMin) * random();
-        particles_.push_back({&def, emitter.def, emitter.id, x + dx * r, y + dy * r, dx * speed, dy * speed, 0.0f, lifetime, startColor(def)});
+        Particle p{&def, emitter.def, emitter.id, emitter.object, x + dx * r, y + dy * r, dx * speed, dy * speed, 0.0f, lifetime,
+                   startColor(def)};
+        if (!def.frames.empty()) { // (untextured ones draw no more randoms: their sequence stays as it was)
+            p.rotation = def.rotationMin + (def.rotationMax - def.rotationMin) * random();
+            p.spin = def.spinMin + (def.spinMax - def.spinMin) * random();
+            p.row = std::min((int)(random() * (int)(def.frames.size() / def.tilesX)), (int)(def.frames.size() / def.tilesX) - 1);
+            p.frameBlend = random();
+        }
+        p.objectX = ox;
+        p.objectY = oy;
+        particles_.push_back(p);
     }
 }
 
 void Particles::update(const World& world, float dt) {
     const Area& area = world.area;
     // A system on an object turned off stops, its particles with it.
-    auto off = [&](const ParticlesDef& def) { return !world.objects.activeInHierarchy(def.object); };
-    emitters_.erase(std::remove_if(emitters_.begin(), emitters_.end(), [&](const Emitter& e) { return off(area.particles[e.def]); }),
+    auto off = [&](int object) { return object >= 0 && !world.objects.activeInHierarchy(object); };
+    emitters_.erase(std::remove_if(emitters_.begin(), emitters_.end(), [&](const Emitter& e) { return off(e.object); }),
                     emitters_.end());
-    particles_.erase(std::remove_if(particles_.begin(), particles_.end(), [&](const Particle& p) { return off(*p.def); }),
+    particles_.erase(std::remove_if(particles_.begin(), particles_.end(), [&](const Particle& p) { return off(p.object); }),
                      particles_.end());
 
     // Play on awake: Unity's ParticleSystem.OnEnable plays it each time its object turns on.
     wasActive_.resize(area.particles.size(), 0);
     for (int i = 0; i < (int)area.particles.size(); i++) {
-        const bool on = !off(area.particles[i]);
+        if (area.particles[i].object < 0) continue; // (a prefab's)
+        const bool on = !off(area.particles[i].object);
         if (area.particles[i].playOnAwake && on && !wasActive_[i]) play(world, i);
         wasActive_[i] = on ? 1 : 0;
     }
@@ -99,9 +138,7 @@ void Particles::update(const World& world, float dt) {
         const ParticlesDef& d = area.particles[e.def];
         const float from = e.time, to = e.time + dt;
         float x, y;
-        world.objectPosition(d.object, x, y);
-        x += e.dx;
-        y += e.dy;
+        origin(world, e, x, y);
         for (const ParticleBurstDef& b : d.bursts)
             for (int k = 0; k < b.cycles; k++) {
                 const float t = b.time + k * b.interval;
@@ -109,7 +146,7 @@ void Particles::update(const World& world, float dt) {
                 // Its times: t, and with looping t + n * duration.
                 float n = d.loop ? std::max(0.0f, std::ceil((from - t) / d.duration)) : 0.0f;
                 for (float at = t + n * d.duration; at < to; at = t + (++n) * d.duration) {
-                    if (at >= from) emit(area, e, x, y, (int)std::lround(b.countMin + (b.countMax - b.countMin) * random()));
+                    if (at >= from) emit(world, e, x, y, (int)std::lround(b.countMin + (b.countMax - b.countMin) * random()));
                     if (!d.loop) break;
                 }
             }
@@ -118,7 +155,7 @@ void Particles::update(const World& world, float dt) {
             e.rateDebt += (d.rateMin + (d.rateMax - d.rateMin) * random()) * span;
             const int n = (int)e.rateDebt;
             e.rateDebt -= (float)n;
-            emit(area, e, x, y, n);
+            emit(world, e, x, y, n);
         }
         e.time = to;
         if (!d.loop && e.time >= d.duration) e.emitting = false;
@@ -133,6 +170,15 @@ void Particles::update(const World& world, float dt) {
     for (size_t i = 0; i < area.particles.size(); i++) keep_[i] = std::pow(1.0f - area.particles[i].dampen, dt * 30.0f);
     for (Particle& p : particles_) {
         const ParticlesDef& d = *p.def;
+        if (d.localSpace && p.object >= 0) { // (local space: carried along by its object)
+            float ox, oy;
+            world.objectPosition(p.object, ox, oy);
+            p.x += ox - p.objectX;
+            p.y += oy - p.objectY;
+            p.objectX = ox;
+            p.objectY = oy;
+        }
+        p.rotation += p.spin * dt;
         p.vx += d.forceX * dt;
         p.vy += d.forceY * dt;
         const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
@@ -161,6 +207,18 @@ void Particles::update(const World& world, float dt) {
     // A finished run counts as playing until its last particle dies.
     emitters_.erase(std::remove_if(emitters_.begin(), emitters_.end(), [](const Emitter& e) { return !e.emitting && e.live <= 0; }),
                     emitters_.end());
+}
+
+int Particles::frameSprite(const Particle& p) {
+    const ParticlesDef& d = *p.def;
+    if (d.frames.empty()) return -1;
+    // Texture sheet animation (Grid, single row, once over the lifetime): frameOverTime, the
+    // particle's blend of its two curves, times the frames in a row.
+    const float t = p.lifetime > 0 ? std::min(p.age / p.lifetime, 1.0f) : 1.0f;
+    const float a = evalKeys(d.frameCurveMin, t), b = evalKeys(d.frameCurveMax, t);
+    const float v = (a + (b - a) * p.frameBlend) * d.frameMultiplier;
+    const int frame = std::min(std::max((int)(v * d.tilesX), 0), d.tilesX - 1);
+    return d.frames[p.row * d.tilesX + frame];
 }
 
 uint32_t Particles::color(const Particle& p) {

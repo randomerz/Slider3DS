@@ -13,8 +13,14 @@ void activateCollectible(World& world, const std::string& name, bool clearDisabl
     if (index < 0 || world.state.hasCollectible(name, area.name)) return;
     if (clearDisableAtStart) world.starts.markStarted(area, ComponentRef::Kind::Collectible, index);
     const int object = area.collectibles[index].object;
-    if (!world.objects.activeSelf(object)) world.audio.play(sounds::PUZZLE_COMPLETE); // (Collectible.SpawnCollectable)
+    const bool appears = !world.objects.activeSelf(object);
     world.objects.setActive(area, object, true);
+    if (appears) { // Collectible.SpawnCollectable: its sound and a SmokePoof under it (playing once it's on)
+        world.audio.play(sounds::PUZZLE_COMPLETE);
+        float x, y;
+        world.objectPosition(object, x, y);
+        world.particles.spawnPrefab(world, ParticleType::SmokePoof, x, y, object);
+    }
 }
 
 void turnFishOn(World& world) {
@@ -26,8 +32,17 @@ void explode(World& world) {
     world.objects.setActive(area, area.areaGrid.caveDoorEntrance, true);
     world.objects.setActive(area, area.areaGrid.caveDoorRocks, false);
     world.state.setFlag(CAVE_DOOR_EXPLODED_FLAG, true);
-    world.effects.shake(1, 3.5f); // (and smoke)
+    world.effects.shake(1, 3.5f);
     world.audio.play(sounds::SLIDE_EXPLOSION);
+    // Five SmokePoofs within 2 units of the entrance (Random.insideUnitSphere), under it.
+    const int door = area.areaGrid.caveDoorEntrance;
+    float x, y;
+    world.objectPosition(door, x, y);
+    for (int i = 0; i < 5; i++) {
+        float dx, dy;
+        world.particles.randomInUnitSphere(dx, dy);
+        world.particles.spawnPrefab(world, ParticleType::SmokePoof, x + 2 * dx, y + 2 * dy, door);
+    }
 }
 
 void waterfallEntry(World& world) {

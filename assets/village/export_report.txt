@@ -1,10 +1,10 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
 World sprites: 333  Anims: 86  Object colliders: 218
-Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18  Items: 15  Knot boxes: 1  Ruins arrows: 1  Chad jumps: 1  Cat tricks: 1  Particle systems: 28
-Tiles: 168 (39 animated)  Sprites: 715
+Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18  Items: 15  Knot boxes: 1  Ruins arrows: 1  Chad jumps: 1  Cat tricks: 1  Particle systems: 30
+Tiles: 168 (39 animated)  Sprites: 740
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
-Sheets (26, 2541K px):
+Sheets (27, 2545K px):
   characters_chad: 256x256  [ChadPortalGun, chad, chad_jump, chad_fall, chad_crutch, chad_sad, chad_surprised]
   characters_fezziwig: 64x512  [fezziwig_jump, fezziwig_float, fezziwig_fall, Fezziwig]
   characters_jungle: 32x128  [jungle_npcsprites]
@@ -16,6 +16,7 @@ Sheets (26, 2541K px):
   largeprops_ocean: 512x512  [pom_tree]
   largeprops_village: 512x512  [more_village_props, Pine Tree, houses2, houses3, houses4, face_rocks, Cow]
   largeprops_village_ruins: 512x256  [village_ruins_bot, village_ruins_bot_deets, village_ruins_runes, village_ruins_top, village_ruins_arrow, village_ruins_deco]
+  particle_effects: 64x64  [smoke]
   tempsprites: 32x32  [temp_interior]
   tiles: 512x1024  [TilesetAnims, WaterTiles, sand-water_animated, VillageTileset, rock_wall_border, rock_wall, sand-grass_transition, waterfall, border, border_light]
   tiles_caves: 256x64  [cave_construction_props, cave_rocks]
@@ -44,8 +45,8 @@ Warnings (13):
   Animator on Map/Village 8Puzzle/STile (1)/Objects/Romeo/NPC Sprite: animated path Item Pickup Location not found
   Calls to UIArtifactWorldMap.SetAreaStatusSilhouette are not run by the port yet
   Calls to ParticleSystem.Play are not run by the port yet
-  5 play-on-awake particle systems not exported: emission over distance, rotation, shape (only a full circle in the screen plane, outward), noise, texture sheet animation, a textured or non-billboard renderer
-  1 play-on-awake particle systems not exported: shape (only a full circle in the screen plane, outward), texture sheet animation
-  2 play-on-awake particle systems not exported: simulation space Local, prewarm, rotation, shape (only a full circle in the screen plane, outward), texture sheet animation, a textured or non-billboard renderer
-  103 play-on-awake particle systems not exported: simulation space Local, start delay, burst count curves / probability, shape (only a full circle in the screen plane, outward), texture sheet animation
-  44 play-on-awake particle systems not exported: simulation space Local, start delay, rotation, burst count curves / probability, shape (only a full circle in the screen plane, outward), velocity over lifetime, texture sheet animation
+  5 play-on-awake particle systems not exported: emission over distance, shape (only a full circle in the screen plane, outward), noise
+  2 play-on-awake particle systems not exported: prewarm, shape (only a full circle in the screen plane, outward)
+  1 play-on-awake particle systems not exported: shape (only a full circle in the screen plane, outward)
+  103 play-on-awake particle systems not exported: start delay, burst count curves / probability, shape (only a full circle in the screen plane, outward), texture sheet sprites beyond one plain white one
+  44 play-on-awake particle systems not exported: start delay, rotation, burst count curves / probability, shape (only a full circle in the screen plane, outward), velocity over lifetime, texture sheet sprites beyond one plain white one

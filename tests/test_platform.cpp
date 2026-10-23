@@ -139,6 +139,9 @@ void drawCircle(float cx, float cy, float r, uint32_t color) {
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags, int scale, uint32_t fill) {
     g_draws.push_back({tex->name, sx, sy, sw, sh, x, y, (float)(sw * scale), (float)(sh * scale), flags, fill});
 }
+void drawSpriteTinted(Texture* tex, int sx, int sy, int sw, int sh, float cx, float cy, float angle, uint32_t tint) {
+    g_draws.push_back({tex->name, sx, sy, sw, sh, cx - sw * 0.5f, cy - sh * 0.5f, (float)sw, (float)sh, 0, 0, angle, tint});
+}
 void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, float w, float h) {
     g_draws.push_back({tex->name, sx, sy, sw, sh, x, y, w, h, 0});
 }

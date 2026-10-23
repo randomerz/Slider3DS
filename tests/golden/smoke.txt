@@ -1,0 +1,3 @@
+# Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
+smoke_early 472:4ebc0908544b1a98
+smoke_late 477:24574c1d70dba7c6

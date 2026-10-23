@@ -37,3 +37,8 @@ void SpriteSheets::draw(const Area& area, int index, float x, float y, uint32_t 
     }
     plat::drawSprite(sheets_[S.sheet], S.x, S.y, S.w, S.h, std::round(x), std::round(y), flags, scale, fill);
 }
+
+void SpriteSheets::drawTinted(const Area& area, int index, float cx, float cy, float angle, uint32_t tint) const {
+    const SpriteDef& S = area.sprites[index];
+    plat::drawSpriteTinted(sheets_[S.sheet], S.x, S.y, S.w, S.h, cx, cy, angle, tint);
+}

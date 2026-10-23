@@ -27,6 +27,9 @@ void freeCat(World& world, const ItemDef& cat) {
 }
 
 void setBubble(World& world, const CatAbductionDef& d, bool on) { // CatBubbleController.SetBubbleActive
+    float x, y; // four MiniSparkles where the bubble is, under it (formed or popped)
+    world.objectPosition(d.bubble, x, y);
+    for (int i = 0; i < 4; i++) world.particles.spawnPrefab(world, ParticleType::MiniSparkle, x, y, d.bubble);
     world.objects.setRendererEnabled(d.bubble, on);
     world.objects.setRendererEnabled(d.electricity, on);
     if (on) world.animators.setTrigger(world, d.bubbleAnimator, "formBubble");
@@ -162,7 +165,8 @@ void CatAbduction::coroutines(World& world, float dt) {
             lerpCat(world, d.landingX, d.landingY, 1, dt);
         } else {
             placeCat(world, d.landingX, d.landingY);
-            world.audio.play(sounds::HAT_CLICK); // (and a SmokePoof)
+            world.particles.spawnPrefab(world, ParticleType::SmokePoof, d.landingX, d.landingY, world.area.items[d.item].object);
+            world.audio.play(sounds::HAT_CLICK);
             step_ = Step::Settling;
             wait_.start(1, world.frame);
         }

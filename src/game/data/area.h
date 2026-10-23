@@ -556,7 +556,7 @@ struct ParticleBurstDef {
     float interval = 0;           // s between cycles
 };
 struct ParticlesDef {
-    int object = -1;              // where it emits (Area::objects)
+    int object = -1;              // where it emits (Area::objects); -1 = a prefab's (spawned under objects)
     bool playOnAwake = false;     // plays when its object becomes active
     bool loop = false;            // starts over after `duration` (until stopped)
     float duration = 0;           // s; emission past it stops (non-looping)
@@ -577,7 +577,24 @@ struct ParticlesDef {
     bool dragBySize = false, dragByVelocity = false;
     std::vector<std::pair<float, float>> alpha; // color over lifetime: (normalized age, alpha) keys; empty = 1
     int sortLayer = 0, order = 0;
+    bool localSpace = false;      // Local simulation: its particles move with the object they're under
+    // Textured particles only (flat squares don't show it): start rotation (radians, counter-clockwise
+    // on screen) and a constant spin (rad/s), each a random pick in [min, max] per particle.
+    float rotationMin = 0, rotationMax = 0, spinMin = 0, spinMax = 0;
+    // A texture sheet (Grid; empty = a flat square of `size`): each tile's sprite, rows from the top,
+    // `tilesX` a row. A particle plays one random row once over its life: its frame is
+    // floor(curve(age / lifetime) * frameMultiplier * tilesX), its curve a random blend of
+    // frameCurveMin and frameCurveMax (frameOverTime's two curves).
+    std::vector<int> frames;
+    int tilesX = 0;
+    float frameMultiplier = 1;
+    std::vector<CurveKey> frameCurveMin, frameCurveMax;
 };
+
+// ParticleManager.SpawnParticle's types the port spawns (Unity's ParticleType names, in order).
+enum class ParticleType : uint8_t { SmokePoof, MiniSparkle, COUNT };
+constexpr const char* PARTICLE_TYPE_NAMES[] = {"SmokePoof", "MiniSparkle"};
+static_assert(sizeof(PARTICLE_TYPE_NAMES) / sizeof(PARTICLE_TYPE_NAMES[0]) == (size_t)ParticleType::COUNT);
 
 // KnotBox (the knot puzzle): line i joins node i and node i + 1 (the last back to the first). A
 // line is bad when it crosses a ray collider other than its own two nodes', or a line that isn't
@@ -925,6 +942,8 @@ struct Area {
     ArtifactDef artifact;
     UiTrackersDef uiTrackers;
     HintsDef hints;
+    // ParticleManager's prefabs by ParticleType: Area::particles indices, -1 = not exported.
+    int particlePrefabs[(int)ParticleType::COUNT] = {-1, -1};
     std::vector<TileDef> tiles;
     std::vector<SpriteDef> sprites;
     std::vector<std::string> sheetNames;

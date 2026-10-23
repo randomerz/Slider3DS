@@ -1,10 +1,13 @@
 // Particles (ParticleSystem playback) with the Village's systems: the knot sparkles (SparkleEffect:
 // bursts, motion slowed by limit-velocity, the fade, Play while playing, stopping with the object),
-// the ruins' looping sparkles (rate, force, Stop), play on awake, spawned copies and random colors.
+// the ruins' looping sparkles (rate, force, Stop), play on awake, spawned copies and random colors;
+// ParticleManager's prefabs (SmokePoof: a texture sheet, local space; MiniSparkle) and where the
+// Village spawns them.
 #include <cmath>
 #include <string>
 
 #include "game/fx/particles.h"
+#include "game/village/village_grid.h"
 #include "game/world/world.h"
 #include "test.h"
 
@@ -21,6 +24,7 @@ int countOf(const World& world, int def) {
 
 int particlesOn(const Area& area, const std::string& pathEnd) {
     for (int i = 0; i < (int)area.particles.size(); i++) {
+        if (area.particles[i].object < 0) continue; // (a prefab's)
         const std::string& path = area.pathOf(area.particles[i].object);
         if (path.size() >= pathEnd.size() && path.compare(path.size() - pathEnd.size(), pathEnd.size(), pathEnd) == 0) return i;
     }
@@ -330,4 +334,102 @@ TEST(particles_force_then_limit_like_unity) {
               "frame " + std::to_string(s.frame) + ": vy " + std::to_string(p->vy) + " (Unity " + std::to_string(s.vy) +
                   "), y " + std::to_string(p->y - oy) + " (Unity " + std::to_string(s.y) + ")");
     }
+}
+
+namespace {
+
+int prefab(ParticleType t) { return villageArea().particlePrefabs[(int)t]; }
+
+// Live particles of Area::particles[def] and their mean position.
+int meanOf(const World& world, int def, float& x, float& y) {
+    int n = 0;
+    x = y = 0;
+    for (const Particles::Particle& p : world.particles.particles())
+        if (p.defIndex == def) n++, x += p.x, y += p.y;
+    if (n) x /= n, y /= n;
+    return n;
+}
+
+} // namespace
+
+TEST(particles_prefabs_export) {
+    // SmokePoof: 8 px frames of the smoke sheet (5 rows of 5), local space, turned and spinning, tinted
+    // by its material (#e6e6e6); MiniSparkle: 1 px squares of #e6e6e6 (its one white sprite).
+    const Area& area = villageArea();
+    const int smoke = prefab(ParticleType::SmokePoof), sparkle = prefab(ParticleType::MiniSparkle);
+    CHECK(smoke >= 0 && sparkle >= 0);
+    if (smoke < 0 || sparkle < 0) return;
+    const ParticlesDef& s = area.particles[smoke];
+    CHECK(s.object == -1 && !s.playOnAwake && s.localSpace && s.size == 0.5f && s.colors[0] == 0xe6e6e6ffu);
+    CHECK(s.frames.size() == 25 && s.tilesX == 5 && s.rotationMax > 6.28f && s.spinMin < 0 && s.spinMax > 0);
+    CHECK(area.sprites[s.frames[0]].w == 8 && area.sprites[s.frames[0]].h == 8);
+    CHECK(s.bursts.size() == 1 && s.bursts[0].cycles == 3 && s.bursts[0].countMax == 2);
+    const ParticlesDef& m = area.particles[sparkle];
+    CHECK(m.object == -1 && !m.localSpace && m.frames.empty() && m.size == 0.0625f && m.colors[0] == 0xe6e6e6ffu);
+}
+
+TEST(particles_smoke_plays_its_row_and_follows_its_parent) {
+    // A SmokePoof spawned under the cave door's entrance: 3 bursts of 2; each particle plays a row
+    // from its first frame to its last; moved with the entrance (local space), gone when it's off.
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    const int smoke = prefab(ParticleType::SmokePoof);
+    const int door = area.areaGrid.caveDoorEntrance;
+    world.objects.setActive(area, door, true);
+    float dx, dy;
+    world.objectPosition(door, dx, dy);
+    world.particles.spawnPrefab(world, ParticleType::SmokePoof, dx, dy, door);
+    const float dt = 1.0f / 60;
+    for (int f = 0; f < 10; f++) world.particles.update(world, dt);
+    float x, y;
+    CHECK(meanOf(world, smoke, x, y) == 6);
+    const ParticlesDef& s = area.particles[smoke];
+    for (const Particles::Particle& p : world.particles.particles())
+        if (p.defIndex == smoke) {
+            const int frame = Particles::frameSprite(p);
+            CHECK(frame == s.frames[p.row * 5] || frame == s.frames[p.row * 5 + 1]); // (early on)
+        }
+    // Its parent moves 3 units right: the smoke goes along.
+    world.placeObject(door, world.objects.owner(door), dx + 3, dy);
+    world.particles.update(world, dt);
+    float x2, y2;
+    meanOf(world, smoke, x2, y2);
+    check(std::fabs(x2 - x - 3) < 0.05f, "carried 3 right: " + std::to_string(x2 - x));
+    // Late in their lives: the rows' last frames.
+    for (int f = 0; f < 125; f++) world.particles.update(world, dt);
+    for (const Particles::Particle& p : world.particles.particles())
+        if (p.defIndex == smoke && p.age > p.lifetime * 0.99f) CHECK(Particles::frameSprite(p) == s.frames[p.row * 5 + 4]);
+    world.objects.setActive(area, door, false);
+    world.particles.update(world, dt);
+    CHECK(meanOf(world, smoke, x, y) == 0);
+}
+
+TEST(particles_village_spawns_smoke_and_sparkles) {
+    // Explode: five SmokePoofs within 2 units of the entrance; a collectible appearing: one under it;
+    // the cat's bubble forming: four MiniSparkles (world space: they stay where it was).
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    const int smoke = prefab(ParticleType::SmokePoof);
+    village::explode(world);
+    const float dt = 1.0f / 60;
+    for (int f = 0; f < 10; f++) world.particles.update(world, dt);
+    float x, y, ex, ey;
+    world.objectPosition(area.areaGrid.caveDoorEntrance, ex, ey);
+    CHECK(meanOf(world, smoke, x, y) == 30);
+    CHECK(std::fabs(x - ex) < 2.5f && std::fabs(y - ey) < 2.5f);
+
+    World w2(area, DEFAULT_SETTINGS);
+    w2.setTileActive(3, true);
+    const int slider = area.collectible("Slider 4");
+    CHECK(slider >= 0);
+    if (slider < 0) return;
+    w2.objects.setActive(area, area.collectibles[slider].object, false); // (hidden until Archibald hands it out)
+    village::activateCollectible(w2, "Slider 4", true);
+    for (int f = 0; f < 10; f++) w2.particles.update(w2, dt);
+    float sx, sy;
+    w2.objectPosition(area.collectibles[slider].object, sx, sy);
+    CHECK(meanOf(w2, smoke, x, y) == 6 && std::fabs(x - sx) < 1 && std::fabs(y - sy) < 1);
+    village::activateCollectible(w2, "Slider 4", true); // (already out: no more smoke)
+    w2.particles.update(w2, dt);
+    CHECK(meanOf(w2, smoke, x, y) == 6);
 }
