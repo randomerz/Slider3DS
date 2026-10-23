@@ -135,6 +135,25 @@ TEST(area_validation_rejects_a_rotated_tile_that_isnt_square) {
     CHECK(!loadFixture(tall, a, err) && err.find("isn't square") != std::string::npos);
 }
 
+TEST(area_validation_particle_frames_match_their_size_on_screen) {
+    // Frames draw at 1x: a 1-unit particle takes 16 px frames (the area's ppu), whatever the sprite's
+    // own ppu — sprite 1 is 32 px at 32 ppu, a unit by its ppu, two on screen.
+    auto withParticles = [](const char* frames, const char* size) {
+        return fixture(R"("fadeDuration": 0.5,)",
+                       std::string(R"("particles": [{"object": -1, "playOnAwake": false, "duration": 1, "lifetime": [1, 1],
+                           "speed": [0, 0], "size": )") + size + R"(, "colorTimes": [0], "colors": [[255, 255, 255, 255]],
+                           "rate": [0, 0], "bursts": [], "rotation": [0, 0], "spin": [0, 0], "frames": {"sprites": )" +
+                           frames + R"(, "tilesX": 1, "multiplier": 1, "curveMin": [0, 0, 0, 0], "curveMax": [0, 0, 0, 0]}}],
+  "fadeDuration": 0.5,)");
+    };
+    Area a;
+    std::string err;
+    check(loadFixture(withParticles("[0]", "1"), a, err), "16 px frames on a 1-unit particle load: " + err);
+    CHECK(a.particles.size() == 1 && a.particles[0].frames.size() == 1);
+    CHECK(!loadFixture(withParticles("[1]", "1"), a, err));   // (32 px at 32 ppu: two units on screen)
+    CHECK(!loadFixture(withParticles("[0]", "0.5"), a, err)); // (16 px on a half-unit particle)
+}
+
 TEST(area_validation_rejects_bad_indices) {
     const char* cases[][3] = {
         {R"("frames": [0])", R"("frames": [5])", "tile frame -> missing sprite"},

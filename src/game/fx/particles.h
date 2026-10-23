@@ -70,7 +70,8 @@ private:
         bool spawned;      // a spawned copy (Play / Stop / playing() ignore it)
         int object;        // what it emits from: the def's object, or a spawned prefab's parent (-1 = none)
         float dx, dy;      // offset from that object (none: the world position)
-        bool waiting;      // spawned under an inactive parent: starts when it turns on
+        bool waiting;      // spawned under an inactive parent: starts when it turns on (if never: kept
+                           // until the next reset, as Unity keeps the inactive instance)
         float rateDebt;    // particles owed by the rate, carried between frames
         int live;          // its particles alive
     };

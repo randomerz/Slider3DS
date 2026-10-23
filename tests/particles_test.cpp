@@ -448,7 +448,13 @@ TEST(particles_smoke_frames_blend_its_two_curves) {
     const int smoke = prefab(ParticleType::SmokePoof);
     if (smoke < 0) return;
     const ParticlesDef& s = area.particles[smoke];
-    Particles::Particle p{&s, smoke, 0, -1, 0, 0, 0, 0, 0.3f, 1.0f, 0xffffffffu};
+    Particles::Particle p{};
+    p.def = &s;
+    p.defIndex = smoke;
+    p.object = -1;
+    p.age = 0.3f;
+    p.lifetime = 1;
+    p.color = 0xffffffffu;
     p.row = 2;
     p.frameBlend = 0;
     CHECK(Particles::frameSprite(p) == s.frames[2 * 5 + 3]);

@@ -918,11 +918,11 @@ static bool validate(const Area& a, std::string* error) {
         for (const ParticleBurstDef& b : pd.bursts) ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0;
         if (!pd.frames.empty())
             ok = ok && pd.tilesX > 0 && pd.frames.size() % pd.tilesX == 0 && !pd.frameCurveMin.empty() && !pd.frameCurveMax.empty();
-        // (frames draw at 1x: each must be the particle's size, as Unity sizes the quad to it)
+        // (frames draw at 1x — a texture pixel a screen pixel: each must be the particle's size on
+        // screen, as Unity sizes the quad to it)
         for (int s : pd.frames)
-            ok = ok && spriteIndexOk(s) && a.sprites[s].outlineWidth == 0 &&
-                 std::fabs(a.sprites[s].w / a.sprites[s].ppu - pd.size) < 1e-3f &&
-                 std::fabs(a.sprites[s].h / a.sprites[s].ppu - pd.size) < 1e-3f;
+            ok = ok && spriteIndexOk(s) && a.sprites[s].outlineWidth == 0 && std::fabs(a.sprites[s].w - pd.size * a.ppu) < 1e-3f &&
+                 std::fabs(a.sprites[s].h - pd.size * a.ppu) < 1e-3f;
         if (!ok) return fail(error, "particles " + (objectOk(pd.object) ? a.pathOf(pd.object) : std::string("?")) +
                                         ": bad object, ranges, colors, bursts or frames");
     }

@@ -992,6 +992,42 @@ TEST(render_smoke_golden) {
     shoot("smoke_late");
 }
 
+TEST(render_particles_near_the_edge_are_drawn) {
+    // Particles whose centers sit just off the left edge (swept 0-9 px out) but whose square or
+    // turned frame reaches in: every one that can show a pixel is drawn (culling never drops one).
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    int checked = 0, missing = 0;
+    for (ParticleType type : {ParticleType::SmokePoof, ParticleType::MiniSparkle})
+        for (int off = 0; off <= 36; off++) { // (quarter pixels)
+            World world = sceneWorld();
+            float cx, cy;
+            world.camera(cx, cy);
+            const float x = cx - (plat::TOP_W / 2.0f + off / 4.0f) / area.ppu;
+            for (int k = 0; k < 20; k++) world.particles.spawnPrefab(world, type, x, cy, -1); // (many turns)
+            world.particles.update(world, 1e-4f); // (the first burst, barely moved)
+            testResetDrawCalls();
+            view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
+            view.draw(world);
+            int drawn = 0;
+            for (const DrawCall& c : testDrawCalls())
+                drawn += (c.tint != 0) || (c.sheet.empty() && c.sw <= 1 && c.sh <= 1 && c.x < 8); // (frames; 1 px squares)
+            int visible = 0;
+            for (const Particles::Particle& p : world.particles.particles()) {
+                const float sx = (p.x - cx) * area.ppu + plat::TOP_W / 2.0f; // its center's screen x
+                const float half = p.def->size * area.ppu / 2;
+                const float reach = p.def->frames.empty() ? half
+                                                          : half * (std::fabs(std::cos(p.rotation)) + std::fabs(std::sin(p.rotation)));
+                visible += sx + reach > 0.5f; // (a pixel's worth inside)
+            }
+            checked += visible;
+            if (drawn < visible) missing++;        }
+    check(checked > 20, "particles that reach in: " + std::to_string(checked));
+    check(missing == 0, "sweeps with a visible particle culled: " + std::to_string(missing));
+}
+
 TEST(render_hints_golden) {
     // The hint box along the top screen's bottom: "move" fading in (4.25 s after the scene starts),
     // fully shown, then its text fading out for the next one's (dismissed with "interact" waiting).
