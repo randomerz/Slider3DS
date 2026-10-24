@@ -87,6 +87,8 @@ void newGame(Frontend& f) {
     tapTitle(f, TitleMenu::PLAY); // (no files: straight to New Save)
     tapTitle(f, (TitleMenu::Widget)(TitleMenu::KEY + 10));
     tapTitle(f, TitleMenu::DONE);
+    // The title's fade, then the intro: A cuts each of its steps short.
+    for (int i = 0; i < 2000 && f.mode() != Frontend::Mode::Game; i++) f.update(buttons(plat::BTN_A), 0, 0);
 }
 
 } // namespace
@@ -476,7 +478,7 @@ TEST(frontend_the_artifact_takes_no_input_while_the_player_is_held) {
 
 TEST(frontend_draws_every_screen) {
     // main's loop with both screens drawn each frame (a Debug build asserts on a bad index): the
-    // title before and after "press any key", Options from it, a new game, the pause menu, Quit to
+    // title before and after "press any key", Options from it, a new game (its intro), the pause menu, Quit to
     // the title, Continue, a direct boot.
     testUserFiles().clear();
     const Area& area = villageArea();
@@ -513,6 +515,11 @@ TEST(frontend_draws_every_screen) {
         step(touchAt(b.x + b.w / 2, b.y + b.h / 2));
         step({});
     }
+    CHECK(f.mode() == Frontend::Mode::Title && f.titleFade() >= 0); // (the new game's fade)
+    for (int i = 0; i < Frontend::TITLE_FADE_FRAMES; i++) step({});
+    CHECK(f.mode() == Frontend::Mode::Intro);
+    for (int i = 0; i < 120; i++) step({}); // (the first image fading in, its caption typing)
+    for (int i = 0; i < 3000 && f.mode() == Frontend::Mode::Intro; i++) step(buttons(i % 2 ? plat::BTN_A : 0));
     CHECK(f.mode() == Frontend::Mode::Game);
     for (int i = 0; i < 60; i++) step({});
     for (uint32_t key : {plat::BTN_START, plat::BTN_DOWN, plat::BTN_DOWN, plat::BTN_A, plat::BTN_A}) step(buttons(key));

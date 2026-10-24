@@ -21,6 +21,7 @@
 #include "game/ui/artifact_ui.h"
 #include "game/ui/hud.h"
 #include "game/ui/end_screen.h"
+#include "game/ui/intro_cutscene.h"
 #include "game/ui/menu_skin.h"
 #include "game/ui/pause_menu.h"
 #include "game/ui/title_menu.h"
@@ -677,6 +678,32 @@ TEST(end_art_refuses_sizes_off_the_screen) {
     CHECK(!loads(0, 0, 300, 180) && !loads(0, 0, 320, 170) && !loads(0, 0, 401, 240) && !loads(0, 0, 400, 241));
     CHECK(!loads(-1, 0, 320, 180) && !loads(0, -1, 320, 180));
     testSetFile("ui/end.json", real);
+}
+
+TEST(render_intro_cutscene_goldens) {
+    // The new game's intro: the first image half faded in, its caption part typed; a two-line caption
+    // whole; the last (larger) image.
+    MenuSkin skin;
+    IntroArt art;
+    std::string error;
+    check(skin.load(&error) && art.load(&error), "menu skin and intro art load " + error);
+    GoldenSet goldens("intro_cutscene.txt");
+    IntroCutscene intro;
+    intro.start(art);
+    auto shoot = [&](const char* name) {
+        testResetDrawCalls();
+        intro.drawTop(art, skin.captionFont());
+        goldens.compare(name, 5); // (the first: an image and a few letters)
+    };
+    for (int i = 0; i < 30; i++) intro.update(false, 1.0f / 60.0f);
+    shoot("intro_first_typing");
+    while (intro.slide() < 2) intro.update(true, 1.0f / 60.0f);
+    for (int i = 0; i < 60; i++) intro.update(i == 0, 1.0f / 60.0f); // (shown, typed whole)
+    CHECK(intro.alpha() == 1 && intro.shownChars() == (int)art.slides()[2].text.size());
+    shoot("intro_two_lines");
+    while (intro.slide() < 6) intro.update(true, 1.0f / 60.0f);
+    for (int i = 0; i < 60; i++) intro.update(i == 0, 1.0f / 60.0f);
+    shoot("intro_last");
 }
 
 TEST(render_ending_goldens) {

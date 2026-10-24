@@ -4,6 +4,9 @@
 //          on the bottom one (game/ui/title_menu; Options opens the pause menu on its Options page).
 //          Play / Continue / a new profile start the game; Quit ends the app. Quitting the game to
 //          the title plays its intro again (Unity reloads the MainMenu scene).
+//   Intro: a new profile first fades the title to black (NewSavePanelManager.LoadCutscene: 1 s) and
+//          plays the original's IntroCutscene (game/ui/intro_cutscene; the title's music on, dipped to
+//          0.4), then the game starts.
 //   Game:  the World on the top screen, the Artifact (game/ui/artifact_ui) on the bottom; START
 //          pauses (game/ui/pause_menu), whose Quit saves and returns to the title (QuitHandler).
 //          Its Cheats page changes the game's Cheats (game/world/cheats), which this runs: Respawn at
@@ -28,6 +31,7 @@
 #include "game/save/settings.h"
 #include "game/ui/artifact_ui.h"
 #include "game/ui/end_screen.h"
+#include "game/ui/intro_cutscene.h"
 #include "game/ui/pause_menu.h"
 #include "game/ui/title_menu.h"
 #include "game/ui/title_screen.h"
@@ -40,10 +44,12 @@ class SpriteSheets;
 
 class Frontend {
 public:
-    enum class Mode { Title, Game, End };
+    enum class Mode { Title, Intro, Game, End };
     static constexpr float FRAME_DT = 1.0f / 60.0f; // the game steps a fixed 60 fps
     // The title menu ignores input this long after it appears (TitleScreen::MENU_LOCKOUT).
     static constexpr int MENU_LOCKOUT_FRAMES = (int)(TitleScreen::MENU_LOCKOUT / FRAME_DT + 0.5f);
+    static constexpr int TITLE_FADE_FRAMES = 60; // a new game's fade to black (UIEffects.FadeToBlack: 1 s)
+    static constexpr float INTRO_MUSIC = 0.4f;   // the music during the intro (CutsceneManager's DampenMusic)
 
     // Starts on the title screen. `settings` (main's) and the art (loaded) must outlive it.
     Frontend(const Area& area, const TitleArt& art, const EndArt& endArt, Settings& settings);
@@ -71,6 +77,8 @@ public:
     const TitleScreen& titleScreen() const { return screen_; }
     const PauseMenu& pauseMenu() const { return pause_; }
     const ArtifactUI& artifactUI() const { return artifactUI_; }
+    const IntroCutscene& intro() const { return intro_; }
+    int titleFade() const { return titleFade_; } // frames into the new game's fade (-1: none)
     Cheats& cheats() { return cheats_; }
     const Cheats& cheats() const { return cheats_; }
     // The player's colliders are off (Player::noClip): through walls, touching no trigger.
@@ -84,6 +92,9 @@ public:
 
 private:
     void startGame(SaveProfile profile, int slot);
+    void startIntro(); // after the title's fade: the new game's IntroCutscene, then the game
+    void drawTitleFade(int w, int h) const; // the new game's fade over a title screen
+    static constexpr int INTRO_DAMPEN = -1;  // the intro's music dip's key (NPCs' are theirs + 1)
     void saveGame();             // the profile into its slot (none for a temporary one)
     void saveSettingsIfChanged(); // one attempt per change
     void toTitle();
@@ -98,6 +109,12 @@ private:
     TitleMenu title_;
     PauseMenu pause_;
     EndScreen end_;
+    IntroArt introArt_;     // (loaded while the intro plays)
+    IntroCutscene intro_;
+    int titleFade_ = -1;
+    bool introTouch_ = false;   // the stylus was down last frame (a new touch is a press)
+    SaveProfile newProfile_;    // the new game the intro leads to
+    int newSlot_ = -1;
     ArtifactUI artifactUI_;
     Cheats cheats_;
     bool noclipMarked_ = false; // the noclip state last seen (each toggle marks UsedCheats, as DoNoClip)

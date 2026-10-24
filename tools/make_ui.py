@@ -34,8 +34,17 @@ own scaler, Scale With Screen Size at 320x180, would scale the canvas 1.25x inst
   assets/sheets/ui_end.png    the sheet (.fmt by its colors)
   assets/ui/end.json          {"sheet", "sprites": {"art": {"rect"}}}
 
+The intro (IntroCutscene.unity's CutsceneManager, game/ui/intro_cutscene): its seven images, and their
+captions as the English localization has them (IntroCutscene_scene.csv: Canvas/Texts/Text (n)), with the
+canvas' layout (INTRO_LAYOUT: from the scene's RectTransforms, at 1x on the top screen like the ending's):
+  assets/sheets/ui_intro.png  the sheet (.fmt by its colors)
+  assets/ui/intro.json        {"sheet", "slides": [{"rect", "text"}], "imageY" (px the images' centers sit
+                               above the screen's middle), "textBox": [w, h, y] (the captions' box, centered,
+                               its middle y px above the bottom; text centered, bottom-aligned)}
+
 Usage: python tools/make_ui.py [path to Slider/Assets]   (needs Pillow)
 """
+import csv
 import json
 import math
 import os
@@ -277,7 +286,44 @@ def title():
     print(f"title: {len(sprites)} sprites, sheet {sheet.width}x{sheet.height}")
 
 
+# CutsceneManager.images, in order (an Image's sprite: its texture, and a sprite name for a multi-sprite one).
+INTRO_IMAGES = [("Sprites/UI/intro_cutscene/intro_cutscene.png", "intro_cutscene_0"),
+                ("Sprites/UI/intro_cutscene/intro_cutscene.png", "intro_cutscene_1"),
+                ("Sprites/UI/intro_cutscene/intro_cutscene.png", "intro_cutscene_2"),
+                ("Sprites/UI/intro_cutscene/cg 4.PNG", None), ("Sprites/UI/intro_cutscene/cg 5.png", None),
+                ("Sprites/UI/intro_cutscene/cg 6.png", None), ("Sprites/UI/intro_cutscene/cg7 160x120.png", None)]
+# Images: anchored to the middle, at (0, 20), native size. Texts (1)-(7): 300x45, anchored bottom-middle at
+# (0, 32.5): PixelTitanZero 16, centered, bottom-aligned.
+INTRO_LAYOUT = {"imageY": 20, "textBox": [300, 45, 32.5]}
+
+
+def intro():
+    rows = csv.reader(open(os.path.join(ASSETS, "StreamingAssets", "Localizations", "English", "IntroCutscene_scene.csv"),
+                           encoding="utf-8-sig", newline=""))
+    texts = {r[0]: r[2] for r in rows if len(r) > 2}
+    cut, captions = {}, []
+    for i, (texture, name) in enumerate(INTRO_IMAGES):
+        sprites = texture_sprites(texture)
+        img, _ = sprites[name] if name else next(iter(sprites.values()))
+        cut[f"slide{i}"] = img
+        text = texts.get(f"Canvas/Texts/Text ({i + 1})")
+        if text is None:
+            sys.exit(f"IntroCutscene_scene.csv: no Canvas/Texts/Text ({i + 1})")
+        captions.append("\n".join(line.strip() for line in text.replace("\r\n", "\n").split("\n")))
+    sheet, placed = pack(cut, 512)
+    write_sheet(sheet, "ui_intro")
+    slides = [{"rect": [*placed[f"slide{i}"], img.width, img.height], "text": captions[i]} for i, img in enumerate(cut.values())]
+    path = os.path.join(REPO, "assets", "ui", "intro.json")
+    with open(path, "w", newline="\n") as f:
+        f.write('{\n  "sheet": "ui_intro",\n  "slides": [\n')
+        f.write(",\n".join("    " + json.dumps(sl, separators=(",", ":")) for sl in slides))
+        f.write('\n  ],\n  "imageY": ' + json.dumps(INTRO_LAYOUT["imageY"]) + ',\n  "textBox": ' +
+                json.dumps(INTRO_LAYOUT["textBox"]) + '\n}\n')
+    print(f"intro: {len(slides)} slides, sheet {sheet.width}x{sheet.height}")
+
+
 if __name__ == "__main__":
     menu()
     title()
     end()
+    intro()

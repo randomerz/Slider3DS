@@ -1,5 +1,6 @@
 #include "game/app/frontend.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <ctime>
@@ -32,6 +33,20 @@ void Frontend::startGame(SaveProfile profile, int slot) {
     mode_ = Mode::Game;
     audio_.takeFrom(world_.audio); // (the scene's Starts: its music)
     saveGame(); // (GameSaver.Start)
+}
+
+void Frontend::startIntro() {
+    titleFade_ = -1;
+    std::string error;
+    if (!introArt_.load(&error)) { // (the game still starts)
+        printf("No intro: %s\n", error.c_str());
+        startGame(std::move(newProfile_), newSlot_);
+        return;
+    }
+    mode_ = Mode::Intro;
+    intro_.start(introArt_);
+    introTouch_ = true; // (a touch held from the title's Done isn't a press)
+    audio_.dampenMusic(INTRO_MUSIC, 36000, INTRO_DAMPEN); // (held until it ends)
 }
 
 void Frontend::bootDirect() { startGame(SaveProfile::make("Boomo"), -1); }
@@ -102,6 +117,20 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
         }
         return true;
     }
+    if (mode_ == Mode::Title && titleFade_ >= 0) { // (a new game: the title fades out, deaf)
+        if (++titleFade_ >= TITLE_FADE_FRAMES) startIntro();
+        return true;
+    }
+    if (mode_ == Mode::Intro) {
+        const bool press = (in.pressed & ~plat::BTN_START) != 0 || (in.touching && !introTouch_); // (not the pause key)
+        introTouch_ = in.touching;
+        if (intro_.update(press, FRAME_DT)) {
+            introArt_.unload();
+            audio_.dampenMusic(INTRO_MUSIC, 0, INTRO_DAMPEN); // (StopDampen)
+            startGame(std::move(newProfile_), newSlot_);
+        }
+        return true;
+    }
     if (mode_ == Mode::Title) {
         const bool wasShown = screen_.menuShown();
         if (screen_.update(area_.cameraShake, in, FRAME_DT, settings_.screenShake)) {
@@ -119,7 +148,11 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
             else title_.open(); // (the file changed since the cards were read)
             break;
         }
-        case TitleMenu::Action::Kind::NewGame: startGame(SaveProfile::make(a.name), a.slot); break;
+        case TitleMenu::Action::Kind::NewGame: // (LoadCutscene: the title fades, then the intro)
+            newProfile_ = SaveProfile::make(a.name);
+            newSlot_ = a.slot;
+            titleFade_ = 0;
+            break;
         case TitleMenu::Action::Kind::Options: pause_.open(PauseMenu::Page::Options); break;
         case TitleMenu::Action::Kind::Quit: return false;
         }
@@ -167,9 +200,14 @@ void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSki
         end_.drawTop(endArt_);
         return;
     }
+    if (mode_ == Mode::Intro) {
+        intro_.drawTop(introArt_, skin.captionFont());
+        return;
+    }
     if (mode_ == Mode::Title) {
         screen_.draw(art_, skin.font());
         if (pause_.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
+        drawTitleFade(plat::TOP_W, plat::TOP_H);
         return;
     }
     plat::beginScreen(plat::Screen::Top, plat::rgba(area_.background[0], area_.background[1], area_.background[2]));
@@ -187,6 +225,7 @@ void Frontend::drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) cons
         return;
     }
     plat::beginScreen(plat::Screen::Bottom, palette::DARK);
+    if (mode_ == Mode::Intro) return; // (the original has one screen)
     if (pause_.isOpen()) pause_.draw(settings_, skin);
     else if (mode_ == Mode::Game) artifactUI_.draw(world_, sheets);
     else if (screen_.menuShown()) { // (before "press any key": empty)
@@ -194,4 +233,10 @@ void Frontend::drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) cons
         const MenuSkin::Shift slide(skin, 0, (int)std::lround(screen_.menuDrop(art_) * plat::BOTTOM_H / MenuSkin::UI_SCALE));
         title_.draw(skin);
     }
+    if (mode_ == Mode::Title) drawTitleFade(plat::BOTTOM_W, plat::BOTTOM_H);
+}
+
+void Frontend::drawTitleFade(int w, int h) const {
+    if (titleFade_ < 0) return;
+    plat::drawRect(0, 0, (float)w, (float)h, plat::rgba(0, 0, 0, (uint8_t)std::min(255, titleFade_ * 255 / TITLE_FADE_FRAMES)));
 }

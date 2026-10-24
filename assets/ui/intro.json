@@ -1,0 +1,14 @@
+{
+  "sheet": "ui_intro",
+  "slides": [
+    {"rect":[0,0,140,100],"text":"In ages past, man held the power to remake the world."},
+    {"rect":[141,0,140,100],"text":"Societies rose and fell, centered around a relic of unimaginable power."},
+    {"rect":[282,0,140,100],"text":"A relic now lost\nto the sands of time."},
+    {"rect":[0,101,140,100],"text":"The world has moved on,\ninto a brighter future."},
+    {"rect":[141,101,140,100],"text":"But some things\ndon't stay buried."},
+    {"rect":[282,101,140,100],"text":"And all thanks to\nyour little cat..."},
+    {"rect":[0,202,160,120],"text":"The world faces\nCataclysm once more."}
+  ],
+  "imageY": 20,
+  "textBox": [300, 45, 32.5]
+}
