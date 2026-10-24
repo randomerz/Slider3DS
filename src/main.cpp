@@ -19,6 +19,7 @@
 #include <cmath>
 #include <cstdio>
 #include <string>
+#include <vector>
 
 #include "dev_controls.h"
 #include "game/app/frontend.h"
@@ -42,12 +43,20 @@ namespace {
 #endif
 constexpr bool DEV = SLIDER_DEV != 0;
 
-// Shows a red top screen until START (the area failed to load; the reason is on the console).
-void showLoadError() {
+// Shows a red top screen until START: the boot failed to load something. With the menu skin loaded
+// (`skin`), the bottom screen says what (wrapped), and that START quits.
+void showLoadError(const MenuSkin* skin, const std::string& error) {
+    constexpr int S = MenuSkin::UI_SCALE, MARGIN = 6, LINE = 8; // (UI px)
+    std::vector<std::string> lines;
+    if (skin) lines = skin->font().wrap("Couldn't load: " + error, 1, plat::BOTTOM_W / S - 2 * MARGIN);
     while (plat::mainLoop() && !(plat::pollInput().pressed & plat::BTN_START)) {
         plat::beginFrame();
         plat::beginScreen(plat::Screen::Top, plat::rgba(0x80, 0x20, 0x20));
         plat::beginScreen(plat::Screen::Bottom, palette::DARK);
+        if (skin) {
+            for (int i = 0; i < (int)lines.size(); i++) skin->drawText(lines[i], MARGIN, MARGIN + 4 + i * LINE, palette::OFF_WHITE);
+            skin->drawText("START: quit", MARGIN, plat::BOTTOM_H / S - MARGIN - 4, palette::GRAY);
+        }
         plat::endFrame();
     }
 }
@@ -89,7 +98,8 @@ int main(int, char**) {
     EndArt endArt;
     Audio audio;
     std::string error;
-    bool loaded = menuSkin.load(&error); // (first: the loading frames use it)
+    const bool skinLoaded = menuSkin.load(&error); // (first: the loading frames use it, and the error screen)
+    bool loaded = skinLoaded;
     const float initS = lap();
     if (loaded) showLoading(menuSkin, 0);
     loaded = loaded && loadArea("village/village.json", area, &error);
@@ -104,8 +114,8 @@ int main(int, char**) {
     loaded = loaded && audio.load(&error);
     const float audioS = lap();
     if (!loaded) {
-        printf("Failed to load village: %s\n", error.c_str());
-        showLoadError();
+        printf("Failed to load: %s\n", error.c_str());
+        showLoadError(skinLoaded ? &menuSkin : nullptr, error);
         plat::shutdown();
         return 1;
     }

@@ -230,25 +230,31 @@ endif
 # `make RELEASE=1 cia` -> slider3ds.cia: the release build, installable from the HOME Menu (FBI), its
 # banner tools/cia/banner.png + banner.wav (tools/make_banner.py's placeholder: replace banner.png with
 # 256x128 art) and makerom spec tools/cia/cia.rsf. Needs makerom and bannertool (devkitPro's tools/bin).
-CIA_UNIQUE_ID	:=	0xF51D3
+# `make cia` -> slider3ds_dev.cia: the dev build as a CIA (its own title id: both install side by side),
+# to read the overlay of an installed title (e.g. the audio thread's core). Its SELECT-at-launch updater
+# still writes the .3dsx, not the CIA.
 ifeq ($(strip $(RELEASE)),)
-cia:
-	@echo "The CIA is the release build: make RELEASE=1 cia"; exit 1
+CIA_NAME	:=	slider3ds_dev.cia
+CIA_UNIQUE_ID	:=	0xF51D4
+CIA_PRODUCT	:=	CTR-P-SLDD
 else
+CIA_NAME	:=	slider3ds.cia
+CIA_UNIQUE_ID	:=	0xF51D3
+CIA_PRODUCT	:=	CTR-P-SLDR
+endif
 cia: all
 	@bannertool makebanner -i tools/cia/banner.png -a tools/cia/banner.wav -o $(BUILD)/banner.bnr
-	@makerom -f cia -o slider3ds.cia -target t -exefslogo -elf $(TARGET).elf -rsf tools/cia/cia.rsf \
-		-icon $(TARGET).smdh -banner $(BUILD)/banner.bnr -DAPP_TITLE="$(APP_TITLE)" -DAPP_PRODUCT_CODE=CTR-P-SLDR \
+	@makerom -f cia -o $(CIA_NAME) -target t -exefslogo -elf $(TARGET).elf -rsf tools/cia/cia.rsf \
+		-icon $(TARGET).smdh -banner $(BUILD)/banner.bnr -DAPP_TITLE="$(APP_TITLE)" -DAPP_PRODUCT_CODE=$(CIA_PRODUCT) \
 		-DAPP_UNIQUE_ID=$(CIA_UNIQUE_ID) -DAPP_ROMFS=$(ROMFS) -DAPP_CATEGORY=Application -DAPP_USE_ON_SD=true \
 		-DAPP_ENCRYPTED=false -DAPP_MEMORY_TYPE=Application -DAPP_SYSTEM_MODE=64MB -DAPP_SYSTEM_MODE_EXT=Legacy \
 		-DAPP_CPU_SPEED=268MHz -DAPP_ENABLE_L2_CACHE=false -DAPP_VERSION_MAJOR=0
-	@echo built ... slider3ds.cia
-endif
+	@echo built ... $(CIA_NAME)
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS)/gfx $(ROMFS)/*/*.json $(ROMFS)/audio
+	@rm -fr $(BUILD) $(TARGET).3dsx $(CIA_NAME) $(OUTPUT).smdh $(TARGET).elf $(GFXBUILD) $(ROMFS)/gfx $(ROMFS)/*/*.json $(ROMFS)/audio
 
 #---------------------------------------------------------------------------------
 $(ROMFS)/gfx/%.t3x	:	assets/sheets/%.png assets/sheets/%.fmt
