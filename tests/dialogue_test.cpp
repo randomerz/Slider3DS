@@ -169,7 +169,7 @@ const Area& npcArea() {
 void standAt(World& world, float x, float y) {
     world.player.x = x;
     world.player.y = y;
-    world.update(DT, 0, 0, true); // noclip: nothing solid here
+    world.update(DT, 0, 0, true); // ignoreWalls: nothing solid here
 }
 
 // Frames until NPC 0's current line is typed (and the next update has handled it).

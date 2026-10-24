@@ -63,7 +63,7 @@ const Area& itemArea() {
 }
 
 void frames(World& world, int n, float moveX = 0, float moveY = 0) {
-    for (int i = 0; i < n; i++) world.update(DT, moveX, moveY, true); // noclip: walls only matter to items
+    for (int i = 0; i < n; i++) world.update(DT, moveX, moveY, true); // ignoreWalls: walls only matter to items
 }
 
 bool near(float a, float b) { return std::fabs(a - b) < 1e-3f; }

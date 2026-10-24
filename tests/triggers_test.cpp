@@ -66,7 +66,7 @@ const Area& triggerArea() {
 void standAt(World& world, float x) {
     world.player.x = x;
     world.player.y = 0;
-    world.update(DT, 0, 0, true); // noclip: the synthetic area has no solid colliders anyway
+    world.update(DT, 0, 0, true); // ignoreWalls: the synthetic area has no solid colliders anyway
 }
 
 bool offered(const World& world, int interaction) {
