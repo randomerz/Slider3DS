@@ -27,6 +27,11 @@ int treeOn(const Area& area, int stile) {
 
 bool startsWith(const std::string& s, const char* prefix) { return s.rfind(prefix, 0) == 0; }
 
+// The Tree controller's drag for a tile moving (dx, dy) slots: the tree lags behind it.
+std::string dragFor(int dx, int dy) {
+    return dx > 0 ? "TreeDragLeft" : dx < 0 ? "TreeDragRight" : dy > 0 ? "TreeDragDown" : "TreeDragUp";
+}
+
 } // namespace
 
 TEST(momentum_gizmos_sway_with_their_tile) {
@@ -64,11 +69,9 @@ TEST(momentum_gizmos_sway_with_their_tile) {
     int dx = 0, dy = 0;
     slide(options[0].first, options[0].second, dx, dy);
     CHECK(world.animators.paramValue(area, a, "dx") == dx && world.animators.paramValue(area, a, "dy") == dy);
-    const std::string drag = world.animators.stateName(area, a);
-    check(startsWith(drag, "TreeDrag"), "dragging: " + drag);
+    check(world.animators.stateName(area, a) == dragFor(dx, dy), "dragging: " + world.animators.stateName(area, a));
     CHECK(world.animators.stateName(area, b) == "TreeIdle"); // (another tile's tree)
-    int frame = 0;
-    while (world.grid.tile(1)->posX != world.grid.tile(1)->x && frame++ < 120) frames(world, 1);
+    for (int frame = 0; world.grid.moving() && frame < 120; frame++) frames(world, 1);
     frames(world, 2);
     CHECK(world.animators.paramValue(area, a, "dx") == 0 && world.animators.paramValue(area, a, "dy") == 0);
     check(startsWith(world.animators.stateName(area, a), "TreeImpact"), "impact: " + world.animators.stateName(area, a));
@@ -79,9 +82,27 @@ TEST(momentum_gizmos_sway_with_their_tile) {
     // Back the other way: the opposite drag.
     int dx2 = 0, dy2 = 0;
     slide(homeX, homeY, dx2, dy2);
-    CHECK(dx2 == -dx && dy2 == -dy);
-    check(startsWith(world.animators.stateName(area, a), "TreeDrag") && world.animators.stateName(area, a) != drag,
-          "the other drag: " + world.animators.stateName(area, a));
+    check(world.animators.stateName(area, a) == dragFor(dx2, dy2), "the other drag: " + world.animators.stateName(area, a));
+}
+
+TEST(momentum_gizmos_pick_random_once_per_enable) {
+    // OnEnable sets random: it holds while the tree stays on, and is picked again when its tile turns
+    // off and back on.
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    frames(world, 1);
+    const int a = area.momentumGizmos[treeOn(area, 1)].animator;
+    const float first = world.animators.paramValue(area, a, "random");
+    frames(world, 30);
+    CHECK(world.animators.paramValue(area, a, "random") == first);
+    world.setTileActive(1, false);
+    frames(world, 1);
+    world.setTileActive(1, true);
+    frames(world, 1);
+    const float second = world.animators.paramValue(area, a, "random");
+    CHECK(second != first && second >= 0 && second < 1);
+    frames(world, 30);
+    CHECK(world.animators.paramValue(area, a, "random") == second);
 }
 
 TEST(animators_int_and_float_conditions) {

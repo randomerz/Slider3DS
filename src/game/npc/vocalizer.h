@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "game/data/area.h"
+#include "game/data/rng.h"
 
 struct VoiceStep {
     bool sound = false; // a syllable (else a pause)
@@ -37,14 +38,7 @@ struct VoiceLine {
 };
 
 // UnityEngine.Random's part: a small deterministic source.
-class VoiceRandom {
-public:
-    explicit VoiceRandom(uint32_t seed = 0x9e3779b9u) : s_(seed ? seed : 1) {}
-    float value(); // [0, 1)
-
-private:
-    uint32_t s_;
-};
+using VoiceRandom = Rng;
 
 // `text`: what's typed (tags already gone); `emote`: the line's NPCEmotes value;
 // `textSpeedMultiplier`: vocalized / typed length (1: the same text).

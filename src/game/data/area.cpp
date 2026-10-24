@@ -1037,8 +1037,8 @@ static bool validate(const Area& a, std::string* error) {
     }
     for (const MomentumGizmoDef& g : a.momentumGizmos) {
         const bool ok = g.animator >= 0 && g.animator < (int)a.animators.size() && a.animators[g.animator].object >= 0 &&
-                        (g.stile == 0 || a.stile(g.stile));
-        if (!ok) return fail(error, "momentum gizmo: bad animator or tile");
+                        (g.stile == 0 || a.stile(g.stile)) && g.dx >= 0 && g.dy >= 0 && g.finishedMoving >= 0 && g.random >= 0;
+        if (!ok) return fail(error, "momentum gizmo: bad animator or tile, or its controller lacks dx / dy / finishedMoving / random");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");
@@ -1486,7 +1486,19 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.animatorByObject.assign(out.objects.size(), -1);
     for (size_t i = 0; i < out.animators.size(); i++) {
         const int o = out.animators[i].object;
-        if (o >= 0 && o < (int)out.objects.size()) out.animatorByObject[o] = (int)i;
+        if (o < 0 || o >= (int)out.objects.size()) continue;
+        if (out.animatorByObject[o] >= 0) return fail(error, "two Animators on " + out.pathOf(o));
+        out.animatorByObject[o] = (int)i;
+    }
+    for (MomentumGizmoDef& g : out.momentumGizmos) { // (their parameters; validated below)
+        if (g.animator < 0 || g.animator >= (int)out.animators.size()) continue;
+        const int c = out.animators[g.animator].controller;
+        if (c < 0 || c >= (int)out.animatorControllers.size()) continue;
+        const AnimatorControllerDef& ctl = out.animatorControllers[c];
+        g.dx = ctl.paramIndex("dx");
+        g.dy = ctl.paramIndex("dy");
+        g.finishedMoving = ctl.paramIndex("finishedMoving");
+        g.random = ctl.paramIndex("random");
     }
     // Transform curves: numbered, then each Animator's target for each (by path). A state without its
     // clip's length (older / hand-written data) takes its sprite clip's.

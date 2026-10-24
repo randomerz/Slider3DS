@@ -33,7 +33,7 @@ Word spokenWord(const std::string& raw, VoiceRandom& random) {
     static const char VOWELS[] = "aeiouy";
     Word w;
     for (char c : raw) {
-        if (c >= '0' && c <= '9') c = VOWELS[std::min((int)(random.value() * 6), 5)];
+        if (c >= '0' && c <= '9') c = VOWELS[std::min((int)(random.unit() * 6), 5)];
         w.chars += (char)(c >= 'A' && c <= 'Z' ? c - 'A' + 'a' : c);
     }
     std::vector<std::string> vowelClusters;
@@ -44,19 +44,19 @@ Word spokenWord(const std::string& raw, VoiceRandom& random) {
         if (vowel) vowelClusters.back() += w.chars[i];
         lastVowel = vowel;
     }
-    if (vowelClusters.empty()) vowelClusters.push_back(std::string(1, VOWELS[std::min((int)(random.value() * 6), 5)]));
+    if (vowelClusters.empty()) vowelClusters.push_back(std::string(1, VOWELS[std::min((int)(random.unit() * 6), 5)]));
     std::vector<uint8_t> stressed(vowelClusters.size(), 0);
     const int n = (int)vowelClusters.size();
     if (n == 1) {
         stressed[0] = vowelClusters[0].size() == 1 && w.chars.size() < 3;
     } else if (n == 2) {
-        stressed[random.value() < 0.6f ? 0 : 1] = 1;
+        stressed[random.unit() < 0.6f ? 0 : 1] = 1;
     } else {
-        const int count = std::max(1, (int)std::nearbyint(random.value() * n / 2.0f)); // (Mathf.RoundToInt: to even)
+        const int count = std::max(1, (int)std::nearbyint(random.unit() * n / 2.0f)); // (Mathf.RoundToInt: to even)
         std::vector<int> pool(n);
         for (int i = 0; i < n; i++) pool[i] = i;
         for (int k = 0; k < count && !pool.empty(); k++) {
-            const int idx = (int)std::floor(random.value() * pool.size());
+            const int idx = (int)std::floor(random.unit() * pool.size());
             stressed[pool[idx]] = 1;
             if (idx != (int)pool.size() - 1) pool.erase(pool.begin() + idx + 1); // (its neighbour can't be stressed too)
             pool.erase(pool.begin() + idx);
@@ -69,13 +69,6 @@ Word spokenWord(const std::string& raw, VoiceRandom& random) {
 }
 
 } // namespace
-
-float VoiceRandom::value() {
-    s_ ^= s_ << 13; // (xorshift32)
-    s_ ^= s_ >> 17;
-    s_ ^= s_ << 5;
-    return (s_ >> 8) / 16777216.0f;
-}
 
 std::vector<std::string> voiceClauses(const std::string& s) {
     // [^.,!?]+ greedy, then [.,!?\s]+ greedy, then (?=[^.,!?\s]|$) — which the greedy run always
@@ -153,12 +146,12 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
             intonation = Intonation::Up;
             static const char* QUESTIONS[] = {"who", "what", "when", "where", "why", "how"};
             for (const char* q : QUESTIONS)
-                if (words[0].chars.rfind(q, 0) == 0 && random.value() < 0.75f) {
+                if (words[0].chars.rfind(q, 0) == 0 && random.unit() < 0.75f) {
                     intonation = Intonation::Down;
                     break;
                 }
         } else if (punctuation == '.' || punctuation == '!') {
-            intonation = wordCount <= 3 && random.value() < 0.5f ? Intonation::Up : Intonation::Down;
+            intonation = wordCount <= 3 && random.unit() < 0.5f ? Intonation::Up : Intonation::Down;
         }
         // (GetBasePitchFromIntonation reads the override; the last word's low / high, the clause's own.)
         const Intonation peakIntonation = p.intonation >= 0 ? (Intonation)p.intonation : intonation;
@@ -169,12 +162,12 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
         for (size_t w = 0; w <= words.size(); w++) {
             const bool first = w == 0, last = w + 1 == words.size(), pause = w == words.size();
             if (first) {
-                low = random.value() > (wordCount <= 3 ? 0.75f : 0.25f);
+                low = random.unit() > (wordCount <= 3 ? 0.75f : 0.25f);
             } else if (last) {
                 if (intonation == Intonation::Up) low = false;
                 else if (intonation == Intonation::Down) low = true;
             } else {
-                low = low ? !(random.value() < p.lowToHigh) : random.value() < p.highToLow;
+                low = low ? !(random.unit() < p.lowToHigh) : random.unit() < p.highToLow;
             }
             if (pause) { // PauseVocalizer: the clause gap, waited out times the vowel openness
                 VoiceStep s;
@@ -189,7 +182,7 @@ VoiceLine vocalize(const VoiceDef& voice, int emote, const std::string& text, fl
             for (const std::string& cluster : words[w].spoken) { // PhonemeClusterVocalizer
                 const float each = p.duration * (low ? 1 : 1 - p.speedup) / mult;
                 const float k = low ? 1 - p.wordIntonation : 1 + p.wordIntonation;
-                auto jitter = [&] { return p.syllables ? 1.0f : 1 + (random.value() - 0.5f) * 0.1f; };
+                auto jitter = [&] { return p.syllables ? 1.0f : 1 + (random.unit() - 0.5f) * 0.1f; };
                 VoiceStep s;
                 s.sound = true;
                 s.clause = clauseIndex;

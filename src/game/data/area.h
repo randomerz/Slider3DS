@@ -293,8 +293,9 @@ struct CallDef {
     int data = -1;
 };
 
-// An Animator controller (base layer; an override controller's clips applied): bool parameters,
-// states playing a sprite clip, transitions on bool conditions and/or exit time (all instant).
+// An Animator controller (base layer; an override controller's clips applied): bool, trigger, int and
+// float parameters, states playing a sprite clip, transitions on their conditions and/or exit time
+// (all instant).
 // A transition's condition (AnimatorCondition): a bool or trigger set (If) or not (IfNot); an int or
 // float compared with `threshold`.
 struct AnimatorConditionDef {
@@ -694,6 +695,8 @@ struct CatTrickDef {
 struct MomentumGizmoDef {
     int animator = -1; // Area::animators index
     int stile = 0;     // islandId, 0 = none (it never sways)
+    // Its controller's parameters (indices, resolved at load; the load fails without them).
+    int dx = -1, dy = -1, finishedMoving = -1, random = -1;
 };
 
 struct ChadJumpDef {

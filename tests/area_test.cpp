@@ -236,6 +236,58 @@ TEST(area_validation_rejects_bad_cat_tricks) {
     }
 }
 
+// A MomentumGizmo on object 0 (tile 1) whose controller has every parameter kind and one transition per
+// condition op.
+std::string gizmoFixture(const std::string& from = "", const std::string& to = "") {
+    std::string s = fixture(R"("fadeDuration": 0.5,)", R"("fadeDuration": 0.5,
+  "animatorControllers": [{"name": "G", "default": 0, "any": [], "params": [
+      {"name": "dx", "default": 0, "int": true}, {"name": "dy", "default": 0, "int": true},
+      {"name": "finishedMoving", "default": false, "trigger": true}, {"name": "random", "default": 0.25, "float": true}],
+    "states": [{"name": "Idle", "anim": 0, "speed": 1, "length": 1, "loop": true, "transitions": [
+      {"to": 0, "exitTime": -1, "conds": [[0, "gt", 0]]}, {"to": 0, "exitTime": -1, "conds": [[1, "lt", -1]]},
+      {"to": 0, "exitTime": -1, "conds": [[0, "eq", 2]]}, {"to": 0, "exitTime": -1, "conds": [[1, "ne", 0.5]]},
+      {"to": 0, "exitTime": -1, "conds": [[2, true]]}, {"to": 0, "exitTime": -1, "conds": [[2, false]]}]}]}],
+  "momentumGizmos": [{"stile": 1, "animator": {"object": 0, "controller": 0, "keepState": false}}],)");
+    if (!from.empty()) {
+        const size_t f = s.find(from);
+        if (f == std::string::npos) return "fixture: pattern not found: " + from;
+        s.replace(f, from.size(), to);
+    }
+    return s;
+}
+
+TEST(area_momentum_gizmo_parameters_and_condition_ops) {
+    using Mode = AnimatorConditionDef::Mode;
+    Area a;
+    std::string err;
+    check(loadFixture(gizmoFixture(), a, err), "gizmo fixture loads: " + err);
+    const AnimatorControllerDef& c = a.animatorControllers[0];
+    CHECK(c.paramDefaults == std::vector<float>({0, 0, 0, 0.25f}) && c.paramTriggers == std::vector<uint8_t>({0, 0, 1, 0}));
+    const Mode modes[] = {Mode::Greater, Mode::Less, Mode::Equals, Mode::NotEqual, Mode::If, Mode::IfNot};
+    const int params[] = {0, 1, 0, 1, 2, 2};
+    const float thresholds[] = {0, -1, 2, 0.5f, 0, 0};
+    const std::vector<AnimatorTransitionDef>& ts = c.states[0].transitions;
+    check(ts.size() == 6, "six transitions");
+    for (size_t i = 0; i < ts.size() && i < 6; i++)
+        CHECK(ts[i].conds.size() == 1 && ts[i].conds[0].mode == modes[i] && ts[i].conds[0].param == params[i] &&
+              ts[i].conds[0].threshold == thresholds[i]);
+    const MomentumGizmoDef& g = a.momentumGizmos.at(0);
+    CHECK(g.stile == 1 && g.dx == 0 && g.dy == 1 && g.finishedMoving == 2 && g.random == 3);
+    CHECK(a.animators[g.animator].object == 0);
+
+    CHECK(!loadFixture(gizmoFixture(R"([0, "gt", 0])", R"([0, "ge", 0])"), a, err)); // an unknown op
+    CHECK(!loadFixture(gizmoFixture(R"({"name": "random")", R"({"name": "rand")"), a, err) &&
+          err.find("momentum gizmo") != std::string::npos); // (a parameter it sets is missing)
+    CHECK(!loadFixture(gizmoFixture(R"("momentumGizmos": [{"stile": 1)", R"("momentumGizmos": [{"stile": 2)"), a, err) &&
+          err.find("momentum gizmo") != std::string::npos); // (no such tile)
+    CHECK(!loadFixture(gizmoFixture(R"("animator": {"object": 0)", R"("animator": {"object": -1)"), a, err) &&
+          err.find("momentum gizmo") != std::string::npos); // (no object)
+    const std::string twice = R"("momentumGizmos": [{"stile": 1, "animator": {"object": 0, "controller": 0, "keepState": false}},
+                                                     {"stile": 1, "animator": {"object": 0, "controller": 0, "keepState": false}}],)";
+    CHECK(!loadFixture(gizmoFixture(R"("momentumGizmos": [{"stile": 1, "animator": {"object": 0, "controller": 0, "keepState": false}}],)", twice), a, err) &&
+          err.find("two Animators") != std::string::npos);
+}
+
 // Animator transform curves: one controller shared by the player's Animator (its item holder) and an
 // NPC's (its sprite); each curve resolves to the target its own Animator has, -1 on the other.
 std::string animatorFixture(const std::string& from = "", const std::string& to = "") {

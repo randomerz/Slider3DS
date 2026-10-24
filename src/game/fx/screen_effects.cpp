@@ -34,13 +34,6 @@ float noiseAt(float frequency, float amplitude, bool constant, float time, float
 
 } // namespace
 
-float ScreenEffects::random() {
-    rng_ ^= rng_ << 13; // xorshift32
-    rng_ ^= rng_ >> 17;
-    rng_ ^= rng_ << 5;
-    return (float)(rng_ >> 8) / (float)(1u << 24);
-}
-
 void ScreenEffects::reset() {
     *this = ScreenEffects();
     offsetX_ = random() * 2000 - 1000;

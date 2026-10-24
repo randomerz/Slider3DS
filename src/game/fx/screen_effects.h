@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "game/data/area.h"
+#include "game/data/rng.h"
 
 // What runs when a screen effect gets somewhere (UIEffects' callbacks; World::effectDone runs it):
 // a fade to black's end (FadeToBlack's callback), a white flash's peak (FlashWhite's callbackMiddle).
@@ -58,7 +59,7 @@ private:
     struct Shake {
         float duration, start, end, elapsed; // CameraShake.CameraShakeData (no delay: Shake's)
     };
-    float random(); // [0, 1)
+    float random() { return rng_.unit(); } // [0, 1)
     void startBlack(float from, float to, EffectDone done, uint32_t frame, float speed = 1);
 
     bool blackOn_ = false;
@@ -73,5 +74,5 @@ private:
     std::vector<Shake> shakes_;
     float gain_ = 0, noiseTime_ = 0, shakeX_ = 0, shakeY_ = 0;
     float offsetX_ = 0, offsetY_ = 0; // the noise's random time offsets (Random.Range(-1000, 1000))
-    uint32_t rng_ = 0x9e3779b9u;
+    Rng rng_;
 };

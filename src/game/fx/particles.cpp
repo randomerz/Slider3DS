@@ -10,14 +10,7 @@ void Particles::reset() {
     particles_.clear();
     wasActive_.clear();
     nextId_ = 1;
-    rng_ = 0x9e3779b9u;
-}
-
-float Particles::random() {
-    rng_ ^= rng_ << 13; // xorshift32
-    rng_ ^= rng_ >> 17;
-    rng_ ^= rng_ << 5;
-    return (float)(rng_ >> 8) / (float)(1u << 24);
+    rng_ = Rng();
 }
 
 bool Particles::playing(int def) const {

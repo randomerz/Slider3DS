@@ -151,10 +151,12 @@ void Animators::setBool(const World& world, int animator, const std::string& par
 }
 
 void Animators::setFloat(const World& world, int animator, const std::string& param, float value) {
+    setParam(world, animator, world.area.animatorControllers[s_[animator].controller].paramIndex(param), value);
+}
+
+void Animators::setParam(const World& world, int animator, int param, float value) {
     syncEnabled(world, animator);
-    State& st = s_[animator];
-    const int p = world.area.animatorControllers[st.controller].paramIndex(param);
-    if (p >= 0) st.params[p] = value;
+    if (param >= 0) s_[animator].params[param] = value;
 }
 
 void Animators::setController(const World& world, int animator, int controller) {

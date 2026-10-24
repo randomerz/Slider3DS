@@ -4,19 +4,12 @@
 
 void MomentumGizmos::reset(const Area& area) { enabled_.assign(area.momentumGizmos.size(), 0); }
 
-float MomentumGizmos::random() {
-    rng_ ^= rng_ << 13; // xorshift32
-    rng_ ^= rng_ >> 17;
-    rng_ ^= rng_ << 5;
-    return (float)(rng_ >> 8) / (float)(1u << 24);
-}
-
 void MomentumGizmos::enable(World& world) {
     const Area& area = world.area;
     for (size_t i = 0; i < area.momentumGizmos.size(); i++) {
-        const int animator = area.momentumGizmos[i].animator;
-        const bool on = world.objects.activeInHierarchy(area.animators[animator].object);
-        if (on && !enabled_[i]) world.animators.setFloat(world, animator, "random", random());
+        const MomentumGizmoDef& g = area.momentumGizmos[i];
+        const bool on = world.objects.activeInHierarchy(area.animators[g.animator].object);
+        if (on && !enabled_[i]) world.animators.setParam(world, g.animator, g.random, rng_.unit());
         enabled_[i] = on;
     }
 }
@@ -29,9 +22,9 @@ void MomentumGizmos::gridEvents(World& world, const std::vector<GridEvent>& even
         for (const MomentumGizmoDef& g : area.momentumGizmos) {
             if (g.stile != e.islandId || !world.objects.activeInHierarchy(area.animators[g.animator].object)) continue;
             // OnStileChangeDir: moveDir is start - end, so -moveDir is the move itself.
-            world.animators.setInteger(world, g.animator, "dx", start ? e.dx : 0);
-            world.animators.setInteger(world, g.animator, "dy", start ? e.dy : 0);
-            if (!start) world.animators.setTrigger(world, g.animator, "finishedMoving");
+            world.animators.setParam(world, g.animator, g.dx, start ? (float)e.dx : 0);
+            world.animators.setParam(world, g.animator, g.dy, start ? (float)e.dy : 0);
+            if (!start) world.animators.setParam(world, g.animator, g.finishedMoving, 1);
         }
     }
 }

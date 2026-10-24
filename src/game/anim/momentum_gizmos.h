@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "game/data/area.h"
+#include "game/data/rng.h"
 #include "game/grid/grid.h"
 
 class World;
@@ -22,8 +23,6 @@ public:
     void gridEvents(World& world, const std::vector<GridEvent>& events);
 
 private:
-    float random(); // [0, 1)
-
     std::vector<uint8_t> enabled_; // per gizmo: its object was active at the last enable()
-    uint32_t rng_ = 0x2545f491u;
+    Rng rng_{0x2545f491u};
 };

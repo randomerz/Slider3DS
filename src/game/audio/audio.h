@@ -32,6 +32,7 @@
 #include "game/audio/audio_cues.h"
 #include "game/audio/busy_log.h"
 #include "game/audio/mixer.h"
+#include "game/data/rng.h"
 
 struct Settings;
 
@@ -117,7 +118,7 @@ private:
     void stopVoices(int key); // key 0: all of them
     void playMusic(const AudioCue& cue);
     void playAmbience(const AudioCue& cue);
-    float random01(); // [0, 1)
+    float random01() { return rng_.unit(); } // [0, 1)
 
     AudioBank bank_;
     Mixer mixer_; // (after the bank: its voices point into it)
@@ -127,7 +128,7 @@ private:
     Listener listener_;
     float musicVolume_ = 1; // the setting (the bus also carries the dampening)
     bool paused_ = false;
-    uint32_t rng_ = 0x2545f491;
+    Rng rng_{0x2545f491u};
     bool threaded_ = false;
     Inbox inbox_;                        // (guarded by plat::lockAudio)
     std::vector<AudioCue> taken_;        // the audio thread's: the cues taken from the inbox

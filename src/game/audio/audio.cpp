@@ -362,9 +362,3 @@ void Audio::fill() {
     }
 }
 
-float Audio::random01() {
-    rng_ ^= rng_ << 13; // (xorshift32)
-    rng_ ^= rng_ >> 17;
-    rng_ ^= rng_ << 5;
-    return (rng_ >> 8) / 16777216.0f;
-}

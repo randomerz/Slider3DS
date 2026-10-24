@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "game/data/area.h"
+#include "game/data/rng.h"
 
 class World;
 
@@ -79,12 +80,12 @@ private:
     void emit(const World& world, Emitter& emitter, float x, float y, int count);
     void origin(const World& world, const Emitter& e, float& x, float& y) const; // where it emits now
     uint32_t startColor(const ParticlesDef& def);
-    float random(); // [0, 1)
+    float random() { return rng_.unit(); } // [0, 1)
 
     std::vector<Emitter> emitters_;
     std::vector<Particle> particles_;
     std::vector<uint8_t> wasActive_; // per Area::particles entry: its object was active last update
     std::vector<float> keep_;        // per Area::particles entry: this frame's dampen factor (scratch)
     int nextId_ = 1;
-    uint32_t rng_ = 0x9e3779b9u;
+    Rng rng_;
 };

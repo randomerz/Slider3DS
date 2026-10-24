@@ -1,8 +1,7 @@
 // Runtime state of the Area's Animators (Area::animators: the NPCs', the player's, the abducted cat's
-// and its bubble's): Unity's Animator for sprite clips, as far as the exported controllers use it.
-// Each has a current state (playing its clip at the state's speed), bool, trigger, int and float
-// parameters and
-// the controller's transitions: once a frame the first transition whose conditions hold (and exit
+// and its bubble's, the trees' and bushes'): Unity's Animator for sprite clips, as far as the exported
+// controllers use it. Each has a current state (playing its clip at the state's speed), bool, trigger,
+// int and float parameters and the controller's transitions: once a frame the first transition whose conditions hold (and exit
 // time is reached: from then on for 1 or more, as it's passed in a loop below 1) switches state,
 // instantly, resetting the triggers it used.
 // Play(state) jumps to a state; switching the controller starts over in the new one's default.
@@ -45,6 +44,8 @@ public:
     // Animator.SetInteger / SetFloat (no-op if the controller has no such parameter).
     void setInteger(const World& world, int animator, const std::string& param, int value) { setFloat(world, animator, param, (float)value); }
     void setFloat(const World& world, int animator, const std::string& param, float value);
+    // Any of those by the controller's parameter index (resolved at load; a trigger or bool: 0 / 1).
+    void setParam(const World& world, int animator, int param, float value);
     // Animator.runtimeAnimatorController = Area::animatorControllers[controller].
     void setController(const World& world, int animator, int controller);
 
