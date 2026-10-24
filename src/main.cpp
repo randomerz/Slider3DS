@@ -2,21 +2,18 @@
 // save points between them are game/app/frontend's. Here: the platform, the assets and the dev tools.
 //   Title (bottom screen): Continue / Play (three profiles, delete, a new one's name) / Options / Quit
 //   Circle Pad: walk                  A: action (pick up / drop items, doors, NPC dialogue)
-//   START: pause (game/ui/pause_menu: Resume, Options (General, Sound), Quit to the title)
+//   START: pause (game/ui/pause_menu: Resume, Options (General, Sound, Cheats), Quit to the title)
 //   Cutscenes (the intro's camera dolly): hold A to skip
 //   Bottom screen in the game: the Artifact (tap a tile, then a highlighted slot, or drag it there;
 //   or the D-pad's cursor and X for those taps)
 // The new-game start is the Default spawn inside tile 1's house. The player's Settings live here,
 // loaded at start (the Frontend saves them when they change). Audio (game/audio) plays what the
 // Frontend asks each frame, at the Settings' volumes.
-// Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) add a perf overlay
-// (game/dev/dev_overlay; SELECT cycles its pages: FRAME, DRAW, off), R on the title screen (boot the Village directly,
-// outdoors on tile 1, on a temporary profile that is never written) and in the game:
-//   R: jump to the next spawn point                 L + SELECT: toggle noclip (shows the position point)
-//   Y: toggle drawing inactive STiles               B: toggle collecting tiles 2-8
-//   L + Circle Pad: slide the tile you stand on
-//   L + B: tiles 2-4 only, next to Kevin's unsolved knot (Slider 5)
-//   L + Y: tiles 2-6 only, the ruins one slide from assembled (slide 2 left; Slider 7)
+// Noclip (the Cheats page's) shows the position point the player moves by.
+// Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) add, only while the Cheats
+// page's Enable Cheats is on: a perf overlay (game/dev/dev_overlay; SELECT cycles its pages: FRAME,
+// DRAW, off), L + SELECT in the game (toggle noclip), R on the title screen (boot the Village
+// directly, outdoors on tile 1, on a temporary profile that is never written).
 #include <cstdio>
 #include <string>
 
@@ -97,8 +94,6 @@ int main(int, char**) {
     AreaView view;
     view.setFont(&font);
     DevControls dev;
-    dev.perfPage = DEV ? 1 : 0;
-    if (const int start = front.world().startSpawn(); start >= 0) dev.spawnIndex = start;
     DevOverlay overlay;
     overlay.setBoot(initS, areaS, sheetsS, uiS, audioS, gameS);
     // The audio thread on the game's core (an Old 3DS): its time comes out of the sections it
@@ -107,30 +102,28 @@ int main(int, char**) {
 
     while (plat::mainLoop()) {
         // The profiler runs only while the overlay shows (scopes are free otherwise; never in release).
-        const bool profiling = DEV && dev.perfPage != 0; // (this frame's: SELECT below changes the next)
+        const int perfPage = DEV ? dev.shownPage(settings) : 0; // (this frame's: SELECT below changes the next)
+        const bool profiling = perfPage != 0;
         prof::setEnabled(profiling);
         prof::setStolenTime(audioSharesCore && profiling ? &Audio::threadBusyCallback : nullptr, &audio);
         prof::beginFrame();
         { // (the update: Logic, with its sections nested; closes before the draw)
             const ProfScope logic(ProfSection::Logic);
             const plat::Input in = plat::pollInput();
-            if (DEV) dev.updateAnywhere(in); // (SELECT: the overlay's page, next frame on)
-            bool devSliding = false;
-            if (DEV && front.mode() == Frontend::Mode::Title && !front.pauseMenu().isOpen() && (in.pressed & plat::BTN_R)) {
+            if (DEV) dev.update(in, settings, front.cheats(), front.playing()); // (the overlay's page: next frame on)
+            if (DEV && settings.cheats && front.mode() == Frontend::Mode::Title && !front.pauseMenu().isOpen() &&
+                (in.pressed & plat::BTN_R)) {
                 front.bootDirect(); // (outdoors on tile 1)
                 float x, y;
                 front.world().grid.ownerBase(1, x, y);
                 front.world().placeNear(x, y);
             } else {
-                if (DEV && front.playing()) devSliding = dev.update(in, front.world());
                 float moveX = 0, moveY = 0;
-                if (!devSliding) {
-                    if (in.held & plat::BTN_CPAD_LEFT) moveX -= 1; // (the D-pad is the Artifact's cursor)
-                    if (in.held & plat::BTN_CPAD_RIGHT) moveX += 1;
-                    if (in.held & plat::BTN_CPAD_UP) moveY += 1;
-                    if (in.held & plat::BTN_CPAD_DOWN) moveY -= 1;
-                }
-                if (!front.update(in, moveX, moveY, DEV && dev.noclip)) break;
+                if (in.held & plat::BTN_CPAD_LEFT) moveX -= 1; // (the D-pad is the Artifact's cursor)
+                if (in.held & plat::BTN_CPAD_RIGHT) moveX += 1;
+                if (in.held & plat::BTN_CPAD_UP) moveY += 1;
+                if (in.held & plat::BTN_CPAD_DOWN) moveY -= 1;
+                if (!front.update(in, moveX, moveY)) break;
             }
             const ProfScope sound(ProfSection::Audio);
             audio.setVolumes(settings);
@@ -147,16 +140,16 @@ int main(int, char**) {
         const bool inGame = front.mode() == Frontend::Mode::Game;
         {
             const ProfScope draw(ProfSection::Draw);
-            front.drawTop(view, sheets, menuSkin, DEV && dev.showInactive);
-            if (inGame && DEV && dev.noclip) // the position point the player moves by (the camera follows it)
+            front.drawTop(view, sheets, menuSkin);
+            if (inGame && front.noclip()) // the position point the player moves by (the camera follows it)
                 plat::drawRect(plat::TOP_W / 2 - 1, plat::TOP_H / 2 - 1, 2, 2, plat::rgba(0xe0, 0xa0, 0x40));
             {
                 const ProfScope bottom(ProfSection::DrawBottom);
                 front.drawBottom(sheets, menuSkin);
             }
-            if (DEV && dev.perfPage != 0) {
+            if (perfPage != 0) {
                 const ProfScope self(ProfSection::Dev);
-                overlay.draw((DevOverlay::Page)(dev.perfPage - 1)); // (the frames before this one)
+                overlay.draw((DevOverlay::Page)(perfPage - 1)); // (the frames before this one)
             }
         }
         {

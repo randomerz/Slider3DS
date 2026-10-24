@@ -19,6 +19,7 @@ constexpr uint32_t SLIDER_FILL = plat::rgba(0x99, 0x99, 0x99);
 constexpr uint32_t TEXT_DARK = palette::DARK;
 constexpr uint32_t TEXT_LIGHT = palette::OFF_WHITE;
 constexpr uint32_t TEXT_GRAY = palette::GRAY;
+constexpr uint32_t TEXT_DISABLED = plat::rgba(0x4d, 0x4d, 0x4d); // (a grayed-out option, on the dark panel)
 // Button24's bottom 2 px are its shaded edge: labels center on the face above it.
 constexpr int BUTTON_EDGE = 2;
 constexpr int HANDLE_W = 3; // ui_slider's handles
@@ -168,8 +169,8 @@ void MenuSkin::drawButton(int x, int y, int w, int h, std::string_view label, bo
     drawText(label, x + (w - font_.textWidth(label)) / 2, y + (h - BUTTON_EDGE) / 2 + drop, enabled ? TEXT_DARK : TEXT_GRAY);
 }
 
-void MenuSkin::drawLabel(std::string_view text, int x, int cy, bool selected) const {
-    drawText(text, x, cy, selected ? TEXT_LIGHT : TEXT_GRAY);
+void MenuSkin::drawLabel(std::string_view text, int x, int cy, bool selected, bool enabled) const {
+    drawText(text, x, cy, !enabled ? TEXT_DISABLED : selected ? TEXT_LIGHT : TEXT_GRAY);
 }
 
 void MenuSkin::drawSlider(int x, int y, int w, float value, bool selected) const {

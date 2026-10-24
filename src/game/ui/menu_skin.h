@@ -45,8 +45,9 @@ public:
     // (Continue without a profile).
     void drawButton(int x, int y, int w, int h, std::string_view label, bool selected, bool pressed,
                     int bracketOut = 0, bool enabled = true) const;
-    // An option's label, left-aligned at x, centered on cy: gray, light when selected.
-    void drawLabel(std::string_view text, int x, int cy, bool selected) const;
+    // An option's label, left-aligned at x, centered on cy: gray, light when selected, dark gray
+    // when it can't be used.
+    void drawLabel(std::string_view text, int x, int cy, bool selected, bool enabled = true) const;
     // A slider (w x SLIDER_H at (x, y)) at `value` 0-1; `selected` swaps its handle.
     void drawSlider(int x, int y, int w, float value, bool selected) const;
     // The value a touch at UI x `touchX` (fractional) sets on a slider at x, `w` wide (0-1, clamped):

@@ -2,16 +2,19 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string>
+#include <vector>
 
 using Item = PauseMenu::Item;
 using Kind = PauseMenu::Kind;
 using Page = PauseMenu::Page;
 
 // What a button does.
-enum class Act { None, Resume, Quit, Open, Back };
+enum class Act { None, Resume, Quit, Open, Back, Respawn };
 
 // An item: its kind and label; a button's action (and the page it opens); an option's setting (a
-// toggle's flag, a slider's 0-1 value: Settings::snap keeps it on its steps).
+// toggle's flag — a setting's or a cheat's —, a slider's 0-1 value: Settings::snap keeps it on its
+// steps); whether it's a cheat (usable only with Settings::cheats on).
 struct PauseMenu::ItemDef {
     Item item;
     Kind kind;
@@ -20,11 +23,15 @@ struct PauseMenu::ItemDef {
     Page opens = Page::Paused;
     bool Settings::*flag = nullptr;
     float Settings::*value = nullptr;
+    bool Cheats::*cheat = nullptr;
+    bool isCheat = false;
 };
 
 namespace {
 
 using ItemDef = PauseMenu::ItemDef;
+
+const std::string NO_COLLECTIBLES = "No Collectibles!";
 
 // The layout, in UI px (MenuSkin's grid: the bottom screen is 160x120 of them): the original's
 // PausePanel arrangement, a title over a column of buttons, sized to fill the touch screen.
@@ -36,12 +43,17 @@ constexpr int TITLE_Y = 20; // the title's middle
 // (compact, so a page of four options and Back fits under the title).
 constexpr int FIRST_TOP = 34;
 constexpr int BUTTON_W = 120, BUTTON_H = 18, BUTTON_SLOT = 24;
+// A page that would run off the screen at that spacing packs closer: buttons 3 px apart from 32.
+constexpr int COMPACT_TOP = 32, COMPACT_BUTTON_SLOT = 21;
 constexpr int ROW_SLOT = 15;
 // Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the
 // row's ends): the slider at the right end, the toggle centered under it. Selected: a light label.
 constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X, ROW_PAD = 4;
 constexpr int SLIDER_W = 60, SLIDER_X = ROW_X + ROW_W - ROW_PAD - SLIDER_W;
 constexpr int CONTROL_CENTER_X = SLIDER_X + SLIDER_W / 2;
+// A picker: "< name >" from the row's start to PICKER_END_X, its button where the toggle goes.
+constexpr int PICKER_BUTTON_W = 28, PICKER_BUTTON_H = 11;
+constexpr int PICKER_END_X = CONTROL_CENTER_X - PICKER_BUTTON_W / 2 - 3;
 
 // A page: its title, items, and parent (B and Back go there, selecting `returnTo`; none for the top).
 struct PageDef {
@@ -52,6 +64,7 @@ struct PageDef {
     bool hasParent;
     Page parent;
     Item returnTo;
+    bool compact = false;
 };
 
 constexpr ItemDef PAUSED_ITEMS[] = {
@@ -62,6 +75,7 @@ constexpr ItemDef PAUSED_ITEMS[] = {
 constexpr ItemDef OPTIONS_ITEMS[] = {
     {PauseMenu::GENERAL, Kind::Button, "General", Act::Open, Page::General},
     {PauseMenu::SOUND, Kind::Button, "Sound", Act::Open, Page::Sound},
+    {PauseMenu::CHEATS, Kind::Button, "Cheats", Act::Open, Page::Cheats},
     {PauseMenu::OPTIONS_BACK, Kind::Button, "Back", Act::Back},
 };
 constexpr ItemDef slider(Item item, const char* label, float Settings::*value) {
@@ -84,11 +98,19 @@ constexpr ItemDef SOUND_ITEMS[] = {
     slider(PauseMenu::AMBIENCE_VOLUME, "Ambience", &Settings::ambienceVolume),
     {PauseMenu::SOUND_BACK, Kind::Button, "Back", Act::Back},
 };
+constexpr ItemDef CHEATS_ITEMS[] = {
+    toggle(PauseMenu::CHEATS_ENABLED, "Enable Cheats", &Settings::cheats),
+    {PauseMenu::GIVE, Kind::Picker, "Give", Act::None, Page::Paused, nullptr, nullptr, nullptr, true},
+    {PauseMenu::NOCLIP, Kind::Toggle, "NoClip", Act::None, Page::Paused, nullptr, nullptr, &Cheats::noclip, true},
+    {PauseMenu::RESPAWN, Kind::Button, "Respawn", Act::Respawn, Page::Paused, nullptr, nullptr, nullptr, true},
+    {PauseMenu::CHEATS_BACK, Kind::Button, "Back", Act::Back},
+};
 constexpr PageDef PAGES[] = {
     {Page::Paused, "Paused", PAUSED_ITEMS, (int)std::size(PAUSED_ITEMS), false, Page::Paused, PauseMenu::RESUME},
-    {Page::Options, "Options", OPTIONS_ITEMS, (int)std::size(OPTIONS_ITEMS), true, Page::Paused, PauseMenu::OPTIONS},
+    {Page::Options, "Options", OPTIONS_ITEMS, (int)std::size(OPTIONS_ITEMS), true, Page::Paused, PauseMenu::OPTIONS, true},
     {Page::General, "General", GENERAL_ITEMS, (int)std::size(GENERAL_ITEMS), true, Page::Options, PauseMenu::GENERAL},
     {Page::Sound, "Sound", SOUND_ITEMS, (int)std::size(SOUND_ITEMS), true, Page::Options, PauseMenu::SOUND},
+    {Page::Cheats, "Cheats", CHEATS_ITEMS, (int)std::size(CHEATS_ITEMS), true, Page::Options, PauseMenu::CHEATS, true},
 };
 
 // PAGES is indexed by Page; each Item is one row on one page (itemBox finds it by its Item).
@@ -110,14 +132,21 @@ constexpr bool itemsOnePageEach() {
         }
     return rows == PauseMenu::ITEM_COUNT;
 }
-// Each row has what its kind needs: a button an action, a slider a value, a toggle a flag.
+// Each row has what its kind needs: a button an action, a slider a value, a toggle one flag (a
+// cheat's only on a cheat), the picker nothing (it's Give's); every page's first item always usable
+// (a page opens on it).
 constexpr bool itemsConsistent() {
     for (const PageDef& p : PAGES)
         for (int i = 0; i < p.count; i++) {
             const ItemDef& d = p.items[i];
-            if (d.kind == Kind::Button ? d.act == Act::None
-                                       : d.kind == Kind::Slider ? d.value == nullptr : d.flag == nullptr)
-                return false;
+            bool ok = i > 0 || (!d.isCheat && !(d.act == Act::Open && d.opens == Page::Cheats));
+            switch (d.kind) {
+            case Kind::Button: ok = ok && d.act != Act::None; break;
+            case Kind::Slider: ok = ok && d.value != nullptr; break;
+            case Kind::Toggle: ok = ok && (d.flag != nullptr) != (d.cheat != nullptr) && (d.cheat == nullptr || d.isCheat); break;
+            case Kind::Picker: ok = ok && d.item == PauseMenu::GIVE && d.isCheat; break;
+            }
+            if (!ok) return false;
         }
     return true;
 }
@@ -139,14 +168,16 @@ const PageDef& find(Item item, int& index) {
     return PAGES[0]; // (every Item is on a page)
 }
 
-int slotHeight(const ItemDef& def) { return def.kind == Kind::Button ? BUTTON_SLOT : ROW_SLOT; }
+int slotHeight(const PageDef& p, const ItemDef& def) {
+    return def.kind != Kind::Button ? ROW_SLOT : p.compact ? COMPACT_BUTTON_SLOT : BUTTON_SLOT;
+}
 
 // Item `index`'s box on page `p` (UI px): a button's, or an option's row (its whole slot).
 PauseMenu::Box uiBox(const PageDef& p, int index) {
-    int top = FIRST_TOP;
-    for (int i = 0; i < index; i++) top += slotHeight(p.items[i]);
+    int top = p.compact ? COMPACT_TOP : FIRST_TOP;
+    for (int i = 0; i < index; i++) top += slotHeight(p, p.items[i]);
     const ItemDef& def = p.items[index];
-    const int cy = top + slotHeight(def) / 2;
+    const int cy = top + slotHeight(p, def) / 2;
     if (def.kind == Kind::Button) return {CENTER_X - BUTTON_W / 2, cy - BUTTON_H / 2, BUTTON_W, BUTTON_H};
     return {ROW_X, top, ROW_W, ROW_SLOT};
 }
@@ -161,6 +192,8 @@ PauseMenu::Box uiControl(const PageDef& p, int index) {
     case Kind::Toggle:
         return {CONTROL_CENTER_X - MenuSkin::TOGGLE_SIZE / 2, cy - MenuSkin::TOGGLE_SIZE / 2, MenuSkin::TOGGLE_SIZE,
                 MenuSkin::TOGGLE_SIZE};
+    case Kind::Picker:
+        return {CONTROL_CENTER_X - PICKER_BUTTON_W / 2, cy - PICKER_BUTTON_H / 2, PICKER_BUTTON_W, PICKER_BUTTON_H};
     case Kind::Button: break;
     }
     return row;
@@ -184,9 +217,11 @@ PauseMenu::Box PauseMenu::controlBox(Item item) {
 
 PauseMenu::Item PauseMenu::cursor() const { return pageDef(page_).items[cursor_].item; }
 
-void PauseMenu::open(Page start) {
+void PauseMenu::open(Page start, Cheats* cheats) {
     open_ = true;
     root_ = start;
+    cheats_ = cheats;
+    give_ = 0;
     go(start, pageDef(start).items[0].item);
     tap_.release(); // (a touch held when the menu opens isn't a tap on it)
 }
@@ -212,17 +247,39 @@ PauseMenu::Action PauseMenu::back() {
     return Action::None;
 }
 
-int PauseMenu::itemAt(int x, int y) const {
+int PauseMenu::itemAt(int x, int y, const Settings& settings) const {
     const PageDef& p = pageDef(page_);
     for (int i = 0; i < p.count; i++)
-        if (uiBox(p, i).contains(x, y)) return i;
+        if (uiBox(p, i).contains(x, y)) return enabled(p.items[i], settings) ? i : -1;
     return -1;
 }
 
+bool PauseMenu::enabled(const ItemDef& def, const Settings& settings) const {
+    if (def.act == Act::Open && def.opens == Page::Cheats) return cheats_ != nullptr;
+    return !def.isCheat || (cheats_ != nullptr && settings.cheats);
+}
+
+bool PauseMenu::flagOn(const ItemDef& def, const Settings& settings) const {
+    if (def.cheat) return cheats_ != nullptr && cheats_->*def.cheat;
+    return settings.*def.flag;
+}
+
+void PauseMenu::flip(const ItemDef& def, Settings& settings) {
+    if (def.cheat) cheats_->*def.cheat = !(cheats_->*def.cheat);
+    else settings.*def.flag = !(settings.*def.flag);
+}
+
 PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
+    if (!enabled(def, settings)) return Action::None;
     if (def.act != Act::Quit) confirmQuit_ = false;
     if (def.kind != Kind::Slider) clicked_ = true;
-    if (def.kind == Kind::Toggle) settings.*def.flag = !(settings.*def.flag);
+    if (def.kind == Kind::Toggle) flip(def, settings);
+    if (def.kind == Kind::Picker && !cheats_->collectibles.empty()) { // ToggleCurrentCollectible
+        std::vector<int>& marked = cheats_->toGive;
+        const auto it = std::find(marked.begin(), marked.end(), give_);
+        if (it != marked.end()) marked.erase(it);
+        else marked.push_back(give_);
+    }
     switch (def.act) {
     case Act::None: break; // (an option; a slider moves with left / right or the stylus)
     case Act::Resume:
@@ -237,16 +294,23 @@ PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
         break;
     case Act::Open: go(def.opens, pageDef(def.opens).items[0].item); break;
     case Act::Back: return back();
+    case Act::Respawn: cheats_->respawn = true; break;
     }
     return Action::None;
 }
 
 void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
+    if (!enabled(def, settings)) return;
     if (def.kind == Kind::Toggle) {
-        settings.*def.flag = !(settings.*def.flag);
+        flip(def, settings);
         clicked_ = true;
     }
     if (def.kind == Kind::Slider) settings.*def.value = Settings::snap(settings.*def.value + dir / (float)Settings::STEPS);
+    if (def.kind == Kind::Picker && !cheats_->collectibles.empty()) { // Increment / DecrementCollectiblesList: wrapping
+        const int n = (int)cheats_->collectibles.size();
+        give_ = (give_ + dir + n) % n;
+        clicked_ = true;
+    }
 }
 
 PauseMenu::Action PauseMenu::update(const plat::Input& in, Settings& settings) {
@@ -264,9 +328,12 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
     }
     if (in.pressed & plat::BTN_B) return back();
     const PageDef& p = pageDef(page_);
+    // Off a cheat that was just turned off (Enable Cheats): onto the next usable one up.
+    while (cursor_ > 0 && !enabled(p.items[cursor_], settings)) cursor_--;
     const int move = ((in.pressed & plat::DIR_DOWN) ? 1 : 0) - ((in.pressed & plat::DIR_UP) ? 1 : 0);
-    const int next = std::clamp(cursor_ + move, 0, p.count - 1); // (stops at the ends, as the title menu)
-    if (next != cursor_) {
+    int next = cursor_ + move; // (the next usable one that way; stops at the ends, as the title menu)
+    while (next >= 0 && next < p.count && !enabled(p.items[next], settings)) next += move;
+    if (move != 0 && next >= 0 && next < p.count) {
         cursor_ = next;
         confirmQuit_ = false;
     }
@@ -275,10 +342,11 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
     if (in.pressed & plat::DIR_RIGHT) step(p.items[cursor_], 1, settings);
 
     const bool wasSliding = sliding_;
-    const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y); });
+    const MenuTap::Frame f = tap_.update(in, S, [&](int x, int y) { return itemAt(x, y, settings); });
     if (f.down >= 0) {
         const ItemDef& def = p.items[f.down];
         cursor_ = f.down;
+        tapX_ = in.touchX / S;
         if (def.act != Act::Quit) confirmQuit_ = false;
         if (def.kind == Kind::Slider) {
             // Only the slider drags, though a finger may land a little above or below it.
@@ -291,7 +359,15 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
         const Box s = uiControl(p, tap_.pressed());
         settings.*p.items[tap_.pressed()].value = Settings::snap(MenuSkin::sliderValueAt(in.touchX / (float)S, s.x, s.w));
     }
-    if (f.tapped >= 0 && !wasSliding) return activate(p.items[f.tapped], settings);
+    if (f.tapped >= 0 && !wasSliding) {
+        const ItemDef& def = p.items[f.tapped];
+        // The picker: its button marks; a tap on its name's left / right half picks the one before / after.
+        if (def.kind == Kind::Picker && tapX_ < uiControl(p, f.tapped).x) {
+            step(def, tapX_ < (ROW_X + PICKER_END_X) / 2 ? -1 : 1, settings);
+            return Action::None;
+        }
+        return activate(def, settings);
+    }
     return Action::None;
 }
 
@@ -301,21 +377,34 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
     for (int i = 0; i < p.count; i++) {
         const ItemDef& def = p.items[i];
         const Box b = uiBox(p, i), c = uiControl(p, i);
-        const bool selected = i == cursor_;
+        const bool selected = i == cursor_, on = enabled(def, settings);
+        const int cy = b.y + b.h / 2;
         switch (def.kind) {
         case Kind::Button: {
             const char* label = def.act == Act::Quit && confirmQuit_ ? "Really quit?" : def.label;
-            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, tap_.held(i), bounce_.out());
+            skin.drawButton(b.x, b.y, b.w, b.h, label, selected, tap_.held(i), bounce_.out(), on);
             break;
         }
         case Kind::Slider:
-            skin.drawLabel(def.label, b.x + ROW_PAD, b.y + b.h / 2, selected);
+            skin.drawLabel(def.label, b.x + ROW_PAD, cy, selected);
             skin.drawSlider(c.x, c.y, c.w, settings.*def.value, selected);
             break;
         case Kind::Toggle:
-            skin.drawLabel(def.label, b.x + ROW_PAD, b.y + b.h / 2, selected);
-            skin.drawToggle(c.x, c.y, settings.*def.flag, selected);
+            skin.drawLabel(def.label, b.x + ROW_PAD, cy, selected, on);
+            skin.drawToggle(c.x, c.y, flagOn(def, settings), selected);
             break;
+        case Kind::Picker: {
+            const bool any = cheats_ != nullptr && !cheats_->collectibles.empty();
+            const std::string& name = any ? cheats_->collectibles[give_] : NO_COLLECTIBLES;
+            const int left = b.x + ROW_PAD, right = PICKER_END_X;
+            skin.drawLabel("<", left, cy, selected, on);
+            skin.drawLabel(">", right - skin.textWidth(">"), cy, selected, on);
+            skin.drawLabel(name, (left + right - skin.textWidth(name)) / 2, cy, selected, on);
+            const std::vector<int>* marked = any ? &cheats_->toGive : nullptr;
+            const bool undo = marked && std::find(marked->begin(), marked->end(), give_) != marked->end();
+            skin.drawButton(c.x, c.y, c.w, c.h, undo ? "Undo" : "Give", false, tap_.held(i) && tapX_ >= c.x, 0, on);
+            break;
+        }
         }
     }
 }

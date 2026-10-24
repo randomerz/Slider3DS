@@ -14,6 +14,7 @@
 
 Frontend::Frontend(const Area& area, const TitleArt& art, const EndArt& endArt, Settings& settings)
     : area_(area), art_(art), endArt_(endArt), settings_(settings), savedSettings_(settings), world_(area, settings) {
+    for (const CollectibleDef& c : area.collectibles) cheats_.collectibles.push_back(c.name);
     toTitle();
 }
 
@@ -22,6 +23,8 @@ void Frontend::startGame(SaveProfile profile, int slot) {
     // scene isn't ported: a new game starts in the Village).
     profile_ = std::move(profile);
     slot_ = slot;
+    cheats_.noclip = false; // (the scene's new Player collides; nothing marked carries over)
+    cheats_.toGive.clear();
     world_.audio.take(); // (left from the World before this scene: its construction's Starts)
     world_.load(profile_);
     artifactUI_.init(area_, world_.artifact);
@@ -70,11 +73,19 @@ void Frontend::shutdown() {
     if (mode_ == Mode::Game) saveGame(); // (GameSaver.OnApplicationQuit)
 }
 
-bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool noclip) {
+bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
     if (pause_.isOpen()) {
         const PauseMenu::Action action = pause_.update(in, settings_);
         if (pause_.clicked()) audio_.play(sounds::UI_CLICK);
         if (action != PauseMenu::Action::None) saveSettingsIfChanged();
+        if (cheats_.respawn) {
+            cheats_.respawn = false;
+            cheats::respawnPlayer(world_);
+        }
+        if (action == PauseMenu::Action::Resume && mode_ == Mode::Game) { // (CheckCheatsOnPauseClosed)
+            for (int index : cheats_.toGive) cheats::giveCollectible(world_, index);
+            cheats_.toGive.clear();
+        }
         if (action == PauseMenu::Action::Quit) { // (QuitHandler: save, then the main menu)
             saveGame();
             world_.sfx.end(world_); // (the scene unloads: its ambience stops)
@@ -116,7 +127,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
         return true;
     }
     if ((in.pressed & plat::BTN_START) && !world_.playerLocked()) {
-        pause_.open();
+        pause_.open(PauseMenu::Page::Paused, &cheats_);
         artifactUI_.releaseStylus();
         return true;
     }
@@ -129,7 +140,8 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
     }
     FrameInput frame{moveX, moveY, (in.held & plat::BTN_A) != 0};
     if (in.pressed & plat::BTN_A) world_.action();
-    world_.update(FRAME_DT, frame, noclip);
+    if (noclip()) cheats::markUsed(world_);
+    world_.update(FRAME_DT, frame, noclip());
     audio_.takeFrom(world_.audio);
     if (world_.saveRequested) {
         world_.saveRequested = false;
@@ -145,7 +157,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY, bool nocl
     return true;
 }
 
-void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin, bool showInactive) const {
+void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin) const {
     if (mode_ == Mode::End) {
         end_.drawTop(endArt_);
         return;
@@ -158,7 +170,7 @@ void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSki
     plat::beginScreen(plat::Screen::Top, plat::rgba(area_.background[0], area_.background[1], area_.background[2]));
     float camX, camY;
     world_.camera(camX, camY);
-    view.begin(area_, sheets, camX, camY, plat::TOP_W, plat::TOP_H, world_.frame * FRAME_DT, showInactive);
+    view.begin(area_, sheets, camX, camY, plat::TOP_W, plat::TOP_H, world_.frame * FRAME_DT, false);
     view.draw(world_);
     drawTopOverlays(world_, skin);
     if (pause_.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));

@@ -25,13 +25,14 @@ constexpr Field FIELDS[] = {
     {"sfxVolume", nullptr, &Settings::sfxVolume},
     {"musicVolume", nullptr, &Settings::musicVolume},
     {"ambienceVolume", nullptr, &Settings::ambienceVolume},
+    {"cheats", &Settings::cheats, nullptr},
 };
 // Every member is in FIELDS: binding Settings' members stops compiling when one is added (add it to
 // FIELDS, then a name here).
 constexpr size_t memberCount() {
     Settings s;
-    [[maybe_unused]] auto& [a, b, c, d, e, f, g, h] = s;
-    return 8;
+    [[maybe_unused]] auto& [a, b, c, d, e, f, g, h, i] = s;
+    return 9;
 }
 static_assert(memberCount() == std::size(FIELDS), "a Settings member missing from FIELDS");
 

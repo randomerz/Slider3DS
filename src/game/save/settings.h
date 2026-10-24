@@ -23,6 +23,9 @@ struct Settings {
     // The buses' volumes, 0-1, linear (AudioManager.SetMasterVolume / SFX "Sound" / Music /
     // Ambience): game/audio's Audio::setVolumes. Port: max by default (Unity: 0.5), as the 3DS has a volume slider.
     float masterVolume = 1, sfxVolume = 1, musicVolume = 1, ambienceVolume = 1;
+    // A port addition: the pause menu's Cheats page works only with this on (game/world/cheats), and
+    // so do dev builds' SELECT shortcuts (the perf overlay, noclip).
+    bool cheats = false;
     // (A new setting: add it to FIELDS in settings.cpp too, or it's neither saved nor compared; a
     // member count there stops the build until it is.)
 

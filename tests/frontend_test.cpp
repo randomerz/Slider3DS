@@ -258,7 +258,7 @@ TEST(frontend_the_ending_draws_and_taps_main_menu_on_release) {
     const plat::Input onButton = touchAt(b.x + b.w / 2, b.y + b.h / 2);
     auto step = [&](const plat::Input& in) {
         f.update(in, 0, 0);
-        f.drawTop(view, sheets, skin, false);
+        f.drawTop(view, sheets, skin);
         f.drawBottom(sheets, skin);
         testResetDrawCalls();
     };
@@ -321,6 +321,64 @@ TEST(frontend_options_from_the_title) {
     CHECK(!f.pauseMenu().isOpen() && f.mode() == Frontend::Mode::Title);
     CHECK(f.update(touchAt(quit.x + 4, quit.y + 4), 0, 0) && f.update({}, 0, 0));
     CHECK(testUserFiles().count(Settings::FILE_NAME) == 1 && Settings::load().autoMove); // (saved as it closed)
+    testUserFiles().clear();
+}
+
+TEST(frontend_cheats_page_respawns_gives_on_resume_and_noclips) {
+    testUserFiles().clear();
+    Settings settings;
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
+    showMenu(f);
+    tapTitle(f, TitleMenu::OPTIONS); // (from the title: no Cheats page)
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    CHECK(f.pauseMenu().cursor() == PauseMenu::OPTIONS_BACK);
+    f.update(buttons(plat::BTN_B), 0, 0);
+    newGame(f);
+    const float startX = f.world().player.x, startY = f.world().player.y;
+    for (int i = 0; i < 30; i++) f.update({}, 1, 0);
+    CHECK(f.world().player.x != startX);
+
+    f.update(buttons(plat::BTN_START), 0, 0);
+    for (uint32_t b : {plat::BTN_DOWN, plat::BTN_A, plat::BTN_DOWN, plat::BTN_DOWN, plat::BTN_A}) f.update(buttons(b), 0, 0);
+    CHECK(f.pauseMenu().page() == PauseMenu::Page::Cheats);
+    f.update(buttons(plat::BTN_DOWN), 0, 0); // (cheats off: straight to Back)
+    CHECK(f.pauseMenu().cursor() == PauseMenu::CHEATS_BACK);
+    f.update(buttons(plat::BTN_UP), 0, 0);
+    f.update(buttons(plat::BTN_A), 0, 0); // Enable Cheats
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    CHECK(settings.cheats && f.pauseMenu().cursor() == PauseMenu::GIVE);
+    const int slider2 = villageArea().collectible("Slider 2");
+    while (f.pauseMenu().giveIndex() != slider2) f.update(buttons(plat::BTN_LEFT), 0, 0);
+    f.update(buttons(plat::BTN_A), 0, 0); // marked
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    f.update(buttons(plat::BTN_DOWN), 0, 0);
+    CHECK(f.pauseMenu().cursor() == PauseMenu::RESPAWN && !f.world().state.flag(cheats::USED_CHEATS_FLAG));
+    f.update(buttons(plat::BTN_A), 0, 0); // back on the Default spawn, still paused
+    CHECK(f.world().player.x == startX && f.world().player.y == startY && f.pauseMenu().isOpen());
+    CHECK(f.world().state.flag(cheats::USED_CHEATS_FLAG) && !f.cheats().respawn);
+    CHECK(!f.world().state.hasCollectible("Slider 2", "Village"));
+    f.update(buttons(plat::BTN_START), 0, 0); // Resume: Slider 2 appears at the player's feet, picked up
+    CHECK(f.cheats().toGive.empty());
+    frames(f, PICKUP_FRAMES);
+    CHECK(f.world().state.hasCollectible("Slider 2", "Village"));
+    frames(f, 200); // (the pick-up's over)
+
+    // NoClip: the player walks through the house's wall (left of the start), only while cheats are on.
+    auto walkLeft = [&]() {
+        f.world().placeAtStart();
+        for (int i = 0; i < 180; i++) f.update({}, -1, 0);
+        return startX - f.world().player.x;
+    };
+    const float blocked = walkLeft();
+    f.cheats().noclip = true;
+    CHECK(walkLeft() > blocked + 1);
+    settings.cheats = false;
+    CHECK(!f.noclip() && std::fabs(walkLeft() - blocked) < 1e-3f);
+    settings.cheats = true;
+    f.cheats().toGive = {0};
+    f.bootDirect(); // a new game: noclip off, nothing left marked
+    CHECK(!f.noclip() && f.cheats().toGive.empty() && !f.world().state.flag(cheats::USED_CHEATS_FLAG));
     testUserFiles().clear();
 }
 
@@ -395,7 +453,7 @@ TEST(frontend_draws_every_screen) {
     view.setFont(&font);
     auto step = [&](const plat::Input& in) {
         f.update(in, 0, 0);
-        f.drawTop(view, sheets, skin, false);
+        f.drawTop(view, sheets, skin);
         f.drawBottom(sheets, skin);
         testResetDrawCalls();
     };

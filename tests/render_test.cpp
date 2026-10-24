@@ -596,6 +596,29 @@ TEST(render_pause_menu_goldens) {
     menu.update(in, s);
     CHECK(menu.isOpen() && menu.cursor() == PauseMenu::RESUME);
     shoot("pause_menu_pressed");
+
+    // In the game: Options with Cheats usable; the Cheats page grayed out, then enabled (Give's
+    // second collectible marked, NoClip on, Respawn selected).
+    Cheats cheats;
+    cheats.collectibles = {"Artifact", "Slider 3", "Boating License"};
+    menu.open(PauseMenu::Page::Paused, &cheats);
+    menu.update(plat::Input{}, s);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A);
+    press(plat::BTN_DOWN);
+    press(plat::BTN_DOWN);
+    shoot("pause_menu_options_in_game");
+    press(plat::BTN_A);
+    shoot("pause_menu_cheats_off");
+    press(plat::BTN_A); // Enable Cheats
+    press(plat::BTN_DOWN);
+    press(plat::BTN_RIGHT);
+    press(plat::BTN_A); // Give: Slider 3 marked
+    press(plat::BTN_DOWN);
+    press(plat::BTN_A); // NoClip
+    press(plat::BTN_DOWN);
+    CHECK(s.cheats && cheats.noclip && cheats.toGive == std::vector<int>{1} && menu.cursor() == PauseMenu::RESPAWN);
+    shoot("pause_menu_cheats_on");
 }
 
 TEST(render_title_screen_goldens) {

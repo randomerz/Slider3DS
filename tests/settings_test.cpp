@@ -57,6 +57,7 @@ TEST(settings_round_trip) {
     CHECK(s.masterVolume == 1 && s.sfxVolume == 1 && s.musicVolume == 1 && s.ambienceVolume == 1); // (port: max, not 0.5: the 3DS has its own volume slider)
     s.autoMove = true;
     s.bigText = true;
+    s.cheats = true;
     s.setScreenShake(0.3f);
     s.screenEffects = Settings::snap(0.2f);
     s.masterVolume = Settings::snap(0.9f);
@@ -227,9 +228,10 @@ TEST(pause_menu_stylus) {
 TEST(pause_menu_boxes_fit_and_dont_overlap) {
     const std::vector<std::vector<Menu::Item>> pages = {
         {Menu::RESUME, Menu::OPTIONS, Menu::QUIT},
-        {Menu::GENERAL, Menu::SOUND, Menu::OPTIONS_BACK},
+        {Menu::GENERAL, Menu::SOUND, Menu::CHEATS, Menu::OPTIONS_BACK},
         {Menu::SCREEN_SHAKE, Menu::SCREEN_EFFECTS, Menu::AUTO_MOVE, Menu::BIGGER_TEXT, Menu::GENERAL_BACK},
         {Menu::MASTER_VOLUME, Menu::SFX_VOLUME, Menu::MUSIC_VOLUME, Menu::AMBIENCE_VOLUME, Menu::SOUND_BACK},
+        {Menu::CHEATS_ENABLED, Menu::GIVE, Menu::NOCLIP, Menu::RESPAWN, Menu::CHEATS_BACK},
     };
     for (const auto& page : pages)
         for (size_t i = 0; i < page.size(); i++) {
@@ -241,13 +243,75 @@ TEST(pause_menu_boxes_fit_and_dont_overlap) {
                 CHECK(prev.y + prev.h <= a.y);
             }
         }
-    // Each option's control sits inside its row.
+    // Each option's control sits inside its row; a button's brackets (1 px past it) stay on screen.
+    for (Menu::Item item : {Menu::OPTIONS_BACK, Menu::CHEATS_BACK}) {
+        const Menu::Box b = Menu::itemBox(item);
+        CHECK(b.y + b.h + MenuSkin::UI_SCALE <= plat::BOTTOM_H);
+    }
+    const Menu::Box give = Menu::itemBox(Menu::GIVE), giveButton = Menu::controlBox(Menu::GIVE);
+    CHECK(give.contains(giveButton.x, giveButton.y) && give.contains(giveButton.x + giveButton.w - 1, giveButton.y + giveButton.h - 1));
     const Menu::Box shake = Menu::itemBox(Menu::SCREEN_SHAKE), slider = Menu::controlBox(Menu::SCREEN_SHAKE);
     const Menu::Box autoRow = Menu::itemBox(Menu::AUTO_MOVE), toggle = Menu::controlBox(Menu::AUTO_MOVE);
     CHECK(shake.contains(slider.x, slider.y) && shake.contains(slider.x + slider.w - 1, slider.y + slider.h - 1));
     CHECK(autoRow.contains(toggle.x, toggle.y) && autoRow.contains(toggle.x + toggle.w - 1, toggle.y + toggle.h - 1));
     // The toggle is centered under the slider (Label Toggle Pair: x 165 = the slider's middle).
     CHECK(toggle.x * 2 + toggle.w == slider.x * 2 + slider.w);
+}
+
+TEST(pause_menu_cheats_page) {
+    // Options' Cheats only with the game's cheats; on its page, the cheats are grayed out (skipped,
+    // taps ignored) until Enable Cheats; Give's picker wraps, its name's halves pick, its button marks.
+    Menu menu;
+    Settings s;
+    Cheats cheats;
+    cheats.collectibles = {"A", "B", "C"};
+    openMenu(menu, s); // (no cheats: the title's)
+    CHECK(tapItem(menu, s, Menu::OPTIONS) == Menu::Action::None && menu.page() == Menu::Page::Options);
+    CHECK(tapItem(menu, s, Menu::CHEATS) == Menu::Action::None && menu.page() == Menu::Page::Options);
+    menu.update(press(plat::BTN_DOWN), s);
+    menu.update(press(plat::BTN_DOWN), s); // (skips Cheats)
+    CHECK(menu.cursor() == Menu::OPTIONS_BACK);
+
+    menu.open(Menu::Page::Paused, &cheats);
+    menu.update(plat::Input{}, s);
+    tapItem(menu, s, Menu::OPTIONS);
+    CHECK(tapItem(menu, s, Menu::CHEATS) == Menu::Action::None && menu.page() == Menu::Page::Cheats);
+    CHECK(menu.cursor() == Menu::CHEATS_ENABLED);
+    tapItem(menu, s, Menu::NOCLIP);
+    tapItem(menu, s, Menu::RESPAWN);
+    menu.update(press(plat::BTN_RIGHT), s); // (Enable Cheats: a toggle, flipped by left / right)
+    CHECK(s.cheats && !cheats.noclip && !cheats.respawn && menu.cursor() == Menu::CHEATS_ENABLED);
+    menu.update(press(plat::BTN_RIGHT), s);
+    CHECK(!s.cheats);
+    menu.update(press(plat::BTN_A), s);
+
+    menu.update(press(plat::BTN_DOWN), s);
+    CHECK(menu.cursor() == Menu::GIVE && menu.giveIndex() == 0);
+    menu.update(press(plat::BTN_LEFT), s);
+    CHECK(menu.giveIndex() == 2 && menu.clicked()); // (wraps, with a click)
+    menu.update(press(plat::BTN_RIGHT), s);
+    menu.update(press(plat::BTN_RIGHT), s);
+    CHECK(menu.giveIndex() == 1);
+    const Menu::Box row = Menu::itemBox(Menu::GIVE), button = Menu::controlBox(Menu::GIVE);
+    tap(menu, s, row.x + 6, row.y + row.h / 2); // the name's left half: the one before
+    CHECK(menu.giveIndex() == 0 && cheats.toGive.empty());
+    tap(menu, s, button.x - 6, row.y + row.h / 2); // its right half: the one after
+    CHECK(menu.giveIndex() == 1);
+    tap(menu, s, button.x + button.w / 2, button.y + button.h / 2);
+    CHECK(cheats.toGive == std::vector<int>{1});
+    menu.update(press(plat::BTN_A), s); // (Undo)
+    CHECK(cheats.toGive.empty());
+    menu.update(press(plat::BTN_A), s);
+    CHECK(tapItem(menu, s, Menu::NOCLIP) == Menu::Action::None && cheats.noclip);
+    CHECK(tapItem(menu, s, Menu::RESPAWN) == Menu::Action::None && cheats.respawn && menu.isOpen());
+
+    // Cheats turned off with the cursor on one: it moves back up onto a usable item.
+    cheats.respawn = false;
+    s.cheats = false;
+    menu.update(plat::Input{}, s);
+    CHECK(menu.cursor() == Menu::CHEATS_ENABLED && cheats.toGive == std::vector<int>{1});
+    menu.open(Menu::Page::Paused, &cheats); // (Give starts over on the first, as OnEnable)
+    CHECK(menu.giveIndex() == 0);
 }
 
 TEST(menu_skin_slider_touch_finds_the_drawn_handle) {

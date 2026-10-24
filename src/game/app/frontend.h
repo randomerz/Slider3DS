@@ -6,6 +6,9 @@
 //          the title plays its intro again (Unity reloads the MainMenu scene).
 //   Game:  the World on the top screen, the Artifact (game/ui/artifact_ui) on the bottom; START
 //          pauses (game/ui/pause_menu), whose Quit saves and returns to the title (QuitHandler).
+//          Its Cheats page changes the game's Cheats (game/world/cheats), which this runs: Respawn at
+//          once, the marked collectibles given on Resume, noclip while it's on (and Settings::cheats);
+//          a new game starts with none.
 //   End:   the port's ending (game/ui/end_screen), once the game faded out through one of the
 //          area's exits (World::leaveArea, which has it saved); then the title.
 // The save profile is written as Unity's GameSaver / SaveSystem.SaveGame do: once the scene has
@@ -45,17 +48,16 @@ public:
     // Starts on the title screen. `settings` (main's) and the art (loaded) must outlive it.
     Frontend(const Area& area, const TitleArt& art, const EndArt& endArt, Settings& settings);
 
-    // One frame of input. In the game, (moveX, moveY) is where the player walks (each -1..1; main
-    // leaves out what its dev controls use) and `noclip` skips collisions (dev). False once the app
-    // should end (Quit on the title).
-    bool update(const plat::Input& in, float moveX, float moveY, bool noclip = false);
+    // One frame of input. In the game, (moveX, moveY) is where the player walks (each -1..1). False
+    // once the app should end (Quit on the title).
+    bool update(const plat::Input& in, float moveX, float moveY);
     // A scene booted directly (dev): the Village, a new game on a temporary profile (never written).
     void bootDirect();
     // The app is closing: changed Settings and, in the game, the profile are written.
     void shutdown();
 
     // The top screen: the world (or the title's backdrop), its overlays, the pause shade.
-    void drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin, bool showInactive) const;
+    void drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSkin& skin) const;
     // The bottom screen: the pause menu, the title menu, the Artifact or the ending's prompt.
     void drawBottom(const SpriteSheets& sheets, const MenuSkin& skin) const;
 
@@ -69,6 +71,9 @@ public:
     const TitleScreen& titleScreen() const { return screen_; }
     const PauseMenu& pauseMenu() const { return pause_; }
     const ArtifactUI& artifactUI() const { return artifactUI_; }
+    Cheats& cheats() { return cheats_; }
+    const Cheats& cheats() const { return cheats_; }
+    bool noclip() const { return settings_.cheats && cheats_.noclip; } // the player walks through everything
     // What's asked of AudioManager since main last took it.
     AudioCues& audio() { return audio_; }
     // Where sounds are heard from: the camera's target in the game.
@@ -93,6 +98,7 @@ private:
     PauseMenu pause_;
     EndScreen end_;
     ArtifactUI artifactUI_;
+    Cheats cheats_;
     Mode mode_ = Mode::Title;
     AudioCues audio_;
     SaveProfile profile_;
