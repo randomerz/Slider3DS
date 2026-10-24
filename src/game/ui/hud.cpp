@@ -4,7 +4,6 @@
 #include <cmath>
 #include <string>
 
-#include "game/ui/menu_skin.h"
 #include "game/ui/palette.h"
 #include "game/world/world.h"
 #include "platform/platform.h"
@@ -51,15 +50,15 @@ void drawSkipPrompt(const Font& font, int screenW, int screenH, float fill) {
     font.drawText(text, (float)(x + (W - font.textWidth(text)) / 2), (float)baseline, 1, palette::OFF_WHITE);
 }
 
-void drawTopOverlays(const World& world, const MenuSkin& skin) {
-    if (world.dollies.promptShown()) drawSkipPrompt(skin.font(), plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
+void drawTopOverlays(const World& world, const Font& menuFont, const Font& caption) {
+    if (world.dollies.promptShown()) drawSkipPrompt(menuFont, plat::TOP_W, plat::TOP_H, world.dollies.promptFill());
     if (const float box = world.hints.boxAlpha(); box > 0) {
         // HintsPanel: a dark strip along the bottom, its hint centered on one line (PixelTitanZero:
         // the original's 12 is under its 16 px pixel size; the 3DS texts fit the width).
         plat::drawRect(0, plat::TOP_H - HINT_BOX_H, plat::TOP_W, HINT_BOX_H,
                        palette::withAlpha(palette::DARK, alpha(box * HINT_BOX_ALPHA)));
         if (world.hints.shownHint() >= 0)
-            drawCentered(skin.captionFont(), world.hints.shownText(), plat::TOP_W / 2,
+            drawCentered(caption, world.hints.shownText(), plat::TOP_W / 2,
                          plat::TOP_H - HINT_BOX_H / 2, palette::withAlpha(palette::OFF_WHITE, alpha(box * world.hints.textAlpha())));
     }
     if (world.pickup.textShown()) {
@@ -67,7 +66,7 @@ void drawTopOverlays(const World& world, const MenuSkin& skin) {
         // wide for the screen (no Village item is: "Legendary Cheese Burger Acquired!" is), it wraps
         // upward: the last line stays there, clear of the item over the player's head.
         // (wrapped once per caption: it shows for 75 frames)
-        const Font& font = skin.captionFont();
+        const Font& font = caption;
         static std::string wrapped;
         static const Font* wrappedWith = nullptr;
         static std::vector<std::string> lines;

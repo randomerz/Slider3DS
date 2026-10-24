@@ -177,7 +177,7 @@ void Frontend::drawTop(AreaView& view, const SpriteSheets& sheets, const MenuSki
     world_.camera(camX, camY);
     view.begin(area_, sheets, camX, camY, plat::TOP_W, plat::TOP_H, world_.frame * FRAME_DT, false);
     view.draw(world_);
-    drawTopOverlays(world_, skin);
+    drawTopOverlays(world_, skin.font(), skin.captionFont());
     if (pause_.isOpen()) plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, 0x80));
 }
 

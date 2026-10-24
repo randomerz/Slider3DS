@@ -190,11 +190,14 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     const SpritePlacement* playerParts[] = {&area.player.body, pl.onWater ? &area.player.boat : nullptr,
                                             world.promptShown() ? &area.player.actionIndicator : nullptr};
     for (const SpritePlacement* p : playerParts) {
-        if (!p || p->sprite < 0 || !inRange(p->sortLayer)) continue;
+        if (!p || p->sprite < 0) continue;
+        // (the body moves to ScreenEffects during a pick-up: ranged by the layer it's drawn on)
+        const int layer = p == &area.player.body && world.pickup.active() ? area.screenEffectsLayer : p->sortLayer;
+        if (!inRange(layer)) continue;
         // The body flips with facing (SpriteRenderer.flipX); its children (boat, indicator) don't.
         const uint32_t flip = p == &area.player.body ? facing : 0u;
         SortedSprite sp = placeSprite(area, *p, pl.x, pl.y, time_, flip);
-        if (p == &area.player.body && world.pickup.active()) sp.sortLayer = ItemPickup::SORT_LAYER; // (ScreenEffects)
+        sp.sortLayer = layer;
         const int animator = area.player.animator;
         if (p == &area.player.body && animator >= 0 && world.animators.sprite(animator) != Animators::NOT_YET)
             sp.sprite = world.animators.sprite(animator); // its Animator's state (idle, run, boat)
@@ -202,9 +205,9 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
     }
 
     // ItemPickupEffect's canvas (around the player, under it): the circle, then the item inside it.
-    if (const float d = world.pickup.circleDiameter(); d > 0 && inRange(ItemPickup::SORT_LAYER)) {
+    if (const float d = world.pickup.circleDiameter(); d > 0 && inRange(area.screenEffectsLayer)) {
         Item circle{ItemKind::Pickup, 0, {}};
-        circle.sprite.sortLayer = ItemPickup::SORT_LAYER;
+        circle.sprite.sortLayer = area.screenEffectsLayer;
         circle.sprite.order = ItemPickup::ORDER;
         circle.sprite.sortY = pl.y;
         items_.push_back(circle);
@@ -221,7 +224,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
                 it.sprite.x = pl.x + (s.pivotX - s.w / 2.0f) / s.ppu;
                 it.sprite.y = pl.y + ItemPickup::ITEM_UP + (s.pivotY - s.h / 2.0f) / s.ppu;
                 it.sprite.sortY = pl.y;
-                it.sprite.sortLayer = ItemPickup::SORT_LAYER;
+                it.sprite.sortLayer = area.screenEffectsLayer;
                 it.sprite.order = ItemPickup::ORDER;
                 items_.push_back(it);
             }

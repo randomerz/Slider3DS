@@ -28,8 +28,8 @@ its draw order — Background, the title outlined, DarkPanel, the text outlined 
 worked out here (END_TEXTS; the last text line is the port's). The background is the original's
 end_cutscene_parallax_0 (320x180), or tools/ui_art/end_canvas.png if it's there: the art extended to fill
 the 3DS's 400x240 top screen (the user's to draw); the texts and the panel keep the original's anchors
-(the title from the middle, the text and the panel from the bottom), as Unity would lay out a bigger
-canvas. Baked with Pillow 12.2.0's FreeType: after changing the text or Pillow, look at the result
+(the title from the middle, the text and the panel from the bottom) at 1x: the user's rule (Unity's
+own scaler, Scale With Screen Size at 320x180, would scale the canvas 1.25x instead). Baked with Pillow 12.2.0's FreeType: after changing the text or Pillow, look at the result
 (the render golden hashes one sprite, not the text).
   assets/sheets/ui_end.png    the sheet (.fmt by its colors)
   assets/ui/end.json          {"sheet", "sprites": {"art": {"rect"}}}

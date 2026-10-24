@@ -2,8 +2,8 @@
 // (World::leaveArea): the original demo's EndOfDemo screen fitted to the 3DS (user's choice). Top
 // screen at 1x: its canvas (320x180, or the user's extension up to the screen's 400x240) centered,
 // baked into one image by tools/make_ui.py (the end art, the original's outlined texts in their own
-// fonts, its dark panel; "More areas coming soon" in place of the Steam wishlist): EndArt. Bottom screen: its Main Menu button alone (the Steam and Twitter
-// links dropped), at the menus' 2x; A or a tap on it (on release) returns to the title. The top
+// fonts, its dark panel; "More areas coming soon" in place of the Steam wishlist): EndArt. Bottom
+// screen: its Main Menu button alone (the Steam and Twitter links dropped), at the menus' 2x; A or a tap on it (on release) returns to the title. The top
 // fades in from black over FADE_FRAMES; the button shows and takes input after LOCKOUT_FRAMES.
 #pragma once
 

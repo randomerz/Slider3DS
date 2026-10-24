@@ -828,6 +828,9 @@ static bool validate(const Area& a, std::string* error) {
             if (c.method == M::SetAnimatorController &&
                 (c.target == -1 || a.animatorByObject[c.target] < 0 || c.data < 0 || c.data >= (int)a.animatorControllers.size()))
                 return false;
+            if (c.method == M::SetAnimatorController) // (a gizmo's parameter indices are its controller's: never swapped)
+                for (const MomentumGizmoDef& g : a.momentumGizmos)
+                    if (g.animator == a.animatorByObject[c.target]) return false;
             if (c.method == M::CheckConditions && (c.data < 0 || c.data >= (int)a.conditionCheckers.size())) return false;
             if ((c.method == M::HintTrigger || c.method == M::HintDisable || c.method == M::HintEnableDisabling) &&
                 (!a.hints.present || c.target != a.hints.object || a.hints.find(c.stringArg) < 0))
@@ -932,13 +935,14 @@ static bool validate(const Area& a, std::string* error) {
         for (const ParticleBurstDef& b : pd.bursts) ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0;
         if (!pd.frames.empty())
             ok = ok && pd.tilesX > 0 && pd.frames.size() % pd.tilesX == 0 && !pd.frameCurveMin.empty() && !pd.frameCurveMax.empty();
+        const std::string name = "particles " + (objectOk(pd.object) ? a.pathOf(pd.object) : std::string("?"));
+        if (!ok) return fail(error, name + ": bad object, ranges, colors, bursts or frames");
         // (frames draw at 1x — a texture pixel a screen pixel: each must be the particle's size on
         // screen, as Unity sizes the quad to it)
         for (int s : pd.frames)
-            ok = ok && spriteIndexOk(s) && a.sprites[s].outlineWidth == 0 && std::fabs(a.sprites[s].w - pd.size * a.ppu) < 1e-3f &&
-                 std::fabs(a.sprites[s].h - pd.size * a.ppu) < 1e-3f;
-        if (!ok) return fail(error, "particles " + (objectOk(pd.object) ? a.pathOf(pd.object) : std::string("?")) +
-                                        ": bad object, ranges, colors, bursts or frames");
+            if (!spriteIndexOk(s) || a.sprites[s].outlineWidth != 0 || std::fabs(a.sprites[s].w - pd.size * a.ppu) >= 1e-3f ||
+                std::fabs(a.sprites[s].h - pd.size * a.ppu) >= 1e-3f)
+                return fail(error, name + ": a frame isn't the particle's size on screen");
     }
     for (int p : a.particlePrefabs)
         if (p != -1 && (p < 0 || p >= (int)a.particles.size() || a.particles[p].object != -1))
@@ -1035,10 +1039,15 @@ static bool validate(const Area& a, std::string* error) {
         for (int spawn : c.spawns) ok = ok && objectOk(spawn);
         if (!ok) return fail(error, "cat trick: bad object, zone, cat, text object or spawn");
     }
+    if (!a.collectibles.empty() && a.screenEffectsLayer < 0)
+        return fail(error, "no screenEffectsLayer (the pick-up cutscene draws on it)");
     for (const MomentumGizmoDef& g : a.momentumGizmos) {
         const bool ok = g.animator >= 0 && g.animator < (int)a.animators.size() && a.animators[g.animator].object >= 0 &&
-                        (g.stile == 0 || a.stile(g.stile)) && g.dx >= 0 && g.dy >= 0 && g.finishedMoving >= 0 && g.random >= 0;
-        if (!ok) return fail(error, "momentum gizmo: bad animator or tile, or its controller lacks dx / dy / finishedMoving / random");
+                        (g.stile == 0 || a.stile(g.stile)) && g.dx >= 0 && g.dy >= 0 && g.finishedMoving >= 0 && g.random >= 0 &&
+                        a.animatorControllers[a.animators[g.animator].controller].paramTriggers[g.finishedMoving];
+        if (!ok)
+            return fail(error, "momentum gizmo: bad animator or tile, or its controller lacks dx / dy / random or the trigger "
+                               "finishedMoving");
     }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");
@@ -1324,6 +1333,7 @@ bool loadArea(const char* path, Area& out, std::string* error) {
         out.cameraDollies.push_back(std::move(c));
     }
     out.flashDuration = doc["flashDuration"].asFloat(1);
+    out.screenEffectsLayer = doc["screenEffectsLayer"].asInt(-1);
     out.cameraShake.frequencyGain = doc["cameraShake"]["frequencyGain"].asFloat(1);
     for (const Json& ch : doc["cameraShake"]["position"].items()) {
         CameraShakeDef::Channel c;

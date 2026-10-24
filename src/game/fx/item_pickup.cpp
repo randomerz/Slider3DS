@@ -18,23 +18,20 @@ float ease(float u) {
 void ItemPickup::reset() { *this = ItemPickup(); }
 
 void ItemPickup::start(World& world, int index) {
-    if (active()) collect(world); // (a pick-up during one: the first's collectible is in by then)
+    if (active() && step_ == Step::Opening) collect(world); // (a pick-up during one: the first's is in by then)
     const CollectibleDef& c = world.area.collectibles[index];
     world.objects.setActive(world.area, c.object, false); // DespwanCollectable
     world.lockPlayer(LOCK_PICKUP, true);
     world.npcs.setDialogueEnabled(false);
     index_ = index;
     text_ = c.name + " Acquired!"; // ("<item/> Acquired!" with the collectible's translated name: English = its name)
-    collected_ = textShown_ = false;
-    step_ = Step::Shown;
+    step_ = Step::Opening;
     circleT_ = 0;
     since_ = world.frame;
     wait_.start(TEXT_AFTER, world.frame);
 }
 
 void ItemPickup::collect(World& world) {
-    if (collected_ || index_ < 0) return;
-    collected_ = true;
     const CollectibleDef& c = world.area.collectibles[index_];
     world.state.setCollectible(c.name, c.area, true); // PlayerInventory.AddCollectible
     runCalls(world, c.onCollect);
@@ -45,12 +42,11 @@ void ItemPickup::coroutines(World& world, float dt) {
     if (!active()) return;
     if (world.frame != since_) circleT_ += dt;
     if (!wait_.done(world.frame, dt)) return;
-    if (!textShown_ && step_ == Step::Shown) { // 0.75 s
-        textShown_ = true;
+    if (step_ == Step::Opening) { // 0.75 s
+        step_ = Step::Shown;
         collect(world);
         wait_.start(SHOWN_FOR, world.frame);
     } else if (step_ == Step::Shown) { // 2 s: isVisible false
-        textShown_ = false;
         step_ = Step::Closing;
         circleT_ = 0;
         since_ = world.frame;
@@ -66,7 +62,7 @@ void ItemPickup::coroutines(World& world, float dt) {
 float ItemPickup::circleDiameter() const {
     if (!active()) return 0;
     const float u = ease(circleT_ / CIRCLE_TIME);
-    return CIRCLE_SIZE * (step_ == Step::Shown ? u : 1 - u);
+    return CIRCLE_SIZE * (step_ == Step::Closing ? 1 - u : u);
 }
 
 int ItemPickup::itemSprite(const Area& area) const {

@@ -44,6 +44,7 @@ std::string fixture(const std::string& from = "", const std::string& to = "") {
   "collectibles": [{"object": 1, "name": "Slider 2", "area": "Village", "disableAtStart": true, "sprite": 0,
                     "onCollect": [{"method": "Collectible.ActivateSTile", "target": 1, "int": 2}]}],
   "fadeDuration": 0.5,
+  "screenEffectsLayer": 10,
   "player": {"body": {"sprite": 0, "pos": [0, 0], "sortY": 0.5, "sortingLayerValue": 7, "order": 0, "anim": 0}},
   "tilemaps": [
     {"kind": "visual", "path": "VIS", "owner": 1, "active": true, "origin": [0, 0], "tileAnchor": [0.5, 0.5],
@@ -155,7 +156,7 @@ TEST(area_validation_particle_frames_match_their_size_on_screen) {
     std::string tall = withParticles("[0]", "1"); // (16 x 32: right width, twice the height)
     const std::string rect = R"("rect": [0, 0, 16, 16])";
     tall.replace(tall.find(rect), rect.size(), R"("rect": [0, 0, 16, 32])");
-    CHECK(!loadFixture(tall, a, err));
+    CHECK(!loadFixture(tall, a, err) && err.find("particle's size") != std::string::npos);
 }
 
 TEST(area_validation_rejects_bad_indices) {
@@ -282,6 +283,14 @@ TEST(area_momentum_gizmo_parameters_and_condition_ops) {
           err.find("momentum gizmo") != std::string::npos); // (no such tile)
     CHECK(!loadFixture(gizmoFixture(R"("animator": {"object": 0)", R"("animator": {"object": -1)"), a, err) &&
           err.find("momentum gizmo") != std::string::npos); // (no object)
+    CHECK(!loadFixture(gizmoFixture(R"("default": false, "trigger": true})", R"("default": false})"), a, err) &&
+          err.find("momentum gizmo") != std::string::npos); // (finishedMoving a bool: setting it would stick)
+    // (its parameter indices are its controller's: a call swapping that controller is refused)
+    const std::string swapped = gizmoFixture(R"({"method": "VarManager.SetBoolOn", "target": 0,)",
+                                             R"({"method": "Animator.set_runtimeAnimatorController", "target": 0, "controller": 0,)");
+    CHECK(swapped.find("fixture:") != 0 && !loadFixture(swapped, a, err) && err.find("trigger event") != std::string::npos);
+    CHECK(!loadFixture(gizmoFixture(R"("screenEffectsLayer": 10,)", ""), a, err) &&
+          err.find("screenEffectsLayer") != std::string::npos); // (the pick-up draws on it)
     const std::string twice = R"("momentumGizmos": [{"stile": 1, "animator": {"object": 0, "controller": 0, "keepState": false}},
                                                      {"stile": 1, "animator": {"object": 0, "controller": 0, "keepState": false}}],)";
     CHECK(!loadFixture(gizmoFixture(R"("momentumGizmos": [{"stile": 1, "animator": {"object": 0, "controller": 0, "keepState": false}}],)", twice), a, err) &&

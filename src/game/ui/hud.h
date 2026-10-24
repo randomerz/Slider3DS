@@ -7,11 +7,11 @@
 
 #include "game/render/font.h"
 
-class MenuSkin;
 class World;
 
-// Everything above the world view on the top screen (the skin's fonts).
-void drawTopOverlays(const World& world, const MenuSkin& skin);
+// Everything above the world view on the top screen: `menuFont` the skip prompt's (the menus' TinyUnicode),
+// `caption` the hint's and the pick-up's (PixelTitanZero: MenuSkin loads both).
+void drawTopOverlays(const World& world, const Font& menuFont, const Font& caption);
 // The skip prompt (Skip Prompt: "Skip" over a bar filling 0-1) in the bottom-right of a screen
 // `screenW` x `screenH`.
 void drawSkipPrompt(const Font& font, int screenW, int screenH, float fill);

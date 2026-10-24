@@ -1,6 +1,6 @@
 // NPCs (NPC.cs + NPCDialogueContext + DialogueDisplay). Each NPC's current conditional is the
-// highest one in its list whose conditions hold, re-checked whenever what they read may have changed (entering one runs its
-// onConditionalEnter). While the player is in the NPC's dialogue trigger it types the current
+// highest one in its list whose conditions hold, re-checked whenever what they read may have changed
+// (entering one runs its onConditionalEnter). While the player is in the NPC's dialogue trigger it types the current
 // conditional's dialogue chain above its head, line by line: a line moves on after its delay, on
 // the action button (waitForAction: a looping " ..." shows), or by an event (manual); the action
 // button also skips typing. Leaving the trigger clears the text unless the line is dontInterrupt.
@@ -23,6 +23,7 @@
 #include "game/data/area.h"
 #include "game/npc/dialogue_text.h"
 #include "game/npc/vocalizer.h"
+#include "game/world/wait.h"
 
 class World;
 
@@ -72,8 +73,8 @@ private:
         std::vector<uint8_t> exhausted;  // per conditional: its last line was shown
         std::vector<std::vector<uint8_t>> eventsRun; // per conditional, line: bit0 onStart, bit1 onEnd ran
         bool inTrigger = false, boxActive = false, typing = false, waitingForAction = false;
-        bool delayPending = false, delayFresh = false; // SetNextDialogueInChainAfterDelay
-        float delayLeft = 0;
+        Wait delay;              // SetNextDialogueInChainAfterDelay
+        bool delayDue = false;   // it ran out while dialogue was off: the next line waits for it
         bool wasActive = false;           // object active at the last update
         bool polled = false;              // conditionals checked against the versions below
         bool pollsEveryFrame = false;     // a condition reads more than GameState + Grid

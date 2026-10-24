@@ -31,8 +31,9 @@ bool EndArt::load(std::string* error) {
         return false;
     }
     x_ = r.at(0).asInt(), y_ = r.at(1).asInt(), w_ = r.at(2).asInt(), h_ = r.at(3).asInt();
-    if (w_ < MIN_W || h_ < MIN_H || w_ > plat::TOP_W || h_ > plat::TOP_H) {
-        if (error) *error = "ui/end.json: the art is " + std::to_string(w_) + "x" + std::to_string(h_);
+    if (x_ < 0 || y_ < 0 || w_ < MIN_W || h_ < MIN_H || w_ > plat::TOP_W || h_ > plat::TOP_H) {
+        if (error) *error = "ui/end.json: the art is " + std::to_string(w_) + "x" + std::to_string(h_) + " at " +
+                            std::to_string(x_) + "," + std::to_string(y_);
         return false;
     }
     sheet_ = plat::loadSheet(doc["sheet"].asString().c_str());

@@ -1,9 +1,9 @@
 // Runtime state of the Area's Animators (Area::animators: the NPCs', the player's, the abducted cat's
 // and its bubble's, the trees' and bushes'): Unity's Animator for sprite clips, as far as the exported
 // controllers use it. Each has a current state (playing its clip at the state's speed), bool, trigger,
-// int and float parameters and the controller's transitions: once a frame the first transition whose conditions hold (and exit
-// time is reached: from then on for 1 or more, as it's passed in a loop below 1) switches state,
-// instantly, resetting the triggers it used.
+// int and float parameters and the controller's transitions: once a frame the first transition
+// whose conditions hold (and exit time is reached: from then on for 1 or more, as it's passed in a
+// loop below 1) switches state, instantly, resetting the triggers it used.
 // Play(state) jumps to a state; switching the controller starts over in the new one's default.
 // An Animator only runs while its object is active; re-enabling one rebinds it (default state and
 // parameters) unless keepAnimatorStateOnDisable. Clips' transform curves move their targets

@@ -243,9 +243,8 @@ void Npcs::finishLine(World& world, int npc) {
         if (l.waitForAction) {
             st.waitingForAction = true;
         } else if (!l.manual && l.delay != 0) {
-            st.delayPending = true;
-            st.delayFresh = true;
-            st.delayLeft = l.delay;
+            st.delay.start(l.delay, world.frame);
+            st.delayDue = false;
         }
         // OnDialogueEnd (doNotRepeatEvents: only the first time), then the chain may be exhausted.
         uint8_t& ran = st.eventsRun[cond][index];
@@ -293,7 +292,8 @@ void Npcs::deactivate(World& world, int npc) {
     }
     State& st = s_[npc];
     st.waitingForAction = false;
-    st.delayPending = false;
+    st.delay.stop();
+    st.delayDue = false;
     st.boxActive = false;
     st.typing = false;
     stopVoice(world, npc); // (FadeAwayDialogue)
@@ -343,7 +343,8 @@ void Npcs::update(World& world, float dt) {
         if (!active && st.wasActive) {
             // Deactivation stops its coroutines: a pending delay is dropped, typing freezes (A can
             // still skip it).
-            st.delayPending = false;
+            st.delay.stop();
+            st.delayDue = false;
             st.typer.halt();
             stopVoice(world, i); // (its coroutine stops too)
         }
@@ -360,16 +361,13 @@ void Npcs::update(World& world, float dt) {
     for (int i = 0; i < (int)s_.size(); i++) {
         if (!s_[i].started || !world.objects.activeInHierarchy(area.npcs[i].object)) continue;
         State& st = s_[i];
-        if (st.delayPending) {
-            if (st.delayFresh) {
-                st.delayFresh = false;
-            } else if ((st.delayLeft -= dt) <= 1e-4f && dialogueEnabled_) {
-                // (run out while dialogue is off: it waits for it — Unity re-checks every 0.25 s, so
-                // the port's line can come up to 0.25 s sooner. Like Unity's, a pending delay outlives
-                // a conditional change: it then advances the new chain.)
-                st.delayPending = false;
-                typeNext(world, i);
-            }
+        // (run out while dialogue is off: it waits for it — Unity re-checks every 0.25 s, so the port's
+        // line can come up to 0.25 s sooner. Like Unity's, a pending delay outlives a conditional
+        // change: it then advances the new chain.)
+        if (st.delay.done(world.frame, dt)) st.delayDue = true;
+        if (st.delayDue && dialogueEnabled_) {
+            st.delayDue = false;
+            typeNext(world, i);
         }
         st.typer.tick(dt); // after the delay, so a line it starts waits from the next frame
         if (st.speaking) {

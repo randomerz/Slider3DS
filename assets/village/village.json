@@ -17667,6 +17667,7 @@
   },
   "fadeDuration": 1,
   "flashDuration": 1,
+  "screenEffectsLayer": 10,
   "cameraShake": {
     "frequencyGain": 1,
     "position": [

@@ -956,6 +956,7 @@ struct Area {
     std::vector<AnimatorDef> animators;
     float fadeDuration = 1; // UIEffects.fadeDuration (s)
     float flashDuration = 1; // UIEffects.flashDuration (s): FlashWhite
+    int screenEffectsLayer = -1; // the ScreenEffects sorting layer's value (ItemPickupEffect's canvas), -1 = not exported
     CameraShakeDef cameraShake;
     std::vector<CameraDollyDef> cameraDollies;
     AreaGridDef areaGrid;

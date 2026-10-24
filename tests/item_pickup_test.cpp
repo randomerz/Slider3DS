@@ -61,6 +61,8 @@ TEST(item_pickup_runs_its_timeline) {
     while (world.pickup.textShown() && f < 200) world.update(DT, 0, 0, false), f++;
     check(f >= 119 && f <= 122, "text off at frame " + std::to_string(f));
     CHECK(world.pickup.circleDiameter() > ItemPickup::CIRCLE_SIZE * 0.95f && world.playerLocked());
+    for (int i = 0; i < 15; i++) world.update(DT, 0, 0, false), f++; // (half way: the same ease, backwards)
+    CHECK(std::fabs(world.pickup.circleDiameter() - ItemPickup::CIRCLE_SIZE / 2) < 1);
     while (world.pickup.active() && f < 300) world.update(DT, 0, 0, false), f++;
     check(f >= 149 && f <= 152, "over at frame " + std::to_string(f));
     CHECK(!world.playerLocked() && world.pickup.circleDiameter() == 0 && world.pickup.itemSprite(world.area) < 0);
@@ -89,16 +91,28 @@ TEST(item_pickup_draws_under_the_player) {
     SpriteSheets sheets;
     CHECK(sheets.load(area));
     AreaView view;
+    const SpriteDef& itemDef = area.sprites[area.collectibles[index].sprite];
+    auto draw = [&]() {
+        float camX, camY;
+        world.camera(camX, camY);
+        testResetDrawCalls();
+        view.begin(area, sheets, camX, camY, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+    };
+    auto itemDrawn = [&]() {
+        for (const DrawCall& c : testDrawCalls())
+            if (c.sx == itemDef.x && c.sy == itemDef.y && c.sw == itemDef.w) return true;
+        return false;
+    };
     world.update(DT, 0, 0, false);
-    for (int f = 0; f < 30; f++) world.update(DT, 0, 0, false);
-    float camX, camY;
-    world.camera(camX, camY);
-    testResetDrawCalls();
-    view.begin(area, sheets, camX, camY, plat::TOP_W, plat::TOP_H, 0, false);
-    view.draw(world);
+    world.update(DT, 0, 0, false);
+    world.update(DT, 0, 0, false); // (2 frames in: the circle is still smaller than the item's reach)
+    draw();
+    CHECK(world.pickup.circleDiameter() > 0 && !itemDrawn());
+    for (int f = 0; f < 28; f++) world.update(DT, 0, 0, false);
+    draw();
     const std::vector<DrawCall>& calls = testDrawCalls();
     int circle = -1, item = -1, body = -1;
-    const SpriteDef& itemDef = area.sprites[area.collectibles[index].sprite];
     for (int i = 0; i < (int)calls.size(); i++) {
         if (calls[i].sheet == "circle") circle = i;
         else if (circle >= 0 && item < 0 && calls[i].sx == itemDef.x && calls[i].sy == itemDef.y) item = i;
@@ -110,4 +124,23 @@ TEST(item_pickup_draws_under_the_player) {
     // The item: its 16 px rect centered 16 px above the player (screen y down).
     CHECK(std::fabs(calls[item].x + itemDef.w / 2.0f - calls[circle].x) < 1);
     CHECK(std::fabs(calls[item].y + itemDef.h / 2.0f - (calls[circle].y - 16)) < 1);
+}
+
+TEST(item_pickup_a_second_one_during_it_collects_both) {
+    // A pick-up while one runs (a queued slide carrying the held player onto another): the first's
+    // DoOnCollect runs first if it hadn't, and the second plays out in full.
+    int index = -1;
+    World world = onSlider2(index);
+    if (index < 0) return;
+    const int other = world.area.collectible("Slider 3");
+    check(other >= 0, "Slider 3");
+    world.update(DT, 0, 0, false);
+    for (int f = 0; f < 10; f++) world.update(DT, 0, 0, false); // (before 0.75 s: not collected yet)
+    CHECK(!world.state.hasCollectible("Slider 2", "Village"));
+    world.pickup.start(world, other);
+    CHECK(world.state.hasCollectible("Slider 2", "Village") && !world.state.hasCollectible("Slider 3", "Village"));
+    for (int f = 0; f < PICKUP_FRAMES; f++) world.update(DT, 0, 0, false);
+    CHECK(world.state.hasCollectible("Slider 3", "Village") && world.pickup.text() == "Slider 3 Acquired!");
+    for (int f = 0; f < 200; f++) world.update(DT, 0, 0, false);
+    CHECK(!world.pickup.active() && !world.playerLocked());
 }

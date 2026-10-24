@@ -662,6 +662,23 @@ TEST(render_title_screen_goldens) {
     shoot("title_stars_in");
 }
 
+TEST(end_art_refuses_sizes_off_the_screen) {
+    // The art must be the original canvas (320x180) up to the top screen (400x240), in its sheet.
+    std::string real;
+    check(plat::readFile("ui/end.json", real), "ui/end.json");
+    auto loads = [&](int x, int y, int w, int h) {
+        testSetFile("ui/end.json", R"({"sheet": "ui_end", "sprites": {"art": {"rect": [)" + std::to_string(x) + ", " +
+                                       std::to_string(y) + ", " + std::to_string(w) + ", " + std::to_string(h) + "]}}}");
+        EndArt art;
+        std::string error;
+        return art.load(&error);
+    };
+    CHECK(loads(0, 0, 320, 180) && loads(0, 0, 400, 240));
+    CHECK(!loads(0, 0, 300, 180) && !loads(0, 0, 320, 170) && !loads(0, 0, 401, 240) && !loads(0, 0, 400, 241));
+    CHECK(!loads(-1, 0, 320, 180) && !loads(0, -1, 320, 180));
+    testSetFile("ui/end.json", real);
+}
+
 TEST(render_ending_goldens) {
     // The port's ending (EndOfDemo fitted): the top screen half faded in, then both screens once it
     // takes input.
@@ -670,7 +687,6 @@ TEST(render_ending_goldens) {
     std::string error;
     check(skin.load(&error), "menu skin loads " + error);
     check(art.load(&error), "end art loads " + error);
-    CHECK(art.width() >= 320 && art.height() >= 180); // (the original canvas, or the user extension; load refuses more than the screen)
     GoldenSet goldens("ending.txt");
     EndScreen end;
     end.start();
@@ -900,7 +916,7 @@ TEST(render_intro_goldens) {
     testResetDrawCalls();
     view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
     view.draw(world);
-    drawTopOverlays(world, skin); // (as main draws them: the prompt, then the panels)
+    drawTopOverlays(world, skin.font(), skin.captionFont()); // (as main draws them: the prompt, then the panels)
     goldens.compare("intro_rolling_skip_held", 50);
 }
 
@@ -917,7 +933,7 @@ TEST(render_white_flash_follows_the_screen_effects_setting) {
         for (int i = 0; i < 300 && world.effects.whiteAlpha(world.area) < 1; i++) world.update(1.0f / 60.0f, 0, 0, true);
         check(world.effects.whiteAlpha(world.area) == 1, "at the flash's peak");
         testResetDrawCalls();
-        drawTopOverlays(world, skin);
+        drawTopOverlays(world, skin.font(), skin.captionFont());
         int alpha = -1;
         for (const DrawCall& c : testDrawCalls())
             if (c.sheet.empty() && c.w == plat::TOP_W && c.h == plat::TOP_H) alpha = (int)(c.flags & 0xff);
@@ -948,7 +964,7 @@ TEST(render_item_pickup_golden) {
         testResetDrawCalls();
         view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
         view.draw(world);
-        drawTopOverlays(world, skin);
+        drawTopOverlays(world, skin.font(), skin.captionFont());
         goldens.compare(name, 10);
     };
     for (int i = 0; i < 9; i++) world.update(1.0f / 60.0f, 0, 0, false);
@@ -990,7 +1006,7 @@ TEST(render_item_pickup_wraps_a_long_name_upward) {
         for (int i = 0; i < 61; i++) world.update(1.0f / 60.0f, 0, 0, false);
         CHECK(world.pickup.textShown());
         testResetDrawCalls();
-        drawTopOverlays(world, skin);
+        drawTopOverlays(world, skin.font(), skin.captionFont());
         const GlyphRect& a = font.def().glyph('A').text;
         const GlyphRect& f = font.def().glyph(first).text;
         aY = firstY = -1;
@@ -1108,7 +1124,10 @@ TEST(render_particles_near_the_edge_are_drawn) {
                     checked++;
                     bool drawn = false;
                     for (const DrawCall& c : testDrawCalls()) {
-                        const bool kind = frames ? c.tint != 0 && c.angle == p.rotation : c.sheet.empty();
+                        // (its own draw: a frame turned as it is, a square its size)
+                        const bool kind = frames ? c.tint != 0 && c.angle == p.rotation && std::fabs(c.w - 2 * half) < 1e-3f
+                                                 : c.sheet.empty() && std::fabs(c.w - 2 * half) < 1e-3f &&
+                                                       std::fabs(c.h - 2 * half) < 1e-3f;
                         drawn = drawn || (kind && std::fabs(c.x + c.w / 2 - sx) < 1e-3f && std::fabs(c.y + c.h / 2 - sy) < 1e-3f);
                     }
                     missing += !drawn;
@@ -1135,7 +1154,7 @@ TEST(render_hints_golden) {
         testResetDrawCalls();
         view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
         view.draw(world);
-        drawTopOverlays(world, skin);
+        drawTopOverlays(world, skin.font(), skin.captionFont());
         goldens.compare(name, 10);
     };
     for (int i = 0; i < 255; i++) world.update(1.0f / 60.0f, 0, 0, false);
