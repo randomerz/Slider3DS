@@ -900,6 +900,28 @@ TEST(render_intro_goldens) {
     goldens.compare("intro_rolling_skip_held", 50);
 }
 
+TEST(render_white_flash_follows_the_screen_effects_setting) {
+    // UIEffects.FlashWhite peaks at the setting's alpha (none at 0: no panel drawn).
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "menu skin loads " + error);
+    for (float amount : {1.0f, 0.5f, 0.0f}) {
+        Settings s;
+        s.screenEffects = amount;
+        World world(villageArea(), s);
+        world.effects.flashWhite();
+        for (int i = 0; i < 300 && world.effects.whiteAlpha(world.area) < 1; i++) world.update(1.0f / 60.0f, 0, 0, true);
+        check(world.effects.whiteAlpha(world.area) == 1, "at the flash's peak");
+        testResetDrawCalls();
+        drawTopOverlays(world, skin);
+        int alpha = -1;
+        for (const DrawCall& c : testDrawCalls())
+            if (c.sheet.empty() && c.w == plat::TOP_W && c.h == plat::TOP_H) alpha = (int)(c.flags & 0xff);
+        check(alpha == (amount > 0 ? (int)(amount * 255) : -1), "the panel's alpha at " + std::to_string(amount) + ": " +
+                                                                   std::to_string(alpha));
+    }
+}
+
 TEST(render_item_pickup_golden) {
     // ItemPickupEffect 0.15 s in (the dark circle growing over the world, the item inside it, the
     // player on top) and 1 s in (it covers the view; "Slider 2 Acquired!").

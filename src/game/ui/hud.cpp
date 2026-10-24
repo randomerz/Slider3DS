@@ -84,6 +84,7 @@ void drawTopOverlays(const World& world, const MenuSkin& skin) {
     }
     if (const float black = world.effects.black(); black > 0)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)(black * 255)));
-    if (const float white = world.effects.whiteAlpha(world.area); white > 0)
+    // (UIEffects' white flashes peak at the Screen Effects setting)
+    if (const float white = world.effects.whiteAlpha(world.area) * world.settings.screenEffects; white > 0)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, palette::withAlpha(palette::OFF_WHITE, (uint8_t)(white * 255)));
 }

@@ -88,7 +88,6 @@ constexpr ItemDef GENERAL_ITEMS[] = {
     slider(PauseMenu::SCREEN_SHAKE, "Screen Shake", &Settings::screenShake),
     slider(PauseMenu::SCREEN_EFFECTS, "Screen Effects", &Settings::screenEffects),
     toggle(PauseMenu::AUTO_MOVE, "Auto Move", &Settings::autoMove),
-    toggle(PauseMenu::BIGGER_TEXT, "Bigger Text", &Settings::bigText),
     {PauseMenu::GENERAL_BACK, Kind::Button, "Back", Act::Back},
 };
 constexpr ItemDef SOUND_ITEMS[] = {

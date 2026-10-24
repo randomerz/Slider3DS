@@ -229,7 +229,7 @@ TEST(pause_menu_boxes_fit_and_dont_overlap) {
     const std::vector<std::vector<Menu::Item>> pages = {
         {Menu::RESUME, Menu::OPTIONS, Menu::QUIT},
         {Menu::GENERAL, Menu::SOUND, Menu::CHEATS, Menu::OPTIONS_BACK},
-        {Menu::SCREEN_SHAKE, Menu::SCREEN_EFFECTS, Menu::AUTO_MOVE, Menu::BIGGER_TEXT, Menu::GENERAL_BACK},
+        {Menu::SCREEN_SHAKE, Menu::SCREEN_EFFECTS, Menu::AUTO_MOVE, Menu::GENERAL_BACK},
         {Menu::MASTER_VOLUME, Menu::SFX_VOLUME, Menu::MUSIC_VOLUME, Menu::AMBIENCE_VOLUME, Menu::SOUND_BACK},
         {Menu::CHEATS_ENABLED, Menu::GIVE, Menu::NOCLIP, Menu::RESPAWN, Menu::CHEATS_BACK},
     };

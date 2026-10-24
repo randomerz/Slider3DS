@@ -3,9 +3,9 @@ pause_menu_paused 56:38b9a5a6e1995ccd
 pause_menu_bounced 56:0c64cbddcf54d435
 pause_menu_options 71:e0e392677b1a186a
 pause_menu_sound 54:71b397c27b27af1c
-pause_menu_general 71:ce6ac004948af6be
-pause_menu_general_min 71:55384a0f7fe33a58
-pause_menu_general_max 71:e3e647590edc4d84
+pause_menu_general 60:10932112130800cf
+pause_menu_general_min 60:caa92cab027bb419
+pause_menu_general_max 60:b048b3d37f52ced5
 pause_menu_quit_confirm 63:7ad441c7d74ea372
 pause_menu_pressed 56:c5166c74f2519b3b
 pause_menu_options_in_game 71:2ebf41119ad165ea

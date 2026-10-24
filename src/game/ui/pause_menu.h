@@ -3,14 +3,14 @@
 //   Paused:  Resume / Options / Quit (UICanvas PausePanel's; its web guide button is left out)
 //   Options: General / Sound / Cheats / Back (the original's side-nav options menu, as pages;
 //            Cheats only in the game, as CheatsButtonEnabler's)
-//   General: Screen Shake / Screen Effects (sliders) / Auto Move (a port feature) / Bigger Text
-//            (toggles) / Back (GeneralOptionsPanel's widgets; its PC-only ones left out)
+//   General: Screen Shake / Screen Effects (sliders) / Auto Move (a port feature; a toggle) / Back
+//            (GeneralOptionsPanel's widgets; its PC-only ones left out, and Bigger Text: user's call,
+//            its 1.5x dialogue would break the one pixel scale)
 //   Sound:   Master / Sound / Music / Ambience (sliders) / Back (SoundPanel's)
 //   Cheats:  Enable Cheats (a port addition: the rest is grayed out without it) / Give (a picker
 //            over the area's collectibles: left / right or a tap on the name's sides picks, A or
 //            its button marks it, given on Resume) / NoClip (a toggle) / Respawn / Back
 //            (CheatsPanel's; Teleport, Spawn Anchor and Scroll + Boots wait for more areas)
-// Only Screen Shake and Auto Move do something yet; the rest are saved for when their systems land.
 // Laid out for the touch screen on MenuSkin's 2x grid, filling it (bigger than the original's).
 // D-pad up / down: pick an item, stopping at the page's ends and skipping grayed-out ones (a
 // button shows brackets at its ends, an option a light label)
@@ -42,7 +42,7 @@ public:
     enum Item {
         RESUME, OPTIONS, QUIT,                                                // Paused
         GENERAL, SOUND, CHEATS, OPTIONS_BACK,                                 // Options
-        SCREEN_SHAKE, SCREEN_EFFECTS, AUTO_MOVE, BIGGER_TEXT, GENERAL_BACK,   // General
+        SCREEN_SHAKE, SCREEN_EFFECTS, AUTO_MOVE, GENERAL_BACK,                // General
         MASTER_VOLUME, SFX_VOLUME, MUSIC_VOLUME, AMBIENCE_VOLUME, SOUND_BACK, // Sound
         CHEATS_ENABLED, GIVE, NOCLIP, RESPAWN, CHEATS_BACK,                   // Cheats
         ITEM_COUNT

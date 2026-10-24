@@ -16,9 +16,10 @@ struct Settings {
     bool autoMove = false;
     // Settings.ScreenShake, 0-1: scales CameraShake's amounts.
     float screenShake = 0.5f;
-    // Not read yet (the options menu shows and saves them): Settings.ScreenVisualEffects (flashes),
-    // BigTextEnabled.
+    // Settings.ScreenVisualEffects, 0-1: UIEffects' white flashes peak at it (game/ui/hud).
     float screenEffects = 1.0f;
+    // BigTextEnabled: kept in the file, but neither shown nor read (the options menu hides it: its
+    // 1.5x dialogue would break the one pixel scale; user's call).
     bool bigText = false;
     // The buses' volumes, 0-1, linear (AudioManager.SetMasterVolume / SFX "Sound" / Music /
     // Ambience): game/audio's Audio::setVolumes. Port: max by default (Unity: 0.5), as the 3DS has a volume slider.
