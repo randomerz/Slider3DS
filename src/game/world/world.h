@@ -52,6 +52,10 @@ struct Player {
     bool facingLeft = false; // Player.Update flips the sprite by the input's x
     float lastMoveX = 0, lastMoveY = 0; // Player.lastMoveDir: the last non-zero input (item drops go that way)
     bool inHouse = false;    // Player.SetIsInHouse (house teleports and placing the player set it)
+    // Player.noClipEnabled (the Cheats page's NoClip, Player.toggleCollision): its colliders are off —
+    // it walks through everything and touches no trigger (leaving those it was in; back on, it enters
+    // them again). The frontend sets it.
+    bool noClip = false;
     int stile = 0;           // islandId underneath, 0 = none
     uint8_t locks = 0;       // PlayerLock bits held now
 
@@ -137,12 +141,12 @@ public:
     void placeNear(float x, float y);
 
     // One frame: queued slides advance and the player rides the tile under it; the player walks
-    // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless `noclip`
-    // or noClip (and is pushed out of anything it overlaps; `noclip`: tests that walk through walls
-    // but keep triggers); triggers react to what it touches; NPCs update; Starts run for components
-    // that became active; Animators and particles advance.
-    void update(float dt, const FrameInput& in, bool noclip = false);
-    void update(float dt, float moveX, float moveY, bool noclip) { update(dt, FrameInput{moveX, moveY, false}, noclip); }
+    // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless
+    // `ignoreWalls` or Player::noClip (and is pushed out of anything it overlaps; `ignoreWalls`: for
+    // tests, walls off but triggers still touched); triggers react to what it touches; NPCs update;
+    // Starts run for components that became active; Animators and particles advance.
+    void update(float dt, const FrameInput& in, bool ignoreWalls = false);
+    void update(float dt, float moveX, float moveY, bool ignoreWalls) { update(dt, FrameInput{moveX, moveY, false}, ignoreWalls); }
 
     // PlayerAction.Action (the action button): pick up an item if one is in reach, use the offered
     // interactables; if neither did anything, drop the carried item. While the player is locked it
@@ -214,10 +218,6 @@ public:
     // A script asked for the game to be saved (SaveSystem.SaveGame: a collectible's pick-up); the
     // frontend saves and clears it.
     bool saveRequested = false;
-    // Player.noClipEnabled (the Cheats page's NoClip, Player.toggleCollision): the player's colliders
-    // are off — it walks through everything and touches no trigger (leaving those it was in;
-    // turned back on, it enters them again). Set by the frontend each frame.
-    bool noClip = false;
     // What scripts asked AudioManager for; the frontend passes it on each frame.
     AudioCues audio;
     SoundProps props; // CowProp / DogProp: cooldowns and emotes

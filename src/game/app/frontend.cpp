@@ -145,7 +145,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
     }
     FrameInput frame{moveX, moveY, (in.held & plat::BTN_A) != 0};
     if (in.pressed & plat::BTN_A) world_.action();
-    world_.noClip = noclip();
+    world_.player.noClip = noclip();
     world_.update(FRAME_DT, frame);
     audio_.takeFrom(world_.audio);
     if (world_.saveRequested) {

@@ -257,7 +257,7 @@ void World::placeNear(float x, float y) {
     player.stile = grid.stileUnder(x, y);
 }
 
-void World::update(float dt, const FrameInput& in, bool noclip) {
+void World::update(float dt, const FrameInput& in, bool ignoreWalls) {
     float moveX = in.moveX, moveY = in.moveY;
     hints.moveInput(*this, moveX, moveY);
     if (playerLocked()) moveX = moveY = 0; // (Player.SetCanMove(false))
@@ -290,7 +290,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
         dx = moveX / len * MOVE_SPEED * dt;
         dy = moveY / len * MOVE_SPEED * dt;
     }
-    if (noclip || noClip) {
+    if (ignoreWalls || player.noClip) {
         player.x += dx;
         player.y += dy;
     } else {

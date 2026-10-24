@@ -124,6 +124,22 @@ TEST(triggers_exclusions_follow_the_players_collider) {
     check(offered(world, 2), "offered on water");
 }
 
+TEST(triggers_noclip_leaves_them_and_reenters_after) {
+    // Player.toggleCollision: its colliders off, the triggers it was in see it leave (and offers go);
+    // back on, it enters them again.
+    World world(triggerArea(), DEFAULT_SETTINGS);
+    standAt(world, -6);
+    world.player.noClip = true;
+    standAt(world, -6);
+    check(world.state.flag("exited") && !world.triggers.touching(0), "noclip inside: exit");
+    world.state.setFlag("entered", false);
+    standAt(world, 0);
+    check(!offered(world, 1) && !world.state.flag("entered"), "nothing touched or offered");
+    world.player.noClip = false;
+    standAt(world, 0);
+    check(offered(world, 1), "off again: offered");
+}
+
 TEST(triggers_collider_swap_resends_enter) {
     World world(triggerArea(), DEFAULT_SETTINGS);
     standAt(world, -6);

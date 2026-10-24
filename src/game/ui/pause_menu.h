@@ -77,6 +77,9 @@ public:
     static Box itemBox(Item item);
     // An option's slider / toggle / picker's button (inside its row); the item's box for a button.
     static Box controlBox(Item item);
+    // Give's name is centered on this x (screen px): a tap left of it picks the one before, right
+    // of it (up to its button) the one after.
+    static int pickerMiddleX();
 
     struct ItemDef; // (pause_menu.cpp)
 

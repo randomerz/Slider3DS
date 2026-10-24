@@ -379,6 +379,8 @@ TEST(frontend_cheats_page_respawns_gives_on_resume_and_noclips) {
     f.cheats().toGive = {0};
     f.bootDirect(); // a new game: noclip off, nothing left marked
     CHECK(!f.noclip() && f.cheats().toGive.empty() && !f.world().state.flag(cheats::USED_CHEATS_FLAG));
+    f.update({}, 0, 0); // (noclip ended with the last game: no toggle in this one to mark it)
+    CHECK(!f.world().state.flag(cheats::USED_CHEATS_FLAG) && !f.world().player.noClip);
     testUserFiles().clear();
 }
 
@@ -405,7 +407,7 @@ TEST(frontend_cheats_give_from_an_inactive_tile_only_with_cheats_and_noclip_touc
     settings.cheats = true;
     f.cheats().noclip = true;
     f.update({}, 0, 0);
-    CHECK(f.world().noClip && f.world().state.flag(cheats::USED_CHEATS_FLAG));
+    CHECK(f.world().player.noClip && f.world().state.flag(cheats::USED_CHEATS_FLAG));
     f.world().state.setFlag(cheats::USED_CHEATS_FLAG, false);
     f.cheats().toGive = {slider3};
     pauseAndResume();
@@ -414,7 +416,7 @@ TEST(frontend_cheats_give_from_an_inactive_tile_only_with_cheats_and_noclip_touc
     CHECK(f.world().state.flag(cheats::USED_CHEATS_FLAG)); // (the give's own mark)
     f.cheats().noclip = false;
     frames(f, PICKUP_FRAMES);
-    CHECK(!f.world().noClip && f.world().state.hasCollectible("Slider 3", "Village"));
+    CHECK(!f.world().player.noClip && f.world().state.hasCollectible("Slider 3", "Village"));
     testUserFiles().clear();
 }
 

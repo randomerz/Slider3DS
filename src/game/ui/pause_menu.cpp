@@ -215,6 +215,8 @@ PauseMenu::Box PauseMenu::controlBox(Item item) {
     return toScreen(uiControl(p, index));
 }
 
+int PauseMenu::pickerMiddleX() { return PICKER_MIDDLE_X * S; }
+
 PauseMenu::Item PauseMenu::cursor() const { return pageDef(page_).items[cursor_].item; }
 
 void PauseMenu::open(Page start, Cheats* cheats) {

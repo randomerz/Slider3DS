@@ -81,7 +81,7 @@ void TriggerTracker::update(World& world) {
 
     const Box box = hitboxAt(world.player.hitbox(area), world.player.x, world.player.y);
     std::fill(now_.begin(), now_.end(), (uint8_t)0);
-    if (!world.noClip) // (noclip: the player's colliders are off, touching nothing)
+    if (!world.player.noClip) // (noclip: the player's colliders are off, touching nothing)
         for (const ObjectCollider& c : area.triggerColliders)
             if (!now_[c.object] && colliderOverlaps(world, c, box)) now_[c.object] = 1;
 

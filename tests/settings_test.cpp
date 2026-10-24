@@ -297,6 +297,11 @@ TEST(pause_menu_cheats_page) {
     CHECK(menu.giveIndex() == 0 && cheats.toGive.empty());
     tap(menu, s, button.x - 6, row.y + row.h / 2); // its right half: the one after
     CHECK(menu.giveIndex() == 1);
+    const int middle = Menu::pickerMiddleX(); // (the split: a UI px either side of the name's center)
+    tap(menu, s, middle - MenuSkin::UI_SCALE, row.y + row.h / 2);
+    CHECK(menu.giveIndex() == 0);
+    tap(menu, s, middle + MenuSkin::UI_SCALE, row.y + row.h / 2);
+    CHECK(menu.giveIndex() == 1);
     tap(menu, s, button.x + button.w / 2, button.y + button.h / 2);
     CHECK(cheats.toGive == std::vector<int>{1});
     menu.update(press(plat::BTN_A), s); // (Undo)

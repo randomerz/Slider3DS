@@ -7,8 +7,8 @@
 //   Game:  the World on the top screen, the Artifact (game/ui/artifact_ui) on the bottom; START
 //          pauses (game/ui/pause_menu), whose Quit saves and returns to the title (QuitHandler).
 //          Its Cheats page changes the game's Cheats (game/world/cheats), which this runs: Respawn at
-//          once, the marked collectibles given on Resume, noclip while it's on (and Settings::cheats);
-//          a new game starts with none.
+//          once, the marked collectibles given on Resume (dropped if cheats were turned off), noclip
+//          while it's on (and Settings::cheats); a new game starts with none.
 //   End:   the port's ending (game/ui/end_screen), once the game faded out through one of the
 //          area's exits (World::leaveArea, which has it saved); then the title.
 // The save profile is written as Unity's GameSaver / SaveSystem.SaveGame do: once the scene has
@@ -73,7 +73,8 @@ public:
     const ArtifactUI& artifactUI() const { return artifactUI_; }
     Cheats& cheats() { return cheats_; }
     const Cheats& cheats() const { return cheats_; }
-    bool noclip() const { return settings_.cheats && cheats_.noclip; } // the player walks through everything
+    // The player's colliders are off (Player::noClip): through walls, touching no trigger.
+    bool noclip() const { return settings_.cheats && cheats_.noclip; }
     // What's asked of AudioManager since main last took it.
     AudioCues& audio() { return audio_; }
     // Where sounds are heard from: the camera's target in the game.
