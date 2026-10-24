@@ -1,7 +1,9 @@
 // Coroutine waits on World's frame clock (World::frame, advanced at the end of World::update):
 // WaitForSeconds / WaitUntil count from the frame after the one they start in, whether they start
 // before the coroutine slot (an event this frame), inside it (a chained wait) or between frames.
-// New coroutine ports use these; older ones (chad_jump, npcs, the typer) still carry "fresh" flags.
+// New coroutine ports use these; older ones (chad_jump, the typer) still carry "fresh" flags. A wait
+// runs out once its seconds are used up, so a whole-frame one (1 s) takes a frame more (61): float
+// sums of 1/60 fall a hair short (fine: only when things show changes, by 16 ms).
 #pragma once
 
 #include <cstdint>

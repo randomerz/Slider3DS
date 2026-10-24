@@ -61,8 +61,8 @@ TEST(item_pickup_runs_its_timeline) {
     while (world.pickup.textShown() && f < 200) world.update(DT, 0, 0, false), f++;
     check(f >= 119 && f <= 122, "text off at frame " + std::to_string(f));
     CHECK(world.pickup.circleDiameter() > ItemPickup::CIRCLE_SIZE * 0.95f && world.playerLocked());
-    for (int i = 0; i < 15; i++) world.update(DT, 0, 0, false), f++; // (half way: the same ease, backwards)
-    CHECK(std::fabs(world.pickup.circleDiameter() - ItemPickup::CIRCLE_SIZE / 2) < 1);
+    for (int i = 0; i < 8; i++) world.update(DT, 0, 0, false), f++; // (a quarter in: eased ~33, linear ~30)
+    CHECK(world.pickup.circleDiameter() > 31 && world.pickup.circleDiameter() < 35.5f);
     while (world.pickup.active() && f < 300) world.update(DT, 0, 0, false), f++;
     check(f >= 149 && f <= 152, "over at frame " + std::to_string(f));
     CHECK(!world.playerLocked() && world.pickup.circleDiameter() == 0 && world.pickup.itemSprite(world.area) < 0);
@@ -143,4 +143,20 @@ TEST(item_pickup_a_second_one_during_it_collects_both) {
     CHECK(world.state.hasCollectible("Slider 3", "Village") && world.pickup.text() == "Slider 3 Acquired!");
     for (int f = 0; f < 200; f++) world.update(DT, 0, 0, false);
     CHECK(!world.pickup.active() && !world.playerLocked());
+}
+
+TEST(item_pickup_a_second_one_after_the_text_collects_each_once) {
+    // The first's DoOnCollect already ran (0.75 s): starting another doesn't run it again (its save
+    // request, cleared here, stays off until the second's own 0.75 s).
+    int index = -1;
+    World world = onSlider2(index);
+    if (index < 0) return;
+    world.update(DT, 0, 0, false);
+    for (int f = 0; f < PICKUP_FRAMES; f++) world.update(DT, 0, 0, false);
+    CHECK(world.pickup.textShown() && world.saveRequested);
+    world.saveRequested = false;
+    world.pickup.start(world, world.area.collectible("Slider 3"));
+    CHECK(!world.saveRequested);
+    for (int f = 0; f < PICKUP_FRAMES; f++) world.update(DT, 0, 0, false);
+    CHECK(world.saveRequested && world.state.hasCollectible("Slider 3", "Village"));
 }

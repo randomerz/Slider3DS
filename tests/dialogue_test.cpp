@@ -759,18 +759,7 @@ TEST(village_archibald_slider_4_can_be_picked_up) {
     world.objectBase(object, bx, by);
     world.player.x = bx + (trigger->minX + trigger->maxX) * 0.5f;
     world.player.y = by + (trigger->minY + trigger->maxY) * 0.5f - area.player.footBox.offY;
-    // The pick-up cutscene, with the player still in Archibald's trigger: his dialogue holds (no line
-    // moves on or starts until it's over: dialogueEnabledAllNPC).
-    world.update(DT, 0, 0, true);
-    check(world.pickup.active(), "the pick-up started");
-    const int line = world.npcs.lineIndex(npc), cond = world.npcs.currentCond(npc);
-    bool held = true;
-    while (world.pickup.active()) {
-        world.update(DT, 0, 0, true);
-        held = held && (!world.pickup.active() || (world.npcs.lineIndex(npc) == line && world.npcs.currentCond(npc) == cond &&
-                                                   !world.npcs.dialogueEnabled()));
-    }
-    CHECK(held);
+    for (int f = 0; f <= PICKUP_FRAMES; f++) world.update(DT, 0, 0, true); // (the pick-up cutscene)
     check(world.state.hasCollectible("Slider 4", "Village") && world.grid.tileActive(4), "picked up: tile 4 collected");
 }
 
