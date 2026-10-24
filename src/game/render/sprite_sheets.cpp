@@ -1,16 +1,15 @@
 #include "game/render/sprite_sheets.h"
 
 #include <cmath>
-#include <cstdio>
 
 #include "platform/platform.h"
 
-bool SpriteSheets::load(const Area& area) {
+bool SpriteSheets::load(const Area& area, std::string* error) {
     unload();
     for (const std::string& name : area.sheetNames) {
         plat::Texture* t = plat::loadSheet(name.c_str());
         if (!t) {
-            printf("SpriteSheets: failed to load sheet %s\n", name.c_str());
+            if (error) *error = "the sheet " + name;
             unload();
             return false;
         }

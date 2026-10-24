@@ -41,7 +41,14 @@ else
 TARGET		:=	slider3ds_release
 BUILD		:=	build-release
 endif
+# (the dev build's title says so: its CIA installs beside the release's. The CIA's process name, 8
+# characters at most, stays "Slider": CIA_TITLE.)
+ifeq ($(strip $(RELEASE)),)
+APP_TITLE	:=	Slider (dev)
+else
 APP_TITLE	:=	Slider
+endif
+CIA_TITLE	:=	Slider
 APP_DESCRIPTION	:=	Slide chunks of the world to solve puzzles
 APP_AUTHOR	:=	boomo
 # Both builds' icon (made by tools/make_icon.py; unset, the release would look for slider3ds_release.png).
@@ -245,7 +252,7 @@ endif
 cia: all
 	@bannertool makebanner -i tools/cia/banner.png -a tools/cia/banner.wav -o $(BUILD)/banner.bnr
 	@makerom -f cia -o $(CIA_NAME) -target t -exefslogo -elf $(TARGET).elf -rsf tools/cia/cia.rsf \
-		-icon $(TARGET).smdh -banner $(BUILD)/banner.bnr -DAPP_TITLE="$(APP_TITLE)" -DAPP_PRODUCT_CODE=$(CIA_PRODUCT) \
+		-icon $(TARGET).smdh -banner $(BUILD)/banner.bnr -DAPP_TITLE="$(CIA_TITLE)" -DAPP_PRODUCT_CODE=$(CIA_PRODUCT) \
 		-DAPP_UNIQUE_ID=$(CIA_UNIQUE_ID) -DAPP_ROMFS=$(ROMFS) -DAPP_CATEGORY=Application -DAPP_USE_ON_SD=true \
 		-DAPP_ENCRYPTED=false -DAPP_MEMORY_TYPE=Application -DAPP_SYSTEM_MODE=64MB -DAPP_SYSTEM_MODE_EXT=Legacy \
 		-DAPP_CPU_SPEED=268MHz -DAPP_ENABLE_L2_CACHE=false -DAPP_VERSION_MAJOR=0

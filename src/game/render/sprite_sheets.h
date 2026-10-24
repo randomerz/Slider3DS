@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "game/data/area.h"
@@ -16,7 +17,8 @@ public:
     SpriteSheets& operator=(const SpriteSheets&) = delete;
     ~SpriteSheets() { unload(); }
 
-    bool load(const Area& area); // false (and nothing kept) if a sheet fails to load
+    // False (and nothing kept, `error` naming it) if a sheet fails to load.
+    bool load(const Area& area, std::string* error = nullptr);
     void unload();
 
     // Draws sprite `index` of `area` with its top-left at screen pixel (x, y), rounded, magnified

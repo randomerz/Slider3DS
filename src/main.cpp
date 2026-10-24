@@ -105,7 +105,7 @@ int main(int, char**) {
     loaded = loaded && loadArea("village/village.json", area, &error);
     const float areaS = lap();
     if (loaded) showLoading(menuSkin, 0.25f);
-    loaded = loaded && sheets.load(area);
+    loaded = loaded && sheets.load(area, &error);
     const float sheetsS = lap();
     if (loaded) showLoading(menuSkin, 0.5f);
     loaded = loaded && font.load("fonts/dialogue.json", &error) && titleArt.load(&error) && endArt.load(&error);
