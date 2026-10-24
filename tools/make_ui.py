@@ -40,7 +40,8 @@ canvas' layout (INTRO_LAYOUT: from the scene's RectTransforms, at 1x on the top 
   assets/sheets/ui_intro.png  the sheet (.fmt by its colors)
   assets/ui/intro.json        {"sheet", "slides": [{"rect", "text"}], "imageY" (px the images' centers sit
                                above the screen's middle), "textBox": [w, h, y] (the captions' box, centered,
-                               its middle y px above the bottom; text centered, bottom-aligned)}
+                               its middle y px above the bottom; text centered, bottom-aligned), "wordSpacing"
+                               (px added to each space; captions are ASCII)}
 
 Usage: python tools/make_ui.py [path to Slider/Assets]   (needs Pillow)
 """
@@ -293,8 +294,8 @@ INTRO_IMAGES = [("Sprites/UI/intro_cutscene/intro_cutscene.png", "intro_cutscene
                 ("Sprites/UI/intro_cutscene/cg 4.PNG", None), ("Sprites/UI/intro_cutscene/cg 5.png", None),
                 ("Sprites/UI/intro_cutscene/cg 6.png", None), ("Sprites/UI/intro_cutscene/cg7 160x120.png", None)]
 # Images: anchored to the middle, at (0, 20), native size. Texts (1)-(7): 300x45, anchored bottom-middle at
-# (0, 32.5): PixelTitanZero 16, centered, bottom-aligned.
-INTRO_LAYOUT = {"imageY": 20, "textBox": [300, 45, 32.5]}
+# (0, 32.5): PixelTitanZero 16, centered, bottom-aligned; m_wordSpacing -10 (TMP: em / 100, so -1.6 px a space).
+INTRO_LAYOUT = {"imageY": 20, "textBox": [300, 45, 32.5], "wordSpacing": round(-10 * 16 * 0.01, 4)}
 
 
 def intro():
@@ -309,7 +310,10 @@ def intro():
         text = texts.get(f"Canvas/Texts/Text ({i + 1})")
         if text is None:
             sys.exit(f"IntroCutscene_scene.csv: no Canvas/Texts/Text ({i + 1})")
-        captions.append("\n".join(line.strip() for line in text.replace("\r\n", "\n").split("\n")))
+        caption = "\n".join(line.strip() for line in text.replace("\r\n", "\n").split("\n"))
+        if not caption.isascii():
+            sys.exit(f"Text ({i + 1}): not ASCII (the port's fonts and typing are byte-wise): {caption!r}")
+        captions.append(caption)
     sheet, placed = pack(cut, 512)
     write_sheet(sheet, "ui_intro")
     slides = [{"rect": [*placed[f"slide{i}"], img.width, img.height], "text": captions[i]} for i, img in enumerate(cut.values())]
@@ -318,7 +322,7 @@ def intro():
         f.write('{\n  "sheet": "ui_intro",\n  "slides": [\n')
         f.write(",\n".join("    " + json.dumps(sl, separators=(",", ":")) for sl in slides))
         f.write('\n  ],\n  "imageY": ' + json.dumps(INTRO_LAYOUT["imageY"]) + ',\n  "textBox": ' +
-                json.dumps(INTRO_LAYOUT["textBox"]) + '\n}\n')
+                json.dumps(INTRO_LAYOUT["textBox"]) + ',\n  "wordSpacing": ' + json.dumps(INTRO_LAYOUT["wordSpacing"]) + '\n}\n')
     print(f"intro: {len(slides)} slides, sheet {sheet.width}x{sheet.height}")
 
 

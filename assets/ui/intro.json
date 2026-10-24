@@ -10,5 +10,6 @@
     {"rect":[0,202,160,120],"text":"The world faces\nCataclysm once more."}
   ],
   "imageY": 20,
-  "textBox": [300, 45, 32.5]
+  "textBox": [300, 45, 32.5],
+  "wordSpacing": -1.6
 }

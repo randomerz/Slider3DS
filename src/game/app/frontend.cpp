@@ -20,8 +20,8 @@ Frontend::Frontend(const Area& area, const TitleArt& art, const EndArt& endArt, 
 }
 
 void Frontend::startGame(SaveProfile profile, int slot) {
-    // SaveSystem.LoadSaveProfile / NewSavePanelManager.StartNewGame (the original's intro cutscene
-    // scene isn't ported: a new game starts in the Village).
+    // SaveSystem.LoadSaveProfile, or a new profile after its intro (Frontend::startIntro).
+    titleFade_ = -1;
     profile_ = std::move(profile);
     slot_ = slot;
     cheats_.noclip = noclipMarked_ = false; // (the scene's new Player collides; nothing marked carries over)
@@ -66,6 +66,7 @@ void Frontend::saveSettingsIfChanged() {
 
 void Frontend::toTitle() {
     mode_ = Mode::Title;
+    titleFade_ = -1;
     screen_.start(art_); // (MainMenu reloads: its intro again)
     title_.open();       // (the profiles re-read; the held touch released)
     // MainMenuManager.Start: the title's music (it plays on from the Options), its full arrangement
@@ -117,7 +118,9 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
         }
         return true;
     }
-    if (mode_ == Mode::Title && titleFade_ >= 0) { // (a new game: the title fades out, deaf)
+    if (mode_ == Mode::Title && titleFade_ >= 0) { // (a new game: the title fades out, animating but deaf)
+        screen_.update(area_.cameraShake, plat::Input{}, FRAME_DT, settings_.screenShake);
+        title_.update(plat::Input{});
         if (++titleFade_ >= TITLE_FADE_FRAMES) startIntro();
         return true;
     }

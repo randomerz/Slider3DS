@@ -32,6 +32,22 @@ TEST(intro_art_loads_seven_slides) {
     CHECK(art.slides().size() == 7 && art.textW() == 300 && art.imageY() == 20 && art.textBottom() == 10);
     CHECK(art.slides()[0].text == "In ages past, man held the power to remake the world.");
     CHECK(art.slides()[6].w == 160 && art.slides()[6].h == 120 && art.slides()[2].text.find('\n') != std::string::npos);
+    CHECK(art.slides()[2].visible == 30); // ("A relic now lost\nto the sands of time.": no spaces or break)
+    // Every key is required, and captions are ASCII (typed a byte at a time).
+    std::string real;
+    check(plat::readFile("ui/intro.json", real), "ui/intro.json");
+    auto loadsWith = [&](const std::string& from, const std::string& to) {
+        std::string json = real;
+        const size_t at = json.find(from);
+        if (at == std::string::npos) return true; // (the pattern must be there: reported as a failure)
+        json.replace(at, from.size(), to);
+        testSetFile("ui/intro.json", json);
+        IntroArt a;
+        return a.load();
+    };
+    CHECK(!loadsWith("\"wordSpacing\"", "\"spacing\"") && !loadsWith("\"imageY\"", "\"y\""));
+    CHECK(!loadsWith("In ages past", "In \xe2\x80\x99ges past"));
+    testSetFile("ui/intro.json", real);
 }
 
 TEST(intro_cutscene_plays_each_image_then_ends) {
@@ -44,7 +60,7 @@ TEST(intro_cutscene_plays_each_image_then_ends) {
     CHECK(intro.slide() == 0 && intro.alpha() == 0 && intro.shownChars() == 0);
     run(intro, 30);
     CHECK(std::fabs(intro.alpha() - 0.5f) < 0.02f && intro.shownChars() > 0); // (typing since 0.2 s)
-    const int length = (int)art.slides()[0].text.size();
+    const int length = art.slides()[0].visible;
     const int typed = 30 + until(intro, [&] { return intro.shownChars() >= length; });
     const int expected = (int)std::ceil((IntroCutscene::TYPE_DELAY + (length - 1) * IntroCutscene::CHAR_TIME) / DT);
     check(std::abs(typed - expected) <= 1, "typed at frame " + std::to_string(typed) + ", expected " + std::to_string(expected));
@@ -60,7 +76,7 @@ TEST(intro_cutscene_plays_each_image_then_ends) {
 TEST(intro_cutscene_a_press_cuts_each_step_short) {
     IntroArt art;
     check(art.load(), "intro art");
-    const int length = (int)art.slides()[0].text.size();
+    const int length = art.slides()[0].visible;
     // During the fade in: shown at once, and the caption whole as soon as it starts.
     IntroCutscene a;
     a.start(art);

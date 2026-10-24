@@ -422,6 +422,56 @@ TEST(frontend_cheats_give_from_an_inactive_tile_only_with_cheats_and_noclip_touc
     testUserFiles().clear();
 }
 
+TEST(frontend_new_game_fades_the_title_then_plays_the_intro) {
+    // Done on New Save: the title fades to black (both screens), then the intro
+    // plays with the music dipped (a DampenMusic at 0.4, lifted at its end); START and a touch held
+    // since the fade don't skip, a new touch does; its art is loaded only while it plays.
+    testUserFiles().clear();
+    Settings settings;
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
+    MenuSkin skin;
+    SpriteSheets sheets;
+    AreaView view;
+    std::string err;
+    check(skin.load(&err) && sheets.load(villageArea()), "assets " + err);
+    showMenu(f);
+    tapTitle(f, TitleMenu::PLAY);
+    tapTitle(f, (TitleMenu::Widget)(TitleMenu::KEY + 10));
+    tapTitle(f, TitleMenu::DONE);
+    f.audio().take();
+    for (int i = 0; i < Frontend::TITLE_FADE_FRAMES / 2; i++) f.update({}, 0, 0);
+    CHECK(f.mode() == Frontend::Mode::Title && !f.introLoaded());
+    testResetDrawCalls();
+    f.drawBottom(sheets, skin);
+    int fade = -1; // (the black over the bottom screen, half way)
+    for (const DrawCall& c : testDrawCalls())
+        if (c.sheet.empty() && c.w == plat::BOTTOM_W && c.h == plat::BOTTOM_H && (c.flags >> 8) == 0) fade = (int)(c.flags & 0xff);
+    check(fade > 100 && fade < 155, "the title's fade half way: alpha " + std::to_string(fade));
+
+    const plat::Input held = touchAt(10, 10); // (a touch going down during the fade, held into the intro)
+    for (int i = Frontend::TITLE_FADE_FRAMES / 2; i < Frontend::TITLE_FADE_FRAMES; i++) f.update(held, 0, 0);
+    CHECK(f.mode() == Frontend::Mode::Intro && f.introLoaded());
+    int dips = 0;
+    for (const AudioCue& c : f.audio().take())
+        dips += c.kind == AudioCue::Kind::DampenMusic && c.value == Frontend::INTRO_MUSIC && c.length > 1000;
+    CHECK(dips == 1);
+    for (int i = 0; i < 6; i++) f.update(held, 0, 0);
+    for (int i = 0; i < 6; i++) f.update(buttons(plat::BTN_START), 0, 0);
+    CHECK(f.intro().slide() == 0 && f.intro().alpha() > 0 && f.intro().alpha() < 0.25f); // (fading in: no skip)
+    f.update({}, 0, 0);
+    f.update(touchAt(10, 10), 0, 0); // a new touch: shown at once
+    CHECK(f.intro().alpha() == 1);
+    for (int i = 0; i < 60; i++) f.update(touchAt(10, 10), 0, 0); // (held: the hold isn't cut short)
+    CHECK(f.intro().slide() == 0 && f.intro().alpha() == 1);
+
+    for (int i = 0; i < 3000 && f.mode() == Frontend::Mode::Intro; i++) f.update(buttons(i % 2 ? plat::BTN_A : 0), 0, 0);
+    CHECK(f.mode() == Frontend::Mode::Game && !f.introLoaded());
+    int lifted = 0;
+    for (const AudioCue& c : f.audio().take()) lifted += c.kind == AudioCue::Kind::DampenMusic && c.length == 0;
+    CHECK(lifted == 1);
+    testUserFiles().clear();
+}
+
 TEST(frontend_stylus_held_into_the_game_is_no_artifact_press) {
     testUserFiles().clear();
     SaveProfile::make("Tofu").save(0);

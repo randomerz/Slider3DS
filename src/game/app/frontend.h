@@ -78,6 +78,7 @@ public:
     const PauseMenu& pauseMenu() const { return pause_; }
     const ArtifactUI& artifactUI() const { return artifactUI_; }
     const IntroCutscene& intro() const { return intro_; }
+    bool introLoaded() const { return introArt_.loaded(); } // its art: only while it plays
     int titleFade() const { return titleFade_; } // frames into the new game's fade (-1: none)
     Cheats& cheats() { return cheats_; }
     const Cheats& cheats() const { return cheats_; }

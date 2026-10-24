@@ -699,7 +699,7 @@ TEST(render_intro_cutscene_goldens) {
     shoot("intro_first_typing");
     while (intro.slide() < 2) intro.update(true, 1.0f / 60.0f);
     for (int i = 0; i < 60; i++) intro.update(i == 0, 1.0f / 60.0f); // (shown, typed whole)
-    CHECK(intro.alpha() == 1 && intro.shownChars() == (int)art.slides()[2].text.size());
+    CHECK(intro.alpha() == 1 && intro.shownChars() == art.slides()[2].visible);
     shoot("intro_two_lines");
     while (intro.slide() < 6) intro.update(true, 1.0f / 60.0f);
     for (int i = 0; i < 60; i++) intro.update(i == 0, 1.0f / 60.0f);
