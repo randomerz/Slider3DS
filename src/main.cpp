@@ -6,6 +6,7 @@
 //   Cutscenes (the intro's camera dolly): hold A to skip
 //   Bottom screen in the game: the Artifact (tap a tile, then a highlighted slot, or drag it there;
 //   or the D-pad's cursor and X for those taps)
+// Boot: "Loading..." and a bar on the bottom screen between the asset groups (the menu skin first).
 // The new-game start is the Default spawn inside tile 1's house. The player's Settings live here,
 // loaded at start (the Frontend saves them when they change). Audio (game/audio) plays what the
 // Frontend asks each frame, at the Settings' volumes.
@@ -14,6 +15,8 @@
 // page's Enable Cheats is on: a perf overlay (game/dev/dev_overlay; SELECT cycles its pages: FRAME,
 // DRAW, off), L + SELECT in the game (toggle noclip), R on the title screen (boot the Village
 // directly, outdoors on tile 1, on a temporary profile that is never written).
+#include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <string>
 
@@ -49,6 +52,22 @@ void showLoadError() {
     }
 }
 
+// A boot frame while the assets load: both screens dark, and on the bottom one "Loading..." over a
+// bar `progress` (0-1) full, in the menus' look (the menu skin loads first).
+void showLoading(const MenuSkin& skin, float progress) {
+    constexpr int S = MenuSkin::UI_SCALE, CX = plat::BOTTOM_W / S / 2, CY = plat::BOTTOM_H / S / 2; // (UI px)
+    constexpr int BAR_W = 80, BAR_H = 2;
+    plat::beginFrame();
+    plat::beginScreen(plat::Screen::Top, palette::DARK);
+    plat::beginScreen(plat::Screen::Bottom, palette::DARK);
+    const char* text = "Loading...";
+    skin.drawText(text, CX - skin.textWidth(text) / 2, CY - 6, palette::OFF_WHITE);
+    const float x = (float)((CX - BAR_W / 2) * S), y = (float)((CY + 4) * S);
+    plat::drawRect(x, y, (float)(BAR_W * S), (float)(BAR_H * S), palette::GRAY);
+    plat::drawRect(x, y, std::floor(BAR_W * std::clamp(progress, 0.0f, 1.0f)) * S, (float)(BAR_H * S), palette::OFF_WHITE);
+    plat::endFrame();
+}
+
 } // namespace
 
 int main(int, char**) {
@@ -61,7 +80,6 @@ int main(int, char**) {
         return s;
     };
     if (!plat::init()) return 1;
-    const float initS = lap();
 
     Area area;
     SpriteSheets sheets;
@@ -71,13 +89,18 @@ int main(int, char**) {
     EndArt endArt;
     Audio audio;
     std::string error;
-    bool loaded = loadArea("village/village.json", area, &error);
+    bool loaded = menuSkin.load(&error); // (first: the loading frames use it)
+    const float initS = lap();
+    if (loaded) showLoading(menuSkin, 0);
+    loaded = loaded && loadArea("village/village.json", area, &error);
     const float areaS = lap();
+    if (loaded) showLoading(menuSkin, 0.25f);
     loaded = loaded && sheets.load(area);
     const float sheetsS = lap();
-    loaded = loaded && font.load("fonts/dialogue.json", &error) && menuSkin.load(&error) && titleArt.load(&error) &&
-             endArt.load(&error);
+    if (loaded) showLoading(menuSkin, 0.5f);
+    loaded = loaded && font.load("fonts/dialogue.json", &error) && titleArt.load(&error) && endArt.load(&error);
     const float uiS = lap();
+    if (loaded) showLoading(menuSkin, 0.75f);
     loaded = loaded && audio.load(&error);
     const float audioS = lap();
     if (!loaded) {
