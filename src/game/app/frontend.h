@@ -99,6 +99,7 @@ private:
     EndScreen end_;
     ArtifactUI artifactUI_;
     Cheats cheats_;
+    bool noclipMarked_ = false; // the noclip state last seen (each toggle marks UsedCheats, as DoNoClip)
     Mode mode_ = Mode::Title;
     AudioCues audio_;
     SaveProfile profile_;

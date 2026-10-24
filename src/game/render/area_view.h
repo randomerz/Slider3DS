@@ -35,7 +35,8 @@ SortedSprite placeSprite(const Area& area, const SpritePlacement& p, float baseX
 class AreaView {
 public:
     // World point (camX, camY) lands at the screen center; the camera snaps to whole pixels.
-    // `time` (seconds) drives animated tiles and sprites. Inactive STiles are drawn when showInactiveTiles.
+    // `time` (seconds) drives animated tiles and sprites. Inactive STiles are drawn when showInactiveTiles
+    // (only a render golden uses it now: the dev toggle is gone).
     void begin(const Area& area, const SpriteSheets& sheets, float camX, float camY, int screenW, int screenH, float time,
                bool showInactiveTiles);
     // The font NPC dialogue is drawn in (none: dialogue isn't drawn).

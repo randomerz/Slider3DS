@@ -137,9 +137,10 @@ public:
     void placeNear(float x, float y);
 
     // One frame: queued slides advance and the player rides the tile under it; the player walks
-    // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless noclip
-    // (and is pushed out of anything it overlaps); triggers react to what it touches; NPCs update;
-    // Starts run for components that became active; Animators and particles advance.
+    // along (moveX, moveY) (each -1..1, normalized here) at MOVE_SPEED, colliding unless `noclip`
+    // or noClip (and is pushed out of anything it overlaps; `noclip`: tests that walk through walls
+    // but keep triggers); triggers react to what it touches; NPCs update; Starts run for components
+    // that became active; Animators and particles advance.
     void update(float dt, const FrameInput& in, bool noclip = false);
     void update(float dt, float moveX, float moveY, bool noclip) { update(dt, FrameInput{moveX, moveY, false}, noclip); }
 
@@ -213,6 +214,10 @@ public:
     // A script asked for the game to be saved (SaveSystem.SaveGame: a collectible's pick-up); the
     // frontend saves and clears it.
     bool saveRequested = false;
+    // Player.noClipEnabled (the Cheats page's NoClip, Player.toggleCollision): the player's colliders
+    // are off — it walks through everything and touches no trigger (leaving those it was in;
+    // turned back on, it enters them again). Set by the frontend each frame.
+    bool noClip = false;
     // What scripts asked AudioManager for; the frontend passes it on each frame.
     AudioCues audio;
     SoundProps props; // CowProp / DogProp: cooldowns and emotes

@@ -309,7 +309,7 @@ TEST(pause_menu_cheats_page) {
     cheats.respawn = false;
     s.cheats = false;
     menu.update(plat::Input{}, s);
-    CHECK(menu.cursor() == Menu::CHEATS_ENABLED && cheats.toGive == std::vector<int>{1});
+    CHECK(menu.cursor() == Menu::CHEATS_ENABLED && cheats.toGive == std::vector<int>{1}); // (the Frontend drops them on Resume)
     menu.open(Menu::Page::Paused, &cheats); // (Give starts over on the first, as OnEnable)
     CHECK(menu.giveIndex() == 0);
 }

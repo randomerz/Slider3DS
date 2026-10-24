@@ -23,7 +23,7 @@ void Frontend::startGame(SaveProfile profile, int slot) {
     // scene isn't ported: a new game starts in the Village).
     profile_ = std::move(profile);
     slot_ = slot;
-    cheats_.noclip = false; // (the scene's new Player collides; nothing marked carries over)
+    cheats_.noclip = noclipMarked_ = false; // (the scene's new Player collides; nothing marked carries over)
     cheats_.toGive.clear();
     world_.audio.take(); // (left from the World before this scene: its construction's Starts)
     world_.load(profile_);
@@ -74,6 +74,10 @@ void Frontend::shutdown() {
 }
 
 bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
+    if (cheats_.noclip != noclipMarked_) { // (toggled: the Cheats page, or a dev shortcut before this)
+        noclipMarked_ = cheats_.noclip;
+        if (mode_ == Mode::Game) cheats::markUsed(world_);
+    }
     if (pause_.isOpen()) {
         const PauseMenu::Action action = pause_.update(in, settings_);
         if (pause_.clicked()) audio_.play(sounds::UI_CLICK);
@@ -83,7 +87,8 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
             cheats::respawnPlayer(world_);
         }
         if (action == PauseMenu::Action::Resume && mode_ == Mode::Game) { // (CheckCheatsOnPauseClosed)
-            for (int index : cheats_.toGive) cheats::giveCollectible(world_, index);
+            if (settings_.cheats) // (turned off since: the marks are dropped)
+                for (int index : cheats_.toGive) cheats::giveCollectible(world_, index);
             cheats_.toGive.clear();
         }
         if (action == PauseMenu::Action::Quit) { // (QuitHandler: save, then the main menu)
@@ -140,8 +145,8 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
     }
     FrameInput frame{moveX, moveY, (in.held & plat::BTN_A) != 0};
     if (in.pressed & plat::BTN_A) world_.action();
-    if (noclip()) cheats::markUsed(world_);
-    world_.update(FRAME_DT, frame, noclip());
+    world_.noClip = noclip();
+    world_.update(FRAME_DT, frame);
     audio_.takeFrom(world_.audio);
     if (world_.saveRequested) {
         world_.saveRequested = false;

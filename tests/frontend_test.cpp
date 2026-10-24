@@ -382,6 +382,42 @@ TEST(frontend_cheats_page_respawns_gives_on_resume_and_noclips) {
     testUserFiles().clear();
 }
 
+TEST(frontend_cheats_give_from_an_inactive_tile_only_with_cheats_and_noclip_touches_nothing) {
+    testUserFiles().clear();
+    Settings settings;
+    Frontend f(villageArea(), titleArt(), endArt(), settings);
+    showMenu(f);
+    newGame(f);
+    const int slider3 = villageArea().collectible("Slider 3"); // (on tile 2, not collected yet: inactive)
+    auto pauseAndResume = [&]() {
+        f.update(buttons(plat::BTN_START), 0, 0);
+        f.update(buttons(plat::BTN_START), 0, 0);
+    };
+    // Marked, then cheats turned off before Resume: dropped, nothing given, nothing marked as used.
+    f.cheats().toGive = {slider3};
+    pauseAndResume();
+    frames(f, PICKUP_FRAMES);
+    CHECK(f.cheats().toGive.empty() && !f.world().state.hasCollectible("Slider 3", "Village"));
+    CHECK(!f.world().state.flag(cheats::USED_CHEATS_FLAG));
+
+    // NoClip on: the player's colliders are off, so the given Slider 3 at its feet isn't picked up
+    // until it's turned off. The toggle alone marks the profile.
+    settings.cheats = true;
+    f.cheats().noclip = true;
+    f.update({}, 0, 0);
+    CHECK(f.world().noClip && f.world().state.flag(cheats::USED_CHEATS_FLAG));
+    f.world().state.setFlag(cheats::USED_CHEATS_FLAG, false);
+    f.cheats().toGive = {slider3};
+    pauseAndResume();
+    frames(f, PICKUP_FRAMES);
+    CHECK(!f.world().state.hasCollectible("Slider 3", "Village"));
+    CHECK(f.world().state.flag(cheats::USED_CHEATS_FLAG)); // (the give's own mark)
+    f.cheats().noclip = false;
+    frames(f, PICKUP_FRAMES);
+    CHECK(!f.world().noClip && f.world().state.hasCollectible("Slider 3", "Village"));
+    testUserFiles().clear();
+}
+
 TEST(frontend_stylus_held_into_the_game_is_no_artifact_press) {
     testUserFiles().clear();
     SaveProfile::make("Tofu").save(0);

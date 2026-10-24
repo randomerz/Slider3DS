@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include "game/ui/palette.h"
+#include "game/world/cheats.h"
 
 namespace {
 
@@ -88,6 +89,7 @@ void TitleMenu::readCards() {
         c.areas = p.areasCompleted();
         c.playTime = p.playTime;
         c.lastSaved = p.lastSaved;
+        c.cheated = p.state.flag(cheats::USED_CHEATS_FLAG); // (the port has no UsedTeleport)
     }
 }
 
@@ -342,7 +344,7 @@ void TitleMenu::draw(const MenuSkin& skin) const {
             const int slot = w - CARD;
             const Card& c = cards_[slot];
             const State st = state(w);
-            skin.drawCard(b.x, b.y, b.w, b.h, st);
+            skin.drawCard(b.x, b.y, b.w, b.h, st, c.status == SaveProfile::Read::Ok && c.cheated);
             if (confirm_ == slot && blinkFrame_ % (2 * BLINK_FRAMES) >= BLINK_FRAMES) continue; // (blinking: hidden)
             const int cy = b.y + (b.h - MenuSkin::CARD_EDGE) / 2 + (st == State::Pressed ? MenuSkin::PRESS_DROP : 0);
             const uint32_t dark = deleting_ ? palette::GRAY : palette::DARK;

@@ -54,6 +54,7 @@ public:
         int areas = 0;
         double playTime = 0;
         int64_t lastSaved = 0;
+        bool cheated = false; // UsedCheats: a darker card
     };
     // A widget's box on the bottom screen, px.
     struct Box {

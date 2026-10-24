@@ -11,7 +11,7 @@ class World;
 struct Cheats {
     std::vector<std::string> collectibles; // Give's list (SGrid.GetCollectibles): the area's, by index
     std::vector<int> toGive; // the indices marked on the page, given when the menu closes (CheckCheatsOnPauseClosed)
-    bool noclip = false;     // DoNoClip: the player walks through everything (until the next game starts)
+    bool noclip = false;     // DoNoClip: the player's colliders off (World::noClip; until the next game starts)
     bool respawn = false;    // DoRespawnPlayer was pressed: the Frontend runs it and clears this
 };
 

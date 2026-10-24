@@ -30,6 +30,7 @@
 #include "game/village/village_grid.h"
 #include "game/grid/artifact.h"
 #include "game/grid/grid.h"
+#include "game/world/cheats.h"
 #include "game/world/world.h"
 #include "platform/platform.h"
 #include "test.h"
@@ -691,7 +692,7 @@ TEST(render_ending_goldens) {
 
 TEST(render_title_menu_goldens) {
     // Main without profiles (Continue grayed) and with one; Saves: a profile (1/9, 1h32), an
-    // unreadable file, an empty slot; delete mode with a card awaiting Confirm; New Save with a name
+    // unreadable file, one that used cheats (the dark card); delete mode with a card awaiting Confirm; New Save with a name
     // in capitals.
     MenuSkin skin;
     std::string error;
@@ -717,6 +718,9 @@ TEST(render_title_menu_goldens) {
     p.state.setCollectible("Slider 9", "Village", true);
     p.save(0);
     testUserFiles()[SaveProfile::fileName(1)] = "garbage";
+    SaveProfile cheated = SaveProfile::make("Cheater");
+    cheated.state.setFlag(cheats::USED_CHEATS_FLAG, true);
+    cheated.save(2);
     menu.open();
     menu.update(plat::Input{});
     shoot("title_main");

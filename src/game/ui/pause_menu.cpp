@@ -54,6 +54,7 @@ constexpr int CONTROL_CENTER_X = SLIDER_X + SLIDER_W / 2;
 // A picker: "< name >" from the row's start to PICKER_END_X, its button where the toggle goes.
 constexpr int PICKER_BUTTON_W = 28, PICKER_BUTTON_H = 11;
 constexpr int PICKER_END_X = CONTROL_CENTER_X - PICKER_BUTTON_W / 2 - 3;
+constexpr int PICKER_MIDDLE_X = (ROW_X + ROW_PAD + PICKER_END_X) / 2; // the name's center (taps split there)
 
 // A page: its title, items, and parent (B and Back go there, selecting `returnTo`; none for the top).
 struct PageDef {
@@ -268,8 +269,9 @@ void PauseMenu::flip(const ItemDef& def, Settings& settings) {
     else settings.*def.flag = !(settings.*def.flag);
 }
 
+// (activate and step see only usable items: the cursor never rests on a grayed-out one, and taps on
+// one are dropped by itemAt)
 PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
-    if (!enabled(def, settings)) return Action::None;
     if (def.act != Act::Quit) confirmQuit_ = false;
     if (def.kind != Kind::Slider) clicked_ = true;
     if (def.kind == Kind::Toggle) flip(def, settings);
@@ -299,7 +301,6 @@ PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
 }
 
 void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
-    if (!enabled(def, settings)) return;
     if (def.kind == Kind::Toggle) {
         flip(def, settings);
         clicked_ = true;
@@ -331,7 +332,7 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
     while (cursor_ > 0 && !enabled(p.items[cursor_], settings)) cursor_--;
     const int move = ((in.pressed & plat::DIR_DOWN) ? 1 : 0) - ((in.pressed & plat::DIR_UP) ? 1 : 0);
     int next = cursor_ + move; // (the next usable one that way; stops at the ends, as the title menu)
-    while (next >= 0 && next < p.count && !enabled(p.items[next], settings)) next += move;
+    while (move != 0 && next >= 0 && next < p.count && !enabled(p.items[next], settings)) next += move;
     if (move != 0 && next >= 0 && next < p.count) {
         cursor_ = next;
         confirmQuit_ = false;
@@ -362,7 +363,7 @@ PauseMenu::Action PauseMenu::handleInput(const plat::Input& in, Settings& settin
         const ItemDef& def = p.items[f.tapped];
         // The picker: its button marks; a tap on its name's left / right half picks the one before / after.
         if (def.kind == Kind::Picker && tapX_ < uiControl(p, f.tapped).x) {
-            step(def, tapX_ < (ROW_X + PICKER_END_X) / 2 ? -1 : 1, settings);
+            step(def, tapX_ < PICKER_MIDDLE_X ? -1 : 1, settings);
             return Action::None;
         }
         return activate(def, settings);
@@ -398,7 +399,7 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
             const int left = b.x + ROW_PAD, right = PICKER_END_X;
             skin.drawLabel("<", left, cy, selected, on);
             skin.drawLabel(">", right - skin.textWidth(">"), cy, selected, on);
-            skin.drawLabel(name, (left + right - skin.textWidth(name)) / 2, cy, selected, on);
+            skin.drawLabel(name, PICKER_MIDDLE_X - skin.textWidth(name) / 2, cy, selected, on);
             const std::vector<int>* marked = any ? &cheats_->toGive : nullptr;
             const bool undo = marked && std::find(marked->begin(), marked->end(), give_) != marked->end();
             skin.drawButton(c.x, c.y, c.w, c.h, undo ? "Undo" : "Give", false, tap_.held(i) && tapX_ >= c.x, 0, on);

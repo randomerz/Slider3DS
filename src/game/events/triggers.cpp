@@ -81,8 +81,9 @@ void TriggerTracker::update(World& world) {
 
     const Box box = hitboxAt(world.player.hitbox(area), world.player.x, world.player.y);
     std::fill(now_.begin(), now_.end(), (uint8_t)0);
-    for (const ObjectCollider& c : area.triggerColliders)
-        if (!now_[c.object] && colliderOverlaps(world, c, box)) now_[c.object] = 1;
+    if (!world.noClip) // (noclip: the player's colliders are off, touching nothing)
+        for (const ObjectCollider& c : area.triggerColliders)
+            if (!now_[c.object] && colliderOverlaps(world, c, box)) now_[c.object] = 1;
 
     // Exits first, then enters; a call may teleport the player or change objects, which the next
     // update sees. After the swap, now_ holds the previous contacts.

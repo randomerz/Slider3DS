@@ -61,6 +61,7 @@ SPRITES = {
     "cardPressed": ("Sprites/UI/Button24_BottomEmpty.png", "Button24_1_Empty"),
     "cardSelected": ("Sprites/UI/Button24_BottomEmpty.png", "Button24_2_Empty"),
     "cardBack": ("Sprites/UI/Button24_Backgrounds.png", "Button24_Backgrounds_0"),
+    "cardBackCheated": ("Sprites/UI/Button24_Backgrounds.png", "Button24_Backgrounds_1"),
     "frameLight": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_0"),
     "frameDark": ("Sprites/UI/MainMenuButton20.png", "MainMenuButton20_2"),
     "back": ("Sprites/UI/artifact/back_button.png", "back_button_0"),

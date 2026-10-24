@@ -290,7 +290,7 @@ void World::update(float dt, const FrameInput& in, bool noclip) {
         dx = moveX / len * MOVE_SPEED * dt;
         dy = moveY / len * MOVE_SPEED * dt;
     }
-    if (noclip) {
+    if (noclip || noClip) {
         player.x += dx;
         player.y += dy;
     } else {

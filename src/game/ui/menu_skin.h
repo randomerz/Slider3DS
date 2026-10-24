@@ -60,9 +60,10 @@ public:
     const Font& captionFont() const { return caption_; }
     // A toggle (TOGGLE_SIZE square at (x, y)); `selected` swaps its background.
     void drawToggle(int x, int y, bool on, bool selected) const;
-    // A profile card filling the box: its background, and its face (pressed: 1 px lower; selected:
-    // outlined). Its contents are the caller's (drawText), PRESS_DROP lower when pressed.
-    void drawCard(int x, int y, int w, int h, State state) const;
+    // A profile card filling the box: its background (dark gray for a profile that used cheats:
+    // MainMenuSaveButton's), and its face (pressed: 1 px lower; selected: outlined). Its contents are
+    // the caller's (drawText), PRESS_DROP lower when pressed.
+    void drawCard(int x, int y, int w, int h, State state, bool cheated = false) const;
     // A bracket frame filling the box ("[ ]").
     void drawFrame(Frame frame, int x, int y, int w, int h) const;
     // An icon button at (x, y), its sprite's size (iconSize).
@@ -105,7 +106,7 @@ private:
 
     plat::Texture* sheet_ = nullptr;
     Sprite button_, buttonPressed_, bracketLeft_, bracketRight_, bracketPressedLeft_, bracketPressedRight_, toggle_, toggleSelected_, toggleCheck_, handle_, handleSelected_;
-    Sprite card_[3], cardBack_, frame_[2], back_[3], trash_[3]; // ([State] / [Frame])
+    Sprite card_[3], cardBack_, cardBackCheated_, frame_[2], back_[3], trash_[3]; // ([State] / [Frame])
     Font font_;
     Font caption_;
     mutable int shiftX_ = 0, shiftY_ = 0; // (Shift: a draw-time offset, not the skin's look)

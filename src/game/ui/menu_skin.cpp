@@ -66,6 +66,7 @@ bool MenuSkin::load(std::string* error) {
         read((std::string("trash") + states[i]).c_str(), trash_[i]);
     }
     read("cardBack", cardBack_);
+    read("cardBackCheated", cardBackCheated_);
     read("frameLight", frame_[(int)Frame::Light]);
     read("frameDark", frame_[(int)Frame::Dark]);
     // The widgets are their sprites' sizes (one grid: no scaling).
@@ -92,7 +93,7 @@ bool MenuSkin::load(std::string* error) {
         ok = false;
         if (error) *error = "ui/menu.json: the bracket frames differ in size";
     }
-    if (ok && !is(cardBack_, card_[0].w, card_[0].h)) {
+    if (ok && !(is(cardBack_, card_[0].w, card_[0].h) && is(cardBackCheated_, card_[0].w, card_[0].h))) {
         ok = false;
         if (error) *error = "ui/menu.json: the card background isn't the card's size";
     }
@@ -185,8 +186,8 @@ float MenuSkin::sliderValueAt(float touchX, int x, int w) {
     return std::clamp((touchX - x - HANDLE_W / 2.0f) / (w - HANDLE_W), 0.0f, 1.0f);
 }
 
-void MenuSkin::drawCard(int x, int y, int w, int h, State state) const {
-    drawNineSlice(cardBack_, x, y, w, h);
+void MenuSkin::drawCard(int x, int y, int w, int h, State state, bool cheated) const {
+    drawNineSlice(cheated ? cardBackCheated_ : cardBack_, x, y, w, h);
     drawNineSlice(card_[(int)state], x, y, w, h);
 }
 
