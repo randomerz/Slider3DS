@@ -81,8 +81,8 @@ void Animators::update(World& world, float dt) {
         };
         auto fires = [&](const AnimatorTransitionDef& t) {
             if (t.exitTime >= 0 && !exitReached(t.exitTime)) return false;
-            for (const auto& k : t.conds)
-                if ((st.params[k.first] != 0) != k.second) return false;
+            for (const AnimatorConditionDef& k : t.conds)
+                if (!k.holds(st.params[k.param])) return false;
             return t.exitTime >= 0 || !t.conds.empty(); // Unity needs one or the other
         };
         const AnimatorTransitionDef* taken = nullptr;
@@ -91,8 +91,8 @@ void Animators::update(World& world, float dt) {
         for (const AnimatorTransitionDef& t : s.transitions)
             if (!taken && fires(t)) taken = &t;
         if (taken) {
-            for (const auto& k : taken->conds)
-                if (c.paramTriggers[k.first]) st.params[k.first] = 0; // (a trigger is used up)
+            for (const AnimatorConditionDef& k : taken->conds)
+                if (c.paramTriggers[k.param]) st.params[k.param] = 0; // (a trigger is used up)
             st.state = taken->to;
             st.time = 0;
         }
@@ -147,11 +147,14 @@ void Animators::play(const World& world, int animator, const std::string& state,
 }
 
 void Animators::setBool(const World& world, int animator, const std::string& param, bool value) {
+    setFloat(world, animator, param, value ? 1.0f : 0.0f);
+}
+
+void Animators::setFloat(const World& world, int animator, const std::string& param, float value) {
     syncEnabled(world, animator);
-    const Area& area = world.area;
     State& st = s_[animator];
-    const int p = area.animatorControllers[st.controller].paramIndex(param);
-    if (p >= 0) st.params[p] = value ? 1 : 0;
+    const int p = world.area.animatorControllers[st.controller].paramIndex(param);
+    if (p >= 0) st.params[p] = value;
 }
 
 void Animators::setController(const World& world, int animator, int controller) {
@@ -168,8 +171,8 @@ const std::string& Animators::stateName(const Area& area, int animator) const {
     return c.states.empty() ? none : c.states[st.state].name;
 }
 
-bool Animators::param(const Area& area, int animator, const std::string& name) const {
+float Animators::paramValue(const Area& area, int animator, const std::string& name) const {
     const State& st = s_[animator];
     const int p = area.animatorControllers[st.controller].paramIndex(name);
-    return p >= 0 && st.params[p] != 0;
+    return p >= 0 ? st.params[p] : 0;
 }

@@ -91,6 +91,7 @@ struct GridEvent {
     Kind kind = Kind::Move;
     int islandId = 0;          // TileMoveStart / TileMoveEnd / TileEnabled: the tile
     float duration = 0;        // TileMoveStart / TileMoveEnd: the move's, s (SGridAnimator's currMoveDuration)
+    int dx = 0, dy = 0;        // TileMoveStart: where the tile goes, slots (end - start)
     std::vector<int> slots;    // idAt as of the event (y * width + x; Move: after it)
     std::string gridString;    // gridString() as of the event
     std::vector<int> oldSlots; // Move: before it

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "game/anim/animators.h"
+#include "game/anim/momentum_gizmos.h"
 #include "game/audio/audio_cues.h"
 #include "game/events/sound_props.h"
 #include "game/cutscene/camera_dolly.h"
@@ -196,6 +197,7 @@ public:
     NpcWalks walks; // NPCs walking their paths
     Items items;
     Animators animators;
+    MomentumGizmos momentum; // trees and bushes swaying with their tile
     Particles particles;
     village::KnotBoxes knots; // the knot puzzle's lines (Village)
     village::RuinsArrows ruins; // the ruins arrow, its rods and trail (Village)

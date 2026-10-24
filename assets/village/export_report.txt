@@ -1,8 +1,8 @@
 Slider3DS village export
 STiles: 9  Tilemaps: 36 collision, 92 visual, 19 material, 4 visual (from sprites)  Cells: 44084
-World sprites: 333  Anims: 86  Object colliders: 218
-Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18  Items: 15  Knot boxes: 1  Ruins arrows: 1  Chad jumps: 1  Cat tricks: 1  Particle systems: 30
-Tiles: 168 (39 animated)  Sprites: 740
+World sprites: 333  Anims: 117  Object colliders: 218
+Trigger colliders: 56  Condition checkers: 7  Interactions: 18  Trigger events: 25  Collectibles: 13  NPCs: 18  Items: 15  Knot boxes: 1  Ruins arrows: 1  Chad jumps: 1  Cat tricks: 1  Momentum gizmos: 62  Particle systems: 30
+Tiles: 168 (39 animated)  Sprites: 769
 Collision shapes: 9  Materials: material_lablels_5=water, material_lablels_4=puddle, material_lablels_3=sand, material_lablels_0=grass, material_lablels_1=wood, material_lablels_2=concrete
 Sheets (27, 2545K px):
   characters_chad: 256x256  [ChadPortalGun, chad, chad_jump, chad_fall, chad_crutch, chad_sad, chad_surprised]

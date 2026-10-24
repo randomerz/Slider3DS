@@ -339,6 +339,8 @@ void Grid::startMove(const SMove& move, int playerStile, int id) {
             e.kind = GridEvent::Kind::TileMoveStart;
             e.islandId = tid;
             e.duration = duration;
+            e.dx = m.ex - m.sx;
+            e.dy = m.ey - m.sy;
             events_.push_back(std::move(e));
         }
     }

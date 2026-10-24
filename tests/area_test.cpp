@@ -7,7 +7,7 @@
 namespace {
 
 constexpr size_t VILLAGE_LAYERS = 76, VILLAGE_COLLISION = 35, VILLAGE_SHAPES = 9, VILLAGE_TILES = 168,
-                 VILLAGE_SPRITES = 740, VILLAGE_FILLED_CELLS = 27554;
+                 VILLAGE_SPRITES = 769, VILLAGE_FILLED_CELLS = 27554;
 
 // A minimal valid area: 1x1 grid, one sheet/sprite/tile, one visual and one collision tilemap,
 // scene objects, a world sprite with a one-frame anim, two object colliders, a start check and the
@@ -305,7 +305,7 @@ TEST(area_village_export_stats) {
     check(a.knotBoxes.size() == 1 && a.ruinsArrows.size() == 1 && a.chadJumps.size() == 1 && a.particles.size() == 30,
           "knot boxes / ruins arrows / particle systems " + std::to_string(a.knotBoxes.size()) + "/" +
               std::to_string(a.ruinsArrows.size()) + "/" + std::to_string(a.particles.size()));
-    check(a.anims.size() == 86, "anims " + std::to_string(a.anims.size()));
+    check(a.anims.size() == 117, "anims " + std::to_string(a.anims.size()));
     check(a.objectColliders.size() == 218, "object colliders " + std::to_string(a.objectColliders.size()));
     check(a.player.footBox.w > 0 && a.player.boatBox.w > 0, "player hitboxes");
     check(a.triggerColliders.size() == 56 && a.conditionCheckers.size() == 7 && a.interactions.size() == 18 &&
@@ -315,7 +315,7 @@ TEST(area_village_export_stats) {
               std::to_string(a.triggerEvents.size()) + "/" + std::to_string(a.collectibles.size()));
     check(a.npcs.size() == 18 && a.items.size() == 15 && a.playerAction.present, "npcs / items " +
           std::to_string(a.npcs.size()) + "/" + std::to_string(a.items.size()));
-    check(a.animatorControllers.size() == 20 && a.animators.size() == 35,
+    check(a.animatorControllers.size() == 25 && a.animators.size() == 97 && a.momentumGizmos.size() == 62,
           "animator controllers / animators " + std::to_string(a.animatorControllers.size()) + "/" +
               std::to_string(a.animators.size()));
     check(a.player.actionIndicator.sprite >= 0, "player action indicator");

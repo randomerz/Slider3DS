@@ -607,7 +607,20 @@ static std::vector<AnimatorTransitionDef> readTransitions(const Json& j) {
         AnimatorTransitionDef d;
         d.to = t["to"].asInt(-1);
         d.exitTime = t["exitTime"].asFloat(-1);
-        for (const Json& c : t["conds"].items()) d.conds.push_back({c.at(0).asInt(-1), c.at(1).asBool()});
+        for (const Json& c : t["conds"].items()) { // [param, bool] or [param, "gt" / "lt" / "eq" / "ne", threshold]
+            using Mode = AnimatorConditionDef::Mode;
+            AnimatorConditionDef k;
+            k.param = c.at(0).asInt(-1);
+            const std::string& op = c.at(1).asString();
+            if (op.empty()) k.mode = c.at(1).asBool() ? Mode::If : Mode::IfNot;
+            else if (op == "gt") k.mode = Mode::Greater;
+            else if (op == "lt") k.mode = Mode::Less;
+            else if (op == "eq") k.mode = Mode::Equals;
+            else if (op == "ne") k.mode = Mode::NotEqual;
+            else k.param = -1; // (fails validation)
+            k.threshold = c.at(2).asFloat();
+            d.conds.push_back(k);
+        }
         out.push_back(std::move(d));
     }
     return out;
@@ -636,7 +649,8 @@ static AnimatorControllerDef readController(const Json& j) {
     c.name = j["name"].asString();
     for (const Json& p : j["params"].items()) {
         c.params.push_back(p["name"].asString());
-        c.paramDefaults.push_back(p["default"].asBool() ? 1 : 0);
+        const bool number = p["int"].asBool() || p["float"].asBool();
+        c.paramDefaults.push_back(number ? p["default"].asFloat() : p["default"].asBool() ? 1.0f : 0.0f);
         c.paramTriggers.push_back(p["trigger"].asBool() ? 1 : 0);
     }
     c.defaultState = j["default"].asInt();
@@ -762,8 +776,8 @@ static bool validate(const Area& a, std::string* error) {
         auto transitionsOk = [&](const std::vector<AnimatorTransitionDef>& ts) {
             for (const AnimatorTransitionDef& t : ts) {
                 if (t.to < 0 || t.to >= n) return false;
-                for (const auto& k : t.conds)
-                    if (k.first < 0 || k.first >= params) return false;
+                for (const AnimatorConditionDef& k : t.conds)
+                    if (k.param < 0 || k.param >= params) return false;
             }
             return true;
         };
@@ -1021,6 +1035,11 @@ static bool validate(const Area& a, std::string* error) {
         for (int spawn : c.spawns) ok = ok && objectOk(spawn);
         if (!ok) return fail(error, "cat trick: bad object, zone, cat, text object or spawn");
     }
+    for (const MomentumGizmoDef& g : a.momentumGizmos) {
+        const bool ok = g.animator >= 0 && g.animator < (int)a.animators.size() && a.animators[g.animator].object >= 0 &&
+                        (g.stile == 0 || a.stile(g.stile));
+        if (!ok) return fail(error, "momentum gizmo: bad animator or tile");
+    }
     if (a.playerAction.dropIndicator.sprite != -1 && !placementOk(a.playerAction.dropIndicator))
         return fail(error, "player action: bad drop indicator sprite");
     for (const SpritePlacement* p : {&a.player.body, &a.player.boat, &a.player.actionIndicator})
@@ -1175,6 +1194,13 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     for (const Json& j : doc["ruinsArrows"].items()) out.ruinsArrows.push_back(readRuinsArrow(j));
     for (const Json& j : doc["chadJumps"].items()) out.chadJumps.push_back(readChadJump(j, out));
     for (const Json& j : doc["catTricks"].items()) out.catTricks.push_back(readCatTrick(j));
+    for (const Json& j : doc["momentumGizmos"].items()) {
+        MomentumGizmoDef g;
+        g.stile = j["stile"].asInt();
+        out.animators.push_back(readAnimator(j["animator"]));
+        g.animator = (int)out.animators.size() - 1;
+        out.momentumGizmos.push_back(g);
+    }
     for (const Json& j : doc["ambiences"].items()) {
         Area::AmbienceDef a;
         a.object = j["object"].asInt(-1);

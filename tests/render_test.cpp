@@ -1041,6 +1041,40 @@ TEST(render_smoke_golden) {
     shoot("smoke_late");
 }
 
+TEST(render_tree_sway_golden) {
+    // Tile 1 sliding with its trees (MomentumGizmo): dragged mid-slide, then the impact as it lands.
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    GoldenSet goldens("trees.txt");
+    World world(area, DEFAULT_SETTINGS);
+    int tree = -1;
+    for (size_t i = 0; i < area.momentumGizmos.size() && tree < 0; i++)
+        if (area.momentumGizmos[i].stile == 1) tree = area.momentumGizmos[i].animator;
+    check(tree >= 0, "a tree on tile 1");
+    float x, y;
+    world.objectPosition(area.animators[tree].object, x, y);
+    const TileState* t = world.grid.tile(1);
+    const auto options = world.artifact.moveOptions(world.grid, t->x, t->y);
+    check(!options.empty() && world.artifact.tryMove(world.grid, t->x, t->y, options[0].first, options[0].second, 0),
+          "tile 1 slides");
+    auto shoot = [&](const char* name) {
+        world.objectPosition(area.animators[tree].object, x, y);
+        testResetDrawCalls();
+        view.begin(area, sheets, x, y, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        goldens.compare(name, 10);
+    };
+    for (int i = 0; i < 20; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.animators.stateName(area, tree).rfind("TreeDrag", 0) == 0, "dragging");
+    shoot("trees_drag");
+    while (world.grid.moving()) world.update(1.0f / 60.0f, 0, 0, false);
+    for (int i = 0; i < 4; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    check(world.animators.stateName(area, tree).rfind("TreeImpact", 0) == 0, "landing");
+    shoot("trees_impact");
+}
+
 TEST(render_particles_near_the_edge_are_drawn) {
     // Particles whose centers sit just off each edge (swept 0-9 px out) but whose square or turned
     // frame reaches a pixel in: each one is drawn — its own draw, matched by center and turn (counts

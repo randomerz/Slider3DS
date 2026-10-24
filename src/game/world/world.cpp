@@ -22,6 +22,7 @@ void setTileObjects(World& world, const STileDef& s, bool active) {
 
 void World::runStarts() {
     animators.enable(*this); // OnEnable comes before Start
+    momentum.enable(*this);
     ruins.activate(*this);   // (rods' Awake, the arrow's Start)
     chad.activate(*this);
     finale.activate(*this); // (RuinsSymbols.Start)
@@ -37,6 +38,7 @@ void World::sendGridEvents() {
     chad.gridEvents(*this, events);
     walks.gridEvents(*this, events);
     hints.gridEvents(*this, events);
+    momentum.gridEvents(*this, events);
     runStarts(); // (the arrow may show the buried Slider)
 }
 
@@ -149,6 +151,7 @@ void World::reloadObjects() {
     items.reset(area);
     village::CatTricks::load(*this);
     animators.reset(area);
+    momentum.reset(area);
     particles.reset();
     ruins.reset(area);
     chad.reset(area);

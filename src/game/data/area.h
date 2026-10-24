@@ -295,10 +295,29 @@ struct CallDef {
 
 // An Animator controller (base layer; an override controller's clips applied): bool parameters,
 // states playing a sprite clip, transitions on bool conditions and/or exit time (all instant).
+// A transition's condition (AnimatorCondition): a bool or trigger set (If) or not (IfNot); an int or
+// float compared with `threshold`.
+struct AnimatorConditionDef {
+    enum class Mode : uint8_t { If, IfNot, Greater, Less, Equals, NotEqual };
+    int param = -1; // AnimatorControllerDef::params index
+    Mode mode = Mode::If;
+    float threshold = 0;
+    bool holds(float value) const {
+        switch (mode) {
+        case Mode::If: return value != 0;
+        case Mode::IfNot: return value == 0;
+        case Mode::Greater: return value > threshold;
+        case Mode::Less: return value < threshold;
+        case Mode::Equals: return value == threshold;
+        case Mode::NotEqual: return value != threshold;
+        }
+        return false;
+    }
+};
 struct AnimatorTransitionDef {
     int to = 0;           // state index
     float exitTime = -1;  // normalized time it waits for, -1 = none
-    std::vector<std::pair<int, bool>> conds; // parameter index, value it must have
+    std::vector<AnimatorConditionDef> conds;
 };
 // A clip's Transform localPosition curves (an item holder bobbing, Chad's sprite shifting as he falls).
 struct MoveCurveDef {
@@ -319,8 +338,8 @@ struct AnimatorStateDef {
 };
 struct AnimatorControllerDef {
     std::string name;
-    std::vector<std::string> params; // bools and triggers
-    std::vector<uint8_t> paramDefaults;
+    std::vector<std::string> params; // bools, triggers, ints and floats
+    std::vector<float> paramDefaults;   // their values as floats (a bool or trigger: 0 / 1)
     std::vector<uint8_t> paramTriggers; // per param: a trigger (the transition it fires resets it)
     int defaultState = 0;
     std::vector<AnimatorStateDef> states;
@@ -670,6 +689,13 @@ struct CatTrickDef {
     int spawns[CATS] = {-1, -1, -1};             // <cat>CollectedSpawnLoc's objects: where Load puts returned cats
 };
 
+// MomentumGizmo (a tree or bush swaying as its tile slides: game/anim/momentum_gizmos): its Animator
+// and the tile whose moves it hears.
+struct MomentumGizmoDef {
+    int animator = -1; // Area::animators index
+    int stile = 0;     // islandId, 0 = none (it never sways)
+};
+
 struct ChadJumpDef {
     int object = -1;              // the ChadJump (its transform moves: start -> jump -> fall)
     int renderer = -1;            // npcRenderer's object (sorting order 1 from the jump until he lands)
@@ -910,6 +936,7 @@ struct Area {
     std::vector<RuinsArrowDef> ruinsArrows;
     std::vector<ChadJumpDef> chadJumps;
     std::vector<CatTrickDef> catTricks;
+    std::vector<MomentumGizmoDef> momentumGizmos;
     // DistanceBasedAmbience: an ambience that plays while its object's scene runs, its global
     // parameter set to the player's distance to the nearest active node.
     struct AmbienceDef {

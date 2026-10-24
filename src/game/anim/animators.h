@@ -1,6 +1,7 @@
 // Runtime state of the Area's Animators (Area::animators: the NPCs', the player's, the abducted cat's
 // and its bubble's): Unity's Animator for sprite clips, as far as the exported controllers use it.
-// Each has a current state (playing its clip at the state's speed), bool and trigger parameters and
+// Each has a current state (playing its clip at the state's speed), bool, trigger, int and float
+// parameters and
 // the controller's transitions: once a frame the first transition whose conditions hold (and exit
 // time is reached: from then on for 1 or more, as it's passed in a loop below 1) switches state,
 // instantly, resetting the triggers it used.
@@ -41,6 +42,9 @@ public:
     void setBool(const World& world, int animator, const std::string& param, bool value);
     // Animator.SetTrigger: set until a transition uses it (no-op if the controller has no such parameter).
     void setTrigger(const World& world, int animator, const std::string& param) { setBool(world, animator, param, true); }
+    // Animator.SetInteger / SetFloat (no-op if the controller has no such parameter).
+    void setInteger(const World& world, int animator, const std::string& param, int value) { setFloat(world, animator, param, (float)value); }
+    void setFloat(const World& world, int animator, const std::string& param, float value);
     // Animator.runtimeAnimatorController = Area::animatorControllers[controller].
     void setController(const World& world, int animator, int controller);
 
@@ -62,14 +66,15 @@ public:
         const std::string* function;
     };
     const std::vector<Fired>& fired() const { return fired_; }
-    bool param(const Area& area, int animator, const std::string& name) const;
+    bool param(const Area& area, int animator, const std::string& name) const { return paramValue(area, animator, name) != 0; }
+    float paramValue(const Area& area, int animator, const std::string& name) const; // 0 if none
 
 private:
     struct State {
         int controller = 0;
         int state = 0;
         float time = 0;           // seconds into the state (times its speed)
-        std::vector<uint8_t> params;
+        std::vector<float> params; // (a bool's or trigger's 0 / 1)
         int sprite = NOT_YET;     // last frame shown (a state without a clip keeps it)
         bool enabled = false;     // its object was active at the last update
         std::vector<float> targetX, targetY; // per AnimatorDef::targets entry: its localPosition now

@@ -15747,16 +15747,738 @@
       ]
     }
   ],
+  "momentumGizmos": [
+    {
+      "stile": 1,
+      "animator": {
+        "object": 155,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 560,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 1,
+      "animator": {
+        "object": 156,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 1,
+      "animator": {
+        "object": 157,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 2,
+      "animator": {
+        "object": 200,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 2,
+      "animator": {
+        "object": 199,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 561,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 2,
+      "animator": {
+        "object": 198,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 3,
+      "animator": {
+        "object": 223,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 3,
+      "animator": {
+        "object": 224,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 3,
+      "animator": {
+        "object": 225,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 3,
+      "animator": {
+        "object": 212,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 562,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 3,
+      "animator": {
+        "object": 210,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 563,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 3,
+      "animator": {
+        "object": 213,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 3,
+      "animator": {
+        "object": 211,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 4,
+      "animator": {
+        "object": 248,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 4,
+      "animator": {
+        "object": 249,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 5,
+      "animator": {
+        "object": 268,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 5,
+      "animator": {
+        "object": 269,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 5,
+      "animator": {
+        "object": 263,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 6,
+      "animator": {
+        "object": 304,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 6,
+      "animator": {
+        "object": 305,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 6,
+      "animator": {
+        "object": 306,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 6,
+      "animator": {
+        "object": 295,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 564,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 6,
+      "animator": {
+        "object": 298,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 565,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 6,
+      "animator": {
+        "object": 299,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 321,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 322,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 323,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 324,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 325,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 326,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 327,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 314,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 566,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 7,
+      "animator": {
+        "object": 313,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 8,
+      "animator": {
+        "object": 344,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 8,
+      "animator": {
+        "object": 345,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 8,
+      "animator": {
+        "object": 346,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 8,
+      "animator": {
+        "object": 347,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 8,
+      "animator": {
+        "object": 338,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 567,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 8,
+      "animator": {
+        "object": 337,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 389,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 390,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 396,
+        "controller": 19,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 391,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 392,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 393,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 394,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 397,
+        "controller": 20,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 9,
+      "animator": {
+        "object": 388,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 568,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 119,
+        "controller": 21,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 569,
+            "local": [-0.75,2.875]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 117,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 570,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 113,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 571,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 107,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 572,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 114,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 573,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 106,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 574,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 115,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 575,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 118,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 576,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 108,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 577,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 109,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 578,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 110,
+        "controller": 17,
+        "keepState": false,
+        "targets": [
+          {
+            "path": "StuckHolder",
+            "object": 579,
+            "local": [0.75,2.125]
+          }
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 116,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 111,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    },
+    {
+      "stile": 0,
+      "animator": {
+        "object": 112,
+        "controller": 18,
+        "keepState": false,
+        "targets": [
+        ]
+      }
+    }
+  ],
   "ambiences": [
     {
-      "object": 560,
+      "object": 580,
       "name": "Waterfall",
       "parameter": "AmbienceDistToWater",
       "default": 15,
       "enabled": true,
       "nodes": [
-        561,
-        562
+        581,
+        582
       ]
     }
   ],
@@ -16302,7 +17024,7 @@
       "order": 0
     },
     {
-      "object": 563,
+      "object": 583,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16340,7 +17062,7 @@
       "order": 0
     },
     {
-      "object": 564,
+      "object": 584,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16376,7 +17098,7 @@
       "order": 0
     },
     {
-      "object": 565,
+      "object": 585,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16412,7 +17134,7 @@
       "order": 0
     },
     {
-      "object": 566,
+      "object": 586,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16448,7 +17170,7 @@
       "order": 0
     },
     {
-      "object": 567,
+      "object": 587,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16484,7 +17206,7 @@
       "order": 0
     },
     {
-      "object": 568,
+      "object": 588,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16526,7 +17248,7 @@
       "order": 0
     },
     {
-      "object": 569,
+      "object": 589,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16562,7 +17284,7 @@
       "order": 0
     },
     {
-      "object": 570,
+      "object": 590,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16598,7 +17320,7 @@
       "order": 0
     },
     {
-      "object": 571,
+      "object": 591,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16634,7 +17356,7 @@
       "order": 0
     },
     {
-      "object": 572,
+      "object": 592,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16670,7 +17392,7 @@
       "order": 0
     },
     {
-      "object": 573,
+      "object": 593,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16706,7 +17428,7 @@
       "order": 0
     },
     {
-      "object": 574,
+      "object": 594,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16742,7 +17464,7 @@
       "order": 0
     },
     {
-      "object": 575,
+      "object": 595,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16778,7 +17500,7 @@
       "order": 0
     },
     {
-      "object": 576,
+      "object": 596,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16814,7 +17536,7 @@
       "order": 0
     },
     {
-      "object": 577,
+      "object": 597,
       "playOnAwake": true,
       "localSpace": false,
       "rotation": [0,6.2832],
@@ -16890,7 +17612,7 @@
       "sortingLayerValue": 9,
       "order": 0,
       "frames": {
-        "sprites": [387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411],
+        "sprites": [416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440],
         "tilesX": 5,
         "multiplier": 0.9999,
         "curveMin": [0,0,2.8364,2.8364,1,1,0,0],
@@ -16955,7 +17677,7 @@
   },
   "cameraDollies": [
     {
-      "object": 578,
+      "object": 598,
       "duration": 6,
       "rate": 60,
       "track": [35,46,35.0006,45.9994,35.0012,45.9989,35.0017,45.9984,35.0023,45.9978,35.0028,45.9973,35.0034,45.9968,35.0039,45.9963,35.0044,45.9958,35.0049,45.9953,35.0054,45.9949,35.0059,45.9944,35.0064,45.9939,35.0068,45.9935,35.0073,45.9931,35.0077,45.9927,35.0081,45.9923,35.0085,45.9919,35.0089,45.9915,35.0093,45.9911,35.0097,45.9908,35.01,45.9904,35.0104,45.9901,35.0107,45.9898,35.011,45.9895,35.0113,45.9893,35.0115,45.989,35.0118,45.9888,35.012,45.9886,35.0122,45.9884,35.0124,45.9882,35.0125,45.9881,35.0126,45.988,35.0127,45.9879,35.0128,45.9878,35.0128,45.9878,35.0128,45.9878,35.0128,45.9878,35.0127,45.9879,35.0126,45.988,35.0125,45.9881,35.0123,45.9883,35.012,45.9885,35.0117,45.9888,35.0114,45.9892,35.0109,45.9896,35.0105,45.99,35.0099,45.9906,35.0092,45.9912,35.0085,45.992,35.0076,45.9928,35.0066,45.9937,35.0056,45.9946,35.0047,45.9955,35.0041,45.9961,35.0044,45.9958,35.006,45.9943,35.0086,45.9918,35.0118,45.9887,35.0153,45.9855,35.0188,45.982,35.0225,45.9786,35.0261,45.9751,35.0298,45.9716,35.0334,45.9682,35.037,45.9647,35.0406,45.9613,35.0441,45.9579,35.0477,45.9546,35.0512,45.9512,35.0547,45.9479,35.0582,45.9446,35.0616,45.9413,35.065,45.938,35.0685,45.9347,35.0719,45.9315,35.0752,45.9283,35.0786,45.9251,35.0819,45.9219,35.0853,45.9187,35.0886,45.9155,35.0919,45.9124,35.0952,45.9092,35.0985,45.9061,35.1017,45.903,35.105,45.8999,35.1082,45.8968,35.1114,45.8937,35.1147,45.8907,35.1179,45.8876,35.1211,45.8846,35.1242,45.8815,35.1274,45.8785,35.1306,45.8755,35.1337,45.8725,35.1369,45.8695,35.14,45.8665,35.1432,45.8635,35.1463,45.8605,35.1494,45.8575,35.1525,45.8546,35.1556,45.8516,35.1587,45.8487,35.1618,45.8457,35.1649,45.8428,35.1679,45.8399,35.1711,45.8368,35.1754,45.8327,35.181,45.8274,35.1879,45.8208,35.1961,45.813,35.2056,45.8039,35.2165,45.7935,35.2287,45.7819,35.2423,45.7689,35.2572,45.7546,35.2736,45.739,35.2914,45.722,35.3106,45.7036,35.3313,45.6839,35.3535,45.6627,35.3771,45.6401,35.4022,45.6161,35.4289,45.5906,35.457,45.5636,35.4868,45.5351,35.518,45.5052,35.5509,45.4736,35.5854,45.4405,35.6215,45.4059,35.6592,45.3696,35.6986,45.3317,35.7397,45.2921,35.7825,45.2508,35.827,45.2078,35.8733,45.163,35.9213,45.1165,35.9711,45.0682,36.0227,45.018,36.0762,44.9659,36.1315,44.9119,36.1886,44.8559,36.2477,44.7979,36.3088,44.7378,36.3718,44.6756,36.4367,44.6112,36.5037,44.5446,36.5728,44.4757,36.6439,44.4045,36.7172,44.3308,36.7925,44.2546,36.8701,44.1758,36.9499,44.0944,37.032,44.0103,37.1163,43.9233,37.203,43.8334,37.292,43.7404,37.3835,43.6443,37.4774,43.545,37.5738,43.4422,37.6728,43.336,37.7744,43.2261,37.8787,43.1125,37.9856,42.9949,38.0954,42.8733,38.2079,42.7474,38.3234,42.6171,38.4418,42.4822,38.5632,42.3426,38.6876,42.198,38.8152,42.0483,38.946,41.8931,39.0801,41.7324,39.2175,41.5659,39.3584,41.3934,39.5027,41.2146,39.6507,41.0292,39.8022,40.8371,39.9575,40.638,40.1167,40.4315,40.2797,40.2175,40.4467,39.9956,40.6177,39.7655,40.7929,39.5271,40.9724,39.2799,41.1561,39.0236,41.3443,38.7581,41.5369,38.4829,41.7341,38.1978,41.936,37.9024,42.1426,37.5965,42.3539,37.2798,42.5702,36.9518,42.7915,36.6125,43.0178,36.2613,43.2492,35.8981,43.4858,35.5226,43.7275,35.1346,43.9737,34.7343,44.2236,34.3221,44.4762,33.8985,44.7306,33.4638,44.9859,33.0186,45.2412,32.5634,45.4954,32.0987,45.7476,31.6252,45.9967,31.1432,46.2418,30.6536,46.4818,30.1568,46.7156,29.6536,46.9423,29.1445,47.1609,28.6303,47.3702,28.1116,47.5694,27.589,47.7574,27.0632,47.9332,26.535,48.096,26.005,48.2448,25.4739,48.3788,24.9424,48.497,24.411,48.5987,23.8806,48.6831,23.3517,48.7495,22.8249,48.7971,22.301,48.8253,21.7804,48.8336,21.2639,48.8212,20.7519,48.7878,20.2449,48.7329,19.7436,48.656,19.2485,48.5568,18.76,48.4349,18.2785,48.2902,17.8046,48.1223,17.3386,47.9312,16.881,47.7167,16.432,47.4787,15.992,47.2172,15.5614,46.9323,15.1404,46.6239,14.7292,46.2923,14.3282,45.9375,13.9374,45.5598,13.5572,45.1594,13.1876,44.7375,12.8284,44.2954,12.4794,43.8343,12.1403,43.3554,11.8108,42.86,11.4906,42.3493,11.1795,41.8244,10.8772,41.2863,10.5834,40.7363,10.2979,40.1753,10.0204,39.6044,9.7508,39.0245,9.4886,38.4366,9.2337,37.8416,8.986,37.2403,8.7451,36.6337,8.5108,36.0225,8.283,35.4075,8.0613,34.7894,7.8457,34.169,7.636,33.5469,7.4319,32.9237,7.2332,32.3002,7.0399,31.6769,6.8516,31.0543,6.6684,30.433,6.4899,29.8134,6.3161,29.1962,6.1467,28.5816,5.9818,27.9702,5.821,27.3624,5.6644,26.7585,5.5117,26.159,5.3629,25.564,5.2177,24.974,5.0763,24.3893,4.9383,23.8101,4.8037,23.2366,4.6724,22.6692,4.5444,22.1081,4.4194,21.5535,4.2975,21.0055,4.1786,20.4643,4.0625,19.9302,3.9492,19.4032,3.8386,18.8835,3.7307,18.3712,3.6253,17.8664,3.5225,17.3693,3.4221,16.8799,3.3241,16.3983,3.2284,15.9246,3.1351,15.4588,3.0439,15.001,2.9549,14.5513,2.8681,14.1096,2.7833,13.6761,2.7006,13.2507,2.6199,12.8334,2.5411,12.4243,2.4643,12.0234,2.3893,11.6306,2.3162,11.246,2.2449,10.8696,2.1754,10.5012,2.1077,10.1411,2.0416,9.789,1.9773,9.445,1.9146,9.1091,1.8536,8.7812,1.7941,8.4612,1.7363,8.1492,1.68,7.8451,1.6253,7.5489,1.5721,7.2605,1.5203,6.9799,1.4701,6.707,1.4213,6.4417,1.374,6.1841,1.3281,5.9342,1.2836,5.6916,1.2405,5.4566,1.1987,5.229,1.1583,5.0088,1.1193,4.7959,1.0815,4.5902,1.0451,4.3917,1.01,4.2004,0.9762,4.0161,0.9436,3.8388,0.9123,3.6686,0.8822,3.5052,0.8534,3.3486,0.8258,3.1989,0.7994,3.0559,0.7741,2.9195,0.7501,2.7898,0.7272,2.6667,0.7055,2.55,0.685,2.4398,0.6655,2.336,0.6472,2.2385,0.6301,2.1473,0.614,2.0623,0.599,1.9835,0.5852,1.9108,0.5724,1.8442,0.5606,1.7836,0.5499,1.7289,0.5403,1.6802,0.5317,1.6373,0.5242,1.6002,0.5176,1.5688,0.5121,1.5432,0.5076,1.5232,0.5041,1.5088,0.5016,1.5,0.5],
@@ -16983,7 +17705,7 @@
       "item": 0,
       "animator": {
         "object": 144,
-        "controller": 17,
+        "controller": 22,
         "keepState": false
       },
       "bubble": {
@@ -16991,7 +17713,7 @@
         "electricity": 146,
         "animator": {
           "object": 145,
-          "controller": 18,
+          "controller": 23,
           "keepState": false
         }
       },
@@ -20928,6 +21650,146 @@
       "pos": [-7,-145.5]
     },
     {
+      "path": "Map/Village 8Puzzle/STile (1)/All Tile Maps/Tile Maps/Decorations/Tree1/StuckHolder",
+      "parent": 155,
+      "active": true,
+      "owner": 1,
+      "pos": [5.75,6.125]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (2)/All Tile Maps/Tile Maps/Decorations/Tree1/StuckHolder",
+      "parent": 199,
+      "active": true,
+      "owner": 2,
+      "pos": [-2.75,2.625]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (6)/StuckHolder",
+      "parent": 212,
+      "active": true,
+      "owner": 3,
+      "pos": [3.75,-1.875]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (3)/All Tile Maps/Tile Maps/Decorations/Tree1 (8)/StuckHolder",
+      "parent": 210,
+      "active": true,
+      "owner": 3,
+      "pos": [-1.25,-0.875]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree1 (2)/StuckHolder",
+      "parent": 295,
+      "active": true,
+      "owner": 6,
+      "pos": [1.75,-3.875]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (6)/All Tile Maps/Tile Maps/Decorations/Tree1 (3)/StuckHolder",
+      "parent": 298,
+      "active": true,
+      "owner": 6,
+      "pos": [-2.25,3.125]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (7)/All Tile Maps/Tile Maps/Decorations/Tree1 (5)/StuckHolder",
+      "parent": 314,
+      "active": true,
+      "owner": 7,
+      "pos": [-2.25,4.125]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (8)/All Tile Maps/Tile Maps/Decorations/Tree1 (1)/StuckHolder",
+      "parent": 338,
+      "active": true,
+      "owner": 8,
+      "pos": [-3.25,-0.875]
+    },
+    {
+      "path": "Map/Village 8Puzzle/STile (9)/All Tile Maps/Tile Maps/Decorations/Tree1/StuckHolder",
+      "parent": 388,
+      "active": true,
+      "owner": 9,
+      "pos": [-0.25,7.125]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Palm1 Variant/StuckHolder",
+      "parent": 119,
+      "active": true,
+      "owner": 0,
+      "pos": [49.25,-15.125]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1/StuckHolder",
+      "parent": 117,
+      "active": true,
+      "owner": 0,
+      "pos": [-15.25,28.125]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (1)/StuckHolder",
+      "parent": 113,
+      "active": true,
+      "owner": 0,
+      "pos": [-12.25,-8.875]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (2)/StuckHolder",
+      "parent": 107,
+      "active": true,
+      "owner": 0,
+      "pos": [33.75,-10.875]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (3)/StuckHolder",
+      "parent": 114,
+      "active": true,
+      "owner": 0,
+      "pos": [-26.75,11.625]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (4)/StuckHolder",
+      "parent": 106,
+      "active": true,
+      "owner": 0,
+      "pos": [32.25,49.125]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (5)/StuckHolder",
+      "parent": 115,
+      "active": true,
+      "owner": 0,
+      "pos": [-23.75,38.625]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (6)/StuckHolder",
+      "parent": 118,
+      "active": true,
+      "owner": 0,
+      "pos": [-18.75,39.625]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (7)/StuckHolder",
+      "parent": 108,
+      "active": true,
+      "owner": 0,
+      "pos": [35.25,-21.375]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (8)/StuckHolder",
+      "parent": 109,
+      "active": true,
+      "owner": 0,
+      "pos": [38.25,-20.125]
+    },
+    {
+      "path": "Map/World Grid/BaseDecorations/Tree1 (9)/StuckHolder",
+      "parent": 110,
+      "active": true,
+      "owner": 0,
+      "pos": [45.75,-17.875]
+    },
+    {
       "path": "Map/World Grid/Waterfall Ambience",
       "parent": 39,
       "active": true,
@@ -20936,7 +21798,7 @@
     },
     {
       "path": "Map/World Grid/Waterfall Ambience/Waterfall Ambience Distance Node",
-      "parent": 560,
+      "parent": 580,
       "active": true,
       "owner": 0,
       "pos": [1.5,45.5]
@@ -21063,12 +21925,12 @@
   ],
   "player": {
     "body": {
-      "sprite": 421,
+      "sprite": 450,
       "pos": [0,0],
       "sortY": 0,
       "sortingLayerValue": 7,
       "order": 0,
-      "anim": 81
+      "anim": 112
     },
     "boat": {
       "sprite": 82,
@@ -21076,7 +21938,7 @@
       "sortY": 0.0001,
       "sortingLayerValue": 7,
       "order": 0,
-      "anim": 82
+      "anim": 113
     },
     "actionIndicator": {
       "sprite": 2,
@@ -21085,7 +21947,7 @@
       "sortingLayerValue": 9,
       "order": 0
     },
-    "animator": 19,
+    "animator": 24,
     "animatorTargets": {
       "targets": [
         {
@@ -21109,12 +21971,12 @@
     "boatDropBase": [0,-0.4688],
     "carryPath": "Item Pickup Location",
     "dropIndicator": {
-      "sprite": 429,
+      "sprite": 458,
       "pos": [0,0],
       "sortY": 0,
       "sortingLayerValue": 7,
       "order": 0,
-      "anim": 85
+      "anim": 116
     },
     "itemLayers": [
       "Item",
@@ -21132,14 +21994,14 @@
   },
   "uiTrackers": {
     "sprites": {
-      "playerFullBlackCircle": 431,
-      "playerFullBlackCircleEmpty": 432,
-      "playerFullWhiteCircle": 433,
-      "playerFullWhiteCircleEmpty": 434,
-      "circle3": 435,
-      "circleEmpty": 436,
-      "circle1W": 437,
-      "circleEmptyW": 438
+      "playerFullBlackCircle": 460,
+      "playerFullBlackCircleEmpty": 461,
+      "playerFullWhiteCircle": 462,
+      "playerFullWhiteCircleEmpty": 463,
+      "circle3": 464,
+      "circleEmpty": 465,
+      "circle1W": 466,
+      "circleEmptyW": 467
     },
     "uiPerPixel": 1,
     "trackHousingAccurately": false
@@ -21250,34 +22112,34 @@
   "artifact": {
     "buttonSpacing": 37,
     "frame": {
-      "sprite": 439,
+      "sprite": 468,
       "rect": [-80,-60,160,120]
     },
     "background": {
-      "sprite": 440,
+      "sprite": 469,
       "rect": [-80,-60,160,120]
     },
     "underlays": [
       {
         "name": "Outside Map",
-        "sprite": 441,
+        "sprite": 470,
         "rect": [-80,-60,160,120]
       }
     ],
-    "empty": 442,
-    "blank": 443,
-    "hoverIcon": 443,
+    "empty": 471,
+    "blank": 472,
+    "hoverIcon": 472,
     "parts": {
       "pressed": {
-        "sprite": 444,
+        "sprite": 473,
         "rect": [-16,-17,32,33]
       },
       "highlight": {
-        "sprite": 445,
+        "sprite": 474,
         "rect": [-16,-17,32,32]
       },
       "hover": {
-        "sprite": 446,
+        "sprite": 475,
         "rect": [-16,-16,32,32]
       }
     },
@@ -21289,11 +22151,11 @@
     "buttons": [
       {
         "islandId": 1,
-        "island": 447,
-        "completed": 448,
+        "island": 476,
+        "completed": 477,
         "icons": [
           {
-            "sprite": 449,
+            "sprite": 478,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21301,11 +22163,11 @@
       },
       {
         "islandId": 2,
-        "island": 450,
-        "completed": 451,
+        "island": 479,
+        "completed": 480,
         "icons": [
           {
-            "sprite": 452,
+            "sprite": 481,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21313,11 +22175,11 @@
       },
       {
         "islandId": 3,
-        "island": 453,
-        "completed": 454,
+        "island": 482,
+        "completed": 483,
         "icons": [
           {
-            "sprite": 455,
+            "sprite": 484,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21325,25 +22187,25 @@
       },
       {
         "islandId": 4,
-        "island": 456,
-        "completed": 457,
+        "island": 485,
+        "completed": 486,
         "icons": [
         ]
       },
       {
         "islandId": 5,
-        "island": 458,
-        "completed": 459,
+        "island": 487,
+        "completed": 488,
         "icons": [
         ]
       },
       {
         "islandId": 6,
-        "island": 460,
-        "completed": 461,
+        "island": 489,
+        "completed": 490,
         "icons": [
           {
-            "sprite": 462,
+            "sprite": 491,
             "rect": [-16,-16,32,32],
             "enabled": false
           }
@@ -21351,22 +22213,22 @@
       },
       {
         "islandId": 7,
-        "island": 463,
-        "completed": 464,
+        "island": 492,
+        "completed": 493,
         "icons": [
         ]
       },
       {
         "islandId": 8,
-        "island": 465,
-        "completed": 466,
+        "island": 494,
+        "completed": 495,
         "icons": [
         ]
       },
       {
         "islandId": 9,
-        "island": 467,
-        "completed": 468,
+        "island": 496,
+        "completed": 497,
         "icons": [
         ]
       }
@@ -24106,618 +24968,618 @@
   "tiles": [
     {
       "name": "Grass2 (Flower)",
-      "frames": [469,470,471],
+      "frames": [498,499,500],
       "fps": 4
     },
     {
       "name": "Grass1",
-      "frames": [472,473],
+      "frames": [501,502],
       "fps": 4
     },
     {
       "name": "Grass4",
-      "frames": [474,475],
+      "frames": [503,504],
       "fps": 4
     },
     {
       "name": "Grass6",
-      "frames": [476,477],
+      "frames": [505,506],
       "fps": 4
     },
     {
       "name": "Grass5",
-      "frames": [478,479],
+      "frames": [507,508],
       "fps": 4
     },
     {
       "name": "rock_wall_12",
-      "frames": [480]
+      "frames": [509]
     },
     {
       "name": "rock_wall_15",
-      "frames": [481]
+      "frames": [510]
     },
     {
       "name": "rock_wall_13",
-      "frames": [482]
+      "frames": [511]
     },
     {
       "name": "rock_wall_2",
-      "frames": [483]
+      "frames": [512]
     },
     {
       "name": "rock_wall_24",
-      "frames": [484]
+      "frames": [513]
     },
     {
       "name": "Grass3",
-      "frames": [485,486],
+      "frames": [514,515],
       "fps": 4
     },
     {
       "name": "rock_wall_23",
-      "frames": [487]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [488]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [489]
-    },
-    {
-      "name": "WallRockCut",
-      "frames": [490]
-    },
-    {
-      "name": "rock_wall_21",
-      "frames": [491]
-    },
-    {
-      "name": "rock_wall_17",
-      "frames": [492]
-    },
-    {
-      "name": "village_ruins_deco_10",
-      "frames": [493]
-    },
-    {
-      "name": "village_ruins_deco_8",
-      "frames": [494]
-    },
-    {
-      "name": "rock_wall_4",
-      "frames": [495]
-    },
-    {
-      "name": "rock_wall_11",
-      "frames": [496]
-    },
-    {
-      "name": "rock_wall_5",
-      "frames": [497]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [498]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [499]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [500]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [501]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [502]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [503]
-    },
-    {
-      "name": "village_ruins_deco_9",
-      "frames": [504]
-    },
-    {
-      "name": "village_ruins_deco_1",
-      "frames": [505]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [506]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [507]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [508]
-    },
-    {
-      "name": "village_ruins_deco_3",
-      "frames": [509]
-    },
-    {
-      "name": "village_ruins_deco_2",
-      "frames": [510]
-    },
-    {
-      "name": "rock_wall_0",
-      "frames": [511]
-    },
-    {
-      "name": "rock_wall_1",
-      "frames": [512]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [513]
-    },
-    {
-      "name": "Jungle Leaves",
-      "frames": [514]
-    },
-    {
-      "name": "village_ruins_deco_0",
-      "frames": [515]
-    },
-    {
-      "name": "leaf_tiles_5",
       "frames": [516]
     },
     {
-      "name": "Ground_4",
+      "name": "WallRockCut",
       "frames": [517]
     },
     {
-      "name": "sand-grass_transition_6",
+      "name": "WallRockCut",
       "frames": [518]
     },
     {
-      "name": "DesertSand",
+      "name": "WallRockCut",
       "frames": [519]
     },
     {
+      "name": "rock_wall_21",
+      "frames": [520]
+    },
+    {
+      "name": "rock_wall_17",
+      "frames": [521]
+    },
+    {
+      "name": "village_ruins_deco_10",
+      "frames": [522]
+    },
+    {
+      "name": "village_ruins_deco_8",
+      "frames": [523]
+    },
+    {
+      "name": "rock_wall_4",
+      "frames": [524]
+    },
+    {
+      "name": "rock_wall_11",
+      "frames": [525]
+    },
+    {
+      "name": "rock_wall_5",
+      "frames": [526]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [527]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [528]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [529]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [530]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [531]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [532]
+    },
+    {
+      "name": "village_ruins_deco_9",
+      "frames": [533]
+    },
+    {
+      "name": "village_ruins_deco_1",
+      "frames": [534]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [535]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [536]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [537]
+    },
+    {
+      "name": "village_ruins_deco_3",
+      "frames": [538]
+    },
+    {
+      "name": "village_ruins_deco_2",
+      "frames": [539]
+    },
+    {
+      "name": "rock_wall_0",
+      "frames": [540]
+    },
+    {
+      "name": "rock_wall_1",
+      "frames": [541]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [542]
+    },
+    {
+      "name": "Jungle Leaves",
+      "frames": [543]
+    },
+    {
+      "name": "village_ruins_deco_0",
+      "frames": [544]
+    },
+    {
+      "name": "leaf_tiles_5",
+      "frames": [545]
+    },
+    {
+      "name": "Ground_4",
+      "frames": [546]
+    },
+    {
+      "name": "sand-grass_transition_6",
+      "frames": [547]
+    },
+    {
+      "name": "DesertSand",
+      "frames": [548]
+    },
+    {
       "name": "WaterSandTransition5",
-      "frames": [520,521,522,523,523,522,521,520],
+      "frames": [549,550,551,552,552,551,550,549],
       "fps": 4
     },
     {
       "name": "Tileset_1",
-      "frames": [524]
+      "frames": [553]
     },
     {
       "name": "DesertSand",
-      "frames": [525]
+      "frames": [554]
     },
     {
       "name": "DesertSand",
-      "frames": [526]
+      "frames": [555]
     },
     {
       "name": "DesertSand",
-      "frames": [527]
+      "frames": [556]
     },
     {
       "name": "sand-grass_transition_8",
-      "frames": [528]
+      "frames": [557]
     },
     {
       "name": "sand-grass_transition_11",
-      "frames": [529]
+      "frames": [558]
     },
     {
       "name": "WaterSandTransition6",
-      "frames": [530,531,532,533,533,532,531,530],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition7",
-      "frames": [534,535,536,537,537,536,535,534],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition8",
-      "frames": [538,539,540,541,541,540,539,538],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition11",
-      "frames": [542,543,544,545,545,544,543,542],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition12",
-      "frames": [546,547,548,549,549,548,547,546],
-      "fps": 4
-    },
-    {
-      "name": "DesertSand",
-      "frames": [550]
-    },
-    {
-      "name": "WaterSandTransition4",
-      "frames": [551,552,553,554,554,553,552,551],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition10",
-      "frames": [555,556,557,558,558,557,556,555],
-      "fps": 4
-    },
-    {
-      "name": "WaterSandTransition3",
       "frames": [559,560,561,562,562,561,560,559],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition1",
+      "name": "WaterSandTransition7",
       "frames": [563,564,565,566,566,565,564,563],
       "fps": 4
     },
     {
-      "name": "WaterSandTransition9",
+      "name": "WaterSandTransition8",
       "frames": [567,568,569,570,570,569,568,567],
       "fps": 4
     },
     {
+      "name": "WaterSandTransition11",
+      "frames": [571,572,573,574,574,573,572,571],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition12",
+      "frames": [575,576,577,578,578,577,576,575],
+      "fps": 4
+    },
+    {
+      "name": "DesertSand",
+      "frames": [579]
+    },
+    {
+      "name": "WaterSandTransition4",
+      "frames": [580,581,582,583,583,582,581,580],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition10",
+      "frames": [584,585,586,587,587,586,585,584],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition3",
+      "frames": [588,589,590,591,591,590,589,588],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition1",
+      "frames": [592,593,594,595,595,594,593,592],
+      "fps": 4
+    },
+    {
+      "name": "WaterSandTransition9",
+      "frames": [596,597,598,599,599,598,597,596],
+      "fps": 4
+    },
+    {
       "name": "sand-grass_transition_10",
-      "frames": [571]
+      "frames": [600]
     },
     {
       "name": "WaterSandTransition2",
-      "frames": [572,573,574,575,575,574,573,572],
+      "frames": [601,602,603,604,604,603,602,601],
       "fps": 4
     },
     {
       "name": "Tileset_0",
-      "frames": [576]
+      "frames": [605]
     },
     {
       "name": "sand-grass_transition_4",
-      "frames": [577]
+      "frames": [606]
     },
     {
       "name": "sand-grass_transition_2",
-      "frames": [578]
+      "frames": [607]
     },
     {
       "name": "RiverEndTile2",
-      "frames": [579,580,581,582],
+      "frames": [608,609,610,611],
       "fps": 4
     },
     {
       "name": "Water9",
-      "frames": [583,584,585,586,586,585,584,583],
+      "frames": [612,613,614,615,615,614,613,612],
       "fps": 4
     },
     {
       "name": "Water2",
-      "frames": [587,588,589,590,590,589,588,587],
+      "frames": [616,617,618,619,619,618,617,616],
       "fps": 4
     },
     {
       "name": "RiverEndTile1",
-      "frames": [591,592,593,594],
+      "frames": [620,621,622,623],
       "fps": 4
     },
     {
       "name": "GroundDefault",
-      "frames": [595]
+      "frames": [624]
     },
     {
       "name": "GroundDefault",
-      "frames": [596]
+      "frames": [625]
     },
     {
       "name": "snow_tiles_0",
-      "frames": [597]
+      "frames": [626]
     },
     {
       "name": "WallRock",
-      "frames": [598]
+      "frames": [627]
     },
     {
       "name": "WallRock",
-      "frames": [599]
+      "frames": [628]
     },
     {
       "name": "WallRock",
-      "frames": [600]
+      "frames": [629]
     },
     {
       "name": "WallRock",
-      "frames": [601]
+      "frames": [630]
     },
     {
       "name": "border_3",
-      "frames": [602]
+      "frames": [631]
     },
     {
       "name": "WallRock",
-      "frames": [603]
+      "frames": [632]
     },
     {
       "name": "WallRock",
-      "frames": [604]
+      "frames": [633]
     },
     {
       "name": "Water6",
-      "frames": [605,606,607,608,608,607,606,605],
+      "frames": [634,635,636,637,637,636,635,634],
       "fps": 4
     },
     {
       "name": "Water7",
-      "frames": [609,610,611,612,612,611,610,609],
+      "frames": [638,639,640,641,641,640,639,638],
       "fps": 4
     },
     {
       "name": "WallRock",
-      "frames": [613]
+      "frames": [642]
     },
     {
       "name": "Fall3",
-      "frames": [614,615,616,617],
+      "frames": [643,644,645,646],
       "fps": 4
     },
     {
       "name": "Fall2",
-      "frames": [618,619,620,621],
+      "frames": [647,648,649,650],
       "fps": 4
     },
     {
       "name": "Fall1",
-      "frames": [622,623,624,625],
+      "frames": [651,652,653,654],
       "fps": 4
     },
     {
       "name": "snow_tiles_6",
-      "frames": [626]
-    },
-    {
-      "name": "Tileset_74",
-      "frames": [627]
-    },
-    {
-      "name": "Tileset_65",
-      "frames": [628]
-    },
-    {
-      "name": "snow_tiles_7",
-      "frames": [629]
-    },
-    {
-      "name": "Tileset_73",
-      "frames": [630]
-    },
-    {
-      "name": "Tileset_66",
-      "frames": [631]
-    },
-    {
-      "name": "snow_tiles_2",
-      "frames": [632]
-    },
-    {
-      "name": "snow_tiles_4",
-      "frames": [633]
-    },
-    {
-      "name": "snow_tiles_3",
-      "frames": [634]
-    },
-    {
-      "name": "snow_tiles_1",
-      "frames": [635]
-    },
-    {
-      "name": "snow_tiles_5",
-      "frames": [636]
-    },
-    {
-      "name": "Ceiling",
-      "frames": [637]
-    },
-    {
-      "name": "Ceiling",
-      "frames": [638]
-    },
-    {
-      "name": "interiors_0",
-      "frames": [639]
-    },
-    {
-      "name": "Tileset_26",
-      "frames": [640]
-    },
-    {
-      "name": "interiors_2",
-      "frames": [641]
-    },
-    {
-      "name": "interiors_4",
-      "frames": [642]
-    },
-    {
-      "name": "interiors_5",
-      "frames": [643]
-    },
-    {
-      "name": "interiors_1",
-      "frames": [644]
-    },
-    {
-      "name": "interiors_3",
-      "frames": [645]
-    },
-    {
-      "name": "interiors_6",
-      "frames": [646]
-    },
-    {
-      "name": "interiors_7",
-      "frames": [647]
-    },
-    {
-      "name": "leaf_tiles_7",
-      "frames": [648]
-    },
-    {
-      "name": "rock_wall_34",
-      "frames": [649]
-    },
-    {
-      "name": "rock_wall_33",
-      "frames": [650]
-    },
-    {
-      "name": "border_6",
-      "frames": [651]
-    },
-    {
-      "name": "border_7",
-      "frames": [652]
-    },
-    {
-      "name": "border_5",
-      "frames": [653]
-    },
-    {
-      "name": "rock_wall_border_10",
-      "frames": [654]
-    },
-    {
-      "name": "rock_wall_border_8",
       "frames": [655]
     },
     {
-      "name": "border_4",
+      "name": "Tileset_74",
       "frames": [656]
     },
     {
-      "name": "border_0",
+      "name": "Tileset_65",
       "frames": [657]
     },
     {
-      "name": "rock_wall_border_7",
+      "name": "snow_tiles_7",
       "frames": [658]
     },
     {
-      "name": "rock_wall_border_4",
+      "name": "Tileset_73",
       "frames": [659]
     },
     {
-      "name": "border_1",
+      "name": "Tileset_66",
       "frames": [660]
     },
     {
-      "name": "border_2",
+      "name": "snow_tiles_2",
       "frames": [661]
     },
     {
-      "name": "village_ruins_deco_11",
+      "name": "snow_tiles_4",
       "frames": [662]
     },
     {
-      "name": "cave_rocks_17",
+      "name": "snow_tiles_3",
       "frames": [663]
     },
     {
-      "name": "cave_rocks_18",
+      "name": "snow_tiles_1",
       "frames": [664]
     },
     {
-      "name": "rock_wall_border_15",
+      "name": "snow_tiles_5",
       "frames": [665]
     },
     {
-      "name": "rock_wall_26",
+      "name": "Ceiling",
       "frames": [666]
     },
     {
+      "name": "Ceiling",
+      "frames": [667]
+    },
+    {
+      "name": "interiors_0",
+      "frames": [668]
+    },
+    {
+      "name": "Tileset_26",
+      "frames": [669]
+    },
+    {
+      "name": "interiors_2",
+      "frames": [670]
+    },
+    {
+      "name": "interiors_4",
+      "frames": [671]
+    },
+    {
+      "name": "interiors_5",
+      "frames": [672]
+    },
+    {
+      "name": "interiors_1",
+      "frames": [673]
+    },
+    {
+      "name": "interiors_3",
+      "frames": [674]
+    },
+    {
+      "name": "interiors_6",
+      "frames": [675]
+    },
+    {
+      "name": "interiors_7",
+      "frames": [676]
+    },
+    {
+      "name": "leaf_tiles_7",
+      "frames": [677]
+    },
+    {
+      "name": "rock_wall_34",
+      "frames": [678]
+    },
+    {
+      "name": "rock_wall_33",
+      "frames": [679]
+    },
+    {
+      "name": "border_6",
+      "frames": [680]
+    },
+    {
+      "name": "border_7",
+      "frames": [681]
+    },
+    {
+      "name": "border_5",
+      "frames": [682]
+    },
+    {
+      "name": "rock_wall_border_10",
+      "frames": [683]
+    },
+    {
+      "name": "rock_wall_border_8",
+      "frames": [684]
+    },
+    {
+      "name": "border_4",
+      "frames": [685]
+    },
+    {
+      "name": "border_0",
+      "frames": [686]
+    },
+    {
+      "name": "rock_wall_border_7",
+      "frames": [687]
+    },
+    {
+      "name": "rock_wall_border_4",
+      "frames": [688]
+    },
+    {
+      "name": "border_1",
+      "frames": [689]
+    },
+    {
+      "name": "border_2",
+      "frames": [690]
+    },
+    {
+      "name": "village_ruins_deco_11",
+      "frames": [691]
+    },
+    {
+      "name": "cave_rocks_17",
+      "frames": [692]
+    },
+    {
+      "name": "cave_rocks_18",
+      "frames": [693]
+    },
+    {
+      "name": "rock_wall_border_15",
+      "frames": [694]
+    },
+    {
+      "name": "rock_wall_26",
+      "frames": [695]
+    },
+    {
       "name": "Water11",
-      "frames": [667,668,669,670,670,669,668,667],
+      "frames": [696,697,698,699,699,698,697,696],
       "fps": 4
     },
     {
       "name": "Water12",
-      "frames": [671,672,673,674,674,673,672,671],
+      "frames": [700,701,702,703,703,702,701,700],
       "fps": 4
     },
     {
       "name": "Tileset_51",
-      "frames": [675]
+      "frames": [704]
     },
     {
       "name": "Water4",
-      "frames": [676,677,678,679,679,678,677,676],
+      "frames": [705,706,707,708,708,707,706,705],
       "fps": 4
     },
     {
       "name": "RiverReeds",
-      "frames": [680,681,682,683],
+      "frames": [709,710,711,712],
       "fps": 4
     },
     {
       "name": "Water5",
-      "frames": [684,685,686,687,687,686,685,684],
+      "frames": [713,714,715,716,716,715,714,713],
       "fps": 4
     },
     {
       "name": "rock_wall_border_5",
-      "frames": [688]
+      "frames": [717]
     },
     {
       "name": "rock_wall_border_3",
-      "frames": [689]
+      "frames": [718]
     },
     {
       "name": "rock_wall_border_11",
-      "frames": [690]
+      "frames": [719]
     },
     {
       "name": "rock_wall_border_9",
-      "frames": [691]
+      "frames": [720]
     },
     {
       "name": "Tileset_42",
-      "frames": [692]
+      "frames": [721]
     },
     {
       "name": "Water13",
-      "frames": [693,694,695,696,696,695,694,693],
+      "frames": [722,723,724,725,725,724,723,722],
       "fps": 4
     },
     {
       "name": "Water3",
-      "frames": [697,698,699,700,700,699,698,697],
+      "frames": [726,727,728,729,729,728,727,726],
       "fps": 4
     },
     {
       "name": "Water1",
-      "frames": [701,702,703,704,704,703,702,701],
+      "frames": [730,731,732,733,733,732,731,730],
       "fps": 4
     },
     {
       "name": "cave_rocks_9",
-      "frames": [705]
+      "frames": [734]
     },
     {
       "name": "cave_rocks_8",
-      "frames": [706]
+      "frames": [735]
     },
     {
       "name": "cave_rocks_16",
-      "frames": [707]
+      "frames": [736]
     },
     {
       "name": "cave_rocks_6",
@@ -24725,95 +25587,95 @@
     },
     {
       "name": "rock_wall_border_6",
-      "frames": [708]
+      "frames": [737]
     },
     {
       "name": "rock_wall_28",
-      "frames": [709]
+      "frames": [738]
     },
     {
       "name": "rock_wall_31",
-      "frames": [710]
+      "frames": [739]
     },
     {
       "name": "rock_wall_border_0",
-      "frames": [711]
+      "frames": [740]
     },
     {
       "name": "rock_wall_border_14",
-      "frames": [712]
+      "frames": [741]
     },
     {
       "name": "border_light_1",
-      "frames": [713]
+      "frames": [742]
     },
     {
       "name": "Water8",
-      "frames": [714,715,716,717,717,716,715,714],
+      "frames": [743,744,745,746,746,745,744,743],
       "fps": 4
     },
     {
       "name": "rock_wall_27",
-      "frames": [718]
+      "frames": [747]
     },
     {
       "name": "rock_wall_30",
-      "frames": [719]
+      "frames": [748]
     },
     {
       "name": "Snow1",
-      "frames": [720,721],
+      "frames": [749,750],
       "fps": 4
     },
     {
       "name": "Tileset_27",
-      "frames": [722]
+      "frames": [751]
     },
     {
       "name": "Tileset_40",
-      "frames": [723]
+      "frames": [752]
     },
     {
       "name": "rock_wall_border_1",
-      "frames": [724]
+      "frames": [753]
     },
     {
       "name": "interiors_19",
-      "frames": [725]
+      "frames": [754]
     },
     {
       "name": "Water10",
-      "frames": [726,727,728,729,729,728,727,726],
+      "frames": [755,756,757,758,758,757,756,755],
       "fps": 4
     },
     {
       "name": "Water14",
-      "frames": [730,731,732,733,733,732,731,730],
+      "frames": [759,760,761,762,762,761,760,759],
       "fps": 4
     },
     {
       "name": "Ceiling",
-      "frames": [734]
+      "frames": [763]
     },
     {
       "name": "rock_wall_border_2",
-      "frames": [735]
+      "frames": [764]
     },
     {
       "name": "Tileset_32",
-      "frames": [736]
+      "frames": [765]
     },
     {
       "name": "Tileset_45",
-      "frames": [737]
+      "frames": [766]
     },
     {
       "name": "Tileset_31",
-      "frames": [738]
+      "frames": [767]
     },
     {
       "name": "Tileset_30",
-      "frames": [739]
+      "frames": [768]
     }
   ],
   "sprites": [
@@ -27525,6 +28387,209 @@
       "sheet": 10,
       "rect": [448,32,16,16],
       "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_D2",
+      "sheet": 21,
+      "rect": [320,80,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_D1",
+      "sheet": 21,
+      "rect": [240,80,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_U1",
+      "sheet": 21,
+      "rect": [80,80,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_L2",
+      "sheet": 21,
+      "rect": [0,0,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_L1",
+      "sheet": 21,
+      "rect": [80,0,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_R1",
+      "sheet": 21,
+      "rect": [240,0,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_R2",
+      "sheet": 21,
+      "rect": [320,0,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce_U2",
+      "sheet": 21,
+      "rect": [0,80,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_D2",
+      "sheet": 21,
+      "rect": [320,320,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_D1",
+      "sheet": 21,
+      "rect": [240,320,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_U1",
+      "sheet": 21,
+      "rect": [80,320,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_L2",
+      "sheet": 21,
+      "rect": [0,240,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_L1",
+      "sheet": 21,
+      "rect": [80,240,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_R1",
+      "sheet": 21,
+      "rect": [240,240,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_R2",
+      "sheet": 21,
+      "rect": [320,240,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "tree_bounce2_U2",
+      "sheet": 21,
+      "rect": [0,320,80,80],
+      "pivot": [40,24],
+      "ppu": 16
+    },
+    {
+      "name": "junglebush_Finish_0",
+      "sheet": 18,
+      "rect": [32,0,32,32],
+      "pivot": [16,16],
+      "ppu": 16
+    },
+    {
+      "name": "junglebush_Finish_1",
+      "sheet": 18,
+      "rect": [0,32,32,32],
+      "pivot": [16,16],
+      "ppu": 16
+    },
+    {
+      "name": "JungleSprout_Moving_0",
+      "sheet": 18,
+      "rect": [112,48,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "JungleSprout_Finish_0",
+      "sheet": 18,
+      "rect": [96,64,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "JungleSprout_Finish_1",
+      "sheet": 18,
+      "rect": [112,64,16,16],
+      "pivot": [8,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_D2",
+      "sheet": 8,
+      "rect": [6,64,48,64],
+      "pivot": [24,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_D1",
+      "sheet": 8,
+      "rect": [70,64,48,64],
+      "pivot": [24,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_U1",
+      "sheet": 8,
+      "rect": [134,64,48,64],
+      "pivot": [24,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_L2",
+      "sheet": 8,
+      "rect": [6,0,48,64],
+      "pivot": [24,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_L1",
+      "sheet": 8,
+      "rect": [70,0,48,64],
+      "pivot": [24,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_R1",
+      "sheet": 8,
+      "rect": [134,0,48,64],
+      "pivot": [24,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_R2",
+      "sheet": 8,
+      "rect": [198,0,48,64],
+      "pivot": [24,8],
+      "ppu": 16
+    },
+    {
+      "name": "pom_tree_U2",
+      "sheet": 8,
+      "rect": [198,64,48,64],
+      "pivot": [24,8],
       "ppu": 16
     },
     {
@@ -30557,6 +31622,223 @@
   "loop": true
 },
     {
+  "name": "TreeImpactDown",
+  "frames": [387,388,47,389],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeImpactLeft",
+  "frames": [390,391,47,392],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeImpactRight",
+  "frames": [393,392,47,391],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeImpactUp",
+  "frames": [394,389,47,388],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeDragUp",
+  "frames": [389],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeDragDown",
+  "frames": [388],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeDragLeft",
+  "frames": [391],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeDragRight",
+  "frames": [392],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "TreeShake",
+  "frames": [391,392,47],
+  "times": [0,0.25,0.5],
+  "length": 0.75,
+  "loop": true
+},
+    {
+  "name": "Tree2ImpactDown",
+  "frames": [395,396,51,397],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2ImpactLeft",
+  "frames": [398,399,51,400],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2ImpactRight",
+  "frames": [401,400,51,399],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2ImpactUp",
+  "frames": [402,397,51,396],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2DragUp",
+  "frames": [397],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2DragDown",
+  "frames": [396],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2DragLeft",
+  "frames": [399],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2DragRight",
+  "frames": [400],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "Tree2Shake",
+  "frames": [399,400,51],
+  "times": [0,0.25,0.5],
+  "length": 0.75,
+  "loop": true
+},
+    {
+  "name": "junglebush_Moving",
+  "frames": [149],
+  "times": [0],
+  "length": 0.05,
+  "loop": false
+},
+    {
+  "name": "junglebush_Finish",
+  "frames": [403,404,404],
+  "times": [0,0.3,0.55],
+  "length": 0.6,
+  "loop": false
+},
+    {
+  "name": "JungleSprout_Moving",
+  "frames": [405,405],
+  "times": [0,0.2333],
+  "length": 0.25,
+  "loop": true
+},
+    {
+  "name": "JungleSprout_Finish",
+  "frames": [406,407,407],
+  "times": [0,0.25,0.4833],
+  "length": 0.5,
+  "loop": true
+},
+    {
+  "name": "PomTreeImpactDown",
+  "frames": [408,409,54,410],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeImpactLeft",
+  "frames": [411,412,54,413],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeImpactRight",
+  "frames": [414,413,54,412],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeImpactUp",
+  "frames": [415,410,54,409],
+  "times": [0,0.125,0.25,0.375],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeDragUp",
+  "frames": [410],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeDragDown",
+  "frames": [409],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeDragLeft",
+  "frames": [412],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeDragRight",
+  "frames": [413],
+  "times": [0],
+  "length": 0.5,
+  "loop": false
+},
+    {
+  "name": "PomTreeShake",
+  "frames": [399,400,51],
+  "times": [0,0.25,0.5],
+  "length": 0.75,
+  "loop": true
+},
+    {
   "name": "Cat1IdleAwake",
   "frames": [220,221],
   "times": [0,0.5],
@@ -30565,28 +31847,28 @@
 },
     {
   "name": "Cat1WakingUp",
-  "frames": [412,413,414,415,416,417,418,419],
+  "frames": [441,442,443,444,445,446,447,448],
   "times": [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7],
   "length": 0.8,
   "loop": true
 },
     {
   "name": "Cat1FallSleep",
-  "frames": [419,413,412],
+  "frames": [448,442,441],
   "times": [0,0.125,0.25],
   "length": 0.375,
   "loop": true
 },
     {
   "name": "LargeBubble_BubbleForm",
-  "frames": [420,-1,-1,-1,-1],
+  "frames": [449,-1,-1,-1,-1],
   "times": [0,0.25,0.5,0.75,0.9833],
   "length": 1,
   "loop": true
 },
     {
   "name": "PlayerIdle",
-  "frames": [421,422],
+  "frames": [450,451],
   "times": [0,0.5],
   "length": 1,
   "loop": true
@@ -30600,21 +31882,21 @@
 },
     {
   "name": "PlayerRun",
-  "frames": [423,424,425,426],
+  "frames": [452,453,454,455],
   "times": [0,0.25,0.5,0.75],
   "length": 1,
   "loop": true
 },
     {
   "name": "PlayerPirateIdle",
-  "frames": [427,428],
+  "frames": [456,457],
   "times": [0,0.5],
   "length": 1,
   "loop": true
 },
     {
   "name": "PlayerDropIndicatorIdle",
-  "frames": [429,430],
+  "frames": [458,459],
   "times": [0,0.5],
   "length": 1,
   "loop": true
@@ -32340,6 +33622,1164 @@
   ]
 },
     {
+  "name": "Tree",
+  "params": [
+    {
+      "name": "dx",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "dy",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "finishedMoving",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "shake",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "random",
+      "default": 0,
+      "float": true
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "TreeIdle",
+      "anim": 7,
+      "speed": 1,
+      "length": 1.5,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 8,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "lt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 7,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "gt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 5,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "lt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 6,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "gt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactDown",
+      "anim": 77,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,0.75,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2,1000000000000000000000000000000,1000000000000000000000000000000,0.125,2.0625,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.125,1000000000000000000000000000000,1000000000000000000000000000000,0.375,2.1875,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactLeft",
+      "anim": 78,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,0.4375,1000000000000000000000000000000,1000000000000000000000000000000,0.125,0.625,1000000000000000000000000000000,1000000000000000000000000000000,0.25,0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.375,0.8125,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.125,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.125,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactRight",
+      "anim": 79,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,1.125,1000000000000000000000000000000,1000000000000000000000000000000,0.125,0.875,1000000000000000000000000000000,1000000000000000000000000000000,0.25,0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.375,0.625,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,1.9375,1000000000000000000000000000000,1000000000000000000000000000000,0.125,2.0625,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.125,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactUp",
+      "anim": 80,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,0.75,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.25,1000000000000000000000000000000,1000000000000000000000000000000,0.125,2.1875,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.125,1000000000000000000000000000000,1000000000000000000000000000000,0.375,2.0625,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragUp",
+      "anim": 81,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,0.75,0,0],
+          "y": [0,2.1875,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragDown",
+      "anim": 82,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,0.75,0,0],
+          "y": [0,2.125,0,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 4,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragLeft",
+      "anim": 83,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,0.6875,1000000000000000000000000000000,1000000000000000000000000000000,0.5,0.625,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.125,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 3,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragRight",
+      "anim": 84,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,0.875,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.0625,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 2,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeShake",
+      "anim": 85,
+      "speed": 1,
+      "length": 0.75,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+    {
+      "to": 9,
+      "exitTime": -1,
+      "conds": [
+        [3, true]
+      ]
+    }
+  ]
+},
+    {
+  "name": "Tree2",
+  "params": [
+    {
+      "name": "dx",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "dy",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "finishedMoving",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "shake",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "random",
+      "default": 0,
+      "float": true
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "TreeIdle",
+      "anim": 8,
+      "speed": 1,
+      "length": 1.5,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 8,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "lt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 7,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "gt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 5,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "lt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 6,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "gt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactDown",
+      "anim": 86,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactLeft",
+      "anim": 87,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactRight",
+      "anim": 88,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactUp",
+      "anim": 89,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragUp",
+      "anim": 90,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragDown",
+      "anim": 91,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 4,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragLeft",
+      "anim": 92,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 3,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragRight",
+      "anim": 93,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 2,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeShake",
+      "anim": 94,
+      "speed": 1,
+      "length": 0.75,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+    {
+      "to": 9,
+      "exitTime": -1,
+      "conds": [
+        [3, true]
+      ]
+    }
+  ]
+},
+    {
+  "name": "JungleBushGizmo",
+  "params": [
+    {
+      "name": "dx",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "dy",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "finishedMoving",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "random",
+      "default": 0,
+      "float": true
+    }
+  ],
+  "default": 3,
+  "states": [
+    {
+      "name": "SimpleDynamicGizmoIdle",
+      "anim": 21,
+      "speed": 1,
+      "length": 2,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "ne",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "ne",
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SimpleDynamicGizmoMoving",
+      "anim": 95,
+      "speed": 1,
+      "length": 0.05,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 2,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SimpleDynamicGizmoFinish",
+      "anim": 96,
+      "speed": 1,
+      "length": 0.6,
+      "loop": false,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+            [
+              3,
+              "gt",
+              0.5
+            ]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+            [
+              3,
+              "lt",
+              0.5
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Start",
+      "anim": 21,
+      "speed": 1,
+      "length": 2,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [
+              3,
+              "gt",
+              0.5
+            ]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": 0.5,
+          "conds": [
+            [
+              3,
+              "lt",
+              0.5
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "JungleSprout",
+  "params": [
+    {
+      "name": "dx",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "dy",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "finishedMoving",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "random",
+      "default": 0,
+      "float": true
+    }
+  ],
+  "default": 3,
+  "states": [
+    {
+      "name": "SimpleDynamicGizmoIdle",
+      "anim": 23,
+      "speed": 1,
+      "length": 1.75,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "ne",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "ne",
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SimpleDynamicGizmoMoving",
+      "anim": 97,
+      "speed": 1,
+      "length": 0.25,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 2,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SimpleDynamicGizmoFinish",
+      "anim": 98,
+      "speed": 1,
+      "length": 0.5,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+            [
+              3,
+              "gt",
+              0.5
+            ]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+            [
+              3,
+              "lt",
+              0.5
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Start",
+      "anim": 23,
+      "speed": 1,
+      "length": 1.75,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [
+              3,
+              "gt",
+              0.5
+            ]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": 0.5,
+          "conds": [
+            [
+              3,
+              "lt",
+              0.5
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+  ]
+},
+    {
+  "name": "PomTree",
+  "params": [
+    {
+      "name": "dx",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "dy",
+      "default": 0,
+      "int": true
+    },
+    {
+      "name": "finishedMoving",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "shake",
+      "default": false,
+      "trigger": true
+    },
+    {
+      "name": "random",
+      "default": 0,
+      "float": true
+    }
+  ],
+  "default": 0,
+  "states": [
+    {
+      "name": "TreeIdle",
+      "anim": 9,
+      "speed": 1,
+      "length": 1.5,
+      "loop": true,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.5,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,1,-0.75,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.5,2.8125,1000000000000000000000000000000,1000000000000000000000000000000,1,2.8125,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 8,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "lt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 7,
+          "exitTime": -1,
+          "conds": [
+            [
+              0,
+              "gt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 5,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "lt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 6,
+          "exitTime": -1,
+          "conds": [
+            [
+              1,
+              "gt",
+              0
+            ]
+          ]
+        },
+        {
+          "to": 0,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactDown",
+      "anim": 99,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.125,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.25,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.375,-0.75,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.6875,1000000000000000000000000000000,1000000000000000000000000000000,0.125,2.75,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.375,2.9375,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactLeft",
+      "anim": 100,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.9375,1000000000000000000000000000000,1000000000000000000000000000000,0.125,-0.8125,1000000000000000000000000000000,1000000000000000000000000000000,0.25,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.375,-0.625,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.75,1000000000000000000000000000000,1000000000000000000000000000000,0.125,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.375,2.875,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactRight",
+      "anim": 101,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.5,1000000000000000000000000000000,1000000000000000000000000000000,0.125,-0.625,1000000000000000000000000000000,1000000000000000000000000000000,0.25,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.375,-0.8125,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.125,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.375,2.875,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeImpactUp",
+      "anim": 102,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.125,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.25,-0.75,1000000000000000000000000000000,1000000000000000000000000000000,0.375,-0.75,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,3,1000000000000000000000000000000,1000000000000000000000000000000,0.125,2.9375,1000000000000000000000000000000,1000000000000000000000000000000,0.25,2.875,1000000000000000000000000000000,1000000000000000000000000000000,0.375,2.75,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragUp",
+      "anim": 103,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.75,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.9375,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 1,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragDown",
+      "anim": 104,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.75,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.8125,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 4,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragLeft",
+      "anim": 105,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.8125,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.875,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 3,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeDragRight",
+      "anim": 106,
+      "speed": 1,
+      "length": 0.5,
+      "loop": false,
+      "writeDefaults": true,
+      "moves": [
+        {
+          "path": "StuckHolder",
+          "x": [0,-0.625,1000000000000000000000000000000,1000000000000000000000000000000],
+          "y": [0,2.875,1000000000000000000000000000000,1000000000000000000000000000000]
+        }
+      ],
+      "transitions": [
+        {
+          "to": 2,
+          "exitTime": -1,
+          "conds": [
+            [2, true]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TreeShake",
+      "anim": 107,
+      "speed": 1,
+      "length": 0.75,
+      "loop": true,
+      "writeDefaults": true,
+      "transitions": [
+        {
+          "to": 0,
+          "exitTime": 1,
+          "conds": [
+          ]
+        }
+      ]
+    }
+  ],
+  "any": [
+    {
+      "to": 9,
+      "exitTime": -1,
+      "conds": [
+        [3, true]
+      ]
+    }
+  ]
+},
+    {
   "name": "Cat1",
   "params": [
     {
@@ -32368,7 +34808,7 @@
     },
     {
       "name": "Cat1IdleAwake",
-      "anim": 77,
+      "anim": 108,
       "speed": 1,
       "length": 1,
       "loop": true,
@@ -32385,7 +34825,7 @@
     },
     {
       "name": "Cat1WakeUp",
-      "anim": 78,
+      "anim": 109,
       "speed": 1,
       "length": 0.8,
       "loop": true,
@@ -32401,7 +34841,7 @@
     },
     {
       "name": "Cat1FallAsleep",
-      "anim": 79,
+      "anim": 110,
       "speed": 1,
       "length": 0.375,
       "loop": true,
@@ -32427,7 +34867,7 @@
     },
     {
       "name": "IdleAwake",
-      "anim": 77,
+      "anim": 108,
       "speed": 1,
       "length": 1,
       "loop": true,
@@ -32437,7 +34877,7 @@
     },
     {
       "name": "WakeUp",
-      "anim": 78,
+      "anim": 109,
       "speed": 1,
       "length": 0.8,
       "loop": true,
@@ -32453,7 +34893,7 @@
     },
     {
       "name": "FallAsleep",
-      "anim": 79,
+      "anim": 110,
       "speed": 1,
       "length": 0.375,
       "loop": true,
@@ -32501,7 +34941,7 @@
     },
     {
       "name": "BubbleForm",
-      "anim": 80,
+      "anim": 111,
       "speed": 1,
       "length": 1,
       "loop": true,
@@ -32535,7 +34975,7 @@
   "states": [
     {
       "name": "PlayerIdle",
-      "anim": 81,
+      "anim": 112,
       "speed": 1,
       "length": 1,
       "loop": true,
@@ -32566,7 +35006,7 @@
     },
     {
       "name": "PlayerRun",
-      "anim": 83,
+      "anim": 114,
       "speed": 1,
       "length": 1,
       "loop": true,
@@ -32607,7 +35047,7 @@
     },
     {
       "name": "PlayerPirateIdle",
-      "anim": 84,
+      "anim": 115,
       "speed": 1,
       "length": 1,
       "loop": true,
