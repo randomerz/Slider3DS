@@ -3,6 +3,7 @@
 #include <string>
 
 #include "game/render/sprite_sheets.h"
+#include "game/save/profile.h"
 #include "game/ui/artifact_ui.h"
 #include "game/world/world.h"
 #include "test.h"
@@ -58,6 +59,22 @@ struct Fixture {
         artifact.update(grid, DT, 0);
     }
 };
+
+// Button `island`'s image is the blank sprite (its flicker) in the UI's draw now.
+bool buttonBlank(const ArtifactUI& ui, const World& world, const SpriteSheets& sheets, int island) {
+    const SpriteDef& blank = world.area.sprites[world.area.artifact.blank];
+    float cx, cy;
+    int bx, by;
+    world.artifact.findButton(island, bx, by);
+    ui.slotCenter(world.area, bx, by, cx, cy);
+    testResetDrawCalls();
+    ui.draw(world, sheets);
+    for (const DrawCall& d : testDrawCalls())
+        if (d.sx == blank.x && d.sy == blank.y && d.sw == blank.w && d.sh == blank.h &&
+            std::fabs(d.x + d.w / 2 - cx) < 1 && std::fabs(d.y + d.h / 2 - cy) < 1)
+            return true;
+    return false;
+}
 
 } // namespace
 
@@ -216,26 +233,11 @@ TEST(artifact_ui_unexplored_tiles_flicker_until_stood_on) {
     f.world.tilesExplored.reset(villageArea(), f.world.state);
     SpriteSheets sheets;
     check(sheets.load(villageArea()), "sheets");
-    const ArtifactDef& def = villageArea().artifact;
-    const SpriteDef& blank = villageArea().sprites[def.blank];
-    auto blankAt = [&](int island) { // its button's image this frame is the blank sprite
-        float cx, cy;
-        int bx, by;
-        f.artifact.findButton(island, bx, by);
-        f.ui.slotCenter(villageArea(), bx, by, cx, cy);
-        testResetDrawCalls();
-        f.ui.draw(f.world, sheets);
-        for (const DrawCall& d : testDrawCalls())
-            if (d.sx == blank.x && d.sy == blank.y && d.sw == blank.w && d.sh == blank.h &&
-                std::fabs(d.x + d.w / 2 - cx) < 1 && std::fabs(d.y + d.h / 2 - cy) < 1)
-                return true;
-        return false;
-    };
     auto run = [&](int frames, int island) { // a sample every 0.25 s, between the steps
         std::string seen;
         for (int n = 0; n < frames; n++) {
             f.world.tilesExplored.update(f.grid, 0, f.world.frame, f.world.state); // (World::update's)
-            if (n % 15 == 7) seen += blankAt(island) ? 'B' : '.';
+            if (n % 15 == 7) seen += buttonBlank(f.ui, f.world, sheets, island) ? 'B' : '.';
             f.world.frame++;
         }
         return seen;
@@ -248,6 +250,30 @@ TEST(artifact_ui_unexplored_tiles_flicker_until_stood_on) {
     check(seen == ".B.B.B..", "tile 2: " + seen);
     seen = run(44 * 15, 1);
     check(seen == std::string(44, '.'), "tile 1 explored: " + seen);
+}
+
+TEST(artifact_ui_flicker_runs_through_world_update_while_the_player_is_held) {
+    // World::update keeps each tile's flicker clock, also while the player is held (a pick-up, a
+    // dolly): tile 2, collected then, flickers on time; tile 1, under the player, doesn't.
+    World world(villageArea(), DEFAULT_SETTINGS);
+    world.load(SaveProfile::make("Tofu"));
+    ArtifactUI ui;
+    ui.init(villageArea(), world.artifact);
+    SpriteSheets sheets;
+    check(sheets.load(villageArea()), "sheets");
+    for (int n = 0; n < 100; n++) world.update(DT, FrameInput{}); // (World::frame past 0)
+    world.lockPlayer(LOCK_PICKUP, true);
+    world.setTileActive(2, true);
+    std::string seen, one;
+    for (int n = 0; n < 8 * 15; n++) {
+        world.update(DT, FrameInput{});
+        if (n % 15 == 7) {
+            seen += buttonBlank(ui, world, sheets, 2) ? 'B' : '.';
+            one += buttonBlank(ui, world, sheets, 1) ? 'B' : '.';
+        }
+    }
+    check(world.playerLocked() && seen == ".B.B.B..", "tile 2: " + seen);
+    check(one == "........", "tile 1: " + one);
 }
 
 TEST(artifact_ui_before_init_does_nothing) {

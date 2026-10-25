@@ -11,6 +11,7 @@ void testSetFile(const std::string& path, const std::string& contents);
 void testClearFiles();
 // plat::loadSheet of the sheet named `name` fails (a missing texture); "" = none fails (the default).
 void testFailSheet(const std::string& name);
+int testLiveSheets(); // sheets loaded and not yet freed
 // The next `reads` plat::readAsset calls fail (read nothing), as a storage error would.
 void testFailAssetReads(int reads);
 // The player's files (readUserFile / writeUserFile), in memory, by name.
