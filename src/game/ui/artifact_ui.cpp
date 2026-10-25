@@ -7,6 +7,14 @@
 namespace {
 constexpr int DRAG_THRESHOLD = 3; // px of stylus travel before a press becomes a drag (Unity's drag threshold)
 constexpr int IMAGE_HALF = 16;    // button images are 32x32, centered on the slot
+
+// NewButtonFlicker at `t` s: 0.25 s, then 3 times blank 0.25 s / shown 0.25 s, then 8.5 s
+// (SECONDS_BETWEEN_REPEAT_NEW_FLICKER), over again.
+bool flickerBlank(float t) {
+    constexpr float STEP = 0.25f, FLICKERS = 3, CYCLE = STEP + FLICKERS * 2 * STEP + 8.5f;
+    const float u = std::fmod(t, CYCLE) - STEP;
+    return u >= 0 && u < FLICKERS * 2 * STEP && std::fmod(u, 2 * STEP) < STEP;
+}
 }
 
 void ArtifactUI::init(const Area& area, const Artifact& artifact) {
@@ -21,6 +29,7 @@ void ArtifactUI::init(const Area& area, const Artifact& artifact) {
     for (const STileDef& s : area.stiles) maxId = std::max(maxId, s.islandId);
     lastSlot_.assign(maxId + 1, {-1, -1});
     nudges_.assign(maxId + 1, Nudge{});
+    flicker_.assign(maxId + 1, -1);
     for (const STileDef& s : area.stiles) artifact.findButton(s.islandId, lastSlot_[s.islandId].first, lastSlot_[s.islandId].second);
 }
 
@@ -115,23 +124,22 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
     // The D-pad's cursor (see the header); one axis a press (Unity's UI navigation).
     const int stepX = ((in.pressed & plat::BTN_RIGHT) ? 1 : 0) - ((in.pressed & plat::BTN_LEFT) ? 1 : 0);
     const int stepY = stepX ? 0 : ((in.pressed & plat::BTN_UP) ? 1 : 0) - ((in.pressed & plat::BTN_DOWN) ? 1 : 0);
-    if ((stepX || stepY) && !touching) {
-        if (!cursorShown_) {
-            cursorShown_ = true;
-            if (!playerStile || !artifact.findButton(playerStile, cursorX_, cursorY_)) {
-                cursorX_ = artifact.width() / 2;
-                cursorY_ = artifact.height() / 2;
-            }
-        } else {
-            cursorX_ = std::min(std::max(cursorX_ + stepX, 0), artifact.width() - 1);
-            cursorY_ = std::min(std::max(cursorY_ + stepY, 0), artifact.height() - 1);
-        }
-    }
+    const bool select = (in.pressed & plat::BTN_X) != 0;
     if (touching) {
         cursorShown_ = false;
-    } else if (cursorShown_ && (in.pressed & plat::BTN_X)) {
-        clicked_ = true; // (its Button's UIClick)
-        selectButton(grid, artifact, cursorX_, cursorY_, false, playerStile, autoMove());
+    } else if (!cursorShown_ && (stepX || stepY || select)) { // (the press only shows it)
+        cursorShown_ = true;
+        if (!playerStile || !artifact.findButton(playerStile, cursorX_, cursorY_)) {
+            cursorX_ = artifact.width() / 2;
+            cursorY_ = artifact.height() / 2;
+        }
+    } else if (cursorShown_) {
+        cursorX_ = std::min(std::max(cursorX_ + stepX, 0), artifact.width() - 1);
+        cursorY_ = std::min(std::max(cursorY_ + stepY, 0), artifact.height() - 1);
+        if (select) {
+            clicked_ = true; // (its Button's UIClick)
+            selectButton(grid, artifact, cursorX_, cursorY_, false, playerStile, autoMove());
+        }
     }
 
     int sx = -1, sy = -1;
@@ -204,6 +212,8 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
         }
         last = {bx, by};
         if (n.t < 1) n.t = std::min(1.0f, n.t + dt / area.artifact.nudgeDuration);
+        float& f = flicker_[s.islandId];
+        f = !grid.tileActive(s.islandId) ? -1 : f < 0 ? 0 : f + dt;
     }
 }
 
@@ -262,7 +272,8 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
         const bool hovered = bx == hoverX_ && by == hoverY_ && option;
 
         const bool complete = world.artifactButtons.complete(b.islandId) && b.completed >= 0;
-        const int image = hovered ? def.hoverIcon : !active ? def.empty : complete ? b.completed : b.island;
+        const bool blank = active && !world.tilesExplored.explored(b.islandId) && flickerBlank(flicker_[b.islandId]);
+        const int image = hovered ? def.hoverIcon : !active ? def.empty : blank ? def.blank : complete ? b.completed : b.island;
         drawPart(image, -IMAGE_HALF, -IMAGE_HALF, 2 * IMAGE_HALF, cx, cy + drop);
         if (active)
             for (int i = 0; i < (int)b.icons.size(); i++)

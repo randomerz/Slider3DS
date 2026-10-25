@@ -22,6 +22,7 @@
 #include "game/grid/ui_trackers.h"
 #include "game/world/game_state.h"
 #include "game/grid/grid.h"
+#include "game/grid/tiles_explored.h"
 #include "game/items/items.h"
 #include "game/npc/npc_walks.h"
 #include "game/npc/npcs.h"
@@ -190,6 +191,7 @@ public:
     Artifact artifact;
     ArtifactButtons artifactButtons; // what scripts set on the Artifact's buttons (icons, completion)
     UiTrackers trackers;             // the Artifact's pins (the player, Slider 2's collectible)
+    TilesExplored tilesExplored;     // the tiles the player has stood on (their buttons flicker until then)
     ObjectStates objects;
     Starts starts;
     TriggerTracker triggers;

@@ -163,6 +163,7 @@ void World::reloadObjects() {
     hints.load(*this);
     player.locks = 0; // (what held the player is reset)
     artifactButtons.reset(area);
+    tilesExplored.reset(area, state);
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
     starts.reset(area);
     runStarts();
@@ -302,6 +303,7 @@ void World::update(float dt, const FrameInput& in, bool ignoreWalls) {
         moveWithCollision(*this, player.hitbox(area), player.x, player.y, dx, dy, player.onWater);
     }
     player.stile = grid.stileUnder(player.x, player.y, player.stile);
+    tilesExplored.update(player.stile, state);
     items.update(*this, dt); // (PlayerAction.Update: the carried item follows, the drop spot)
     cats.update(*this);      // (CatTrick.Update: a cat dropped in the zone is back)
     trackers.update(*this, dt); // (UITracker.Update: the Artifact pins' blinking)

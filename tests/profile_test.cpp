@@ -165,6 +165,21 @@ TEST(world_load_of_a_new_profile_is_a_new_game) {
     CHECK(w.player.inHouse && w.player.stile == 1); // (the Default spawn is in tile 1's house)
 }
 
+TEST(world_marks_the_tiles_the_player_stands_on_in_the_save) {
+    // SGridTilesExplored: the tile under the player, as the original's key, kept by a save + load.
+    World w(villageArea(), DEFAULT_SETTINGS);
+    w.load(SaveProfile::make("Tofu"));
+    CHECK(TilesExplored::key("Village", 1) == "TilesExplored_Village_01");
+    CHECK(!w.tilesExplored.explored(1) && !w.state.flag("TilesExplored_Village_01"));
+    frames(w, 1);
+    CHECK(w.tilesExplored.explored(1) && w.state.flag("TilesExplored_Village_01") && !w.tilesExplored.explored(2));
+    SaveProfile p;
+    w.save(p);
+    World l(villageArea(), DEFAULT_SETTINGS);
+    l.load(p);
+    CHECK(l.tilesExplored.explored(1) && !l.tilesExplored.explored(2));
+}
+
 TEST(world_save_then_load_keeps_the_boat_and_the_house) {
     const Area& area = villageArea();
     World w(area, DEFAULT_SETTINGS);

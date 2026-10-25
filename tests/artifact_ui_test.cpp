@@ -208,6 +208,36 @@ TEST(artifact_ui_auto_move) {
     CHECK(f.ui.selected() == 1 && f.artifact.queueEmpty());
 }
 
+TEST(artifact_ui_unexplored_tiles_flicker_until_stood_on) {
+    // NewButtonFlicker: an active tile the player hasn't stood on blanks 3 times (0.25 s each, from
+    // 0.25 s after it turned active), again 10.25 s after it began; once explored, never again.
+    Fixture f;
+    f.world.tilesExplored.reset(villageArea(), f.world.state);
+    SpriteSheets sheets;
+    check(sheets.load(villageArea()), "sheets");
+    const SpriteDef& blank = villageArea().sprites[villageArea().artifact.blank];
+    auto blankNow = [&] {
+        testResetDrawCalls();
+        f.ui.draw(f.world, sheets);
+        for (const DrawCall& d : testDrawCalls())
+            if (d.sx == blank.x && d.sy == blank.y && d.sw == blank.w && d.sh == blank.h) return true;
+        return false;
+    };
+    std::string seen; // a sample every 0.25 s, between the steps
+    for (int frame = 0; frame < 44 * 15; frame++) {
+        f.frame(false);
+        if (frame % 15 == 7) seen += blankNow() ? 'B' : '.';
+    }
+    check(seen == ".B.B.B" + std::string(36, '.') + "B.", seen);
+    f.world.tilesExplored.update(1, f.world.state); // (the player on tile 1)
+    seen.clear();
+    for (int frame = 0; frame < 44 * 15; frame++) {
+        f.frame(false);
+        if (frame % 15 == 7) seen += blankNow() ? 'B' : '.';
+    }
+    check(seen == std::string(44, '.'), seen);
+}
+
 TEST(artifact_ui_before_init_does_nothing) {
     // A screen that shows or feeds the Artifact before a game started it (the title once did) gets
     // nothing drawn and nothing moved, not a bad index.
@@ -266,10 +296,11 @@ TEST(artifact_ui_dpad_cursor_starts_on_the_player_and_hides_on_touch) {
     CHECK(f.ui.cursorX() == 1 && f.ui.cursorY() == 1);
     f.tap(2, 2);
     CHECK(!f.ui.cursorShown());
-    f.press(plat::BTN_X); // (hidden: X does nothing)
-    CHECK(f.ui.selected() == 0);
-    f.press(plat::BTN_UP);
+    f.press(plat::BTN_X); // (hidden: X only shows it, back on the player's tile)
+    CHECK(f.ui.selected() == 0 && !f.ui.clicked());
     CHECK(f.ui.cursorShown() && f.ui.cursorX() == 0 && f.ui.cursorY() == 0);
+    f.press(plat::BTN_X); // (shown: X taps tile 1)
+    CHECK(f.ui.selected() == 1);
 }
 
 TEST(artifact_ui_dpad_cursor_steps_one_axis_and_not_while_touching) {
