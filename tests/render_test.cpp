@@ -744,6 +744,7 @@ TEST(render_title_menu_goldens) {
     check(skin.load(&error), "menu skin loads " + error);
     GoldenSet goldens("title.txt");
     TitleMenu menu;
+    menu.setVersionLabel("v3ds_0.0"); // (fixed: version bumps leave the goldens alone)
     auto shoot = [&](const char* name) {
         testResetDrawCalls();
         menu.draw(skin);

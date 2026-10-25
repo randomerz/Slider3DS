@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include "game/app/version.h"
 #include "game/save/profile.h"
 #include "game/ui/menu_input.h"
 #include "game/ui/menu_skin.h"
@@ -40,6 +41,8 @@ public:
     static constexpr int KEY_COUNT = CAPS - KEY;
     static_assert(sizeof(KEYS) - 1 == KEY_COUNT, "one Widget per key");
     static constexpr int MAX_NAME = 10; // KeyboardButton.MAX_PROFILE_NAME_LENGTH
+    // Main's top-right corner (GetVersion's "v<version>"; "3ds_" marks the port's).
+    static constexpr const char* VERSION_LABEL = "v3ds_" SLIDER_VERSION;
 
     struct Action {
         enum class Kind { None, Play, NewGame, Options, Quit };
@@ -75,6 +78,8 @@ public:
     // A widget was used this frame (its UIClick: the click sound).
     bool clicked() const { return clicked_; }
     void draw(const MenuSkin& skin) const;
+    // Shows `label` in place of VERSION_LABEL (render goldens: so a version bump doesn't change them).
+    void setVersionLabel(std::string label) { version_ = std::move(label); }
 
     Page page() const { return page_; }
     Widget selected() const { return selected_; }
@@ -118,4 +123,5 @@ private:
     int blinkFrame_ = 0; // frames since a card started awaiting Confirm (its own timer: timeUntilSwap)
     int lockout_ = 0;    // frames left ignoring input
     bool clicked_ = false;
+    std::string version_ = VERSION_LABEL;
 };

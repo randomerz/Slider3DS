@@ -49,3 +49,6 @@ preview/
 romfs/gfx/
 romfs/*/*.json
 romfs/audio/
+
+# Release files (make RELEASE=1 dist)
+dist/

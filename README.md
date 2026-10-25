@@ -32,6 +32,8 @@ Saves and settings are kept in `sdmc:/3ds/slider3ds/`.
 | D-pad + X | Slide tiles without the stylus: the D-pad moves the cursor, X selects |
 | START | Pause menu (options, quit) |
 
+In the menus, the D-pad or Circle Pad moves, A selects and B goes back. You can also tap with the stylus.
+
 ## Building
 
 The game is C++ on devkitPro (libctru + citro2d). It also has an SDL2 PC build for development and headless tests.
@@ -40,6 +42,7 @@ The game is C++ on devkitPro (libctru + citro2d). It also has an SDL2 PC build f
 make              # 3DS dev build: slider3ds.3dsx
 make RELEASE=1    # 3DS release build: slider3ds_release.3dsx
 make RELEASE=1 cia  # slider3ds.cia (needs makerom and bannertool)
+make RELEASE=1 dist # dist/slider3ds.3dsx + dist/slider3ds.cia: the files to publish
 ```
 
 For the PC build, configure the repo with CMake; it fetches SDL2 on its own. The tests are `slider3ds_tests`.

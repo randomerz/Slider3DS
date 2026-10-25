@@ -1,4 +1,5 @@
-// The port's version: shown in the title menu's corner; the Makefile reads it for the CIA's title version.
+// The port's version, "major.minor": the title menu shows it as "v3ds_<version>"; the Makefile reads it for
+// the CIA's title version (major and minor, each at most 15: see the Makefile).
 #pragma once
 
-#define SLIDER_VERSION "0.1.0"
+#define SLIDER_VERSION "0.1"

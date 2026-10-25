@@ -618,11 +618,11 @@ TEST(frontend_title_menu_slides_up_as_it_comes_in) {
     frames(f, Frontend::MENU_LOCKOUT_FRAMES * 3 / 4);
     const float rest = menuTop();
     CHECK(rest == menuTop(true));
-    TitleMenu::Box b; // (the top button; no cursor yet at the start or a quarter in)
-    CHECK(f.title().box(TitleMenu::CONTINUE, b) && start == b.y + plat::BOTTOM_H);
+    // (the menu's top: the version label; no cursor yet at the start or a quarter in)
+    CHECK(start == rest + plat::BOTTOM_H);
     // A quarter in (16 frames: the key's own frame counts): Unity's curve (weighted) has it 0.908
     // screens low; Hermite would have it at 0.817.
-    CHECK(std::fabs(quarterDrop - 0.908f) < 0.002f && quarter == b.y + 2 * std::lround(quarterDrop * plat::BOTTOM_H / 2));
+    CHECK(std::fabs(quarterDrop - 0.908f) < 0.002f && quarter == rest + 2 * std::lround(quarterDrop * plat::BOTTOM_H / 2));
     testUserFiles().clear();
 }
 

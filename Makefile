@@ -50,8 +50,9 @@ APP_TITLE	:=	Slider
 endif
 CIA_TITLE	:=	Slider
 APP_DESCRIPTION	:=	Slide chunks of the world to solve puzzles
-# The version (src/game/app/version.h's SLIDER_VERSION, major.minor.micro): the CIA's title version.
-APP_VERSION	:=	$(subst ",,$(word 3,$(shell grep define.SLIDER_VERSION src/game/app/version.h)))
+# The version (src/game/app/version.h's SLIDER_VERSION, "major.minor"): the CIA's title version, as its
+# major and micro fields (makerom writes 0 for a CIA's minor; micro holds 0-15), checked after the build.
+APP_VERSION	:=	$(subst ",,$(word 3,$(shell grep 'define SLIDER_VERSION "' src/game/app/version.h)))
 APP_VERSION_PARTS	:=	$(subst ., ,$(APP_VERSION))
 APP_AUTHOR	:=	boomo
 # Both builds' icon (made by tools/make_icon.py; unset, the release would look for slider3ds_release.png).
@@ -215,7 +216,7 @@ AUDIO_FILES	:=	$(wildcard assets/audio/*.ogg assets/audio/*.adp assets/audio/*.p
 ROMFS_AUDIO	:=	$(patsubst assets/%,$(ROMFS)/%,$(AUDIO_FILES))
 export _3DSXDEPS	+=	$(addprefix $(CURDIR)/,$(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_AUDIO))
 
-.PHONY: all clean cia
+.PHONY: all clean cia dist
 
 #---------------------------------------------------------------------------------
 all: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES) $(ROMFS_SHEETS) $(ROMFS_JSONS) $(ROMFS_AUDIO)
@@ -238,8 +239,8 @@ endif
 
 #---------------------------------------------------------------------------------
 # `make RELEASE=1 cia` -> slider3ds.cia: the release build, installable from the HOME Menu (FBI), its
-# banner tools/cia/banner.png + banner.wav (tools/make_banner.py's placeholder: replace banner.png with
-# 256x128 art) and makerom spec tools/cia/cia.rsf. Needs makerom and bannertool (devkitPro's tools/bin).
+# banner tools/cia/banner.png + banner.wav (tools/make_banner.py) and makerom spec tools/cia/cia.rsf.
+# Needs makerom and bannertool (devkitPro's tools/bin).
 # `make cia` -> slider3ds_dev.cia: the dev build as a CIA (its own title id: both install side by side),
 # to read the overlay of an installed title (e.g. the audio thread's core). Its SELECT-at-launch updater
 # still writes the .3dsx, not the CIA.
@@ -253,14 +254,25 @@ CIA_UNIQUE_ID	:=	0xF51D3
 CIA_PRODUCT	:=	CTR-P-SLDR
 endif
 cia: all
+	$(if $(filter-out 2,$(words $(APP_VERSION_PARTS))),$(error SLIDER_VERSION "$(APP_VERSION)" in src/game/app/version.h is not major.minor))
 	@bannertool makebanner -i tools/cia/banner.png -a tools/cia/banner.wav -o $(BUILD)/banner.bnr
 	@makerom -f cia -o $(CIA_NAME) -target t -exefslogo -elf $(TARGET).elf -rsf tools/cia/cia.rsf \
 		-icon $(TARGET).smdh -banner $(BUILD)/banner.bnr -DAPP_TITLE="$(CIA_TITLE)" -DAPP_PRODUCT_CODE=$(CIA_PRODUCT) \
 		-DAPP_UNIQUE_ID=$(CIA_UNIQUE_ID) -DAPP_ROMFS=$(ROMFS) -DAPP_CATEGORY=Application -DAPP_USE_ON_SD=true \
 		-DAPP_ENCRYPTED=false -DAPP_MEMORY_TYPE=Application -DAPP_SYSTEM_MODE=64MB -DAPP_SYSTEM_MODE_EXT=Legacy \
-		-DAPP_CPU_SPEED=268MHz -DAPP_ENABLE_L2_CACHE=false -DAPP_VERSION_MAJOR=0 \
-		-major $(word 1,$(APP_VERSION_PARTS)) -minor $(word 2,$(APP_VERSION_PARTS)) -micro $(word 3,$(APP_VERSION_PARTS))
+		-DAPP_CPU_SPEED=268MHz -DAPP_ENABLE_L2_CACHE=false -DAPP_REMASTER_VERSION=0 \
+		-major $(word 1,$(APP_VERSION_PARTS)) -micro $(word 2,$(APP_VERSION_PARTS))
+	@sh tools/cia_version.sh $(CIA_NAME) $(word 1,$(APP_VERSION_PARTS)).0.$(word 2,$(APP_VERSION_PARTS))
 	@echo built ... $(CIA_NAME)
+
+# `make RELEASE=1 dist` -> dist/: the files to publish under their players' names (README.md):
+# slider3ds.3dsx (the release .3dsx) and slider3ds.cia.
+dist: cia
+	$(if $(strip $(RELEASE)),,$(error dist is the release's: make RELEASE=1 dist))
+	@mkdir -p dist
+	@cp $(TARGET).3dsx dist/slider3ds.3dsx
+	@cp $(CIA_NAME) dist/slider3ds.cia
+	@echo dist ... slider3ds.3dsx slider3ds.cia v$(APP_VERSION)
 
 #---------------------------------------------------------------------------------
 clean:
