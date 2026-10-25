@@ -71,6 +71,24 @@ TEST(item_pickup_runs_its_timeline) {
     CHECK(world.player.x > x); // (walks again)
 }
 
+TEST(item_pickup_holds_the_player_but_the_input_still_animates_it) {
+    // SetCanMove(false) with canAnimateMovement: held in place, the player still runs on the spot
+    // and turns with the input (the user likes it), then idles when it stops.
+    int index = -1;
+    World world = onSlider2(index);
+    CHECK(index >= 0);
+    if (index < 0) return;
+    const int animator = world.area.player.animator;
+    world.update(DT, 0, 0, false); // touched: the cutscene starts
+    CHECK(world.playerLocked() && animator >= 0);
+    const float x = world.player.x, y = world.player.y;
+    for (int f = 0; f < 10; f++) world.update(DT, -1, 0, false);
+    CHECK(world.player.x == x && world.player.y == y && world.playerLocked());
+    CHECK(world.animators.stateName(world.area, animator) == "PlayerRun" && world.player.facingLeft);
+    world.update(DT, 0, 0, false);
+    CHECK(world.animators.stateName(world.area, animator) == "PlayerIdle");
+}
+
 TEST(item_pickup_a_scene_load_drops_it) {
     int index = -1;
     World world = onSlider2(index);

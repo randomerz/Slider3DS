@@ -262,9 +262,11 @@ void World::placeNear(float x, float y) {
 }
 
 void World::update(float dt, const FrameInput& in, bool ignoreWalls) {
-    float moveX = in.moveX, moveY = in.moveY;
+    const float moveX = in.moveX, moveY = in.moveY;
     hints.moveInput(*this, moveX, moveY);
-    if (playerLocked()) moveX = moveY = 0; // (Player.SetCanMove(false))
+    // Held (Player.SetCanMove(false)): no movement, but the input still turns and animates the
+    // player — canAnimateMovement, true for every holder here.
+    const bool canMove = !playerLocked();
     // Tiles slide; the player is parented to the tile underneath and rides along.
     const TileState* t = grid.tile(player.stile);
     const float ox = t ? t->posX : 0, oy = t ? t->posY : 0;
@@ -289,7 +291,7 @@ void World::update(float dt, const FrameInput& in, bool ignoreWalls) {
         animators.setBool(*this, area.player.animator, "isOnWater", player.onWater);
     }
     float dx = 0, dy = 0;
-    if (moveX != 0 || moveY != 0) {
+    if (canMove && (moveX != 0 || moveY != 0)) {
         const float len = std::sqrt(moveX * moveX + moveY * moveY);
         dx = moveX / len * MOVE_SPEED * dt;
         dy = moveY / len * MOVE_SPEED * dt;
