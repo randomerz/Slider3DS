@@ -350,9 +350,11 @@ void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, 
     SDL_RenderCopyExF(g_renderer, t, &src, &dst, angle, nullptr, (SDL_RendererFlip)flip);
 }
 
-void drawSpriteTinted(Texture* tex, int sx, int sy, int sw, int sh, float cx, float cy, float angle, uint32_t tint) {
+void drawSpriteTinted(Texture* tex, int sx, int sy, int sw, int sh, float cx, float cy, float angle, uint32_t tint,
+                      int scale) {
     SDL_Rect src{sx, sy, sw, sh};
-    SDL_FRect dst{cx - sw * 0.5f, cy - sh * 0.5f, (float)sw, (float)sh};
+    const float w = (float)(sw * scale), h = (float)(sh * scale);
+    SDL_FRect dst{cx - w * 0.5f, cy - h * 0.5f, w, h};
     SDL_SetTextureColorMod(tex->tex, (Uint8)(tint >> 24), (Uint8)(tint >> 16), (Uint8)(tint >> 8));
     SDL_SetTextureAlphaMod(tex->tex, (Uint8)tint);
     SDL_RenderCopyExF(g_renderer, tex->tex, &src, &dst, -angle * 57.2957795, nullptr, SDL_FLIP_NONE); // (SDL: clockwise degrees)

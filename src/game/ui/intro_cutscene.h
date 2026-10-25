@@ -29,6 +29,12 @@ public:
         int width = 0;
     };
 
+    // The images at 2x (the user's call: 1x left the top screen mostly empty), each centered imageY
+    // up but kept on the screen: the 140x100 ones end above the caption, the last one (160x120)
+    // fills the screen under it. The caption stays 1x, CAPTION_DOWN px lower than the original's
+    // box, between the images' bottom (y 200) and the screen's.
+    static constexpr int IMAGE_SCALE = 2, CAPTION_DOWN = 4;
+
     IntroArt() = default;
     IntroArt(const IntroArt&) = delete;
     IntroArt& operator=(const IntroArt&) = delete;
@@ -39,14 +45,14 @@ public:
     bool loaded() const { return sheet_ != nullptr; }
 
     const std::vector<Slide>& slides() const { return slides_; }
-    int imageY() const { return imageY_; }         // px the images' centers sit above the screen's middle
+    int imageY() const { return imageY_; }         // px the images' centers sit above the screen's middle (at 1x)
     int textW() const { return textW_; }           // the captions' box: its width,
     int textBottom() const { return textBottom_; } // its bottom, px above the screen's bottom
     // A space's advance in `font` with the captions' word spacing (TMP m_wordSpacing), whole px.
     int spaceWidth(const Font& font) const;
     // Slide `slide`'s caption word-wrapped to the box in `font` (laid out once per font, then kept).
     const std::vector<Line>& lines(int slide, const Font& font) const;
-    void drawImage(int slide, int cx, int cy, float alpha) const; // 1x, centered on (cx, cy)
+    void drawImage(int slide, int cx, int cy, float alpha) const; // at IMAGE_SCALE, centered on (cx, cy)
 
 private:
     plat::Texture* sheet_ = nullptr;

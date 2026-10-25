@@ -47,6 +47,7 @@ TEST(intro_art_loads_seven_slides) {
     };
     CHECK(!loadsWith("\"wordSpacing\"", "\"spacing\"") && !loadsWith("\"imageY\"", "\"y\""));
     CHECK(!loadsWith("In ages past", "In \xe2\x80\x99ges past"));
+    CHECK(!loadsWith("[0,202,160,120]", "[0,202,160,121]")); // (241 px at 2x: off the screen)
     testSetFile("ui/intro.json", real);
 }
 

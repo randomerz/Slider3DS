@@ -106,10 +106,11 @@ void drawCircle(float cx, float cy, float r, uint32_t color);
 // (RGBA) draws the sprite's shape in that solid color instead (a white flash).
 void drawSprite(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, uint32_t flags = 0, int scale = 1,
                 uint32_t fill = 0);
-// Draws the sw x sh pixel rect at (sx, sy) of `tex` at 1x centered on (cx, cy), turned `angle`
+// Draws the sw x sh pixel rect at (sx, sy) of `tex` at `scale`x centered on (cx, cy), turned `angle`
 // radians counter-clockwise on screen, point-sampled, its colors multiplied by `tint` (RGBA: alpha
-// fades it; white = as is) — textured particles.
-void drawSpriteTinted(Texture* tex, int sx, int sy, int sw, int sh, float cx, float cy, float angle, uint32_t tint);
+// fades it; white = as is) — textured particles, the intro's fading images.
+void drawSpriteTinted(Texture* tex, int sx, int sy, int sw, int sh, float cx, float cy, float angle, uint32_t tint,
+                      int scale = 1);
 // Draws the sw x sh pixel rect at (sx, sy) of `tex` stretched to w x h at (x, y), point-sampled
 // (a 9-slice's edges and middle).
 void drawSpriteStretched(Texture* tex, int sx, int sy, int sw, int sh, float x, float y, float w, float h);

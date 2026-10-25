@@ -24,8 +24,8 @@ bool IntroArt::load(std::string* error) {
     for (const Json& s : doc["slides"].items()) {
         const Json& r = s["rect"];
         Slide sl{r.at(0).asInt(-1), r.at(1).asInt(-1), r.at(2).asInt(), r.at(3).asInt(), s["text"].asString(), 0};
-        if (!s.has("text") || r.size() != 4 || sl.x < 0 || sl.y < 0 || sl.w <= 0 || sl.h <= 0 || sl.w > plat::TOP_W ||
-            sl.h > plat::TOP_H)
+        if (!s.has("text") || r.size() != 4 || sl.x < 0 || sl.y < 0 || sl.w <= 0 || sl.h <= 0 || sl.w * IMAGE_SCALE > plat::TOP_W ||
+            sl.h * IMAGE_SCALE > plat::TOP_H)
             return fail("a bad slide");
         for (char c : sl.text) {
             if ((unsigned char)c >= 0x80) return fail("a caption isn't ASCII");
@@ -97,7 +97,7 @@ const std::vector<IntroArt::Line>& IntroArt::lines(int slide, const Font& font) 
 void IntroArt::drawImage(int slide, int cx, int cy, float alpha) const {
     const Slide& s = slides_[slide];
     const uint8_t a = (uint8_t)std::lround(std::clamp(alpha, 0.0f, 1.0f) * 255);
-    plat::drawSpriteTinted(sheet_, s.x, s.y, s.w, s.h, (float)cx, (float)cy, 0, plat::rgba(255, 255, 255, a));
+    plat::drawSpriteTinted(sheet_, s.x, s.y, s.w, s.h, (float)cx, (float)cy, 0, plat::rgba(255, 255, 255, a), IMAGE_SCALE);
 }
 
 void IntroCutscene::start(const IntroArt& art) {
@@ -154,13 +154,15 @@ bool IntroCutscene::update(bool pressed, float dt) {
 void IntroCutscene::drawTop(const IntroArt& art, const Font& caption) const {
     plat::beginScreen(plat::Screen::Top, palette::DARK); // (the camera's background)
     if (done() || alpha_ <= 0) return;
-    art.drawImage(slide_, plat::TOP_W / 2, plat::TOP_H / 2 - art.imageY(), alpha_);
+    const int half = art.slides()[slide_].h * IntroArt::IMAGE_SCALE / 2;
+    const int cy = std::clamp(plat::TOP_H / 2 - art.imageY() * IntroArt::IMAGE_SCALE, half, plat::TOP_H - half);
+    art.drawImage(slide_, plat::TOP_W / 2, cy, alpha_);
     // The caption: centered, the last line's descent on the box's bottom; typed in place (each line
     // laid out whole), a visible character at a time.
     const std::vector<IntroArt::Line>& lines = art.lines(slide_, caption);
     const uint32_t color = palette::withAlpha(palette::OFF_WHITE, (uint8_t)std::lround(alpha_ * 255));
     const int space = art.spaceWidth(caption);
-    const int last = plat::TOP_H - art.textBottom() - caption.def().descent;
+    const int last = plat::TOP_H - art.textBottom() - caption.def().descent + IntroArt::CAPTION_DOWN;
     int left = chars_;
     for (int i = 0; i < (int)lines.size() && left > 0; i++) {
         int x = (plat::TOP_W - lines[i].width) / 2;
