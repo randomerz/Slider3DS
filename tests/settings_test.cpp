@@ -128,8 +128,8 @@ TEST(pause_menu_buttons) {
     CHECK(menu.cursor() == Menu::AUTO_MOVE);
     menu.update(press(plat::BTN_A), s);
     CHECK(s.autoMove);
-    menu.update(press(plat::BTN_LEFT), s);
-    CHECK(!s.autoMove);
+    menu.update(press(plat::BTN_LEFT), s); // (toggles: only A flips them)
+    CHECK(s.autoMove);
     menu.update(press(plat::BTN_B), s); // back to Options, on General
     CHECK(menu.isOpen() && menu.page() == Menu::Page::Options && menu.cursor() == Menu::GENERAL);
     menu.update(press(plat::BTN_DOWN), s);
@@ -243,6 +243,11 @@ TEST(pause_menu_boxes_fit_and_dont_overlap) {
                 CHECK(prev.y + prev.h <= a.y);
             }
         }
+    // Back in one place on every page.
+    for (Menu::Item item : {Menu::OPTIONS_BACK, Menu::GENERAL_BACK, Menu::CHEATS_BACK}) {
+        const Menu::Box b = Menu::itemBox(item), sound = Menu::itemBox(Menu::SOUND_BACK);
+        CHECK(b.x == sound.x && b.y == sound.y && b.w == sound.w && b.h == sound.h);
+    }
     // Each option's control sits inside its row; a button's brackets (1 px past it) stay on screen.
     for (Menu::Item item : {Menu::OPTIONS_BACK, Menu::CHEATS_BACK}) {
         const Menu::Box b = Menu::itemBox(item);
@@ -264,7 +269,7 @@ TEST(pause_menu_cheats_page) {
     Menu menu;
     Settings s;
     Cheats cheats;
-    cheats.collectibles = {"A", "B", "C"};
+    cheats.collectibles = {{"A", 0}, {"B", 1}, {"C", 2}};
     openMenu(menu, s); // (no cheats: the title's)
     CHECK(tapItem(menu, s, Menu::OPTIONS) == Menu::Action::None && menu.page() == Menu::Page::Options);
     CHECK(tapItem(menu, s, Menu::CHEATS) == Menu::Action::None && menu.page() == Menu::Page::Options);
@@ -279,11 +284,11 @@ TEST(pause_menu_cheats_page) {
     CHECK(menu.cursor() == Menu::CHEATS_ENABLED);
     tapItem(menu, s, Menu::NOCLIP);
     tapItem(menu, s, Menu::RESPAWN);
-    menu.update(press(plat::BTN_RIGHT), s); // (Enable Cheats: a toggle, flipped by left / right)
-    CHECK(s.cheats && !cheats.noclip && !cheats.respawn && menu.cursor() == Menu::CHEATS_ENABLED);
-    menu.update(press(plat::BTN_RIGHT), s);
-    CHECK(!s.cheats);
+    menu.update(press(plat::BTN_RIGHT), s); // (Enable Cheats: a toggle, not flipped by left / right)
+    menu.update(press(plat::BTN_LEFT), s);
+    CHECK(!s.cheats && !cheats.noclip && !cheats.respawn && menu.cursor() == Menu::CHEATS_ENABLED && !menu.clicked());
     menu.update(press(plat::BTN_A), s);
+    CHECK(s.cheats);
 
     menu.update(press(plat::BTN_DOWN), s);
     CHECK(menu.cursor() == Menu::GIVE && menu.giveIndex() == 0);

@@ -7,7 +7,7 @@
 #include "platform/platform.h"
 
 struct DevControls {
-    int perfPage = 1; // SELECT: the perf overlay's page, cycling (0 off, then DevOverlay::Page + 1)
+    int perfPage = 0; // SELECT: the perf overlay's page, cycling (0 off, then DevOverlay::Page + 1)
 
     // On every screen (title, pause menu, game): SELECT cycles the overlay; L + SELECT (`inGame`)
     // toggles noclip.

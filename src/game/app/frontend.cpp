@@ -15,7 +15,7 @@
 
 Frontend::Frontend(const Area& area, const TitleArt& art, const EndArt& endArt, Settings& settings)
     : area_(area), art_(art), endArt_(endArt), settings_(settings), savedSettings_(settings), world_(area, settings) {
-    for (const CollectibleDef& c : area.collectibles) cheats_.collectibles.push_back(c.name);
+    cheats_.collectibles = cheats::giveList(area);
     toTitle();
 }
 
@@ -104,7 +104,7 @@ bool Frontend::update(const plat::Input& in, float moveX, float moveY) {
         }
         if (action == PauseMenu::Action::Resume && mode_ == Mode::Game) { // (CheckCheatsOnPauseClosed)
             if (settings_.cheats) // (turned off since: the marks are dropped)
-                for (int index : cheats_.toGive) cheats::giveCollectible(world_, index);
+                for (int entry : cheats_.toGive) cheats::giveCollectible(world_, cheats_.collectibles[entry].index);
             cheats_.toGive.clear();
         }
         if (action == PauseMenu::Action::Quit) { // (QuitHandler: save, then the main menu)

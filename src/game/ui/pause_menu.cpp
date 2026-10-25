@@ -43,9 +43,11 @@ constexpr int TITLE_Y = 20; // the title's middle
 // (compact, so a page of four options and Back fits under the title).
 constexpr int FIRST_TOP = 34;
 constexpr int BUTTON_W = 120, BUTTON_H = 18, BUTTON_SLOT = 24;
-// A page that would run off the screen at that spacing packs closer: buttons 3 px apart from 32.
-constexpr int COMPACT_TOP = 32, COMPACT_BUTTON_SLOT = 21;
+// A page that would run off the screen at that spacing packs closer: buttons 3 px apart from 30.
+constexpr int COMPACT_TOP = 30, COMPACT_BUTTON_SLOT = 21;
 constexpr int ROW_SLOT = 15;
+// Back is in one place on every page: where Sound's four rows put it (the lowest).
+constexpr int BACK_Y = FIRST_TOP + 4 * ROW_SLOT + (BUTTON_SLOT - BUTTON_H) / 2;
 // Option rows (GeneralOptionsPanel's: label at the left, control at the right, inset from the
 // row's ends): the slider at the right end, the toggle centered under it. Selected: a light label.
 constexpr int ROW_X = 10, ROW_W = UI_W - 2 * ROW_X, ROW_PAD = 4;
@@ -177,6 +179,7 @@ PauseMenu::Box uiBox(const PageDef& p, int index) {
     int top = p.compact ? COMPACT_TOP : FIRST_TOP;
     for (int i = 0; i < index; i++) top += slotHeight(p, p.items[i]);
     const ItemDef& def = p.items[index];
+    if (def.act == Act::Back) return {CENTER_X - BUTTON_W / 2, BACK_Y, BUTTON_W, BUTTON_H};
     const int cy = top + slotHeight(p, def) / 2;
     if (def.kind == Kind::Button) return {CENTER_X - BUTTON_W / 2, cy - BUTTON_H / 2, BUTTON_W, BUTTON_H};
     return {ROW_X, top, ROW_W, ROW_SLOT};
@@ -302,11 +305,8 @@ PauseMenu::Action PauseMenu::activate(const ItemDef& def, Settings& settings) {
     return Action::None;
 }
 
+// (toggles ignore it: only A or a tap flips them, the user's call)
 void PauseMenu::step(const ItemDef& def, int dir, Settings& settings) {
-    if (def.kind == Kind::Toggle) {
-        flip(def, settings);
-        clicked_ = true;
-    }
     if (def.kind == Kind::Slider) settings.*def.value = Settings::snap(settings.*def.value + dir / (float)Settings::STEPS);
     if (def.kind == Kind::Picker && !cheats_->collectibles.empty()) { // Increment / DecrementCollectiblesList: wrapping
         const int n = (int)cheats_->collectibles.size();
@@ -397,7 +397,7 @@ void PauseMenu::draw(const Settings& settings, const MenuSkin& skin) const {
             break;
         case Kind::Picker: {
             const bool any = cheats_ != nullptr && !cheats_->collectibles.empty();
-            const std::string& name = any ? cheats_->collectibles[give_] : NO_COLLECTIBLES;
+            const std::string& name = any ? cheats_->collectibles[give_].name : NO_COLLECTIBLES;
             const int left = b.x + ROW_PAD, right = PICKER_END_X;
             skin.drawLabel("<", left, cy, selected, on);
             skin.drawLabel(">", right - skin.textWidth(">"), cy, selected, on);

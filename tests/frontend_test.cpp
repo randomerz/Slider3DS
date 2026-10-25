@@ -350,8 +350,13 @@ TEST(frontend_cheats_page_respawns_gives_on_resume_and_noclips) {
     f.update(buttons(plat::BTN_A), 0, 0); // Enable Cheats
     f.update(buttons(plat::BTN_DOWN), 0, 0);
     CHECK(settings.cheats && f.pauseMenu().cursor() == PauseMenu::GIVE);
+    // The Sliders by number, then the rest by name.
+    std::string order;
+    for (const Cheats::Give& g : f.cheats().collectibles) order += g.name + ",";
+    check(order == "Slider 2,Slider 3,Slider 4,Slider 5,Slider 6,Slider 7,Slider 8,Slider 9,Artifact,Boating License,"
+                   "Breadge,Coffee,Map,", order);
     const int slider2 = villageArea().collectible("Slider 2");
-    while (f.pauseMenu().giveIndex() != slider2) f.update(buttons(plat::BTN_LEFT), 0, 0);
+    while (f.cheats().collectibles[f.pauseMenu().giveIndex()].index != slider2) f.update(buttons(plat::BTN_LEFT), 0, 0);
     f.update(buttons(plat::BTN_A), 0, 0); // marked
     f.update(buttons(plat::BTN_DOWN), 0, 0);
     f.update(buttons(plat::BTN_DOWN), 0, 0);

@@ -12,8 +12,8 @@
 // Frontend asks each frame, at the Settings' volumes.
 // Noclip (the Cheats page's) shows the position point the player moves by.
 // Dev builds (SLIDER_DEV=1: plain `make`, PC default; dev_controls.cpp) add, only while the Cheats
-// page's Enable Cheats is on: a perf overlay (game/dev/dev_overlay; SELECT cycles its pages: FRAME,
-// DRAW, off), L + SELECT in the game (toggle noclip), R on the title screen (boot the Village
+// page's Enable Cheats is on: a perf overlay (game/dev/dev_overlay; hidden until SELECT, which cycles
+// FRAME, DRAW, off), L + SELECT in the game (toggle noclip), R on the title screen (boot the Village
 // directly, outdoors on tile 1, on a temporary profile that is never written).
 #include <algorithm>
 #include <cmath>

@@ -602,7 +602,7 @@ TEST(render_pause_menu_goldens) {
     // In the game: Options with Cheats usable; the Cheats page grayed out, then enabled (Give's
     // second collectible marked, NoClip on, Respawn selected).
     Cheats cheats;
-    cheats.collectibles = {"Artifact", "Slider 3", "Boating License"};
+    cheats.collectibles = {{"Artifact", 0}, {"Slider 3", 1}, {"Boating License", 2}};
     menu.open(PauseMenu::Page::Paused, &cheats);
     menu.update(plat::Input{}, s);
     press(plat::BTN_DOWN);

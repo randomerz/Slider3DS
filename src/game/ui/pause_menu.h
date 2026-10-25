@@ -14,7 +14,7 @@
 // Laid out for the touch screen on MenuSkin's 2x grid, filling it (bigger than the original's).
 // D-pad up / down: pick an item, stopping at the page's ends and skipping grayed-out ones (a
 // button shows brackets at its ends, an option a light label)
-// A: use it   left / right: move the slider or flip the toggle   B: back a page (on Paused:
+// A: use it   left / right: move the slider (toggles only flip on A)   B: back a page (on Paused:
 // resume)   START: resume
 // Stylus: tap a button or the toggle's row (a button shows pressed while held), drag the slider
 // (only the slider: its label is just a label). Quit asks again, then saves and goes back to the
@@ -71,7 +71,7 @@ public:
     Page page() const { return page_; }
     Item cursor() const;
     bool confirmingQuit() const { return confirmQuit_; }
-    int giveIndex() const { return give_; } // the collectible Give shows
+    int giveIndex() const { return give_; } // the entry of Cheats::collectibles Give shows
 
     // An item's box: a button's, or an option's whole row (its label at the left).
     static Box itemBox(Item item);
