@@ -50,6 +50,9 @@ APP_TITLE	:=	Slider
 endif
 CIA_TITLE	:=	Slider
 APP_DESCRIPTION	:=	Slide chunks of the world to solve puzzles
+# The version (src/game/app/version.h's SLIDER_VERSION, major.minor.micro): the CIA's title version.
+APP_VERSION	:=	$(subst ",,$(word 3,$(shell grep define.SLIDER_VERSION src/game/app/version.h)))
+APP_VERSION_PARTS	:=	$(subst ., ,$(APP_VERSION))
 APP_AUTHOR	:=	boomo
 # Both builds' icon (made by tools/make_icon.py; unset, the release would look for slider3ds_release.png).
 ICON		:=	slider3ds.png
@@ -255,7 +258,8 @@ cia: all
 		-icon $(TARGET).smdh -banner $(BUILD)/banner.bnr -DAPP_TITLE="$(CIA_TITLE)" -DAPP_PRODUCT_CODE=$(CIA_PRODUCT) \
 		-DAPP_UNIQUE_ID=$(CIA_UNIQUE_ID) -DAPP_ROMFS=$(ROMFS) -DAPP_CATEGORY=Application -DAPP_USE_ON_SD=true \
 		-DAPP_ENCRYPTED=false -DAPP_MEMORY_TYPE=Application -DAPP_SYSTEM_MODE=64MB -DAPP_SYSTEM_MODE_EXT=Legacy \
-		-DAPP_CPU_SPEED=268MHz -DAPP_ENABLE_L2_CACHE=false -DAPP_VERSION_MAJOR=0
+		-DAPP_CPU_SPEED=268MHz -DAPP_ENABLE_L2_CACHE=false -DAPP_VERSION_MAJOR=0 \
+		-major $(word 1,$(APP_VERSION_PARTS)) -minor $(word 2,$(APP_VERSION_PARTS)) -micro $(word 3,$(APP_VERSION_PARTS))
 	@echo built ... $(CIA_NAME)
 
 #---------------------------------------------------------------------------------

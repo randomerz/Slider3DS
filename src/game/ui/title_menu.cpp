@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "game/app/version.h"
 #include "game/ui/palette.h"
 #include "game/world/cheats.h"
 
@@ -19,6 +20,9 @@ constexpr int UI_W = plat::BOTTOM_W / S;
 constexpr int CENTER_X = UI_W / 2;
 // Main: MainMenu Panel's column of buttons (the pause menu's size and spacing), centered.
 constexpr int BUTTON_W = 120, BUTTON_H = 18, BUTTON_SLOT = 24, MAIN_TOP = 12;
+// The version, in the bottom-right corner under Quit (a port addition).
+constexpr const char* VERSION_LABEL = "v" SLIDER_VERSION;
+constexpr int VERSION_INSET = 3, VERSION_Y = 113;
 // Saves: the title between the back (top-left) and trash (top-right) icons, the cards stacked
 // under it (the original's are side by side, too wide for the 2x grid), Confirm under them.
 constexpr int ICON_INSET = 2, TITLE_Y = 12;
@@ -316,8 +320,11 @@ void TitleMenu::draw(const MenuSkin& skin) const {
         const char* title = deleting_ ? "Delete file?" : "Select Save";
         skin.drawText(title, CENTER_X - skin.textWidth(title) / 2, TITLE_Y, palette::GRAY);
     }
-    if (page_ == Page::Main) // (Continue shows, grayed, even when it can't be used)
+    if (page_ == Page::Main) {
+        // (Continue shows, grayed, even when it can't be used)
         if (!usable(CONTINUE)) skin.drawButton(mainButton(0).x, mainButton(0).y, BUTTON_W, BUTTON_H, "Continue", false, false, 0, false);
+        skin.drawText(VERSION_LABEL, UI_W - VERSION_INSET - skin.textWidth(VERSION_LABEL), VERSION_Y, palette::DIM);
+    }
     if (page_ == Page::NewSave) {
         skin.drawFrame(MenuSkin::Frame::Light, FIELD_X, FIELD_Y, FIELD_W, FIELD_H);
         const int cy = FIELD_Y + FIELD_H / 2;
