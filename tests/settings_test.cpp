@@ -6,6 +6,7 @@
 
 #include "game/save/settings.h"
 #include "game/ui/pause_menu.h"
+#include "game/world/cheats.h"
 #include "test.h"
 #include "test_platform.h"
 
@@ -261,6 +262,19 @@ TEST(pause_menu_boxes_fit_and_dont_overlap) {
     CHECK(autoRow.contains(toggle.x, toggle.y) && autoRow.contains(toggle.x + toggle.w - 1, toggle.y + toggle.h - 1));
     // The toggle is centered under the slider (Label Toggle Pair: x 165 = the slider's middle).
     CHECK(toggle.x * 2 + toggle.w == slider.x * 2 + slider.w);
+}
+
+TEST(cheats_give_list_puts_the_sliders_first_by_number) {
+    // Then the rest by name, a "Slider <word>" among them; each keeps its Area index.
+    Area area;
+    for (const char* name : {"Map", "Slider 10", "Slider Shard", "Slider 2", "Artifact", "Slider 9x"}) {
+        CollectibleDef c;
+        c.name = name;
+        area.collectibles.push_back(c);
+    }
+    std::string order;
+    for (const Cheats::Give& g : cheats::giveList(area)) order += g.name + "@" + std::to_string(g.index) + ",";
+    check(order == "Slider 2@3,Slider 10@1,Artifact@4,Map@0,Slider 9x@5,Slider Shard@2,", order);
 }
 
 TEST(pause_menu_cheats_page) {

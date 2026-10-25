@@ -210,32 +210,44 @@ TEST(artifact_ui_auto_move) {
 
 TEST(artifact_ui_unexplored_tiles_flicker_until_stood_on) {
     // NewButtonFlicker: an active tile the player hasn't stood on blanks 3 times (0.25 s each, from
-    // 0.25 s after it turned active), again 10.25 s after it began; once explored, never again.
+    // 0.25 s after it turned active), again 10.25 s after it began, in World::frame; once explored,
+    // never again. Each tile on its own clock: tile 2, active later, isn't stopped by tile 1.
     Fixture f;
     f.world.tilesExplored.reset(villageArea(), f.world.state);
     SpriteSheets sheets;
     check(sheets.load(villageArea()), "sheets");
-    const SpriteDef& blank = villageArea().sprites[villageArea().artifact.blank];
-    auto blankNow = [&] {
+    const ArtifactDef& def = villageArea().artifact;
+    const SpriteDef& blank = villageArea().sprites[def.blank];
+    auto blankAt = [&](int island) { // its button's image this frame is the blank sprite
+        float cx, cy;
+        int bx, by;
+        f.artifact.findButton(island, bx, by);
+        f.ui.slotCenter(villageArea(), bx, by, cx, cy);
         testResetDrawCalls();
         f.ui.draw(f.world, sheets);
         for (const DrawCall& d : testDrawCalls())
-            if (d.sx == blank.x && d.sy == blank.y && d.sw == blank.w && d.sh == blank.h) return true;
+            if (d.sx == blank.x && d.sy == blank.y && d.sw == blank.w && d.sh == blank.h &&
+                std::fabs(d.x + d.w / 2 - cx) < 1 && std::fabs(d.y + d.h / 2 - cy) < 1)
+                return true;
         return false;
     };
-    std::string seen; // a sample every 0.25 s, between the steps
-    for (int frame = 0; frame < 44 * 15; frame++) {
-        f.frame(false);
-        if (frame % 15 == 7) seen += blankNow() ? 'B' : '.';
-    }
+    auto run = [&](int frames, int island) { // a sample every 0.25 s, between the steps
+        std::string seen;
+        for (int n = 0; n < frames; n++) {
+            f.world.tilesExplored.update(f.grid, 0, f.world.frame, f.world.state); // (World::update's)
+            if (n % 15 == 7) seen += blankAt(island) ? 'B' : '.';
+            f.world.frame++;
+        }
+        return seen;
+    };
+    std::string seen = run(44 * 15, 1);
     check(seen == ".B.B.B" + std::string(36, '.') + "B.", seen);
-    f.world.tilesExplored.update(1, f.world.state); // (the player on tile 1)
-    seen.clear();
-    for (int frame = 0; frame < 44 * 15; frame++) {
-        f.frame(false);
-        if (frame % 15 == 7) seen += blankNow() ? 'B' : '.';
-    }
-    check(seen == std::string(44, '.'), seen);
+    f.world.setTileActive(2, true); // turned active now: its own clock
+    f.world.tilesExplored.update(f.grid, 1, f.world.frame, f.world.state); // (the player on tile 1)
+    seen = run(8 * 15, 2);
+    check(seen == ".B.B.B..", "tile 2: " + seen);
+    seen = run(44 * 15, 1);
+    check(seen == std::string(44, '.'), "tile 1 explored: " + seen);
 }
 
 TEST(artifact_ui_before_init_does_nothing) {

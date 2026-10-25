@@ -26,6 +26,7 @@ bool g_audioAvailable = true;
 std::vector<int16_t> g_audio;
 bool g_audioThreadOn = false;
 double g_nowMs = 0;
+std::string g_failSheet;
 void (*g_audioService)(void*) = nullptr;
 void* g_audioUser = nullptr;
 int g_assetReadsToFail = 0;
@@ -46,6 +47,7 @@ const std::vector<int16_t>& testAudioQueued() { return g_audio; }
 void testSetAudioAvailable(bool available) { g_audioAvailable = available; }
 void testSetAudioThread(bool on) { g_audioThreadOn = on; }
 void testSetNowMs(double ms) { g_nowMs = ms; }
+void testFailSheet(const std::string& name) { g_failSheet = name; }
 void testRunAudioThread() {
     if (g_audioService) g_audioService(g_audioUser);
 }
@@ -117,7 +119,7 @@ bool removeUserFile(const char* name) {
     return true;
 }
 
-Texture* loadSheet(const char* name) { return new Texture{name}; }
+Texture* loadSheet(const char* name) { return !g_failSheet.empty() && g_failSheet == name ? nullptr : new Texture{name}; }
 void freeSheet(Texture* tex) { delete tex; }
 
 void beginFrame() {}

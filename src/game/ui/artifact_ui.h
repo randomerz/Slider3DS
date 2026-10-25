@@ -12,8 +12,8 @@
 //     and steps it to the slot beside (no wrap); X is a tap on that button. It stays on its slot as
 //     tiles move (Unity's SwapButtons / auto-move re-select the button now there); a touch hides it;
 //   - an active tile's button flickers blank until the player has stood on it (NewButtonFlicker,
-//     World::tilesExplored): from when it turns active (or the game starts), 3 times every 10.25 s
-//     (Unity's starts as the Artifact opens, always here; it stops as soon as the tile's explored).
+//     World::tilesExplored): 3 times every 10.25 s of World::frame from when it turns active (or the
+//     game starts; Unity's starts as the Artifact opens, always here), until the tile's explored.
 // Positions are UI pixels from the Area's ArtifactDef, drawn `scale`x around (centerX, centerY).
 // At 2x the outer frame runs off the 320x240 screen; the buttons and the area art fit.
 #pragma once
@@ -85,5 +85,4 @@ private:
     // Per islandId: last slot seen (to detect moves) and its nudge animation.
     std::vector<std::pair<int, int>> lastSlot_;
     std::vector<Nudge> nudges_;
-    std::vector<float> flicker_; // s since the tile turned active (or the game started), -1 = inactive
 };

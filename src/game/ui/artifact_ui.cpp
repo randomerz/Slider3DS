@@ -8,12 +8,12 @@ namespace {
 constexpr int DRAG_THRESHOLD = 3; // px of stylus travel before a press becomes a drag (Unity's drag threshold)
 constexpr int IMAGE_HALF = 16;    // button images are 32x32, centered on the slot
 
-// NewButtonFlicker at `t` s: 0.25 s, then 3 times blank 0.25 s / shown 0.25 s, then 8.5 s
-// (SECONDS_BETWEEN_REPEAT_NEW_FLICKER), over again.
-bool flickerBlank(float t) {
-    constexpr float STEP = 0.25f, FLICKERS = 3, CYCLE = STEP + FLICKERS * 2 * STEP + 8.5f;
-    const float u = std::fmod(t, CYCLE) - STEP;
-    return u >= 0 && u < FLICKERS * 2 * STEP && std::fmod(u, 2 * STEP) < STEP;
+// NewButtonFlicker `frames` in (the game steps a fixed 60 fps): 0.25 s, then 3 times blank 0.25 s /
+// shown 0.25 s, then 8.5 s (SECONDS_BETWEEN_REPEAT_NEW_FLICKER), over again.
+bool flickerBlank(int frames) {
+    constexpr int STEP = 15, FLICKERS = 3, CYCLE = STEP + FLICKERS * 2 * STEP + 510;
+    const int u = frames % CYCLE - STEP;
+    return u >= 0 && u < FLICKERS * 2 * STEP && u % (2 * STEP) < STEP;
 }
 }
 
@@ -29,7 +29,6 @@ void ArtifactUI::init(const Area& area, const Artifact& artifact) {
     for (const STileDef& s : area.stiles) maxId = std::max(maxId, s.islandId);
     lastSlot_.assign(maxId + 1, {-1, -1});
     nudges_.assign(maxId + 1, Nudge{});
-    flicker_.assign(maxId + 1, -1);
     for (const STileDef& s : area.stiles) artifact.findButton(s.islandId, lastSlot_[s.islandId].first, lastSlot_[s.islandId].second);
 }
 
@@ -212,8 +211,6 @@ void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
         }
         last = {bx, by};
         if (n.t < 1) n.t = std::min(1.0f, n.t + dt / area.artifact.nudgeDuration);
-        float& f = flicker_[s.islandId];
-        f = !grid.tileActive(s.islandId) ? -1 : f < 0 ? 0 : f + dt;
     }
 }
 
@@ -272,7 +269,9 @@ void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
         const bool hovered = bx == hoverX_ && by == hoverY_ && option;
 
         const bool complete = world.artifactButtons.complete(b.islandId) && b.completed >= 0;
-        const bool blank = active && !world.tilesExplored.explored(b.islandId) && flickerBlank(flicker_[b.islandId]);
+        const int since = world.tilesExplored.activeSince(b.islandId);
+        const bool blank = active && since >= 0 && !world.tilesExplored.explored(b.islandId) &&
+                           flickerBlank((int)world.frame - since);
         const int image = hovered ? def.hoverIcon : !active ? def.empty : blank ? def.blank : complete ? b.completed : b.island;
         drawPart(image, -IMAGE_HALF, -IMAGE_HALF, 2 * IMAGE_HALF, cx, cy + drop);
         if (active)

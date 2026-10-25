@@ -1,9 +1,11 @@
 // The new game's intro (game/ui/intro_cutscene): CutsceneManager's timeline per image, what a press
 // cuts short, and its assets.
+#include <algorithm>
 #include <cmath>
 #include <string>
 
 #include "game/ui/intro_cutscene.h"
+#include "game/ui/menu_skin.h"
 #include "test.h"
 #include "test_platform.h"
 
@@ -105,4 +107,32 @@ TEST(intro_cutscene_a_press_cuts_each_step_short) {
     CHECK(c.slide() == 0 && c.alpha() < 1);
     c.update(true, DT);
     CHECK(c.slide() == 1);
+}
+
+TEST(intro_captions_clear_their_images) {
+    // At 2x each caption, whole, starts below its image (its glyphs and their backings); the last
+    // image fills the screen, under its caption on purpose.
+    IntroArt art;
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error) && art.load(&error), "menu skin and intro art load " + error);
+    const std::string captionSheet = skin.captionFont().def().sheet;
+    IntroCutscene intro;
+    intro.start(art);
+    for (int s = 0; s < (int)art.slides().size(); s++) {
+        while (intro.slide() == s && intro.shownChars() < art.slides()[s].visible) intro.update(true, DT);
+        testResetDrawCalls();
+        intro.drawTop(art, skin.captionFont());
+        float imageBottom = 0, textTop = (float)plat::TOP_H;
+        for (const DrawCall& d : testDrawCalls()) {
+            if (d.sheet == captionSheet) textTop = std::min(textTop, d.y);
+            else if (!d.sheet.empty()) imageBottom = d.y + d.h;
+        }
+        if (art.slides()[s].h * IntroArt::IMAGE_SCALE < plat::TOP_H)
+            check(imageBottom > 0 && textTop >= imageBottom,
+                  "slide " + std::to_string(s) + ": text from " + std::to_string(textTop) + ", image to " +
+                      std::to_string(imageBottom));
+        while (intro.slide() == s) intro.update(true, DT);
+    }
+    CHECK(intro.done());
 }
