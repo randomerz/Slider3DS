@@ -67,7 +67,8 @@ uint64_t fnv1a(const std::string& s) {
 
 // A golden file of draw-list hashes (tests/golden/<file>): compare() checks the draw calls
 // recorded since the last testResetDrawCalls() against the named entry; with
-// SLIDER3DS_UPDATE_GOLDENS set, the file is rewritten instead when the set is destroyed.
+// SLIDER3DS_UPDATE_GOLDENS set, the file is rewritten instead when the set is destroyed; with
+// SLIDER3DS_DUMP_DRAWLISTS set, every list is written to test-out (tools/make_banner.py renders one).
 class GoldenSet {
 public:
     explicit GoldenSet(const std::string& file) : path_(std::string(TESTS_DIR) + "/golden/" + file) {
@@ -102,9 +103,10 @@ public:
         check(calls.size() >= minDraws, name + " draws something (" + std::to_string(calls.size()) + ")");
         if (update_) return;
         auto it = goldens_.find(name);
-        if (it != goldens_.end() && it->second == value) return;
-        std::string out = std::string(TEST_OUT_DIR) + "/" + name + ".txt";
-        std::ofstream(out) << text;
+        const std::string out = std::string(TEST_OUT_DIR) + "/" + name + ".txt";
+        const bool matches = it != goldens_.end() && it->second == value;
+        if (!matches || std::getenv("SLIDER3DS_DUMP_DRAWLISTS")) std::ofstream(out) << text;
+        if (matches) return;
         check(false, name + ": draw list " + value + " != golden " +
                          (it == goldens_.end() ? "(missing)" : it->second) + "; actual list in " + out);
     }

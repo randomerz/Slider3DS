@@ -27,9 +27,17 @@ def main():
     ap.add_argument("--scale", type=int, default=3)
     args = ap.parse_args()
     w, h = (int(v) for v in args.size.split("x"))
-    canvas = Image.new("RGBA", (w, h), (255, 0, 255, 255))
+    canvas = render(args.drawlist, w, h)
+    out = args.out or os.path.splitext(args.drawlist)[0] + ".png"
+    canvas.resize((w * args.scale, h * args.scale), Image.NEAREST).save(out)
+    print(out)
+
+
+def render(drawlist, w, h, background=(255, 0, 255, 255)):
+    """The draw list at 1x on a w x h canvas (magenta where nothing is drawn, by default)."""
+    canvas = Image.new("RGBA", (w, h), background)
     sheets = {}
-    with open(args.drawlist) as f:
+    with open(drawlist) as f:
         for line in f:
             parts = line.split()
             if len(parts) == 7:  # rect: empty sheet name
@@ -96,9 +104,7 @@ def main():
             layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
             layer.paste(img, (px, py))
             canvas.alpha_composite(layer)
-    out = args.out or os.path.splitext(args.drawlist)[0] + ".png"
-    canvas.resize((w * args.scale, h * args.scale), Image.NEAREST).save(out)
-    print(out)
+    return canvas
 
 
 if __name__ == "__main__":
