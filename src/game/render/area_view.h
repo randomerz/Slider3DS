@@ -74,6 +74,9 @@ private:
     void drawSprite(const Area& area, const SortedSprite& sp); // if on screen
     void drawDialogue(const World& world, int npc);
     void drawWorldText(const World& world, int i); // texts_[i]
+    // The screen position, in whole pixels, of a text box (bottom-left) at (minX, minY) from the world
+    // base (bx, by).
+    void textOrigin(float bx, float by, float minX, float minY, float& sx, float& sy) const;
     // `text` laid out as `glyphs` in a box whose bottom-left is at screen (sx, sy): every backing,
     // then the letters; `typer` (null = all shown, still) reveals and waves them.
     void drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace>& glyphs, float sx, float sy,

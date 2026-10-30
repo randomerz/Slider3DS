@@ -308,7 +308,7 @@ void AreaView::drawDialogue(const World& world, int npc) {
     }
     float bx, by, sx, sy;
     world.objectBase(n.object, bx, by);
-    worldToScreen(bx + n.text.minX, by + n.text.minY, sx, sy); // the box's bottom-left
+    textOrigin(bx, by, n.text.minX, n.text.minY, sx, sy); // the box's bottom-left
     drawGlyphs(text, layout.glyphs, sx, sy, &typer);
 }
 
@@ -324,8 +324,17 @@ void AreaView::drawWorldText(const World& world, int i) {
     }
     float bx, by, sx, sy;
     world.objectBase(t.object, bx, by);
-    worldToScreen(bx + t.box->minX, by + t.box->minY, sx, sy);
+    textOrigin(bx, by, t.box->minX, t.box->minY, sx, sy);
     drawGlyphs(layout.parsed, layout.glyphs, sx, sy, nullptr);
+}
+
+void AreaView::textOrigin(float bx, float by, float minX, float minY, float& sx, float& sy) const {
+    // Whole pixels: the base rounded as its sprites are (their pivots are whole pixels), plus the
+    // box's offset rounded. Each letter then lands the same pixels from it however the base moves
+    // between pixels (a walking NPC, a sliding tile), and the text keeps with the sprite.
+    worldToScreen(bx, by, sx, sy);
+    sx = std::round(sx) + std::round(minX * ppu_);
+    sy = std::round(sy) - std::round(minY * ppu_);
 }
 
 void AreaView::drawGlyphs(const DialogueText& text, const std::vector<GlyphPlace>& glyphs, float sx, float sy,

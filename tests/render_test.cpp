@@ -836,6 +836,32 @@ TEST(render_npc_dialogue_goldens) {
     for (int i = 0; i < 600 && world.npcs.typer(npc).typing(); i++) world.update(1.0f / 60.0f, 0, 0, false);
     world.update(1.0f / 60.0f, 0, 0, false);
     shoot("exploresse_typed");
+
+    // Moving between pixels (as a walk moves her: 1/64 unit steps, off exact half pixels, where her
+    // sprite and the box round the same position reached two ways; the camera snaps to whole
+    // pixels), the letters keep their place from her sprite: the box lands on whole pixels from her base.
+    std::string herSheet;
+    for (const WorldSprite& ws : area.worldSprites)
+        if (ws.object == n.sprite && ws.place.sprite >= 0) herSheet = area.sheetNames[area.sprites[ws.place.sprite].sheet];
+    check(!herSheet.empty(), "her sprite's sheet");
+    const int owner = world.objects.owner(n.object);
+    std::vector<std::pair<int, int>> first; // each letter from her sprite, at the first step
+    bool steady = true;
+    for (int k = 0; k < 64; k++) {
+        world.placeObject(n.object, owner, nx + (k + 0.3f) / 64, ny + (k + 0.3f) / 128);
+        testResetDrawCalls();
+        view.begin(area, sheets, nx, ny + 1, plat::TOP_W, plat::TOP_H, 0, false);
+        view.draw(world);
+        int herX = 0, herY = 0, hers = 0;
+        for (const DrawCall& c : testDrawCalls())
+            if (c.sheet == herSheet) herX = (int)c.x, herY = (int)c.y, hers++;
+        std::vector<std::pair<int, int>> letters;
+        for (const DrawCall& c : testDrawCalls())
+            if (c.sheet.find("font") != std::string::npos) letters.push_back({(int)c.x - herX, (int)c.y - herY});
+        if (k == 0) first = letters;
+        steady = steady && hers == 1 && !letters.empty() && letters == first;
+    }
+    check(steady, "the text holds its pixels from her as she moves between them");
 }
 
 TEST(render_cat_count_golden) {
