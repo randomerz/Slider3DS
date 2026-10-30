@@ -23,14 +23,15 @@ Slider3DSTitleExporter: the layout), cut from TITLE_TEXTURES:
   assets/sheets/ui_title.png  the sheet (.fmt by its colors)
   assets/ui/title_sheet.json  {"sheet", "sprites": {name: {"rect", "pivot": [x, y] (px from the bottom-left)}}}
 
-The ending's top screen (game/ui/end_screen): the demo's EndOfDemo.unity canvas baked into one image, in
-its draw order — Background, the title outlined, DarkPanel, the text outlined — with TextMeshPro's layout
-worked out here (END_TEXTS; the last text line is the port's). The background is the original's
-end_cutscene_parallax_0 (320x180), or tools/ui_art/end_canvas.png if it's there: the art extended to fill
-the 3DS's 400x240 top screen (the user's to draw); the texts and the panel keep the original's anchors
-(the title from the middle, the text and the panel from the bottom) at 1x: the user's rule (Unity's
-own scaler, Scale With Screen Size at 320x180, would scale the canvas 1.25x instead). Baked with Pillow 12.2.0's FreeType: after changing the text or Pillow, look at the result
-(the render golden hashes one sprite, not the text).
+The ending's top screen (game/ui/end_screen): the demo's EndOfDemo.unity texts baked into one image over
+the user's end art, tools/end_ui/end_cutscene_full.png (the original's end_cutscene art extended to the
+3DS's 400x240 top screen; end_cutscene_sliced.png beside it is the same art in its parallax layers, for the
+full game's EndOfGame), each text outlined, with TextMeshPro's line layout worked out here (END_TEXTS; the
+last text line is the port's). No DarkPanel (the user's call): the texts sit where the art leaves room —
+the title in the dark sky between the rocket and the cat, the text along the bottom over the clouds — at
+1x (the user's rule: Unity's own scaler would scale the canvas 1.25x). Baked with Pillow 12.2.0's
+FreeType: after changing the text, its place or Pillow, look at the result (preview/end_screen.png; the
+render golden hashes one sprite, not the text).
   assets/sheets/ui_end.png    the sheet (.fmt by its colors)
   assets/ui/end.json          {"sheet", "sprites": {"art": {"rect"}}}
 
@@ -167,17 +168,18 @@ DARK = (26, 26, 26, 255)      # their outline copies' 0.102
 # centered in (px from the canvas's (middle, bottom) anchor: x right, y up; VerticalAlignment Middle),
 # the font asset's face info (pointSize, lineHeight, ascent, descent) for TMP's line layout, lineSpacing,
 # and the box's top margin (m_margin.y: Middle alignment moves down by half of it).
-# Title Text: (-45, 55) from the middle. The original's is PixelTitanOne at 20 (wrapped by its 200 px box
-# to "Thanks for" / "playing Slider!"); here at 16, the font's own pixel size (64/1024 em: at 20 a font
-# pixel is 1.25 px, lumpy at 1x), keeping the original's two lines.
-# Text: anchored to the bottom, 42.5 px up; "Please wishlist Slider on Steam!" -> the port's line.
+# Title Text: the original's PixelTitanOne at 20 (wrapped by its 200 px box to "Thanks for" / "playing
+# Slider!"); here at 16, the font's own pixel size (64/1024 em: at 20 a font pixel is 1.25 px, lumpy at
+# 1x), on the original's two lines, in the sky above the planet: centered 20 px left of the middle
+# (between the rocket and the cat), 24 px from the top.
+# Text: the original's first line and the port's last ("Please wishlist Slider on Steam!" -> "More areas
+# coming soon"), without the blank line between them, centered 18 px above the bottom.
 END_TEXTS = [
-    ("PixelTitanOne.ttf", 16, ["Thanks for", "playing Slider!"], ("middle", -45, 55), (151, 155.1289, 113.25, -28.3125), 0, 0),
-    ("PixelTitanZero.ttf", 16, ["This is the end of the demo.", "", "More areas coming soon"], ("bottom", 0, 42.5),
-     (172, 176.70312, 129, -32.25), -15, 1.0913),
+    ("PixelTitanOne.ttf", 16, ["Thanks for", "playing Slider!"], ("middle", -20, 96), (151, 155.1289, 113.25, -28.3125), 0, 0),
+    ("PixelTitanZero.ttf", 16, ["This is the end of the demo.", "More areas coming soon"], ("bottom", 0, 18),
+     (172, 176.70312, 129, -32.25), -15, 0),
 ]
-END_PANEL = (60, 0.392)  # DarkPanel: the bottom 60 px, full width, black at 0.392
-END_CANVAS = os.path.join(ART, "end_canvas.png")
+END_CANVAS = os.path.join(REPO, "tools", "end_ui", "end_cutscene_full.png")
 
 
 def half_up(v):
@@ -209,18 +211,13 @@ def draw_tmp_text(img, ttf, size, lines, anchor, face, line_spacing, margin_top)
 
 
 def end():
-    if os.path.exists(END_CANVAS):
-        img = Image.open(END_CANVAS).convert("RGBA")
-        if img.width < 320 or img.height < 180 or img.width > 400 or img.height > 240:
-            sys.exit(f"{END_CANVAS}: {img.width}x{img.height}; between 320x180 (the original's) and 400x240 (the screen)")
-    else:
-        img, _ = unity_sprite("Sprites/UI/end_cutscene/end_cutscene_parallax.png", "end_cutscene_parallax_0")
-    title, text = END_TEXTS
-    draw_tmp_text(img, *title)
-    panel_h, alpha = END_PANEL
-    panel = Image.new("RGBA", (img.width, panel_h), (0, 0, 0, round(alpha * 255)))
-    img.alpha_composite(panel, (0, img.height - panel_h))
-    draw_tmp_text(img, *text)
+    img = Image.open(END_CANVAS).convert("RGBA")
+    if img.size != (400, 240):
+        sys.exit(f"{END_CANVAS}: {img.width}x{img.height}; the top screen's 400x240 (the texts' places are picked on it)")
+    for t in END_TEXTS:
+        draw_tmp_text(img, *t)
+    os.makedirs(os.path.join(REPO, "preview"), exist_ok=True)
+    img.resize((img.width * 2, img.height * 2), Image.NEAREST).save(os.path.join(REPO, "preview", "end_screen.png"))
     sheet, placed = pack({"art": img}, 512)
     write_sheet(sheet, "ui_end")
     write_json(os.path.join(REPO, "assets", "ui", "end.json"), "ui_end",
