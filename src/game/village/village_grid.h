@@ -1,8 +1,8 @@
 // VillageGrid (the Village's SGrid): the methods its UnityEvent calls and spec conditions use.
 // The knot box is in game/village/knot_box, the ruins arrow in game/village/ruins_arrow, Chad in
 // game/village/chad_jump, FillInHole / ShufflePuzzle and the final 8-puzzle in game/village/final_puzzle.
-// The intro cutscene is game/village/village_intro, the cats game/village/cat_trick. Not yet: trackers,
-// particles and sounds.
+// The intro cutscene is game/village/village_intro, the cats game/village/cat_trick, the fish
+// game/village/village_fish.
 #pragma once
 
 #include <string>
@@ -25,7 +25,7 @@ constexpr const char* FINAL_SLIDER = "Slider 9"; // PlaceTile9 hands it out: the
 // (SpawnCollectable: its object turns on) unless it's already in the inventory. `clearDisableAtStart`
 // (ActivateCollectible) also stops its Start from hiding it later.
 void activateCollectible(World& world, const std::string& name, bool clearDisableAtStart);
-// TurnFishOn: the fish come back (Pierre's CheckFishOn spec).
+// TurnFishOn: the fish come back (game/village/village_fish; Pierre's CheckFishOn spec).
 void turnFishOn(World& world);
 // Explode: the cave door opens (entrance on, rocks off) for good.
 void explode(World& world);

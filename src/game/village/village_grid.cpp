@@ -23,9 +23,7 @@ void activateCollectible(World& world, const std::string& name, bool clearDisabl
     }
 }
 
-void turnFishOn(World& world) {
-    world.state.setFlag(FISH_ON_FLAG, true); // (and fish particles)
-}
+void turnFishOn(World& world) { world.fish.turnOn(world); }
 
 void explode(World& world) {
     const Area& area = world.area;

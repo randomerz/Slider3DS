@@ -42,7 +42,8 @@ public:
     void typeCurrent(World& world, int npc);  // NPC.TypeCurrentDialogue
     // DialogueDisplay.Activate / DeactivateMessagePing (SetMessagePing): its ping object on or off.
     void setPing(World& world, int npc, bool shown);
-    // NPC.Teleport: onto `target` (an object), parented to it; nothing if it's already there.
+    // NPC.Teleport: onto `target` (an object), parented to it, with a SmokePoof at each end; nothing
+    // if it's already there.
     void teleport(World& world, int npc, int target);
     bool showsPrompt(const Area& area, int npc) const; // DisplayInteractionPrompt
     // NPCDialogueContext.dialogueEnabledAllNPC (on again after a scene load). One owner at a time

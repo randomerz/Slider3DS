@@ -1069,6 +1069,7 @@ TEST(render_smoke_golden) {
     float x, y;
     world.objectPosition(area.areaGrid.caveDoorEntrance, x, y);
     world.placeNear(x, y - 3);
+    for (int f = 0; f < 240; f++) world.particles.update(world, 1.0f / 60); // (Romeo's poofs from the scene start play out)
     village::explode(world);
     auto shoot = [&](const char* name) {
         float cx, cy;
@@ -1085,6 +1086,35 @@ TEST(render_smoke_golden) {
     shoot("smoke_early");
     for (int i = 0; i < 72; i++) world.update(1.0f / 60.0f, 0, 0, false);
     shoot("smoke_late");
+}
+
+TEST(render_fish_golden) {
+    // The salmon gone (TurnFishOn): the two special fish by the beach mid-leap, 4 x 8 frames turned
+    // their way (nose first, counter-clockwise as Unity's mesh), and the river's fish on STile 7.
+    const Area& area = villageArea();
+    SpriteSheets sheets;
+    AreaView view;
+    check(sheets.load(area), "sheets load");
+    GoldenSet goldens("fish.txt");
+    World world(area, DEFAULT_SETTINGS);
+    world.setTileActive(7, true);
+    const int special = area.areaGrid.specialFish.at(0);
+    float x, y;
+    world.objectPosition(area.particles[special].object, x, y);
+    world.placeNear(x - 1, y - 2);
+    village::turnFishOn(world);
+    // 2.85 s: the first's fish (out 0.25 s after it plays, at 2 s) 0.6 s into its leap, the second's
+    // (2.5 s + 0.25) 0.1 s.
+    for (int i = 0; i < 171; i++) world.update(1.0f / 60.0f, 0, 0, false);
+    float cx, cy;
+    world.camera(cx, cy);
+    testResetDrawCalls();
+    view.begin(area, sheets, cx, cy, plat::TOP_W, plat::TOP_H, 0, false);
+    view.draw(world);
+    int fish = 0;
+    for (const DrawCall& c : testDrawCalls()) fish += c.tint != 0 && c.sw == 4 && c.sh == 8;
+    check(fish >= 2, "the special fish drawn: " + std::to_string(fish));
+    goldens.compare("fish_leaping", 2);
 }
 
 TEST(render_tree_sway_golden) {

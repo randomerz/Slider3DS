@@ -37,6 +37,7 @@
 #include "game/village/final_puzzle.h"
 #include "game/village/ruins_arrow.h"
 #include "game/village/cat_abduction.h"
+#include "game/village/village_fish.h"
 #include "game/village/village_intro.h"
 
 struct SaveProfile;
@@ -208,6 +209,7 @@ public:
     village::FinalPuzzle finale; // the fragment in the hole, the shuffle, the final 8-puzzle (Village)
     village::VillageIntro intro; // the first house exit's cutscene (Village)
     village::CatAbduction abduction; // the cat floating off to the beach after the intro (Village)
+    village::VillageFish fish;       // the fish back in the river after the salmon leaves (Village)
     CameraDollies dollies;       // cutscene cameras on a path
     GameState state;
     Player player;

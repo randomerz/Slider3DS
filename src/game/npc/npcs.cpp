@@ -138,7 +138,11 @@ void Npcs::teleport(World& world, int npc, int target) {
     float ax, ay, bx, by;
     world.objectPosition(object, ax, ay);
     world.objectPosition(target, bx, by);
-    if (std::fabs(ax - bx) > 1e-4f || std::fabs(ay - by) > 1e-4f) world.objects.moveOnto(world.area, object, target);
+    if (std::fabs(ax - bx) < 1e-4f && std::fabs(ay - by) < 1e-4f) return;
+    // A SmokePoof where it was and one where it lands, both under the target.
+    world.particles.spawnPrefab(world, ParticleType::SmokePoof, ax, ay, target);
+    world.particles.spawnPrefab(world, ParticleType::SmokePoof, bx, by, target);
+    world.objects.moveOnto(world.area, object, target);
 }
 
 void Npcs::poll(World& world, int npc) {

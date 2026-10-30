@@ -2,7 +2,8 @@
 // bursts, motion slowed by limit-velocity, the fade, Play while playing, stopping with the object),
 // the ruins' looping sparkles (rate, force, Stop), play on awake, spawned copies and random colors;
 // ParticleManager's prefabs (SmokePoof: a texture sheet, local space; MiniSparkle) and where the
-// Village spawns them.
+// Village spawns them; the fish (a sprite sheet, an arc, orbital motion, a start delay, burst
+// probability) against Unity's measurements (Slider3DSSceneSurvey.SurveyFishMotionBatch).
 #include <cmath>
 #include <string>
 
@@ -46,17 +47,21 @@ TEST(particles_sparkle_export) {
 }
 
 TEST(particles_play_on_awake_export) {
-    // Every collectible's sparkles play on awake (looping, a steady rate, drifting up); systems the
-    // port can't show (smoke, fish, waves: texture sheets) are left out.
+    // Every collectible's sparkles play on awake (looping, a steady rate, drifting up), and the
+    // river's 44 fish (under ParticleSpawner's inactive spawners); systems the port can't show
+    // (chimney smoke: emission over distance, noise; waves: their shape) are left out.
     const Area& area = villageArea();
     const int s3 = particlesOn(area, "Slider 3 Collectible/Slider Sprite/SparklesConstant Variant");
     CHECK(s3 >= 0);
     const ParticlesDef& d = area.particles[s3];
     CHECK(d.playOnAwake && d.loop && d.rateMin == 2 && d.rateMax == 3 && d.forceY == 1 && d.bursts.empty());
-    CHECK(particlesOn(area, "SmokeChimney") < 0 && particlesOn(area, "FishParticle") < 0);
-    int onAwake = 0;
-    for (const ParticlesDef& p : area.particles) onAwake += p.playOnAwake;
-    CHECK(onAwake == 15);
+    CHECK(particlesOn(area, "SmokeChimney") < 0 && particlesOn(area, "FishParticles/FishParticle") >= 0);
+    int onAwake = 0, fish = 0;
+    for (const ParticlesDef& p : area.particles) {
+        onAwake += p.playOnAwake;
+        fish += p.object >= 0 && area.pathOf(p.object).find("/FishParticles/FishParticle") != std::string::npos;
+    }
+    CHECK(onAwake == 60 && fish == 44);
 }
 
 TEST(particles_burst_fly_out_slow_down_and_fade) {
@@ -340,12 +345,13 @@ namespace {
 
 int prefab(ParticleType t) { return villageArea().particlePrefabs[(int)t]; }
 
-// Live particles of Area::particles[def] and their mean position.
-int meanOf(const World& world, int def, float& x, float& y) {
+// Live particles of Area::particles[def] under `object` (a spawned prefab's parent; the scene
+// start's SmokePoofs, Romeo's NPC.Teleport, are under other objects) and their mean position.
+int meanOf(const World& world, int def, int object, float& x, float& y) {
     int n = 0;
     x = y = 0;
     for (const Particles::Particle& p : world.particles.particles())
-        if (p.defIndex == def) n++, x += p.x, y += p.y;
+        if (p.defIndex == def && p.object == object) n++, x += p.x, y += p.y;
     if (n) x /= n, y /= n;
     return n;
 }
@@ -361,7 +367,7 @@ TEST(particles_prefabs_export) {
     if (smoke < 0 || sparkle < 0) return;
     const ParticlesDef& s = area.particles[smoke];
     CHECK(s.object == -1 && !s.playOnAwake && s.localSpace && s.size == 0.5f && s.colors[0] == 0xe6e6e6ffu);
-    CHECK(s.frames.size() == 25 && s.tilesX == 5 && s.rotationMax > 6.28f && s.spinMin < 0 && s.spinMax > 0);
+    CHECK(s.frames.size() == 25 && s.tilesX == 5 && s.rotationMin < -6.28f && s.spinMin < 0 && s.spinMax > 0);
     CHECK(area.sprites[s.frames[0]].w == 8 && area.sprites[s.frames[0]].h == 8);
     CHECK(s.bursts.size() == 1 && s.bursts[0].cycles == 3 && s.bursts[0].countMax == 2);
     const ParticlesDef& m = area.particles[sparkle];
@@ -382,10 +388,10 @@ TEST(particles_smoke_plays_its_row_and_follows_its_parent) {
     const float dt = 1.0f / 60;
     for (int f = 0; f < 10; f++) world.particles.update(world, dt);
     float x, y;
-    CHECK(meanOf(world, smoke, x, y) == 6);
+    CHECK(meanOf(world, smoke, door, x, y) == 6);
     const ParticlesDef& s = area.particles[smoke];
     for (const Particles::Particle& p : world.particles.particles())
-        if (p.defIndex == smoke) {
+        if (p.defIndex == smoke && p.object == door) {
             const int frame = Particles::frameSprite(p);
             CHECK(frame == s.frames[p.row * 5] || frame == s.frames[p.row * 5 + 1]); // (early on)
         }
@@ -393,14 +399,14 @@ TEST(particles_smoke_plays_its_row_and_follows_its_parent) {
     world.placeObject(door, world.objects.owner(door), dx + 3, dy);
     world.particles.update(world, dt);
     float x2, y2;
-    meanOf(world, smoke, x2, y2);
+    meanOf(world, smoke, door, x2, y2);
     check(std::fabs(x2 - x - 3) < 0.05f, "carried 3 right: " + std::to_string(x2 - x));
     // Late in their lives (from 95% on, whichever curve): the rows' last frames.
     int late = 0;
     for (int f = 0; f < 160; f++) {
         world.particles.update(world, dt);
         for (const Particles::Particle& p : world.particles.particles())
-            if (p.defIndex == smoke && p.age >= p.lifetime * 0.95f) {
+            if (p.defIndex == smoke && p.object == door && p.age >= p.lifetime * 0.95f) {
                 late++;
                 CHECK(Particles::frameSprite(p) == s.frames[p.row * 5 + 4]);
             }
@@ -408,7 +414,7 @@ TEST(particles_smoke_plays_its_row_and_follows_its_parent) {
     CHECK(late >= 6); // (every particle passed through it)
     world.objects.setActive(area, door, false);
     world.particles.update(world, dt);
-    CHECK(meanOf(world, smoke, x, y) == 0);
+    CHECK(meanOf(world, smoke, door, x, y) == 0);
 }
 
 TEST(particles_village_spawns_smoke_and_sparkles) {
@@ -421,8 +427,9 @@ TEST(particles_village_spawns_smoke_and_sparkles) {
     const float dt = 1.0f / 60;
     for (int f = 0; f < 10; f++) world.particles.update(world, dt);
     float x, y, ex, ey;
-    world.objectPosition(area.areaGrid.caveDoorEntrance, ex, ey);
-    CHECK(meanOf(world, smoke, x, y) == 30);
+    const int door = area.areaGrid.caveDoorEntrance;
+    world.objectPosition(door, ex, ey);
+    CHECK(meanOf(world, smoke, door, x, y) == 30);
     CHECK(std::fabs(x - ex) < 2.5f && std::fabs(y - ey) < 2.5f);
 
     World w2(area, DEFAULT_SETTINGS);
@@ -435,10 +442,11 @@ TEST(particles_village_spawns_smoke_and_sparkles) {
     for (int f = 0; f < 10; f++) w2.particles.update(w2, dt);
     float sx, sy;
     w2.objectPosition(area.collectibles[slider].object, sx, sy);
-    CHECK(meanOf(w2, smoke, x, y) == 6 && std::fabs(x - sx) < 1 && std::fabs(y - sy) < 1);
+    const int object = area.collectibles[slider].object;
+    CHECK(meanOf(w2, smoke, object, x, y) == 6 && std::fabs(x - sx) < 1 && std::fabs(y - sy) < 1);
     village::activateCollectible(w2, "Slider 4", true); // (already out: no more smoke)
     w2.particles.update(w2, dt);
-    CHECK(meanOf(w2, smoke, x, y) == 6);
+    CHECK(meanOf(w2, smoke, object, x, y) == 6);
 }
 
 TEST(particles_smoke_frames_blend_its_two_curves) {
@@ -471,14 +479,156 @@ TEST(particles_prefab_bursts_truncate_and_wait_for_their_parent) {
     world.particles.spawnPrefab(world, ParticleType::MiniSparkle, 0, 0, -1);
     for (int f = 0; f < 10; f++) world.particles.update(world, dt);
     float x, y;
-    CHECK(meanOf(world, prefab(ParticleType::MiniSparkle), x, y) == 4);
+    CHECK(meanOf(world, prefab(ParticleType::MiniSparkle), -1, x, y) == 4);
     const int door = area.areaGrid.caveDoorEntrance;
     CHECK(!world.objects.activeInHierarchy(door));
     world.objectPosition(door, x, y);
     world.particles.spawnPrefab(world, ParticleType::SmokePoof, x, y, door);
     for (int f = 0; f < 10; f++) world.particles.update(world, dt);
-    CHECK(meanOf(world, prefab(ParticleType::SmokePoof), x, y) == 0);
+    CHECK(meanOf(world, prefab(ParticleType::SmokePoof), door, x, y) == 0);
     world.objects.setActive(area, door, true);
     for (int f = 0; f < 10; f++) world.particles.update(world, dt);
-    CHECK(meanOf(world, prefab(ParticleType::SmokePoof), x, y) == 6);
+    CHECK(meanOf(world, prefab(ParticleType::SmokePoof), door, x, y) == 6);
+}
+
+namespace {
+
+// The special fish VillageGrid plays (TurnFishOn), and a river fish (Area::particles indices).
+int specialFish() { return villageArea().areaGrid.specialFish.at(0); }
+int riverFish() { return particlesOn(villageArea(), "STile (7)/All Tile Maps/Tile Maps/Decorations/FishParticles/FishParticle"); }
+
+// Unity's step (measured: Slider3DSSceneSurvey.SurveyFishMotionBatch): the position turns `orbital`
+// rad/s about the system, then the velocity moves it. Relative to the system, from (x, y).
+void unityFishStep(float& x, float& y, float vx, float vy, float orbital, float dt) {
+    const float c = std::cos(orbital * dt), s = std::sin(orbital * dt);
+    const float rx = c * x - s * y, ry = s * x + c * y;
+    x = rx + vx * dt;
+    y = ry + vy * dt;
+}
+
+} // namespace
+
+TEST(particles_fish_export) {
+    // A river fish: every 1 s loop a burst of 1 at probability 0.1, after a 0-1 s start delay; leaving
+    // the circle's 145-160 degrees at 2.5 units/s, circling 1 rad/s, turned 45 degrees (counter-clockwise:
+    // Unity's -45) and turning 85 degrees/s; three 4 x 8 frames (minifish), local space. The special
+    // fish: one play, 4 a second over 0.4 s.
+    const Area& area = villageArea();
+    CHECK(riverFish() >= 0 && specialFish() >= 0);
+    if (riverFish() < 0 || specialFish() < 0) return;
+    const ParticlesDef& f = area.particles[riverFish()];
+    CHECK(f.playOnAwake && f.loop && f.duration == 1 && f.localSpace && f.delayMin == 0 && f.delayMax == 1);
+    CHECK(f.bursts.size() == 1 && f.bursts[0].countMax == 1 && std::fabs(f.bursts[0].probability - 0.1f) < 1e-6f);
+    CHECK(std::fabs(f.arcStart - 2.5307f) < 1e-3f && std::fabs(f.arcLength - 0.2618f) < 1e-3f && f.shapeRadius == 0.1f);
+    CHECK(f.orbital == 1 && f.speedMin == 2.5f && f.speedMax == 2.5f && f.lifetimeMax == 1);
+    CHECK(std::fabs(f.rotationMin - 0.7854f) < 1e-3f && std::fabs(f.spinMin - 1.4835f) < 1e-3f);
+    CHECK(f.frames.size() == 3 && f.tilesX == 3 && area.sprites[f.frames[0]].w == 4 && area.sprites[f.frames[0]].h == 8);
+    const ParticlesDef& s = area.particles[specialFish()];
+    CHECK(!s.playOnAwake && !s.loop && s.duration == 0.4f && s.rateMax == 4 && s.bursts.empty() && s.frames == f.frames);
+    CHECK(area.areaGrid.specialFish.size() == 2 && area.areaGrid.specialFish[1] >= 0);
+}
+
+TEST(particles_fish_leap_like_unity) {
+    // Unity's special fish (seed 1): one fish 0.25 s after Play (the rate's first whole particle) at
+    // (-0.0827, 0.0301) from the system, moving (-2.349, 0.855); half a second later at
+    // (-1.3169, 0.1195), at 0.9833 s (-2.4102, -0.3679). The reference step reproduces those; the
+    // port's fish follows it from wherever it starts.
+    float ux = -0.0827f, uy = 0.0301f;
+    for (int f = 1; f <= 59; f++) {
+        unityFishStep(ux, uy, -2.349f, 0.855f, 1, 1.0f / 60);
+        if (f == 30) check(std::fabs(ux + 1.3169f) < 2e-3f && std::fabs(uy - 0.1195f) < 2e-3f, "reference at 0.5 s");
+    }
+    check(std::fabs(ux + 2.4102f) < 2e-3f && std::fabs(uy + 0.3679f) < 2e-3f, "reference at 0.9833 s");
+
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    world.setTileActive(7, true);
+    const int k = specialFish();
+    const ParticlesDef& d = area.particles[k];
+    float ox, oy;
+    world.objectPosition(d.object, ox, oy);
+    world.particles.play(world, k);
+    const float dt = 1.0f / 60;
+    int frame = 0;
+    while (countOf(world, k) == 0 && frame < 30) {
+        world.particles.update(world, dt);
+        frame++;
+    }
+    check(frame == 15 || frame == 16, "the first fish 0.25 s in: frame " + std::to_string(frame));
+    auto fish = [&]() -> const Particles::Particle* {
+        for (const Particles::Particle& q : world.particles.particles())
+            if (q.defIndex == k) return &q;
+        return nullptr;
+    };
+    const Particles::Particle* p = fish();
+    CHECK(p != nullptr);
+    if (!p) return;
+    const float angle = std::atan2(p->vy, p->vx);
+    CHECK(std::fabs(std::hypot(p->vx, p->vy) - 2.5f) < 1e-4f && angle >= 2.5307f - 1e-4f && angle <= 2.7925f + 1e-4f);
+    // (the port's particle moved once in its emitting frame: the reference starts from there)
+    float rx = p->x - ox, ry = p->y - oy;
+    const float vx = p->vx, vy = p->vy;
+    for (int f = 0; f < 50; f++) {
+        world.particles.update(world, dt);
+        unityFishStep(rx, ry, vx, vy, 1, dt);
+    }
+    p = fish();
+    CHECK(p != nullptr);
+    if (!p) return;
+    check(std::fabs(p->x - ox - rx) < 1e-3f && std::fabs(p->y - oy - ry) < 1e-3f,
+          "on Unity's path: " + std::to_string(p->x - ox) + ", " + std::to_string(p->y - oy));
+    // Turned as Unity's mesh: 45 degrees counter-clockwise, then 85 degrees a second more.
+    CHECK(std::fabs(p->rotation - (0.7854f + 1.4835f * p->age)) < 1e-3f);
+}
+
+TEST(particles_fish_frames_switch_where_unitys_do) {
+    // The weighted frame-over-time curve: frame 1 from 0.2145 of its life, frame 2 from 0.825 (Unity:
+    // between 0.2 and 0.2167, between 0.8167 and 0.8333).
+    const Area& area = villageArea();
+    if (specialFish() < 0) return;
+    const ParticlesDef& d = area.particles[specialFish()];
+    Particles::Particle p{};
+    p.def = &d;
+    p.defIndex = specialFish();
+    p.object = -1;
+    p.lifetime = 1;
+    const float ages[] = {0.2f, 0.2167f, 0.8167f, 0.8333f};
+    const int want[] = {0, 1, 1, 2};
+    for (int i = 0; i < 4; i++) {
+        p.age = ages[i];
+        check(Particles::frameSprite(p) == d.frames[want[i]], "frame at " + std::to_string(ages[i]));
+    }
+}
+
+TEST(particles_fish_wait_out_their_delay_and_leap_at_random) {
+    // A river fish once its spawner is on: each loop's burst fires one time in ten (Unity's seeds:
+    // 1-4 fish in 30 s), always the same time into the loop (its start delay, 0-1 s: drawn once).
+    const Area& area = villageArea();
+    World world(area, DEFAULT_SETTINGS);
+    world.setTileActive(7, true);
+    const int k = riverFish();
+    if (k < 0) return;
+    world.objects.setActive(area, area.areaGrid.fishSpawners.at(1), true); // (STile 7's)
+    CHECK(world.objects.activeInHierarchy(area.particles[k].object));
+    const float dt = 1.0f / 60;
+    std::vector<float> born;
+    int most = 0;
+    for (int f = 1; f <= 60 * 120; f++) {
+        world.particles.update(world, dt); // (play on awake: it starts in the first)
+        int n = 0;
+        for (const Particles::Particle& p : world.particles.particles())
+            if (p.defIndex == k) {
+                n++;
+                if (p.age <= dt * 1.5f) born.push_back(f * dt - p.age);
+            }
+        most = std::max(most, n);
+    }
+    check(born.size() >= 4 && born.size() <= 24, "fish in 120 s: " + std::to_string(born.size()));
+    CHECK(most == 1); // (a second-long leap a loop at most)
+    if (born.empty()) return;
+    const float first = born[0] - std::floor(born[0]);
+    for (float t : born) {
+        const float into = t - std::floor(t), off = std::fabs(into - first);
+        check(off < 0.02f || off > 0.98f, "the same time into each loop: " + std::to_string(into) + " vs " + std::to_string(first));
+    }
 }

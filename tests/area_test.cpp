@@ -7,7 +7,7 @@
 namespace {
 
 constexpr size_t VILLAGE_LAYERS = 76, VILLAGE_COLLISION = 35, VILLAGE_SHAPES = 9, VILLAGE_TILES = 168,
-                 VILLAGE_SPRITES = 769, VILLAGE_FILLED_CELLS = 27554;
+                 VILLAGE_SPRITES = 772, VILLAGE_FILLED_CELLS = 27554;
 
 // A minimal valid area: 1x1 grid, one sheet/sprite/tile, one visual and one collision tilemap,
 // scene objects, a world sprite with a one-frame anim, two object colliders, a start check and the
@@ -137,14 +137,16 @@ TEST(area_validation_rejects_a_rotated_tile_that_isnt_square) {
 }
 
 TEST(area_validation_particle_frames_match_their_size_on_screen) {
-    // Frames draw at 1x: a 1-unit particle takes 16 px frames (the area's ppu), whatever the sprite's
-    // own ppu — sprite 1 is 32 px at 32 ppu, a unit by its ppu, two on screen.
+    // Frames draw at 1x around their center: a 1-unit particle takes 16 px wide frames (the area's
+    // ppu), whatever the sprite's own ppu — sprite 1 is 32 px at 32 ppu, a unit by its ppu, two on
+    // screen; any height (Unity keeps the sprite's aspect); the pivot in the middle.
     auto withParticles = [](const char* frames, const char* size) {
         return fixture(R"("fadeDuration": 0.5,)",
                        std::string(R"("particles": [{"object": -1, "playOnAwake": false, "duration": 1, "lifetime": [1, 1],
                            "speed": [0, 0], "size": )") + size + R"(, "colorTimes": [0], "colors": [[255, 255, 255, 255]],
                            "rate": [0, 0], "bursts": [], "rotation": [0, 0], "spin": [0, 0], "frames": {"sprites": )" +
-                           frames + R"(, "tilesX": 1, "multiplier": 1, "curveMin": [0, 0, 0, 0], "curveMax": [0, 0, 0, 0]}}],
+                           frames + R"(, "tilesX": 1, "multiplier": 1, "curveMin": [0, 0, 0, 0, 0.3333, 0.3333],
+                           "curveMax": [0, 0, 0, 0, 0.3333, 0.3333]}}],
   "fadeDuration": 0.5,)");
     };
     Area a;
@@ -153,10 +155,13 @@ TEST(area_validation_particle_frames_match_their_size_on_screen) {
     CHECK(a.particles.size() == 1 && a.particles[0].frames.size() == 1);
     CHECK(!loadFixture(withParticles("[1]", "1"), a, err));   // (32 px at 32 ppu: two units on screen)
     CHECK(!loadFixture(withParticles("[0]", "0.5"), a, err)); // (16 px on a half-unit particle)
+    const std::string sprite0 = R"("rect": [0, 0, 16, 16], "pivot": [8, 8])";
     std::string tall = withParticles("[0]", "1"); // (16 x 32: right width, twice the height)
-    const std::string rect = R"("rect": [0, 0, 16, 16])";
-    tall.replace(tall.find(rect), rect.size(), R"("rect": [0, 0, 16, 32])");
-    CHECK(!loadFixture(tall, a, err) && err.find("particle's size") != std::string::npos);
+    tall.replace(tall.find(sprite0), sprite0.size(), R"("rect": [0, 0, 16, 32], "pivot": [8, 16])");
+    check(loadFixture(tall, a, err), "a 16 x 32 frame on a 1-unit particle loads: " + err);
+    std::string offCenter = withParticles("[0]", "1");
+    offCenter.replace(offCenter.find(sprite0), sprite0.size(), R"("rect": [0, 0, 16, 16], "pivot": [8, 0])");
+    CHECK(!loadFixture(offCenter, a, err) && err.find("off center") != std::string::npos);
 }
 
 TEST(area_validation_rejects_bad_indices) {
@@ -363,7 +368,7 @@ TEST(area_village_export_stats) {
     check(a.sprites.size() == VILLAGE_SPRITES, "sprites " + std::to_string(a.sprites.size()));
     check(a.sheetNames.size() == 27, "sheets " + std::to_string(a.sheetNames.size()));
     check(a.worldSprites.size() == 333, "world sprites " + std::to_string(a.worldSprites.size()));
-    check(a.knotBoxes.size() == 1 && a.ruinsArrows.size() == 1 && a.chadJumps.size() == 1 && a.particles.size() == 30,
+    check(a.knotBoxes.size() == 1 && a.ruinsArrows.size() == 1 && a.chadJumps.size() == 1 && a.particles.size() == 77,
           "knot boxes / ruins arrows / particle systems " + std::to_string(a.knotBoxes.size()) + "/" +
               std::to_string(a.ruinsArrows.size()) + "/" + std::to_string(a.particles.size()));
     check(a.anims.size() == 117, "anims " + std::to_string(a.anims.size()));

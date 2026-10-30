@@ -203,6 +203,10 @@ static std::vector<CallDef> readCalls(const Json& j, Area& out) {
             else d.method = CallDef::Method::Unsupported; // its ChadJump was left out (the export says so)
         }
         if (d.method == CallDef::Method::CowMoo || d.method == CallDef::Method::DogBark) d.data = c["emote"].asInt(-1);
+        if (d.method == CallDef::Method::ParticlePlay) {
+            if (c.has("particles")) d.data = c["particles"].asInt(-1);
+            else d.method = CallDef::Method::Unsupported; // a system the port can't show (the export says so)
+        }
         if (d.method == CallDef::Method::SetColliderEnabled) { // (colliders load first)
             if (c.has("collider")) d.data = c["collider"].asInt(-1) + (c["trigger"].asBool() ? (int)out.objectColliders.size() : 0);
             else d.method = CallDef::Method::Unsupported; // a collider the export left out (it warns)
@@ -321,14 +325,21 @@ static ParticlesDef readParticles(const Json& j) {
     for (const Json& t : j["colorTimes"].items()) d.colorTimes.push_back(t.asFloat());
     for (const Json& c : j["colors"].items()) d.colors.push_back(readColor(c));
     d.colorsFixed = j["colorsFixed"].asBool();
+    d.delayMin = j["delay"].at(0).asFloat();
+    d.delayMax = j["delay"].at(1).asFloat();
     d.shapeRadius = j["shapeRadius"].asFloat();
+    if (const Json& arc = j["arc"]; !arc.isNull()) {
+        d.arcStart = arc.at(0).asFloat();
+        d.arcLength = arc.at(1).asFloat();
+    }
     d.rateMin = j["rate"].at(0).asFloat();
     d.rateMax = j["rate"].at(1).asFloat();
     d.forceX = j["force"].at(0).asFloat();
     d.forceY = j["force"].at(1).asFloat();
     for (const Json& b : j["bursts"].items())
         d.bursts.push_back({b["time"].asFloat(), b["count"].at(0).asFloat(), b["count"].at(1).asFloat(),
-                            b["cycles"].asInt(1), b["interval"].asFloat()});
+                            b["cycles"].asInt(1), b["interval"].asFloat(), b["probability"].asFloat(1)});
+    d.orbital = j["orbital"].asFloat();
     if (j.has("limitVelocity")) {
         const Json& lv = j["limitVelocity"];
         d.limitVelocity = true;
@@ -353,8 +364,9 @@ static ParticlesDef readParticles(const Json& j) {
         for (int which = 0; which < 2; which++) {
             const Json& k = f[which ? "curveMax" : "curveMin"];
             std::vector<CurveKey>& keys = which ? d.frameCurveMax : d.frameCurveMin;
-            for (size_t i = 0; i + 3 < k.size(); i += 4)
-                keys.push_back({k.at(i).asFloat(), k.at(i + 1).asFloat(), k.at(i + 2).asFloat(), k.at(i + 3).asFloat()});
+            for (size_t i = 0; i + 5 < k.size(); i += 6) // [t, v, in, out, inWeight, outWeight]
+                keys.push_back({k.at(i).asFloat(), k.at(i + 1).asFloat(), k.at(i + 2).asFloat(), k.at(i + 3).asFloat(),
+                                k.at(i + 4).asFloat(), k.at(i + 5).asFloat()});
         }
     }
     return d;
@@ -819,6 +831,9 @@ static bool validate(const Area& a, std::string* error) {
                 return false;
             if (c.method == M::VillageExplode && (!objectOk(a.areaGrid.caveDoorEntrance) || !objectOk(a.areaGrid.caveDoorRocks)))
                 return false;
+            if (c.method == M::ParticlePlay &&
+                (c.data < 0 || c.data >= (int)a.particles.size() || a.particles[c.data].object != c.target))
+                return false;
             if (c.method == M::SetColliderEnabled) {
                 const int nSolid = (int)a.objectColliders.size();
                 if (c.data < 0 || c.data >= nSolid + (int)a.triggerColliders.size()) return false;
@@ -930,19 +945,22 @@ static bool validate(const Area& a, std::string* error) {
         bool ok = (objectOk(pd.object) || (pd.object == -1 && !pd.playOnAwake)) && pd.lifetimeMin <= pd.lifetimeMax &&
                   pd.speedMin <= pd.speedMax && pd.rotationMin <= pd.rotationMax && pd.spinMin <= pd.spinMax &&
                   pd.rateMin >= 0 && pd.rateMin <= pd.rateMax && pd.size >= 0 && pd.duration >= 0 &&
-                  !(pd.loop && pd.duration <= 0) && !pd.colors.empty() && pd.colors.size() == pd.colorTimes.size();
+                  !(pd.loop && pd.duration <= 0) && !pd.colors.empty() && pd.colors.size() == pd.colorTimes.size() &&
+                  pd.delayMin >= 0 && pd.delayMin <= pd.delayMax && pd.arcLength > 0 && pd.arcLength <= 6.2831854f;
         for (size_t i = 1; i < pd.colorTimes.size(); i++) ok = ok && pd.colorTimes[i - 1] <= pd.colorTimes[i];
-        for (const ParticleBurstDef& b : pd.bursts) ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0;
+        for (const ParticleBurstDef& b : pd.bursts)
+            ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0 && b.probability >= 0 && b.probability <= 1;
         if (!pd.frames.empty())
             ok = ok && pd.tilesX > 0 && pd.frames.size() % pd.tilesX == 0 && !pd.frameCurveMin.empty() && !pd.frameCurveMax.empty();
         const std::string name = "particles " + (objectOk(pd.object) ? a.pathOf(pd.object) : std::string("?"));
         if (!ok) return fail(error, name + ": bad object, ranges, colors, bursts or frames");
-        // (frames draw at 1x — a texture pixel a screen pixel: each must be the particle's size on
-        // screen, as Unity sizes the quad to it)
+        // (frames draw at 1x around their center — a texture pixel a screen pixel: each must be the
+        // particle's size wide, as Unity sizes the quad's width to it (its height to the sprite's
+        // aspect), with its pivot in the middle)
         for (int s : pd.frames)
             if (!spriteIndexOk(s) || a.sprites[s].outlineWidth != 0 || std::fabs(a.sprites[s].w - pd.size * a.ppu) >= 1e-3f ||
-                std::fabs(a.sprites[s].h - pd.size * a.ppu) >= 1e-3f)
-                return fail(error, name + ": a frame isn't the particle's size on screen");
+                std::fabs(a.sprites[s].pivotX * 2 - a.sprites[s].w) >= 1e-3f || std::fabs(a.sprites[s].pivotY * 2 - a.sprites[s].h) >= 1e-3f)
+                return fail(error, name + ": a frame isn't the particle's size on screen, or off center");
     }
     for (int p : a.particlePrefabs)
         if (p != -1 && (p < 0 || p >= (int)a.particles.size() || a.particles[p].object != -1))
@@ -994,6 +1012,11 @@ static bool validate(const Area& a, std::string* error) {
     if (a.areaGrid.romeo < -1 || a.areaGrid.romeo >= (int)a.npcs.size()) return fail(error, "area grid: romeo isn't an NPC");
     if (a.areaGrid.slider2Collectible != -1 && !objectOk(a.areaGrid.slider2Collectible))
         return fail(error, "area grid: bad slider2Collectible");
+    for (int o : a.areaGrid.fishSpawners)
+        if (!objectOk(o)) return fail(error, "area grid: bad fishSpawners");
+    for (int p : a.areaGrid.specialFish)
+        if (p != -1 && (p < 0 || p >= (int)a.particles.size() || a.particles[p].object < 0))
+            return fail(error, "area grid: bad specialFish");
     if (const UiTrackersDef& t = a.uiTrackers; t.present) {
         // (the port draws them at the Artifact's scale, 1 UI px per sprite pixel, and doesn't port
         // trackHousingAccurately — a pin in a house sits on its button's center)
@@ -1255,6 +1278,8 @@ bool loadArea(const char* path, Area& out, std::string* error) {
     out.areaGrid.introDolly = doc["areaGrid"]["introDolly"].asInt(-1);
     out.areaGrid.romeo = doc["areaGrid"]["romeo"].asInt(-1);
     out.areaGrid.slider2Collectible = doc["areaGrid"]["slider2Collectible"].asInt(-1);
+    for (const Json& o : doc["areaGrid"]["fishSpawners"].items()) out.areaGrid.fishSpawners.push_back(o.asInt(-1));
+    for (const Json& p : doc["areaGrid"]["specialFish"].items()) out.areaGrid.specialFish.push_back(p.asInt(-1));
     if (const Json& t = doc["uiTrackers"]; !t.isNull()) {
         UiTrackersDef& d = out.uiTrackers;
         d.present = true;

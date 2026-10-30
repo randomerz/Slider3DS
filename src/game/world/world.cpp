@@ -158,6 +158,7 @@ void World::reloadObjects() {
     finale.reset(area);
     intro.reset();
     abduction.reset();
+    fish.reset();
     dollies.reset();
     pickup.reset();
     hints.load(*this);
@@ -167,6 +168,7 @@ void World::reloadObjects() {
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
     starts.reset(area);
     runStarts();
+    fish.start(*this); // VillageGrid.Start: the fish spawners, once on
     audio.playMusic(tracks::VILLAGE); // VillageGrid.Start
     // The Artifact's pins: UITrackerManager.Awake's Player.AddTracker, then VillageGrid.Start's.
     trackers.clear();
@@ -334,6 +336,7 @@ void World::update(float dt, const FrameInput& in, bool ignoreWalls) {
     pickup.coroutines(*this, dt);
     hints.update(*this, dt);
     abduction.coroutines(*this, dt);
+    fish.coroutines(*this, dt);
     props.coroutines(*this, dt);
     dollies.update(*this, dt, in.actionHeld);
     runStarts(); // (the final Slider may have appeared)

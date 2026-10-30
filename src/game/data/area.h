@@ -218,6 +218,7 @@ struct ConditionDef {
 //   ChadSetIsOnRock         VillageChadJump.SetIsOnRock on chadJumps[data]: from now on slides tip him
 //   HintTrigger / HintDisable / HintEnableDisabling  PlayerActionHints.TriggerHint / DisableHint /
 //                           EnableDisabling(stringArg: a hint's name in Area::hints)
+//   ParticlePlay            ParticleSystem.Play on particles[data] (game/fx/particles)
 // To add one: a line here, its case in events.cpp's runCall (the compiler flags a missing case),
 // and its name in the exporter's PortMethods (area_test pins the names still unsupported).
 #define SLIDER_CALL_METHODS(X)                                         \
@@ -259,6 +260,7 @@ struct ConditionDef {
     X(ChadJumpStarter, "ChadJump.JumpStarter")                         \
     X(ChadSetIsOnRock, "VillageChadJump.SetIsOnRock")                  \
     X(CatPickedUp, "CatAbductionController.SetPickedUp")              \
+    X(ParticlePlay, "ParticleSystem.Play")                             \
     X(HintTrigger, "PlayerActionHints.TriggerHint")                    \
     X(HintDisable, "PlayerActionHints.DisableHint")                    \
     X(HintEnableDisabling, "PlayerActionHints.EnableDisabling")        \
@@ -289,7 +291,8 @@ struct CallDef {
     // Teleport*: Area::teleports index; CheckConditions: Area::conditionCheckers index;
     // SetAnimatorController: Area::animatorControllers index; SetColliderEnabled: ObjectCollider::slot;
     // KnotCheckParticles / KnotSetToCorrect: Area::knotBoxes index; ChadJumpStarter / ChadSetIsOnRock:
-    // Area::chadJumps index; CowMoo / DogBark: the prop's emote object (-1 = none).
+    // Area::chadJumps index; CowMoo / DogBark: the prop's emote object (-1 = none); ParticlePlay:
+    // Area::particles index.
     int data = -1;
 };
 
@@ -568,13 +571,15 @@ struct ComponentRange {
 };
 
 // A ParticleSystem the port plays (ParticleSystem.Play, or on activation with playOnAwake): bursts
-// and a steady rate of flat squares from a circle, flying outward, pushed by a constant force, slowed
-// by limit-velocity, fading by color-over-lifetime alpha; world space.
+// and a steady rate of flat squares (or texture sheet frames) from a circle or an arc of it, flying
+// outward, pushed by a constant force, circling the system (orbital velocity), slowed by
+// limit-velocity, fading by color-over-lifetime alpha; world or local space.
 struct ParticleBurstDef {
-    float time = 0;               // s after Play
+    float time = 0;               // s after Play (after its start delay)
     float countMin = 0, countMax = 0;
     int cycles = 1;
     float interval = 0;           // s between cycles
+    float probability = 1;        // each cycle fires with it
 };
 struct ParticlesDef {
     int object = -1;              // where it emits (Area::objects); -1 = a prefab's (spawned under objects)
@@ -588,9 +593,14 @@ struct ParticlesDef {
     std::vector<float> colorTimes;
     std::vector<uint32_t> colors;
     bool colorsFixed = false;
+    float delayMin = 0, delayMax = 0; // start delay: s from Play to its time 0, a random pick per Play
     float shapeRadius = 0;        // Circle shape: start inside it, moving away from its center
+    // ... leaving from a random angle in [arcStart, arcStart + arcLength] (radians, counter-clockwise
+    // from +x; the whole circle by default)
+    float arcStart = 0, arcLength = 6.2831853f;
     float rateMin = 0, rateMax = 0; // emission per second
     float forceX = 0, forceY = 0; // force over lifetime (units/s^2)
+    float orbital = 0;            // velocity over lifetime's orbital z: rad/s counter-clockwise about the system
     std::vector<ParticleBurstDef> bursts;
     bool limitVelocity = false;   // limit velocity over lifetime:
     float limit = 0, dampen = 0;  //   speed over `limit` loses the `dampen` fraction (per 1/30 s)
@@ -602,10 +612,11 @@ struct ParticlesDef {
     // Textured particles only (flat squares don't show it): start rotation (radians, counter-clockwise
     // on screen) and a constant spin (rad/s), each a random pick in [min, max] per particle.
     float rotationMin = 0, rotationMax = 0, spinMin = 0, spinMax = 0;
-    // A texture sheet (Grid; empty = a flat square of `size`): each tile's sprite, rows from the top,
-    // `tilesX` a row. A particle plays one random row once over its life: its frame is
-    // floor(curve(age / lifetime) * frameMultiplier * tilesX), its curve a random blend of
-    // frameCurveMin and frameCurveMax (frameOverTime's two curves).
+    // A texture sheet (empty = a flat square of `size`): each frame's sprite, rows from the top,
+    // `tilesX` a row (a Sprites sheet: one row). A particle plays one random row once over its life:
+    // its frame is floor(curve(age / lifetime) * frameMultiplier * tilesX), its curve a random blend
+    // of frameCurveMin and frameCurveMax (frameOverTime's two curves). Frames draw at native size,
+    // centered: `size` wide (Unity sizes the quad's width to it, its height to the sprite's aspect).
     std::vector<int> frames;
     int tilesX = 0;
     float frameMultiplier = 1;
@@ -756,6 +767,8 @@ struct AreaGridDef {
     int romeo = -1;             // romeoNPC: Area::npcs index (the intro turns him and walks him in), -1 = none
     CatAbductionDef catAbduction; // after the intro, the cat floats off to the beach
     int slider2Collectible = -1; // its object: VillageGrid.Start's Artifact tracker (until Slider 2 is collected)
+    std::vector<int> fishSpawners; // ParticleSpawner.fishSpawners' objects: TurnFishOn (and Start, once on) turns them on
+    std::vector<int> specialFish;  // specialFishParticle1 / 2: Area::particles indices (-1 = none), played 2 s / 2.5 s after TurnFishOn
 };
 
 // UITrackerManager's pins (UITracker): the sprites the port's trackers use, by its DefaultSprites

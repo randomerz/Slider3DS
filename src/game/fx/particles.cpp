@@ -19,10 +19,13 @@ bool Particles::playing(int def) const {
     return false;
 }
 
-void Particles::start(int def, int object, float dx, float dy, bool spawned, bool waiting) {
+void Particles::start(const World& world, int def, int object, float dx, float dy, bool spawned, bool waiting) {
+    const ParticlesDef& d = world.area.particles[def];
     Emitter e{};
     e.def = def;
     e.id = nextId_++;
+    // (a start delay between two constants is a random pick; a fixed one draws nothing)
+    e.time = -(d.delayMax > d.delayMin ? d.delayMin + (d.delayMax - d.delayMin) * random() : d.delayMin);
     e.emitting = true;
     e.spawned = spawned;
     e.object = object;
@@ -35,7 +38,7 @@ void Particles::start(int def, int object, float dx, float dy, bool spawned, boo
 void Particles::play(const World& world, int def) {
     const int object = world.area.particles[def].object;
     if (object < 0 || !world.objects.activeInHierarchy(object) || playing(def)) return;
-    start(def, object, 0, 0, false);
+    start(world, def, object, 0, 0, false);
 }
 
 void Particles::stop(int def) {
@@ -46,7 +49,7 @@ void Particles::stop(int def) {
 void Particles::spawn(const World& world, int def, float dx, float dy) {
     const int object = world.area.particles[def].object;
     if (object < 0 || !world.objects.activeInHierarchy(object)) return;
-    start(def, object, dx, dy, true);
+    start(world, def, object, dx, dy, true);
 }
 
 void Particles::spawnPrefab(const World& world, ParticleType type, float x, float y, int parent) {
@@ -54,7 +57,7 @@ void Particles::spawnPrefab(const World& world, ParticleType type, float x, floa
     if (def < 0) return;
     float px = 0, py = 0;
     if (parent >= 0) world.objectPosition(parent, px, py);
-    start(def, parent, x - px, y - py, true, parent >= 0 && !world.objects.activeInHierarchy(parent));
+    start(world, def, parent, x - px, y - py, true, parent >= 0 && !world.objects.activeInHierarchy(parent));
 }
 
 void Particles::randomInUnitSphere(float& x, float& y) {
@@ -100,8 +103,9 @@ void Particles::emit(const World& world, Emitter& emitter, float x, float y, int
     if (emitter.object >= 0) world.objectPosition(emitter.object, ox, oy);
     emitter.live += count;
     for (int i = 0; i < count; i++) {
-        // Circle shape: anywhere inside it (uniform over the area), moving away from its center.
-        const float angle = random() * 6.2831853f, r = def.shapeRadius * std::sqrt(random());
+        // Circle shape: anywhere inside it (uniform over the area), moving away from its center; an
+        // arc: from a random angle in it.
+        const float angle = def.arcStart + random() * def.arcLength, r = def.shapeRadius * std::sqrt(random());
         const float dx = std::cos(angle), dy = std::sin(angle);
         const float speed = def.speedMin + (def.speedMax - def.speedMin) * random();
         const float lifetime = def.lifetimeMin + (def.lifetimeMax - def.lifetimeMin) * random();
@@ -115,6 +119,8 @@ void Particles::emit(const World& world, Emitter& emitter, float x, float y, int
         }
         p.objectX = ox;
         p.objectY = oy;
+        p.centerDx = emitter.object >= 0 ? emitter.dx : x;
+        p.centerDy = emitter.object >= 0 ? emitter.dy : y;
         particles_.push_back(p);
     }
 }
@@ -145,6 +151,10 @@ void Particles::update(const World& world, float dt) {
         if (!e.emitting || e.waiting) continue;
         const ParticlesDef& d = area.particles[e.def];
         const float from = e.time, to = e.time + dt;
+        if (to <= 0) { // (still in its start delay)
+            e.time = to;
+            continue;
+        }
         float x, y;
         origin(world, e, x, y);
         for (const ParticleBurstDef& b : d.bursts)
@@ -154,13 +164,16 @@ void Particles::update(const World& world, float dt) {
                 // Its times: t, and with looping t + n * duration.
                 float n = d.loop ? std::max(0.0f, std::ceil((from - t) / d.duration)) : 0.0f;
                 for (float at = t + n * d.duration; at < to; at = t + (++n) * d.duration) {
-                    // (a fractional count is truncated: measured, MiniSparkle's 2.5 emits 2 every time)
-                    if (at >= from) emit(world, e, x, y, (int)(b.countMin + (b.countMax - b.countMin) * random()));
+                    // (a fractional count is truncated: measured, MiniSparkle's 2.5 emits 2 every time; a
+                    // cycle that may not fire draws its chance first)
+                    if (at >= from && (b.probability >= 1 || random() < b.probability))
+                        emit(world, e, x, y, (int)(b.countMin + (b.countMax - b.countMin) * random()));
                     if (!d.loop) break;
                 }
             }
         if (d.rateMax > 0) {
-            const float span = d.loop ? dt : std::max(0.0f, std::min(to, d.duration) - from);
+            const float start = std::max(from, 0.0f); // (from its delay's end)
+            const float span = d.loop ? to - start : std::max(0.0f, std::min(to, d.duration) - start);
             e.rateDebt += (d.rateMin + (d.rateMax - d.rateMin) * random()) * span;
             const int n = (int)e.rateDebt;
             e.rateDebt -= (float)n;
@@ -188,6 +201,19 @@ void Particles::update(const World& world, float dt) {
             p.objectY = oy;
         }
         p.rotation += p.spin * dt;
+        if (d.orbital != 0) { // (about the system's position: its position turns, then the velocity moves it)
+            float cx = p.centerDx, cy = p.centerDy;
+            if (p.object >= 0) {
+                float ox, oy;
+                world.objectPosition(p.object, ox, oy);
+                cx += ox;
+                cy += oy;
+            }
+            const float c = std::cos(d.orbital * dt), s = std::sin(d.orbital * dt);
+            const float rx = p.x - cx, ry = p.y - cy;
+            p.x = cx + c * rx - s * ry;
+            p.y = cy + s * rx + c * ry;
+        }
         p.vx += d.forceX * dt;
         p.vy += d.forceY * dt;
         const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);

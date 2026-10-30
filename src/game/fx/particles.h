@@ -1,11 +1,13 @@
 // ParticleSystem playback for the systems the export describes (Area::particles, ParticlesDef):
-// bursts and a steady rate of flat squares (or a texture sheet's frames, rotated and spinning) in
-// world space (or local: moving with their object), emitted from a circle around the system's object,
-// flying outward, pushed by a constant force, slowed by limit-velocity and faded by color-over-lifetime
-// alpha. Systems with playOnAwake play whenever their object becomes active; ParticleManager's prefabs
-// (Area::particlePrefabs) are spawned under any object (spawnPrefab).
+// bursts (each cycle maybe, by its probability) and a steady rate of flat squares (or a texture
+// sheet's frames, rotated and spinning) in world space (or local: moving with their object), from a
+// start delay on, emitted from a circle (or an arc of it) around the system's object, flying outward,
+// pushed by a constant force, circling the system (orbital), slowed by limit-velocity and faded by
+// color-over-lifetime alpha. Systems with playOnAwake play whenever their object becomes active;
+// ParticleManager's prefabs (Area::particlePrefabs) are spawned under any object (spawnPrefab).
 // Limit velocity follows speed curves measured in Unity (Slider3DSSceneSurvey.SurveyParticleSpeedBatch):
-// within ~1% for SparkleEffect.
+// within ~1% for SparkleEffect; orbital motion and sprite frames as SurveyFishMotionBatch measured the
+// Village's fish.
 #pragma once
 
 #include <cstdint>
@@ -31,6 +33,7 @@ public:
         float rotation = 0, spin = 0, frameBlend = 0;
         int row = 0;
         float objectX = 0, objectY = 0;
+        float centerDx = 0, centerDy = 0; // the system's position (what orbital circles) from its object (none: world)
     };
 
     void reset(); // nothing playing, the random sequence from its start
@@ -66,7 +69,7 @@ private:
     struct Emitter {
         int def;           // Area::particles index
         int id;
-        float time;        // s since Play
+        float time;        // s since Play, less its start delay (negative: still delayed)
         bool emitting;     // false: finished (non-looping), kept while its particles live
         bool spawned;      // a spawned copy (Play / Stop / playing() ignore it)
         int object;        // what it emits from: the def's object, or a spawned prefab's parent (-1 = none)
@@ -76,7 +79,7 @@ private:
         float rateDebt;    // particles owed by the rate, carried between frames
         int live;          // its particles alive
     };
-    void start(int def, int object, float dx, float dy, bool spawned, bool waiting = false);
+    void start(const World& world, int def, int object, float dx, float dy, bool spawned, bool waiting = false);
     void emit(const World& world, Emitter& emitter, float x, float y, int count);
     void origin(const World& world, const Emitter& e, float& x, float& y) const; // where it emits now
     uint32_t startColor(const ParticlesDef& def);

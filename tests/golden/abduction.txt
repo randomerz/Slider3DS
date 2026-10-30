@@ -1,2 +1,2 @@
 # Draw-list hashes per scene (tests/render_test.cpp): name count:fnv1a64
-cat_in_bubble 47:8ee7086cd9006722
+cat_in_bubble 48:c8f222430c080876

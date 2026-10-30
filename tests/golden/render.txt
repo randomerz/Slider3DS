@@ -8,7 +8,7 @@ all_beach 227:907e5c1583b2c7f8
 all_top_left 388:ce068ce8bf780c99
 mid_slide 91:84f4060a901ea0df
 shuffled 261:385308e5add8c2a7
-knot_sparkles 338:0a29dcc0024fe8f5
-knot_sparkles_fading 338:66c6ee3f8aea4adb
-ruins_lit_flash 469:8a0e3f0a282c836c
-ruins_lit 505:06f93491b4c83f39
+knot_sparkles 338:46e019acbb849d78
+knot_sparkles_fading 338:d3dfb49ccca560de
+ruins_lit_flash 470:396b20b3b7f8b3d0
+ruins_lit 506:759b13cd62218be7

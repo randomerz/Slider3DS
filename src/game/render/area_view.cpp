@@ -172,7 +172,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         if (!inRange(p.def->sortLayer)) continue;
         float sx, sy; // (off screen: not worth sorting)
         worldToScreen(p.x, p.y, sx, sy);
-        const float reach = particleReach(*p.def);
+        const float reach = particleReach(area, *p.def);
         if (sx + reach < 0 || sx - reach > screenW_ || sy + reach < 0 || sy - reach > screenH_) continue;
         Item it{ItemKind::Particle, i, {}};
         it.sprite.sortLayer = p.def->sortLayer;
@@ -275,11 +275,12 @@ void AreaView::drawLine(const LineDraw& l) {
     spriteCount_++;
 }
 
-float AreaView::particleReach(const ParticlesDef& d) const {
+float AreaView::particleReach(const Area& area, const ParticlesDef& d) const {
     // Screen px from its position to the farthest pixel it can cover: a square's half, a turned
-    // frame's half diagonal; + 1 slack (the draws themselves aren't rounded).
-    const float half = d.size * ppu_ * 0.5f;
-    return (d.frames.empty() ? half : half * 1.41422f) + 1;
+    // frame's half diagonal (frames draw at native size); + 1 slack (the draws themselves aren't rounded).
+    float reach = d.size * ppu_ * 0.5f;
+    for (int f : d.frames) reach = std::max(reach, 0.5f * std::hypot((float)area.sprites[f].w, (float)area.sprites[f].h));
+    return reach + 1;
 }
 
 void AreaView::drawParticle(const Area& area, const Particles::Particle& p) {
