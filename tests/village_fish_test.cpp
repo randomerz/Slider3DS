@@ -137,3 +137,26 @@ TEST(village_salmon_blasts_off_in_a_poof) {
         }
     CHECK(there == 6 && here == 6);
 }
+
+TEST(village_particle_play_call_starts_its_system) {
+    // ParticleSystem.Play from a UnityEvent: (in the game the line before has started them already, so
+    // these stop it first) it plays the call's system, and nothing while its object is off.
+    World world = riverWorld();
+    std::vector<CallDef> calls;
+    for (const NpcDef& n : world.area.npcs)
+        for (const NpcCondDef& c : n.conds)
+            for (const DialogueDef& d : c.dialogue)
+                for (const CallDef& call : d.onStart)
+                    if (call.method == CallDef::Method::ParticlePlay) calls.push_back(call);
+    CHECK(calls.size() == 2);
+    runCalls(world, calls);
+    for (const CallDef& c : calls) CHECK(!world.particles.playing(c.data)); // (the spawners are off)
+    village::turnFishOn(world);
+    frames(world, 1);
+    for (const CallDef& c : calls) {
+        world.particles.stop(c.data);
+        CHECK(!world.particles.playing(c.data));
+    }
+    runCalls(world, calls);
+    for (const CallDef& c : calls) CHECK(world.particles.playing(c.data));
+}

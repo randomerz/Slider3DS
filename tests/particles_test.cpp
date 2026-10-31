@@ -600,6 +600,59 @@ TEST(particles_fish_frames_switch_where_unitys_do) {
     }
 }
 
+TEST(particles_fish_frame_table_follows_the_curve) {
+    // The table baked at load stays on the exact curves, between its samples too.
+    for (const ParticlesDef& d : villageArea().particles) {
+        if (d.frames.empty()) continue;
+        Particles::Particle p{};
+        p.def = &d;
+        p.object = -1;
+        p.lifetime = 1;
+        p.frameBlend = 0.5f;
+        auto exactFrame = [&](float t) { // (the blended curves, as frameSprite's formula)
+            t = std::min(std::max(t, 0.0f), 1.0f);
+            const float v = (evalKeys(d.frameCurveMin, t) + evalKeys(d.frameCurveMax, t)) * 0.5f * d.frameMultiplier;
+            return std::min(std::max((int)(v * d.tilesX), 0), d.tilesX - 1);
+        };
+        for (int i = 0; i <= 1000; i++) { // (a switch may land up to 1/128 of a life off: only checked away from one)
+            p.age = i / 1000.0f;
+            const int frame = exactFrame(p.age);
+            if (exactFrame(p.age - 1 / 128.0f) == frame && exactFrame(p.age + 1 / 128.0f) == frame)
+                check(Particles::frameSprite(p) == d.frames[frame], "frame at " + std::to_string(p.age));
+        }
+    }
+}
+
+TEST(particles_fish_start_delays_spread_the_river) {
+    // Each river fish draws its own 0-1 s delay, so they don't leap together: with every burst forced
+    // to fire, the first leaps spread over the second.
+    Area area = villageArea();
+    int fish = 0;
+    for (ParticlesDef& d : area.particles)
+        if (d.playOnAwake && area.pathOf(d.object).find("/FishParticles/") != std::string::npos) {
+            d.bursts.at(0).probability = 1;
+            fish++;
+        }
+    CHECK(fish == 44);
+    World world(area, DEFAULT_SETTINGS);
+    for (int id : {2, 4, 6, 7}) world.setTileActive(id, true);
+    for (int o : area.areaGrid.fishSpawners) world.objects.setActive(area, o, true);
+    int bornByThird[4] = {}; // (how many have leapt by 1/3, 2/3, 3/3 of a second, and a little past it)
+    std::vector<uint8_t> born(area.particles.size(), 0);
+    const float dt = 1.0f / 60;
+    for (int f = 1; f <= 62; f++) {
+        world.particles.update(world, dt);
+        for (const Particles::Particle& p : world.particles.particles())
+            if (area.particles[p.defIndex].playOnAwake && area.pathOf(p.def->object).find("/FishParticles/") != std::string::npos && !born[p.defIndex]) {
+                born[p.defIndex] = 1;
+                for (int k = 0; k < 4; k++) bornByThird[k] += f <= (k < 3 ? 20 * (k + 1) : 62);
+            }
+    }
+    check(bornByThird[3] == fish, "all leapt within the delay: " + std::to_string(bornByThird[3]));
+    check(bornByThird[0] >= 7 && bornByThird[0] <= 23, "a third by 1/3 s: " + std::to_string(bornByThird[0]));
+    check(bornByThird[1] >= 21 && bornByThird[1] <= 37, "two thirds by 2/3 s: " + std::to_string(bornByThird[1]));
+}
+
 TEST(particles_fish_wait_out_their_delay_and_leap_at_random) {
     // A river fish once its spawner is on: each loop's burst fires one time in ten (Unity's seeds:
     // 1-4 fish in 30 s), always the same time into the loop (its start delay, 0-1 s: drawn once).

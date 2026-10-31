@@ -49,6 +49,13 @@ void waterfallEntry(World& world) {
 
 void houseExit(World& world) { world.intro.houseExit(world); }
 
+void gridStart(World& world) {
+    world.fish.start(world);
+    world.audio.playMusic(tracks::VILLAGE);
+    addSlider2Tracker(world);
+    world.finale.start(world); // (CheckHole may hide the fragment)
+}
+
 void addSlider2Tracker(World& world) {
     const Area& area = world.area;
     const UiTrackersDef& u = area.uiTrackers;

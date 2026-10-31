@@ -666,7 +666,7 @@ TEST(render_title_screen_goldens) {
 }
 
 TEST(end_art_refuses_sizes_off_the_screen) {
-    // The art must be the original canvas (320x180) up to the top screen (400x240), in its sheet.
+    // The art must fill the top screen (400x240), in its sheet.
     std::string real;
     check(plat::readFile("ui/end.json", real), "ui/end.json");
     auto loads = [&](int x, int y, int w, int h) {
@@ -676,10 +676,20 @@ TEST(end_art_refuses_sizes_off_the_screen) {
         std::string error;
         return art.load(&error);
     };
-    CHECK(loads(0, 0, 320, 180) && loads(0, 0, 400, 240));
-    CHECK(!loads(0, 0, 300, 180) && !loads(0, 0, 320, 170) && !loads(0, 0, 401, 240) && !loads(0, 0, 400, 241));
-    CHECK(!loads(-1, 0, 320, 180) && !loads(0, -1, 320, 180));
+    CHECK(loads(0, 0, 400, 240));
+    CHECK(!loads(0, 0, 320, 180) && !loads(0, 0, 399, 240) && !loads(0, 0, 400, 239) && !loads(0, 0, 401, 240) && !loads(0, 0, 400, 241));
+    CHECK(!loads(-1, 0, 400, 240) && !loads(0, -1, 400, 240));
     testSetFile("ui/end.json", real);
+}
+
+TEST(title_menu_real_version_label_draws) {
+    // (the goldens pin their own label) Every character is in the menu font, not its '?', and it fits.
+    MenuSkin skin;
+    std::string error;
+    check(skin.load(&error), "menu skin loads " + error);
+    const std::string label = TitleMenu::VERSION_LABEL;
+    for (char c : label) check(&skin.font().def().glyph(c) != &skin.font().def().glyph('?'), std::string("the font has '") + c + "'");
+    CHECK(skin.textWidth(label) > 0 && skin.textWidth(label) * MenuSkin::UI_SCALE < plat::BOTTOM_W / 2);
 }
 
 TEST(render_intro_cutscene_goldens) {

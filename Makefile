@@ -262,13 +262,17 @@ cia: all
 		-DAPP_ENCRYPTED=false -DAPP_MEMORY_TYPE=Application -DAPP_SYSTEM_MODE=64MB -DAPP_SYSTEM_MODE_EXT=Legacy \
 		-DAPP_CPU_SPEED=268MHz -DAPP_ENABLE_L2_CACHE=false -DAPP_REMASTER_VERSION=0 \
 		-major $(word 1,$(APP_VERSION_PARTS)) -micro $(word 2,$(APP_VERSION_PARTS))
-	@sh tools/cia_version.sh $(CIA_NAME) $(word 1,$(APP_VERSION_PARTS)).0.$(word 2,$(APP_VERSION_PARTS))
+	@sh tools/cia_version.sh $(CIA_NAME) $(word 1,$(APP_VERSION_PARTS)).0.$(word 2,$(APP_VERSION_PARTS)) || { rm -f $(CIA_NAME); exit 1; }
 	@echo built ... $(CIA_NAME)
 
 # `make RELEASE=1 dist` -> dist/: the files to publish under their players' names (README.md):
 # slider3ds.3dsx (the release .3dsx) and slider3ds.cia.
+ifneq ($(filter dist,$(MAKECMDGOALS)),)
+ifeq ($(strip $(RELEASE)),)
+$(error dist is the release's: make RELEASE=1 dist)
+endif
+endif
 dist: cia
-	$(if $(strip $(RELEASE)),,$(error dist is the release's: make RELEASE=1 dist))
 	@mkdir -p dist
 	@cp $(TARGET).3dsx dist/slider3ds.3dsx
 	@cp $(CIA_NAME) dist/slider3ds.cia

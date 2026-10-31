@@ -119,8 +119,8 @@ void Particles::emit(const World& world, Emitter& emitter, float x, float y, int
         }
         p.objectX = ox;
         p.objectY = oy;
-        p.centerDx = emitter.object >= 0 ? emitter.dx : x;
-        p.centerDy = emitter.object >= 0 ? emitter.dy : y;
+        p.centerDx = emitter.dx;
+        p.centerDy = emitter.dy;
         particles_.push_back(p);
     }
 }
@@ -188,13 +188,24 @@ void Particles::update(const World& world, float dt) {
     // the limit loses the dampen fraction per 1/30 s, then drag: dv/dt = -k v^2 (dragByVelocity;
     // else -k v), k = drag times the particle's circle area pi (size/2)^2 (dragBySize), integrated
     // exactly per step.
-    keep_.resize(area.particles.size());
-    for (size_t i = 0; i < area.particles.size(); i++) keep_[i] = std::pow(1.0f - area.particles[i].dampen, dt * 30.0f);
+    if (dt != stepDt_ || steps_.size() != area.particles.size()) { // (the game's step is fixed: once)
+        stepDt_ = dt;
+        steps_.resize(area.particles.size());
+        for (size_t i = 0; i < area.particles.size(); i++) {
+            const ParticlesDef& d = area.particles[i];
+            steps_[i] = {std::pow(1.0f - d.dampen, dt * 30.0f), std::cos(d.orbital * dt), std::sin(d.orbital * dt)};
+        }
+    }
+    int positionOf = -1; // (the object last looked up: nothing moves objects in this loop)
+    float ox = 0, oy = 0;
     for (Particle& p : particles_) {
         const ParticlesDef& d = *p.def;
-        if (d.localSpace && p.object >= 0) { // (local space: carried along by its object)
-            float ox, oy;
+        const Step& step = steps_[p.defIndex];
+        if (p.object >= 0 && p.object != positionOf && (d.localSpace || d.orbital != 0)) {
             world.objectPosition(p.object, ox, oy);
+            positionOf = p.object;
+        }
+        if (d.localSpace && p.object >= 0) { // (local space: carried along by its object)
             p.x += ox - p.objectX;
             p.y += oy - p.objectY;
             p.objectX = ox;
@@ -202,24 +213,17 @@ void Particles::update(const World& world, float dt) {
         }
         p.rotation += p.spin * dt;
         if (d.orbital != 0) { // (about the system's position: its position turns, then the velocity moves it)
-            float cx = p.centerDx, cy = p.centerDy;
-            if (p.object >= 0) {
-                float ox, oy;
-                world.objectPosition(p.object, ox, oy);
-                cx += ox;
-                cy += oy;
-            }
-            const float c = std::cos(d.orbital * dt), s = std::sin(d.orbital * dt);
+            const float cx = p.centerDx + (p.object >= 0 ? ox : 0), cy = p.centerDy + (p.object >= 0 ? oy : 0);
             const float rx = p.x - cx, ry = p.y - cy;
-            p.x = cx + c * rx - s * ry;
-            p.y = cy + s * rx + c * ry;
+            p.x = cx + step.orbitalCos * rx - step.orbitalSin * ry;
+            p.y = cy + step.orbitalSin * rx + step.orbitalCos * ry;
         }
         p.vx += d.forceX * dt;
         p.vy += d.forceY * dt;
         const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
         if (d.limitVelocity && speed > 0) {
             float s = speed;
-            if (s > d.limit) s = d.limit + (s - d.limit) * keep_[p.defIndex];
+            if (s > d.limit) s = d.limit + (s - d.limit) * step.keep;
             if (d.drag > 0) {
                 const float k = d.drag * (d.dragBySize ? 0.78539816f * d.size * d.size : 1.0f);
                 s = d.dragByVelocity ? s / (1 + k * s * dt) : s * std::exp(-k * dt);
@@ -248,10 +252,14 @@ int Particles::frameSprite(const Particle& p) {
     const ParticlesDef& d = *p.def;
     if (d.frames.empty()) return -1;
     // Texture sheet animation (Grid, single row, once over the lifetime): frameOverTime, the
-    // particle's blend of its two curves, times the frames in a row.
+    // particle's blend of its two curves (their baked tables), times the frames in a row.
     const float t = p.lifetime > 0 ? std::min(p.age / p.lifetime, 1.0f) : 1.0f;
-    const float a = evalKeys(d.frameCurveMin, t), b = evalKeys(d.frameCurveMax, t);
-    const float v = (a + (b - a) * p.frameBlend) * d.frameMultiplier;
+    const float at = t * ParticlesDef::FRAME_TABLE_STEPS;
+    const int i = std::min((int)at, ParticlesDef::FRAME_TABLE_STEPS - 1);
+    auto sample = [&](const std::vector<float>& table) { return table[i] + (table[i + 1] - table[i]) * (at - (float)i); };
+    float v = sample(d.frameTableMin);
+    if (!d.frameTableMax.empty()) v += (sample(d.frameTableMax) - v) * p.frameBlend;
+    v *= d.frameMultiplier;
     const int frame = std::min(std::max((int)(v * d.tilesX), 0), d.tilesX - 1);
     return d.frames[p.row * d.tilesX + frame];
 }

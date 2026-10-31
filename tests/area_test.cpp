@@ -164,6 +164,52 @@ TEST(area_validation_particle_frames_match_their_size_on_screen) {
     CHECK(!loadFixture(offCenter, a, err) && err.find("off center") != std::string::npos);
 }
 
+TEST(area_validation_rejects_bad_particle_and_fish_data) {
+    // A particle system with every optional part, a ParticleSystem.Play of it, the fish lists.
+    const std::string good = fixture(R"("onEnter": [{"method": "VarManager.SetBoolOn", "target": 0,
+                     "string": "touched"}])",
+                                     R"("onEnter": [{"method": "ParticleSystem.Play", "target": 1, "particles": 0}])");
+    auto withFish = [&](const std::string& from, const std::string& to) {
+        std::string s = good;
+        const std::string fadeKey = R"("fadeDuration": 0.5,)";
+        s.replace(s.find(fadeKey), fadeKey.size(), R"("particles": [{"object": 1, "playOnAwake": false, "duration": 1, "lifetime": [1, 1],
+    "speed": [0, 0], "size": 1, "colorTimes": [0], "colors": [[255, 255, 255, 255]], "delay": [0, 1], "arc": [0, 1], "rate": [0, 0],
+    "bursts": [{"time": 0, "count": [1, 1], "probability": 0.5}], "rotation": [0, 0], "spin": [0, 0],
+    "frames": {"sprites": [0], "tilesX": 1, "multiplier": 1, "curveMin": [0, 0, 0, 0, 0.5, 0.5], "curveMax": [0, 0, 0, 0, 0.5, 0.5]}}],
+  "areaGrid": {"fishSpawners": [2], "specialFish": [0]},
+  "fadeDuration": 0.5,)");
+        if (!from.empty()) {
+            const size_t at = s.find(from);
+            if (at == std::string::npos) return "fixture: pattern not found: " + from;
+            s.replace(at, from.size(), to);
+        }
+        return s;
+    };
+    Area a;
+    std::string err;
+    check(loadFixture(withFish("", ""), a, err), "the fish fixture loads: " + err);
+    const char* cases[][3] = {
+        {R"("target": 1, "particles": 0)", R"("target": 2, "particles": 0)", "Play's target isn't its system's object"},
+        {R"("target": 1, "particles": 0)", R"("target": 1, "particles": 5)", "Play -> missing system"},
+        {R"("delay": [0, 1])", R"("delay": [1, 0])", "delay min over max"},
+        {R"("delay": [0, 1])", R"("delay": [-1, 1])", "negative delay"},
+        {R"("arc": [0, 1])", R"("arc": [0, 0])", "empty arc"},
+        {R"("arc": [0, 1])", R"("arc": [0, 7])", "arc over a full circle"},
+        {R"("probability": 0.5)", R"("probability": 1.5)", "probability over 1"},
+        {R"("probability": 0.5)", R"("probability": -0.5)", "negative probability"},
+        {R"("curveMin": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMin": [0, 0, 0, 0])", "a curve in the old 4-number keys"},
+        {R"("curveMax": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMax": [0, 0, 0, 0, 1, 1, 0, 0])", "a curve of two old keys"},
+        {R"("curveMin": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMin": [1, 0, 0, 0, 0.5, 0.5, 0, 0, 0, 0, 0.5, 0.5])", "curve keys out of order"},
+        {R"("fishSpawners": [2])", R"("fishSpawners": [9])", "fish spawner -> missing object"},
+        {R"("specialFish": [0])", R"("specialFish": [3])", "special fish -> missing system"},
+    };
+    for (const auto& c : cases) {
+        const std::string json = withFish(c[0], c[1]);
+        check(json.rfind("fixture:", 0) != 0, json);
+        check(!loadFixture(json, a, err), std::string("rejects ") + c[2]);
+    }
+}
+
 TEST(area_validation_rejects_bad_indices) {
     const char* cases[][3] = {
         {R"("frames": [0])", R"("frames": [5])", "tile frame -> missing sprite"},

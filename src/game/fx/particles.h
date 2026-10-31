@@ -33,7 +33,7 @@ public:
         float rotation = 0, spin = 0, frameBlend = 0;
         int row = 0;
         float objectX = 0, objectY = 0;
-        float centerDx = 0, centerDy = 0; // the system's position (what orbital circles) from its object (none: world)
+        float centerDx = 0, centerDy = 0; // the system's position (what orbital circles): its emitter's dx, dy
     };
 
     void reset(); // nothing playing, the random sequence from its start
@@ -88,7 +88,12 @@ private:
     std::vector<Emitter> emitters_;
     std::vector<Particle> particles_;
     std::vector<uint8_t> wasActive_; // per Area::particles entry: its object was active last update
-    std::vector<float> keep_;        // per Area::particles entry: this frame's dampen factor (scratch)
+    struct Step { // a def's factors for one step of stepDt_
+        float keep;                   // limit velocity's dampen
+        float orbitalCos, orbitalSin; // the turn about the system
+    };
+    std::vector<Step> steps_; // per Area::particles entry
+    float stepDt_ = 0;
     int nextId_ = 1;
     Rng rng_;
 };

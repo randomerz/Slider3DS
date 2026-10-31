@@ -172,7 +172,7 @@ void AreaView::draw(const World& world, int minSortLayer, int maxSortLayer) {
         if (!inRange(p.def->sortLayer)) continue;
         float sx, sy; // (off screen: not worth sorting)
         worldToScreen(p.x, p.y, sx, sy);
-        const float reach = particleReach(area, *p.def);
+        const float reach = particleReach_[p.defIndex];
         if (sx + reach < 0 || sx - reach > screenW_ || sy + reach < 0 || sy - reach > screenH_) continue;
         Item it{ItemKind::Particle, i, {}};
         it.sprite.sortLayer = p.def->sortLayer;
@@ -273,14 +273,6 @@ void AreaView::drawLine(const LineDraw& l) {
         return;
     plat::drawLine(x0, y0, x1, y1, l.width * ppu_, l.color);
     spriteCount_++;
-}
-
-float AreaView::particleReach(const Area& area, const ParticlesDef& d) const {
-    // Screen px from its position to the farthest pixel it can cover: a square's half, a turned
-    // frame's half diagonal (frames draw at native size); + 1 slack (the draws themselves aren't rounded).
-    float reach = d.size * ppu_ * 0.5f;
-    for (int f : d.frames) reach = std::max(reach, 0.5f * std::hypot((float)area.sprites[f].w, (float)area.sprites[f].h));
-    return reach + 1;
 }
 
 void AreaView::drawParticle(const Area& area, const Particles::Particle& p) {
@@ -387,6 +379,14 @@ void AreaView::prepareTiles(const Area& area) {
         const float k = ppu_ / S.ppu; // (world sprites draw at their pixel size; the reach in this view's px)
         spriteReach_ = std::max({spriteReach_, std::abs(S.pivotX) * k, std::abs(S.w - S.pivotX) * k,
                                  std::abs(S.pivotY) * k, std::abs(S.h - S.pivotY) * k, (float)S.w, (float)S.h});
+    }
+    particleReach_.clear();
+    for (const ParticlesDef& d : area.particles) {
+        // A square's half, a turned frame's half diagonal (frames draw at native size); + 1 slack (the
+        // draws themselves aren't rounded).
+        float reach = d.size * ppu_ * 0.5f;
+        for (int f : d.frames) reach = std::max(reach, 0.5f * std::hypot((float)area.sprites[f].w, (float)area.sprites[f].h));
+        particleReach_.push_back(reach + 1);
     }
     tileFrame_.assign(area.tiles.size(), -1);
     animatedTiles_.clear();

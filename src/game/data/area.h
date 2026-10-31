@@ -621,6 +621,11 @@ struct ParticlesDef {
     int tilesX = 0;
     float frameMultiplier = 1;
     std::vector<CurveKey> frameCurveMin, frameCurveMax;
+    // The curves baked at load (a weighted key's exact value takes a bisection, and every particle on
+    // screen reads this every frame): FRAME_TABLE_STEPS + 1 even samples, linear between them. Max is
+    // empty when it would equal min (no blend to do).
+    static constexpr int FRAME_TABLE_STEPS = 64;
+    std::vector<float> frameTableMin, frameTableMax;
 };
 
 // ParticleManager.SpawnParticle's types the port spawns (Unity's ParticleType names, in order).

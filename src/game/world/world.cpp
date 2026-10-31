@@ -168,16 +168,13 @@ void World::reloadObjects() {
     artifact.canAddMoves = true; // UIArtifact.Init (EnableMovement)
     starts.reset(area);
     runStarts();
-    fish.start(*this); // VillageGrid.Start: the fish spawners, once on
-    audio.playMusic(tracks::VILLAGE); // VillageGrid.Start
     // The Artifact's pins: UITrackerManager.Awake's Player.AddTracker, then VillageGrid.Start's.
     trackers.clear();
     if (const UiTrackersDef& u = area.uiTrackers; u.present)
         trackers.add({UiTracker::PLAYER, u.playerFullBlackCircle, u.playerFullBlackCircleEmpty, u.playerFullWhiteCircle,
                       u.playerFullWhiteCircleEmpty, PLAYER_TRACKER_BLINK_S, PLAYER_TRACKER_REPEAT_S});
-    village::addSlider2Tracker(*this);
+    village::gridStart(*this);
     trackers.update(*this, 0); // (shown by their targets before the first draw: the manager's LateUpdate)
-    finale.start(*this); // VillageGrid.Start (after every Awake; CheckHole may hide the fragment)
     abduction.start(*this); // CatAbductionController.Start
     sfx.start(*this);       // DistanceBasedAmbience.Start
     runStarts();

@@ -84,7 +84,6 @@ private:
     void drawLine(const LineDraw& l);
     void drawPickupCircle(const World& world); // ItemPickupEffect's mask (its dark panel inside it)
     void drawParticle(const Area& area, const Particles::Particle& p);
-    float particleReach(const Area& area, const ParticlesDef& d) const; // culling: screen px it reaches from its position
     // Screen top-left of `sp`; false if it is off screen.
     bool spriteRect(const Area& area, const SortedSprite& sp, float& px, float& py) const;
 
@@ -141,6 +140,7 @@ private:
     std::vector<std::vector<SolidRect>> solidRects_; // per layer
     std::vector<std::vector<uint8_t>> inRect_;       // per layer, per cell: drawn by a SolidRect
     float spriteReach_ = 0; // screen px: the farthest any sprite's pixels lie from its pivot (world sprites' early cull)
+    std::vector<float> particleReach_; // per Area::particles: screen px from its position to the farthest pixel it can cover
     // The screen position of cell (0, 0)'s anchor and the cells whose sprites can reach the screen
     // (x0 > x1 or y0 > y1: none).
     void layerRange(const Area& area, const Grid& grid, int layer, float& ax, float& ay, int& x0, int& x1, int& y0,

@@ -33,8 +33,11 @@ void explode(World& world);
 void waterfallEntry(World& world);
 // OnHouseExit: the first time, the intro cutscene plays (VillageIntro).
 void houseExit(World& world);
-// VillageGrid.Start's Artifact pin on the Slider 2 collectible, while it isn't collected
-// (RemoveSlider2Tracker drops it as it's collected).
+// VillageGrid.Start, on a scene load (after every Awake): the fish, the music, the Artifact's Slider 2
+// pin (addSlider2Tracker), the final puzzle's state.
+void gridStart(World& world);
+// The Artifact pin on the Slider 2 collectible, while it isn't collected (RemoveSlider2Tracker drops it
+// as it's collected).
 void addSlider2Tracker(World& world);
 
 // The spec conditions (Condition.checkBool) on VillageGrid & co., and what they read.

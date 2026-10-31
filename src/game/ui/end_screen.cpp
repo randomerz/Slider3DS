@@ -9,7 +9,6 @@
 namespace {
 
 constexpr int S = MenuSkin::UI_SCALE;
-constexpr int MIN_W = 320, MIN_H = 180; // EndOfDemo.unity's canvas
 // Main Menu (its button), centered on the bottom screen like the pause menu's (UI px).
 constexpr int BUTTON_W = 120, BUTTON_H = 18;
 constexpr int BUTTON_X = (plat::BOTTOM_W / S - BUTTON_W) / 2, BUTTON_Y = (plat::BOTTOM_H / S - BUTTON_H) / 2;
@@ -31,7 +30,7 @@ bool EndArt::load(std::string* error) {
         return false;
     }
     x_ = r.at(0).asInt(), y_ = r.at(1).asInt(), w_ = r.at(2).asInt(), h_ = r.at(3).asInt();
-    if (x_ < 0 || y_ < 0 || w_ < MIN_W || h_ < MIN_H || w_ > plat::TOP_W || h_ > plat::TOP_H) {
+    if (x_ < 0 || y_ < 0 || w_ != plat::TOP_W || h_ != plat::TOP_H) {
         if (error) *error = "ui/end.json: the art is " + std::to_string(w_) + "x" + std::to_string(h_) + " at " +
                             std::to_string(x_) + "," + std::to_string(y_);
         return false;
@@ -49,7 +48,7 @@ void EndArt::unload() {
     sheet_ = nullptr;
 }
 
-void EndArt::draw(int x, int y) const { plat::drawSprite(sheet_, x_, y_, w_, h_, (float)x, (float)y); }
+void EndArt::draw() const { plat::drawSprite(sheet_, x_, y_, w_, h_, 0, 0); }
 
 EndScreen::Box EndScreen::buttonBox() { return {BUTTON_X * S, BUTTON_Y * S, BUTTON_W * S, BUTTON_H * S}; }
 
@@ -74,8 +73,8 @@ bool EndScreen::update(const plat::Input& in) {
 }
 
 void EndScreen::drawTop(const EndArt& art) const {
-    plat::beginScreen(plat::Screen::Top, palette::DARK); // (the art's own background around it)
-    art.draw((plat::TOP_W - art.width()) / 2, (plat::TOP_H - art.height()) / 2);
+    plat::beginScreen(plat::Screen::Top, palette::DARK);
+    art.draw();
     if (frames_ < FADE_FRAMES) // (from black)
         plat::drawRect(0, 0, plat::TOP_W, plat::TOP_H, plat::rgba(0, 0, 0, (uint8_t)std::lround(255 - 255.0f * frames_ / FADE_FRAMES)));
 }
