@@ -47,7 +47,7 @@ make RELEASE=1 dist # dist/slider3ds.3dsx + dist/slider3ds.cia: the files to pub
 
 For the PC build, configure the repo with CMake; it fetches SDL2 on its own. The tests are `slider3ds_tests`.
 
-The content in `assets/` is exported from the original Unity project by an editor script on its `3ds-export` branch.
+The content in `assets/` is exported from the original Unity project by an editor script, which isn't published. Everything needed to build the game is in this repo.
 
 ## Credits
 
