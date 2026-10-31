@@ -240,7 +240,8 @@ endif
 
 #---------------------------------------------------------------------------------
 # `make RELEASE=1 cia` -> slider3ds.cia: the release build, installable from the HOME Menu (FBI), its
-# banner tools/cia/banner.png + banner.wav (tools/make_banner.py) and makerom spec tools/cia/cia.rsf.
+# banner tools/cia/banner.cgfx (3D: tools/make_banner3d.py) or, without one or with FLAT_BANNER=1, banner.png,
+# its sound banner.wav (tools/make_banner.py), and makerom spec tools/cia/cia.rsf.
 # Needs makerom and bannertool (devkitPro's tools/bin).
 # `make cia` -> slider3ds_dev.cia: the dev build as a CIA (its own title id: both install side by side),
 # to read the overlay of an installed title (e.g. the audio thread's core). Its SELECT-at-launch updater
@@ -254,9 +255,10 @@ CIA_NAME	:=	slider3ds.cia
 CIA_UNIQUE_ID	:=	0xF51D3
 CIA_PRODUCT	:=	CTR-P-SLDR
 endif
+BANNER_ART	:=	$(if $(and $(wildcard tools/cia/banner.cgfx),$(if $(FLAT_BANNER),,1)),-ci tools/cia/banner.cgfx,-i tools/cia/banner.png)
 cia: all
 	$(if $(filter-out 2,$(words $(APP_VERSION_PARTS))),$(error SLIDER_VERSION "$(APP_VERSION)" in src/game/app/version.h is not major.minor))
-	@bannertool makebanner -i tools/cia/banner.png -a tools/cia/banner.wav -o $(BUILD)/banner.bnr
+	@bannertool makebanner $(BANNER_ART) -a tools/cia/banner.wav -o $(BUILD)/banner.bnr
 	@makerom -f cia -o $(CIA_NAME) -target t -exefslogo -elf $(TARGET).elf -rsf tools/cia/cia.rsf \
 		-icon $(TARGET).smdh -banner $(BUILD)/banner.bnr -DAPP_TITLE="$(CIA_TITLE)" -DAPP_PRODUCT_CODE=$(CIA_PRODUCT) \
 		-DAPP_UNIQUE_ID=$(CIA_UNIQUE_ID) -DAPP_ROMFS=$(ROMFS) -DAPP_CATEGORY=Application -DAPP_USE_ON_SD=true \
