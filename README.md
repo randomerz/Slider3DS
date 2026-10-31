@@ -52,5 +52,3 @@ The content in `assets/` is exported from the original Unity project by an edito
 ## Credits
 
 Slider is by Boomo and the Georgia Tech VGDev team. This port is an unofficial homebrew project, not affiliated with Nintendo.
-
-The code and game content are here so you can build and play the port. If you'd like to reuse any of it, just ask!
