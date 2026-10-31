@@ -51,4 +51,4 @@ The content in `assets/` is exported from the original Unity project by an edito
 
 ## Credits
 
-Slider is by Boomo and the Georgia Tech VGDev team. This port is a fan-made homebrew project, not affiliated with Nintendo.
+Slider is by Boomo and the Georgia Tech VGDev team. This port is an unofficial homebrew project, not affiliated with Nintendo.

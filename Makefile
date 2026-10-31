@@ -84,7 +84,8 @@ ifeq ($(strip $(RELEASE)),)
 DEV_HOST	?=	10.0.0.200
 CFLAGS	+=	-DSLIDER_DEV=1 -DDEV_UPDATE_URL='"http://$(DEV_HOST):8000/slider3ds.3dsx"'
 else
-CFLAGS	+=	-DSLIDER_DEV=0
+# (asserts stay on in the release: their file names without this machine's path)
+CFLAGS	+=	-DSLIDER_DEV=0 -fmacro-prefix-map=$(TOPDIR)/=
 endif
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
