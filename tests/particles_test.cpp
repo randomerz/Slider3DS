@@ -629,6 +629,7 @@ TEST(particles_orbital_turns_about_each_systems_own_position) {
     // also across a change of the time step.
     Area area = villageArea();
     const int river = riverFish(), special = specialFish(), smoke = area.particlePrefabs[(int)ParticleType::SmokePoof];
+    CHECK(river >= 0 && special >= 0 && smoke >= 0);
     if (river < 0 || special < 0 || smoke < 0) return;
     for (ParticlesDef& d : area.particles) d.playOnAwake = false; // (only these four particles)
     for (int k : {river, special, smoke}) {

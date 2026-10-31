@@ -77,10 +77,9 @@ public:
     const std::vector<int>& moved() const { return moved_; }
     bool isMoved(const Area& area, int object) const { return owner_[object] != area.objects[object].owner || offX_[object] != 0 || offY_[object] != 0; }
 
-    // Bumped when active state / placement changes, so per-frame work can skip frames where what
-    // it depends on didn't change (Starts watch activity; placement has no reader yet: for walks).
+    // Bumped when active state changes, so per-frame work can skip frames where what it depends on
+    // didn't change (Starts watch it).
     uint32_t activeVersion() const { return activeVersion_; }
-    uint32_t placementVersion() const { return placementVersion_; }
 
 private:
     void buildOrder();                         // order_ etc. from parent_
@@ -98,6 +97,6 @@ private:
     std::vector<uint32_t> fill_;
     std::vector<int> sortingOrder_;
     std::vector<uint8_t> colliderEnabled_; // per ObjectCollider::slot
-    uint32_t activeVersion_ = 0, placementVersion_ = 0;
+    uint32_t activeVersion_ = 0;
     std::vector<int> moved_;               // moved(), sorted
 };

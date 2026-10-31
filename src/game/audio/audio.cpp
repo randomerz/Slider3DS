@@ -171,9 +171,6 @@ void Audio::applyCues(const std::vector<AudioCue>& cues) {
         switch (c.kind) {
         case AudioCue::Kind::Play: play(c); break;
         case AudioCue::Kind::PlayMusic: playMusic(c); break;
-        case AudioCue::Kind::StopMusic:
-            if (auto it = music_.find(c.name); it != music_.end()) mixer_.stop(it->second);
-            break;
         case AudioCue::Kind::PlayAmbience: playAmbience(c); break;
         case AudioCue::Kind::StopAmbience:
             if (auto it = ambience_.find(c.name); it != ambience_.end()) mixer_.stop(it->second);

@@ -42,7 +42,6 @@ public:
     // Animator.SetTrigger: set until a transition uses it (no-op if the controller has no such parameter).
     void setTrigger(const World& world, int animator, const std::string& param) { setBool(world, animator, param, true); }
     // Animator.SetInteger / SetFloat (no-op if the controller has no such parameter).
-    void setInteger(const World& world, int animator, const std::string& param, int value) { setFloat(world, animator, param, (float)value); }
     void setFloat(const World& world, int animator, const std::string& param, float value);
     // Any of those by the controller's parameter index (resolved at load; a trigger or bool: 0 / 1).
     void setParam(const World& world, int animator, int param, float value);

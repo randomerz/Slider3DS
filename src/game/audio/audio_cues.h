@@ -16,7 +16,7 @@ struct Listener {
 };
 
 struct AudioCue {
-    enum class Kind { Play, PlayMusic, StopMusic, PlayAmbience, StopAmbience, SetParameter, DampenMusic, PlayVoice, StopVoice };
+    enum class Kind { Play, PlayMusic, PlayAmbience, StopAmbience, SetParameter, DampenMusic, PlayVoice, StopVoice };
     Kind kind;
     std::string name;    // AudioManager's sound / music / ambience name, or the parameter's
     float value = 0;     // SetParameter: the value; Play: the "Pitch" parameter (0: the event's own);
@@ -58,7 +58,6 @@ public:
     void playMusic(std::string_view name, bool restart = true) {
         add({AudioCue::Kind::PlayMusic, std::string(name), 0, restart});
     }
-    void stopMusic(std::string_view name) { add({AudioCue::Kind::StopMusic, std::string(name)}); }
     void playAmbience(std::string_view name) { add({AudioCue::Kind::PlayAmbience, std::string(name)}); }
     void stopAmbience(std::string_view name) { add({AudioCue::Kind::StopAmbience, std::string(name)}); }
     // AudioManager.SetGlobalParameter.

@@ -1,6 +1,7 @@
 #include "game/ui/artifact_ui.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 
@@ -105,7 +106,7 @@ void ArtifactUI::selectButton(Grid& grid, Artifact& artifact, int x, int y, bool
 
 void ArtifactUI::update(const plat::Input& in, World& world, float dt) {
     clicked_ = false;
-    if (nudges_.empty()) return; // (before init: no buttons yet)
+    assert(!nudges_.empty()); // (the Frontend inits it before Mode::Game, the only mode that runs it)
     const Area& area = world.area;
     Grid& grid = world.grid;
     Artifact& artifact = world.artifact;
@@ -220,7 +221,7 @@ bool ArtifactUI::buttonPressed(const Grid& grid, const Artifact& artifact, int i
 }
 
 void ArtifactUI::draw(const World& world, const SpriteSheets& sheets) const {
-    if (nudges_.empty()) return; // (before init: no buttons yet)
+    assert(!nudges_.empty()); // (the Frontend inits it before Mode::Game, the only mode that runs it)
     const Area& area = world.area;
     const Grid& grid = world.grid;
     const Artifact& artifact = world.artifact;

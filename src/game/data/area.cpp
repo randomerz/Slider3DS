@@ -961,10 +961,10 @@ static bool validate(const Area& a, std::string* error) {
         for (size_t i = 1; i < pd.colorTimes.size(); i++) ok = ok && pd.colorTimes[i - 1] <= pd.colorTimes[i];
         for (const ParticleBurstDef& b : pd.bursts)
             ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0 && b.probability >= 0 && b.probability <= 1;
-        auto bakeable = [](const std::vector<CurveKey>& k) { // (in order; no stepped key: a table would smear its step)
-            auto smooth = [](const CurveKey& c) { return std::fabs(c.in) < CurveKey::INFINITE && std::fabs(c.out) < CurveKey::INFINITE; };
-            return !k.empty() && std::all_of(k.begin(), k.end(), smooth) &&
-                   std::is_sorted(k.begin(), k.end(), [](const CurveKey& a, const CurveKey& b) { return a.t < b.t; });
+        auto bakeable = [](const std::vector<CurveKey>& k) { // (in order; no stepped segment: a table would smear its step)
+            for (size_t i = 1; i < k.size(); i++)
+                if (k[i].t < k[i - 1].t || std::fabs(k[i - 1].out) >= CurveKey::INFINITE || std::fabs(k[i].in) >= CurveKey::INFINITE) return false;
+            return !k.empty();
         };
         if (!pd.frames.empty())
             ok = ok && pd.tilesX > 0 && pd.frames.size() % pd.tilesX == 0 && bakeable(pd.frameCurveMin) && bakeable(pd.frameCurveMax);

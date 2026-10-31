@@ -39,7 +39,6 @@ void ObjectStates::init(const Area& area) {
             updateMoved(area, root);
         }
     activeVersion_++;
-    placementVersion_++;
 }
 
 void ObjectStates::buildOrder() {
@@ -126,7 +125,6 @@ void ObjectStates::setParent(const Area& area, int object, int parent) {
     propagate(area, object);
     updateMoved(area, object);
     activeVersion_++;
-    placementVersion_++;
 }
 
 void ObjectStates::setPlacement(const Area& area, int object, int owner, float dx, float dy) {
@@ -135,7 +133,6 @@ void ObjectStates::setPlacement(const Area& area, int object, int owner, float d
     selfDy_[object] = dy;
     propagate(area, object);
     updateMoved(area, object);
-    placementVersion_++;
 }
 
 void ObjectStates::moveOnto(const Area& area, int object, int target) {
@@ -150,5 +147,4 @@ void ObjectStates::moveOnto(const Area& area, int object, int target) {
     propagate(area, object);
     updateMoved(area, object);
     activeVersion_++;
-    placementVersion_++;
 }

@@ -188,6 +188,8 @@ TEST(area_validation_rejects_bad_particle_and_fish_data) {
     Area a;
     std::string err;
     check(loadFixture(withFish("", ""), a, err), "the fish fixture loads: " + err);
+    check(loadFixture(withFish(R"("curveMin": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMin": [0, 0, 1e30, 0, 0.5, 0.5, 1, 1, 0, -1e30, 0.5, 0.5])"), a, err),
+          "a curve's outer tangents, never read, may be anything: " + err);
     const char* cases[][3] = {
         {R"("target": 1, "particles": 0)", R"("target": 2, "particles": 0)", "Play's target isn't its system's object"},
         {R"("target": 1, "particles": 0)", R"("target": 1, "particles": 5)", "Play -> missing system"},
@@ -200,8 +202,8 @@ TEST(area_validation_rejects_bad_particle_and_fish_data) {
         {R"("curveMin": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMin": [0, 0, 0, 0])", "a curve in the old 4-number keys"},
         {R"("curveMax": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMax": [0, 0, 0, 0, 1, 1, 0, 0])", "a curve of two old keys"},
         {R"("curveMin": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMin": [1, 0, 0, 0, 0.5, 0.5, 0, 0, 0, 0, 0.5, 0.5])", "curve keys out of order"},
-        {R"("curveMin": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMin": [0, 0, 1e30, 0, 0.5, 0.5])", "a stepped key (in)"},
-        {R"("curveMax": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMax": [0, 0, 0, -1e30, 0.5, 0.5])", "a stepped key (out)"},
+        {R"("curveMin": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMin": [0, 0, 0, 0, 0.5, 0.5, 1, 1, 1e30, 0, 0.5, 0.5])", "a stepped segment (its end's in)"},
+        {R"("curveMax": [0, 0, 0, 0, 0.5, 0.5])", R"("curveMax": [0, 0, 0, -1e30, 0.5, 0.5, 1, 1, 0, 0, 0.5, 0.5])", "a stepped segment (its start's out)"},
         {R"("fishSpawners": [2])", R"("fishSpawners": [9])", "fish spawner -> missing object"},
         {R"("specialFish": [0])", R"("specialFish": [3])", "special fish -> missing system"},
     };
