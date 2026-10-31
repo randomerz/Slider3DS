@@ -70,7 +70,7 @@ private:
     };
 
     void drawLayer(const Area& area, const Grid& grid, int layer); // Area::layers index
-    void prepareTiles(const Area& area); // tileSprites_ / layerBounds_ / tileFrame_, once per Area
+    void prepare(const Area& area); // tileSprites_ / layerBounds_ / tileFrame_ / particleReach_, once per Area
     void drawSprite(const Area& area, const SortedSprite& sp); // if on screen
     void drawDialogue(const World& world, int npc);
     void drawWorldText(const World& world, int i); // texts_[i]

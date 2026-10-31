@@ -88,7 +88,7 @@ TEST(world_collectibles_chime_as_they_appear_and_play_the_pick_up) {
     w.objectPosition(area.collectibles[shown].object, w.player.x, w.player.y);
     w.update(DT, FrameInput{});
     const std::vector<AudioCue> cues = w.audio.take();
-    CHECK(count(cues, K::Play, area.name + " Pick Up") == 1);
+    CHECK(area.name + " Pick Up" == sounds::VILLAGE_PICK_UP && count(cues, K::Play, sounds::VILLAGE_PICK_UP) == 1); // (in the bank: sounds::ALL)
     const AudioCue* dip = find(cues, "");
     CHECK(dip && dip->kind == K::DampenMusic && dip->value == 0.2f && dip->length == 2);
 }

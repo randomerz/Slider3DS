@@ -18,14 +18,6 @@ int npcNamed(const Area& area, const std::string& name) {
     return -1;
 }
 
-int objectNamed(const Area& area, const std::string& tail) {
-    for (int i = 0; i < (int)area.objects.size(); i++) {
-        const std::string& p = area.objects[i].path;
-        if (p.size() >= tail.size() && p.compare(p.size() - tail.size(), tail.size(), tail) == 0) return i;
-    }
-    return -1;
-}
-
 bool near(const World& world, int a, int b) {
     float ax, ay, bx, by;
     world.objectPosition(a, ax, ay);

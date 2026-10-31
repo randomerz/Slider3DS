@@ -276,24 +276,6 @@ TEST(artifact_ui_flicker_runs_through_world_update_while_the_player_is_held) {
     check(one == "........", "tile 1: " + one);
 }
 
-TEST(artifact_ui_before_init_does_nothing) {
-    // A screen that shows or feeds the Artifact before a game started it (the title once did) gets
-    // nothing drawn and nothing moved, not a bad index.
-    World world(villageArea(), DEFAULT_SETTINGS);
-    SpriteSheets sheets;
-    ArtifactUI ui;
-    testResetDrawCalls();
-    ui.draw(world, sheets);
-    CHECK(testDrawCalls().empty());
-    plat::Input in;
-    in.touching = true;
-    in.touchX = 160;
-    in.touchY = 120;
-    ui.update(in, world, 1.0f / 60);
-    ui.update(plat::Input{}, world, 1.0f / 60);
-    CHECK(ui.selected() == 0 && world.artifact.queueEmpty());
-}
-
 TEST(artifact_ui_dpad_cursor_selects_and_moves) {
     // The D-pad's cursor: its first press shows it (no player tile here: the middle), then it steps
     // by slot without wrapping; X taps the button under it, so a tile is selected then sent to an

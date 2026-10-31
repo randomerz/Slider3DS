@@ -614,13 +614,67 @@ TEST(particles_fish_frame_table_follows_the_curve) {
             const float v = (evalKeys(d.frameCurveMin, t) + evalKeys(d.frameCurveMax, t)) * 0.5f * d.frameMultiplier;
             return std::min(std::max((int)(v * d.tilesX), 0), d.tilesX - 1);
         };
-        for (int i = 0; i <= 1000; i++) { // (a switch may land up to 1/128 of a life off: only checked away from one)
+        for (int i = 0; i <= 1000; i++) { // (a switch lands within 0.2% of a life of the exact one: checked outside that)
             p.age = i / 1000.0f;
             const int frame = exactFrame(p.age);
-            if (exactFrame(p.age - 1 / 128.0f) == frame && exactFrame(p.age + 1 / 128.0f) == frame)
+            if (exactFrame(p.age - 0.002f) == frame && exactFrame(p.age + 0.002f) == frame)
                 check(Particles::frameSprite(p) == d.frames[frame], "frame at " + std::to_string(p.age));
         }
     }
+}
+
+TEST(particles_orbital_turns_about_each_systems_own_position) {
+    // Not the Village's fish (all local space, on their object): world space, under an object, at an
+    // offset from one, and under none. Each particle follows the reference step about its own system,
+    // also across a change of the time step.
+    Area area = villageArea();
+    const int river = riverFish(), special = specialFish(), smoke = area.particlePrefabs[(int)ParticleType::SmokePoof];
+    if (river < 0 || special < 0 || smoke < 0) return;
+    for (ParticlesDef& d : area.particles) d.playOnAwake = false; // (only these four particles)
+    for (int k : {river, special, smoke}) {
+        ParticlesDef& d = area.particles[k];
+        d.localSpace = d.loop = d.limitVelocity = false;
+        d.orbital = 1;
+        d.speedMin = d.speedMax = 1;
+        d.shapeRadius = 0;
+        d.lifetimeMin = d.lifetimeMax = d.duration = 10;
+        d.delayMin = d.delayMax = 0;
+        d.rateMin = d.rateMax = 0;
+        d.forceX = d.forceY = 0;
+        d.bursts = {{0, 1, 1, 1, 0}};
+    }
+    World world(area, DEFAULT_SETTINGS);
+    world.setTileActive(7, true);
+    world.objects.setActive(area, area.areaGrid.fishSpawners.at(1), true);
+    world.particles.reset(); // (Romeo's start poofs)
+    const int object = area.particles[river].object;
+    float ax, ay, bx, by;
+    world.objectPosition(object, ax, ay);
+    world.objectPosition(area.particles[special].object, bx, by);
+    CHECK(ax != bx || ay != by);
+    world.particles.play(world, river);
+    world.particles.spawnPrefab(world, ParticleType::SmokePoof, 3, 4, -1);
+    world.particles.spawnPrefab(world, ParticleType::SmokePoof, ax + 2, ay + 1, object);
+    world.particles.play(world, special);
+    const float centers[4][2] = {{ax, ay}, {3, 4}, {ax + 2, ay + 1}, {bx, by}}; // (in emitters' order)
+    float dt = 1.0f / 60;
+    world.particles.update(world, dt);
+    const std::vector<Particles::Particle>& live = world.particles.particles();
+    CHECK(live.size() == 4);
+    if (live.size() != 4) return;
+    float rel[4][2];
+    for (int i = 0; i < 4; i++) {
+        rel[i][0] = live[i].x - centers[i][0];
+        rel[i][1] = live[i].y - centers[i][1];
+    }
+    for (int f = 0; f < 60; f++) {
+        if (f == 30) dt = 1.0f / 30;
+        world.particles.update(world, dt);
+        for (int i = 0; i < 4; i++) unityFishStep(rel[i][0], rel[i][1], live[i].vx, live[i].vy, 1, dt);
+    }
+    for (int i = 0; i < 4; i++)
+        check(std::fabs(live[i].x - centers[i][0] - rel[i][0]) < 1e-3f && std::fabs(live[i].y - centers[i][1] - rel[i][1]) < 1e-3f,
+              "particle " + std::to_string(i) + " on its path");
 }
 
 TEST(particles_fish_start_delays_spread_the_river) {

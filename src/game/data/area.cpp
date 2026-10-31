@@ -369,12 +369,16 @@ static ParticlesDef readParticles(const Json& j) {
                 keys.push_back({k.at(i).asFloat(), k.at(i + 1).asFloat(), k.at(i + 2).asFloat(), k.at(i + 3).asFloat(),
                                 k.at(i + 4).asFloat(), k.at(i + 5).asFloat()});
         }
-        for (int i = 0; i <= ParticlesDef::FRAME_TABLE_STEPS; i++) {
-            const float t = (float)i / ParticlesDef::FRAME_TABLE_STEPS;
-            d.frameTableMin.push_back(evalKeys(d.frameCurveMin, t));
-            d.frameTableMax.push_back(evalKeys(d.frameCurveMax, t));
-        }
-        if (d.frameTableMax == d.frameTableMin) d.frameTableMax.clear();
+        auto bake = [](const std::vector<CurveKey>& keys, std::vector<float>& table) {
+            table.reserve(ParticlesDef::FRAME_TABLE_STEPS + 1);
+            for (int i = 0; i <= ParticlesDef::FRAME_TABLE_STEPS; i++) table.push_back(evalKeys(keys, (float)i / ParticlesDef::FRAME_TABLE_STEPS));
+        };
+        auto sameKey = [](const CurveKey& a, const CurveKey& b) {
+            return a.t == b.t && a.v == b.v && a.in == b.in && a.out == b.out && a.inW == b.inW && a.outW == b.outW;
+        };
+        bake(d.frameCurveMin, d.frameTableMin);
+        if (!std::equal(d.frameCurveMin.begin(), d.frameCurveMin.end(), d.frameCurveMax.begin(), d.frameCurveMax.end(), sameKey))
+            bake(d.frameCurveMax, d.frameTableMax);
     }
     return d;
 }
@@ -957,11 +961,13 @@ static bool validate(const Area& a, std::string* error) {
         for (size_t i = 1; i < pd.colorTimes.size(); i++) ok = ok && pd.colorTimes[i - 1] <= pd.colorTimes[i];
         for (const ParticleBurstDef& b : pd.bursts)
             ok = ok && b.countMin <= b.countMax && b.cycles >= 1 && b.interval >= 0 && b.probability >= 0 && b.probability <= 1;
-        auto keysInOrder = [](const std::vector<CurveKey>& k) {
-            return !k.empty() && std::is_sorted(k.begin(), k.end(), [](const CurveKey& a, const CurveKey& b) { return a.t < b.t; });
+        auto bakeable = [](const std::vector<CurveKey>& k) { // (in order; no stepped key: a table would smear its step)
+            auto smooth = [](const CurveKey& c) { return std::fabs(c.in) < CurveKey::INFINITE && std::fabs(c.out) < CurveKey::INFINITE; };
+            return !k.empty() && std::all_of(k.begin(), k.end(), smooth) &&
+                   std::is_sorted(k.begin(), k.end(), [](const CurveKey& a, const CurveKey& b) { return a.t < b.t; });
         };
         if (!pd.frames.empty())
-            ok = ok && pd.tilesX > 0 && pd.frames.size() % pd.tilesX == 0 && keysInOrder(pd.frameCurveMin) && keysInOrder(pd.frameCurveMax);
+            ok = ok && pd.tilesX > 0 && pd.frames.size() % pd.tilesX == 0 && bakeable(pd.frameCurveMin) && bakeable(pd.frameCurveMax);
         const std::string name = "particles " + (objectOk(pd.object) ? a.pathOf(pd.object) : std::string("?"));
         if (!ok) return fail(error, name + ": bad object, ranges, colors, bursts or frames");
         // (frames draw at 1x around their center — a texture pixel a screen pixel: each must be the

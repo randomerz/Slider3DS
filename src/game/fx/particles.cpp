@@ -220,16 +220,18 @@ void Particles::update(const World& world, float dt) {
         }
         p.vx += d.forceX * dt;
         p.vy += d.forceY * dt;
-        const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
-        if (d.limitVelocity && speed > 0) {
-            float s = speed;
-            if (s > d.limit) s = d.limit + (s - d.limit) * step.keep;
-            if (d.drag > 0) {
-                const float k = d.drag * (d.dragBySize ? 0.78539816f * d.size * d.size : 1.0f);
-                s = d.dragByVelocity ? s / (1 + k * s * dt) : s * std::exp(-k * dt);
+        if (d.limitVelocity) {
+            const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
+            if (speed > 0) {
+                float s = speed;
+                if (s > d.limit) s = d.limit + (s - d.limit) * step.keep;
+                if (d.drag > 0) {
+                    const float k = d.drag * (d.dragBySize ? 0.78539816f * d.size * d.size : 1.0f);
+                    s = d.dragByVelocity ? s / (1 + k * s * dt) : s * std::exp(-k * dt);
+                }
+                p.vx *= s / speed;
+                p.vy *= s / speed;
             }
-            p.vx *= s / speed;
-            p.vy *= s / speed;
         }
         p.x += p.vx * dt;
         p.y += p.vy * dt;

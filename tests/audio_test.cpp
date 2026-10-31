@@ -517,11 +517,6 @@ TEST(audio_dampens_the_music_and_brings_it_back) {
     CHECK(audio.musicDampening() == 1);
 }
 
-TEST(audio_bank_has_the_areas_pick_up) {
-    AudioBank bank;
-    CHECK(bank.load() && bank.sound(villageArea().name + " Pick Up") != nullptr); // (ItemPickupEffect's name)
-}
-
 TEST(mixer_stream_volume_follows_its_parameter) {
     // An ambience's distance curve: 0 dB at 0, -20 dB at 10 (linear in dB between the levels).
     Mixer m;

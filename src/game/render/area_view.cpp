@@ -22,7 +22,7 @@ void AreaView::begin(const Area& area, const SpriteSheets& sheets, float camX, f
     time_ = time;
     showInactive_ = showInactiveTiles;
     spriteCount_ = tileCount_ = 0;
-    if (tilesFor_ != &area || tileSheets_ != &sheets) prepareTiles(area);
+    if (tilesFor_ != &area || tileSheets_ != &sheets) prepare(area);
     for (int i : animatedTiles_) { // (each animated tile's frame once, not per cell)
         const TileDef& T = area.tiles[i];
         tileFrame_[i] = T.frames[(size_t)(time_ * T.fps) % T.frames.size()];
@@ -360,7 +360,7 @@ int screenSide(int side, uint32_t flags) {
 // Keyed by the Area's and the sheets' addresses: both are loaded once for the app's life (main) or a
 // test's. A future in-place reload of either (dev hot-reload) must reset tilesFor_ (textures and
 // tile indices would go stale).
-void AreaView::prepareTiles(const Area& area) {
+void AreaView::prepare(const Area& area) {
     assert(sheets_->loaded() || area.sprites.empty());
     tilesFor_ = &area;
     tileSheets_ = sheets_;
