@@ -8,7 +8,15 @@ It runs on Old and New 3DS / 2DS systems with custom firmware.
 
 ## Install
 
-Download a file from the [Releases](https://github.com/randomerz/Slider3DS/releases) page. There are two kinds.
+If you are new to modding a 3DS, follow this guide! 
+
+https://3ds.hacks.guide/
+
+If you have a FBI set up, you can install the Slider 3DS CIA with this QR code:
+
+![QR code for installing slider3ds.cia with FBI](tools/cia/install_qr.png)
+
+Or install it by hand from the [Releases](https://github.com/randomerz/Slider3DS/releases) page. 
 
 **`slider3ds.cia`: an icon on the HOME Menu**
 1. Copy it to the SD card.
