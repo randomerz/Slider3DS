@@ -2,6 +2,8 @@
 
 A homebrew Nintendo 3DS port of [Slider](https://store.steampowered.com/app/1916890/Slider/): slide chunks of the world to solve puzzles and help others.
 
+![Example Gameplay Gif](misc/24_04_03_river_puzzle.gif)
+
 **v0.1 has the first area, Stonybrook Village**, from the intro to the final puzzle, with a short ending. More areas will come later.
 
 It runs on Old and New 3DS / 2DS systems with custom firmware.
